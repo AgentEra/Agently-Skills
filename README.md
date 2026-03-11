@@ -1,10 +1,133 @@
+<img width="640" alt="image" src="https://github.com/user-attachments/assets/c645d031-c8b0-4dba-a515-9d7a4b0a6881" />
+
 # Agently Skills
 
-This repository contains Agent Skills for the Agently framework.
+> Official installable skills for Agently, designed to help coding agents understand, route, and implement real Agently work more accurately.
 
-Prerequisite: Agently `>= 4.0.8.5`.
+[English](https://github.com/AgentEra/Agently-Skills/blob/main/README.md) | [中文](https://github.com/AgentEra/Agently-Skills/blob/main/README_CN.md)
 
-## Available Skills
+Main framework repository: <https://github.com/AgentEra/Agently>  
+Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/docs/>
+
+---
+
+<p align="center">
+  <b><a href="#install">Install</a> | <a href="#capability-overview">Capability Overview</a> | <a href="#detailed-skill-list">Detailed Skill List</a> | <a href="#repository-layout">Repository Layout</a> | <a href="#migration-and-adaptation">Migration and Adaptation</a></b>
+</p>
+
+---
+
+## Official Installable Skills
+
+This repository publishes official Agently skills for coding-agent use.
+
+After installation, you get:
+
+- top-level routing from business requirements into the right Agently implementation path
+- a complete one-request capability tree covering model setup, input composition, output control, tools, MCP, session, FastAPI, embeddings, and RAG
+- a complete TriggerFlow capability tree covering orchestration, patterns, state and resources, sub flows, model integration, interrupts and stream, config, and execution state
+- migration playbooks for LangChain and LangGraph
+
+Prerequisite:
+
+- `Agently >= 4.0.8.5`
+
+## Install
+
+Install the whole repository:
+
+```bash
+npx skills add AgentEra/Agently-Skills
+```
+
+Install one specific skill:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-playbook
+```
+
+List installable skills from the repository:
+
+```bash
+npx skills add AgentEra/Agently-Skills -l --full-depth
+```
+
+## Core Resources
+
+- Main repository: <https://github.com/AgentEra/Agently>
+- Official docs (EN): <https://agently.tech/docs/en/>
+- Official docs (CN): <https://agently.cn/docs/>
+- Skills repository: <https://github.com/AgentEra/Agently-Skills>
+- Install command: `npx skills add AgentEra/Agently-Skills`
+
+## Why This Repository Exists
+
+Agently's practical boundary is much broader than "send one model request":
+
+- you may need stable structured output
+- you may need `instant` structured streaming
+- you may need tools, MCP, a knowledge base, or session continuity
+- you may need to expose the result through FastAPI
+- you may need TriggerFlow for orchestration, concurrency, interrupts, and restore
+- you may need to migrate an existing LangChain or LangGraph system
+
+If those boundaries must be re-explained from scratch in every coding session, the result is slower and less consistent. This repository turns that repeated knowledge into installable skills with explicit routing, boundaries, and implementation guidance.
+
+## Capability Overview
+
+### 1. Top-Level Entry Skills
+
+- `agently-playbook`
+  Starts from business goals, product behavior, or system design and decides whether the solution should stay one request, become a multi-agent design, or escalate to TriggerFlow.
+- `agently-model-request-playbook`
+  Starts from one-request business needs and decides when to stay within one request and when to add tools, MCP, RAG, session, FastAPI, or TriggerFlow.
+- `agently-triggerflow-playbook`
+  Starts from workflow and orchestration needs and routes into the right TriggerFlow capability group.
+
+### 2. One-Request Core
+
+- `agently-model-setup`
+  Model connection, `OpenAICompatible`, provider switching, auth, proxy, timeout, and `client_options`
+- `agently-input-composition`
+  Input organization, prompt slots, mappings, attachments, and low-level `chat_history`
+- `agently-output-control`
+  Output schema design, `ensure_keys`, response consumption, `instant`, and `streaming_parse`
+
+### 3. Request-Enhancement Skills
+
+- `agently-tools`
+- `agently-mcp`
+- `agently-session-memo`
+- `agently-prompt-config-files`
+- `agently-fastapi-helper`
+- `agently-embeddings`
+- `agently-knowledge-base-and-rag`
+
+### 4. Multi-Agent and Complex Systems
+
+- `agently-multi-agent-patterns`
+  Covers planner-worker, parallel experts, reviewer-reviser, and other multi-agent design patterns built from current Agently capabilities.
+
+### 5. TriggerFlow Capability Tree
+
+- `agently-triggerflow-orchestration`
+  Basic signal-driven orchestration
+- `agently-triggerflow-patterns`
+  Common workflow patterns such as routers, fan-out and fan-in, safe loops, ReAct loops, and approval gates
+- `agently-triggerflow-state-and-resources`
+  `runtime_data`, `flow_data`, and resource boundaries
+- `agently-triggerflow-subflows`
+  Child flow boundaries, `capture`, and `write_back`
+- `agently-triggerflow-model-integration`
+  Model requests inside workflows, including `delta` and `instant`
+- `agently-triggerflow-config`
+  Flow definition export, import, Mermaid, and contract metadata
+- `agently-triggerflow-execution-state`
+  Execution save, restore, and resume
+- `agently-triggerflow-interrupts-and-stream`
+  Interrupts, resume, runtime stream, and interactive waiting
+
+## Detailed Skill List
 
 ### `agently-playbook`
 
@@ -20,50 +143,19 @@ Skill path:
 
 - `skills/agently-playbook/SKILL.md`
 
-### `agently-langchain-langgraph-migration-playbook`
+### `agently-model-request-playbook`
 
-Use this skill when migrating a LangChain or LangGraph codebase or mental model into Agently, including:
+Use this skill when the request starts from business needs around one Agently model request, including:
 
-- deciding whether the source design maps to LangChain-side or LangGraph-side migration
-- choosing between one-request, multi-agent, or TriggerFlow migration targets
-- choosing the correct migration skill and implementation order
-
-Skill path:
-
-- `skills/agently-langchain-langgraph-migration-playbook/SKILL.md`
-
-### `agently-langchain-to-agently`
-
-Use this skill when migrating LangChain agent-side concepts into Agently, including:
-
-- `create_agent`
-- `response_format`, `ProviderStrategy`, and `ToolStrategy`
-- tools
-- structured output
-- short-term memory
-- middleware or guardrails
-- `HumanInTheLoopMiddleware`
-- retrieval and service exposure
+- the standard request path
+- the high-quality request path
+- responsibility boundaries between framework and business logic
+- when to add tools, MCP, KB/RAG, session, prompt config, or FastAPIHelper
+- when to escalate from one request into TriggerFlow
 
 Skill path:
 
-- `skills/agently-langchain-to-agently/SKILL.md`
-
-### `agently-langgraph-to-triggerflow`
-
-Use this skill when migrating LangGraph orchestration concepts into Agently TriggerFlow, including:
-
-- `StateGraph`
-- nodes and edges
-- `Send` and `Command`
-- graph state
-- threads, checkpoints, and persistence
-- interrupts
-- streaming and subgraphs
-
-Skill path:
-
-- `skills/agently-langgraph-to-triggerflow/SKILL.md`
+- `skills/agently-model-request-playbook/SKILL.md`
 
 ### `agently-model-setup`
 
@@ -80,49 +172,6 @@ Use this skill when configuring Agently model access for Chat LLM, Completions L
 Skill path:
 
 - `skills/agently-model-setup/SKILL.md`
-
-### `agently-model-request-playbook`
-
-Use this skill when the request starts from business needs around one Agently model request, including:
-
-- the standard request path
-- the high-quality request path
-- responsibility boundaries between framework and business logic
-- when to add tools, MCP, KB/RAG, session, prompt config, or FastAPIHelper
-- when to escalate from one request into TriggerFlow
-
-Skill path:
-
-- `skills/agently-model-request-playbook/SKILL.md`
-
-### `agently-multi-agent-patterns`
-
-Use this skill when designing a multi-agent solution in Agently, including:
-
-- deciding whether the problem should stay one request or become a specialized agent team
-- planner-worker or supervisor-router patterns
-- staged specialist pipelines
-- parallel experts and synthesizer
-- reviewer-reviser design
-- agent handoff contracts and ownership boundaries
-
-Skill path:
-
-- `skills/agently-multi-agent-patterns/SKILL.md`
-
-### `agently-output-control`
-
-Use this skill when defining or consuming Agently model output, including:
-
-- `.output(...)` schema design
-- `ensure_keys` and retries
-- `get_text()`, `get_data()`, `get_data_object()`, and `get_meta()`
-- `delta`, `specific`, `instant`, and `streaming_parse`
-- reusing the same `response` without sending another request
-
-Skill path:
-
-- `skills/agently-output-control/SKILL.md`
 
 ### `agently-input-composition`
 
@@ -141,20 +190,19 @@ Skill path:
 
 - `skills/agently-input-composition/SKILL.md`
 
-### `agently-embeddings`
+### `agently-output-control`
 
-Use this skill when configuring and sending Agently embeddings requests, including:
+Use this skill when defining or consuming Agently model output, including:
 
-- `model_type="embeddings"`
-- single or batch `input(...)`
-- parsed vector results through `start()` / `get_data()`
-- `async_start()` and async embeddings usage
-- original payload or metadata inspection through `get_response()`
-- offline indexing and online query embedding patterns
+- `.output(...)` schema design
+- `ensure_keys` and retries
+- `get_text()`, `get_data()`, `get_data_object()`, and `get_meta()`
+- `delta`, `specific`, `instant`, and `streaming_parse`
+- reusing the same `response` without sending another request
 
 Skill path:
 
-- `skills/agently-embeddings/SKILL.md`
+- `skills/agently-output-control/SKILL.md`
 
 ### `agently-tools`
 
@@ -187,38 +235,6 @@ Skill path:
 
 - `skills/agently-mcp/SKILL.md`
 
-### `agently-fastapi-helper`
-
-Use this skill when exposing Agently through `FastAPIHelper`, including:
-
-- Agent, ModelRequest, TriggerFlow, or generator providers
-- POST and GET endpoints
-- SSE
-- WebSocket
-- helper payload shape
-- wrapped response and error behavior
-- TriggerFlow-contract-aware request and response typing
-- OpenAPI contract metadata
-
-Skill path:
-
-- `skills/agently-fastapi-helper/SKILL.md`
-
-### `agently-knowledge-base-and-rag`
-
-Use this skill when building Agently knowledge-base or RAG flows, including:
-
-- `ChromaCollection`
-- embedding-agent-backed indexing
-- collection `add(...)` and `query(...)`
-- query-to-`info(...)` answer flow
-- `ChromaData` and `ChromaEmbeddingFunction`
-- process-level collection reuse
-
-Skill path:
-
-- `skills/agently-knowledge-base-and-rag/SKILL.md`
-
 ### `agently-session-memo`
 
 Use this skill when managing Agently session-backed conversation memory, including:
@@ -247,6 +263,80 @@ Use this skill when managing Agently prompts as YAML or JSON config, including:
 Skill path:
 
 - `skills/agently-prompt-config-files/SKILL.md`
+
+### `agently-fastapi-helper`
+
+Use this skill when exposing Agently through `FastAPIHelper`, including:
+
+- Agent, ModelRequest, TriggerFlow, or generator providers
+- POST and GET endpoints
+- SSE
+- WebSocket
+- helper payload shape
+- wrapped response and error behavior
+- TriggerFlow-contract-aware request and response typing
+- OpenAPI contract metadata
+
+Skill path:
+
+- `skills/agently-fastapi-helper/SKILL.md`
+
+### `agently-embeddings`
+
+Use this skill when configuring and sending Agently embeddings requests, including:
+
+- `model_type="embeddings"`
+- single or batch `input(...)`
+- parsed vector results through `start()` / `get_data()`
+- `async_start()` and async embeddings usage
+- original payload or metadata inspection through `get_response()`
+- offline indexing and online query embedding patterns
+
+Skill path:
+
+- `skills/agently-embeddings/SKILL.md`
+
+### `agently-knowledge-base-and-rag`
+
+Use this skill when building Agently knowledge-base or RAG flows, including:
+
+- `ChromaCollection`
+- embedding-agent-backed indexing
+- collection `add(...)` and `query(...)`
+- query-to-`info(...)` answer flow
+- `ChromaData` and `ChromaEmbeddingFunction`
+- process-level collection reuse
+
+Skill path:
+
+- `skills/agently-knowledge-base-and-rag/SKILL.md`
+
+### `agently-multi-agent-patterns`
+
+Use this skill when designing a multi-agent solution in Agently, including:
+
+- deciding whether the problem should stay one request or become a specialized agent team
+- planner-worker or supervisor-router patterns
+- staged specialist pipelines
+- parallel experts and synthesizer
+- reviewer-reviser design
+- agent handoff contracts and ownership boundaries
+
+Skill path:
+
+- `skills/agently-multi-agent-patterns/SKILL.md`
+
+### `agently-triggerflow-playbook`
+
+Use this skill when the request starts from business workflow analysis rather than TriggerFlow APIs, including:
+
+- deciding whether the solution should use TriggerFlow
+- choosing between orchestration, state-and-resources, subflows, and interrupt-and-stream work
+- combining TriggerFlow with model setup or output control
+
+Skill path:
+
+- `skills/agently-triggerflow-playbook/SKILL.md`
 
 ### `agently-triggerflow-orchestration`
 
@@ -303,18 +393,6 @@ Skill path:
 
 - `skills/agently-triggerflow-subflows/SKILL.md`
 
-### `agently-triggerflow-playbook`
-
-Use this skill when the request starts from business workflow analysis rather than TriggerFlow APIs, including:
-
-- deciding whether the solution should use TriggerFlow
-- choosing between orchestration, state-and-resources, subflows, and interrupt-and-stream work
-- combining TriggerFlow with model setup or output control
-
-Skill path:
-
-- `skills/agently-triggerflow-playbook/SKILL.md`
-
 ### `agently-triggerflow-model-integration`
 
 Use this skill when a TriggerFlow workflow needs model execution inside the flow, including:
@@ -370,100 +448,109 @@ Skill path:
 
 - `skills/agently-triggerflow-interrupts-and-stream/SKILL.md`
 
-## Install
+### `agently-langchain-langgraph-migration-playbook`
 
-Before using these skills, ensure the Agently package version is `>= 4.0.8.5`.
+Use this skill when migrating a LangChain or LangGraph codebase or mental model into Agently, including:
 
-Install the repository with the Skills CLI:
+- deciding whether the source design maps to LangChain-side or LangGraph-side migration
+- choosing between one-request, multi-agent, or TriggerFlow migration targets
+- choosing the correct migration skill and implementation order
 
-```bash
-npx skills add <owner>/<repo>
-```
+Skill path:
 
-Install only this skill from the repository:
+- `skills/agently-langchain-langgraph-migration-playbook/SKILL.md`
 
-```bash
-npx skills add <owner>/<repo> --skill agently-embeddings
-```
+### `agently-langchain-to-agently`
+
+Use this skill when migrating LangChain agent-side concepts into Agently, including:
+
+- `create_agent`
+- `response_format`, `ProviderStrategy`, and `ToolStrategy`
+- tools
+- structured output
+- short-term memory
+- middleware or guardrails
+- `HumanInTheLoopMiddleware`
+- retrieval and service exposure
+
+Skill path:
+
+- `skills/agently-langchain-to-agently/SKILL.md`
+
+### `agently-langgraph-to-triggerflow`
+
+Use this skill when migrating LangGraph orchestration concepts into Agently TriggerFlow, including:
+
+- `StateGraph`
+- nodes and edges
+- `Send` and `Command`
+- graph state
+- threads, checkpoints, and persistence
+- interrupts
+- streaming and subgraphs
+
+Skill path:
+
+- `skills/agently-langgraph-to-triggerflow/SKILL.md`
 
 ## Repository Layout
+
+Public skills live under `skills/`. A typical skill contains:
+
+- `SKILL.md`
+- `references/`
+- optional `scripts/`
+
+Typical structure:
 
 ```text
 skills/
   agently-playbook/
     SKILL.md
     references/
-  agently-langchain-langgraph-migration-playbook/
-    SKILL.md
-    references/
-  agently-langchain-to-agently/
-    SKILL.md
-    references/
-  agently-langgraph-to-triggerflow/
+  agently-model-request-playbook/
     SKILL.md
     references/
   agently-model-setup/
     SKILL.md
     references/
     scripts/
-  agently-model-request-playbook/
-    SKILL.md
-    references/
-  agently-multi-agent-patterns/
-    SKILL.md
-    references/
-  agently-output-control/
-    SKILL.md
-    references/
-  agently-input-composition/
-    SKILL.md
-    references/
-  agently-embeddings/
-    SKILL.md
-    references/
-  agently-session-memo/
-    SKILL.md
-    references/
-  agently-prompt-config-files/
-    SKILL.md
-    references/
-  agently-tools/
-    SKILL.md
-    references/
-  agently-mcp/
-    SKILL.md
-    references/
-  agently-fastapi-helper/
-    SKILL.md
-    references/
-  agently-knowledge-base-and-rag/
-    SKILL.md
-    references/
-  agently-triggerflow-orchestration/
-    SKILL.md
-    references/
-  agently-triggerflow-patterns/
-    SKILL.md
-    references/
-  agently-triggerflow-state-and-resources/
-    SKILL.md
-    references/
-  agently-triggerflow-subflows/
-    SKILL.md
-    references/
-  agently-triggerflow-playbook/
-    SKILL.md
-    references/
-  agently-triggerflow-model-integration/
-    SKILL.md
-    references/
-  agently-triggerflow-config/
-    SKILL.md
-    references/
-  agently-triggerflow-execution-state/
-    SKILL.md
-    references/
-  agently-triggerflow-interrupts-and-stream/
-    SKILL.md
-    references/
+  ...
 ```
+
+The `spec/` directory is author-side only. It exists for writing, validation, and upstream-coverage maintenance, and is not part of the public skill payload.
+
+## Migration and Adaptation
+
+If your current system is based on LangChain or LangGraph, start with the migration skills:
+
+- `agently-langchain-langgraph-migration-playbook`
+  Top-level router for deciding whether the migration is LangChain-side or LangGraph-side
+- `agently-langchain-to-agently`
+  Covers `create_agent`, structured output, middleware, tools, memory, and service exposure
+- `agently-langgraph-to-triggerflow`
+  Covers `StateGraph`, `Send`, `Command`, threads and checkpoints, interrupts, streaming, and subgraphs
+
+The goal of these migration skills is not line-by-line replacement. The goal is to translate the source capabilities into Agently's current capability tree and redesign the implementation where a literal rewrite would be misleading.
+
+## Recommended Reading Order
+
+If you are new to this repository, start here:
+
+1. `agently-playbook`
+2. `agently-model-request-playbook`
+3. `agently-model-setup`
+4. `agently-input-composition`
+5. `agently-output-control`
+6. move into tools, MCP, session, FastAPI, embeddings, or RAG only as needed
+7. move into `agently-triggerflow-playbook` when the problem becomes a multi-step, async, restartable workflow
+
+## Release Status
+
+This repository currently has:
+
+- full `skills-ref validate`
+- full author-side validator coverage
+- remote discovery and install smoke tests through `npx skills add AgentEra/Agently-Skills`
+
+If you find that a skill boundary, trigger, or routing rule is still off, open an issue or PR.
