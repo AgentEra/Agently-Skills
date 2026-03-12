@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
+SKILLS = ROOT / "skills"
 
 
 def check(name: str, condition: bool, details: str, failures: list[str], passes: list[str]) -> None:
@@ -16,85 +17,88 @@ def check(name: str, condition: bool, details: str, failures: list[str], passes:
         failures.append(f"{name}: {details}")
 
 
-def predict_route(query: str, installed_skills: list[str]) -> list[str]:
-    q = query.lower()
-    path: list[str] = []
-    if "agently-playbook" in installed_skills:
-        path.append("agently-playbook")
-
-    if "langchain" in q or "langgraph" in q or "migrate" in q or "migration" in q:
-        if "agently-migration-playbook" in installed_skills:
-            path.append("agently-migration-playbook")
-        if "langgraph" in q and "agently-langgraph-to-triggerflow" in installed_skills:
-            path.append("agently-langgraph-to-triggerflow")
-        elif "langchain" in q and "agently-langchain-to-agently" in installed_skills:
-            path.append("agently-langchain-to-agently")
-        return path
-
-    workflow_terms = (
-        "workflow",
-        "branch",
-        "concurrency",
-        "resume",
-        "runtime stream",
-        "draft judge revise",
-        "waiting and resume",
-        "stop conditions",
-    )
-    if any(term in q for term in workflow_terms):
-        if "agently-triggerflow" in installed_skills:
-            path.append("agently-triggerflow")
-        return path
-
-    if any(term in q for term in ("deepseek", "ollama", "openaicompatible", "base url", "auth", "connect")):
-        if "agently-model-setup" in installed_skills:
-            path.append("agently-model-setup")
-        return path
-
-    if any(term in q for term in ("prompt config", "mappings", "input", "instruct", "placeholder")):
-        if "agently-prompt-management" in installed_skills:
-            path.append("agently-prompt-management")
-        return path
-
-    if any(term in q for term in ("session", "memo", "restore after restart", "continuity")):
-        if "agently-session-memory" in installed_skills:
-            path.append("agently-session-memory")
-        return path
-
-    if any(term in q for term in ("tool", "mcp", "fastapihelper", "fastapi", "keywaiter", "auto_func")):
-        if "agently-agent-extensions" in installed_skills:
-            path.append("agently-agent-extensions")
-        return path
-
-    if any(term in q for term in ("knowledge-base", "knowledge base", "chroma", "embeddings", "retrieval")):
-        if "agently-knowledge-base" in installed_skills:
-            path.append("agently-knowledge-base")
-        return path
-
-    if "agently-output-control" in installed_skills:
-        path.append("agently-output-control")
-    if "agently-model-response" in installed_skills and any(term in q for term in ("report", "response", "stream", "simulator", "stable")):
-        path.append("agently-model-response")
-    return path
-
-
 def main() -> None:
     data = json.loads(FIXTURES.read_text(encoding="utf-8"))
     passes: list[str] = []
     failures: list[str] = []
+    cases = data.get("cases", [])
 
-    for case in data["cases"]:
-        predicted = predict_route(case["query"], case["installed_skills"])
-        expected = case["expected_route_path"]
+    check("cases_present", bool(cases), "route fixtures contain cases", failures, passes)
+
+    for case in cases:
+        case_id = case.get("id", "<missing-id>")
+        query = case.get("query")
+        installed = case.get("installed_skills")
+        expected_paths = case.get("expected_route_paths")
+
         check(
-            case["id"],
-            predicted == expected,
-            f"expected={expected} predicted={predicted}",
+            f"{case_id}_shape",
+            (
+                isinstance(query, str)
+                and isinstance(installed, list)
+                and isinstance(expected_paths, list)
+                and bool(expected_paths)
+                and all(isinstance(path, list) and bool(path) for path in expected_paths)
+            ),
+            "case has query, installed_skills, and expected_route_paths",
+            failures,
+            passes,
+        )
+        if not isinstance(installed, list) or not isinstance(expected_paths, list):
+            continue
+
+        check(
+            f"{case_id}_installed_exist",
+            all((SKILLS / skill).exists() for skill in installed),
+            "all installed skills exist",
+            failures,
+            passes,
+        )
+        check(
+            f"{case_id}_expected_installed",
+            all(skill in installed for path in expected_paths for skill in path),
+            "all acceptable route paths only contain installed skills",
             failures,
             passes,
         )
 
-    print("V2 trigger path validation")
+    check(
+        "generic_non_framework_playbook_case",
+        any(
+            case.get("expected_route_paths") == [["agently-playbook"]]
+            and "agently" not in case.get("query", "").lower()
+            and "triggerflow" not in case.get("query", "").lower()
+            for case in cases
+        ),
+        "fixtures cover unresolved generic cases without framework-name requirements",
+        failures,
+        passes,
+    )
+    check(
+        "chinese_quality_validator_case",
+        any(
+            case.get("id") == "skills-quality-simulator-kickoff-zh"
+            and case.get("expected_route_paths") == [["agently-playbook"]]
+            and "agently" not in case.get("query", "").lower()
+            for case in cases
+        ),
+        "fixtures cover the Chinese skills-quality-validator kickoff scenario without Agently mention",
+        failures,
+        passes,
+    )
+    check(
+        "direct_leaf_cases_present",
+        any(
+            isinstance(case.get("expected_route_paths"), list)
+            and any(path and path[0] != "agently-playbook" for path in case["expected_route_paths"])
+            for case in cases
+        ),
+        "fixtures cover direct leaf discovery without forcing agently-playbook first",
+        failures,
+        passes,
+    )
+
+    print("V2 trigger fixture validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

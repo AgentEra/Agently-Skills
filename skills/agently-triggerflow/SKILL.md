@@ -1,11 +1,13 @@
 ---
 name: agently-triggerflow
-description: Use when the main task is workflow orchestration in Agently, including TriggerFlow branching, concurrency, runtime data, runtime stream, sub flows, execution state, and workflow-side model execution.
+description: Use when the user needs workflow orchestration such as branching, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, or explicit draft-review-revise style multi-stage flows. The user does not need to say TriggerFlow explicitly.
 ---
 
 # Agently TriggerFlow
 
 Use this skill when the solution clearly needs orchestration semantics rather than one request family.
+
+The user does not need to say TriggerFlow or Agently. Scenario language such as resumable approval flow, branching automation, or draft-review-revise pipeline should still route here once orchestration is clearly the owner layer.
 
 ## Native-First Rules
 

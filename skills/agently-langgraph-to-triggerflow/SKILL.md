@@ -1,6 +1,6 @@
 ---
 name: agently-langgraph-to-triggerflow
-description: Use when the main task is directly migrating LangGraph orchestration surfaces into Agently TriggerFlow, including graph stages, routing, checkpoints, interrupts, persistence, streaming, and subgraph boundaries.
+description: Use when a migration is already known to stay on the LangGraph orchestration side, including stages, routing, checkpoints, interrupts, persistence, streaming, and subgraph boundaries.
 ---
 
 # LangGraph To TriggerFlow

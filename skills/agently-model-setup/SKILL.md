@@ -1,6 +1,6 @@
 ---
 name: agently-model-setup
-description: Use when the main task is model connection or request transport setup in Agently, including dotenv-loaded DeepSeek or other OpenAI-compatible endpoints, auth wiring, request options, and minimal connectivity verification.
+description: Use when the user is wiring a model endpoint, env vars, or connectivity check for a model-powered feature, including dotenv-loaded DeepSeek or other OpenAI-compatible settings, auth, request options, and minimal verification.
 ---
 
 # Agently Model Setup

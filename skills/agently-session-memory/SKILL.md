@@ -1,6 +1,6 @@
 ---
 name: agently-session-memory
-description: Use when the main task is Session-backed continuity, memo, or restore in Agently, including session ids, chat history continuity, memo, restore after restart, and request-side conversational state placement.
+description: Use when the user needs conversation continuity, memo, or restore-after-restart behavior for a request family, including session ids, chat history, request-side memory boundaries, and session-backed continuity.
 ---
 
 # Agently Session Memory

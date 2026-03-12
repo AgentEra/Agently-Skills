@@ -1,6 +1,6 @@
 ---
 name: agently-agent-extensions
-description: Use when the main task is extending Agently agents with native extension surfaces such as tools, MCP, FastAPIHelper, `auto_func`, or `KeyWaiter`, rather than replacing them with custom wrappers first.
+description: Use when the user wants tool use, MCP access, HTTP or streaming API exposure, auto-function helpers, or wait-for-key behavior through Agently-native extension surfaces rather than custom wrappers first.
 ---
 
 # Agently Agent Extensions

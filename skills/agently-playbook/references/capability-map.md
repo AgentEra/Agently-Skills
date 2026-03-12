@@ -2,6 +2,14 @@
 
 Use `agently-playbook` to reduce a broad request into one Agently-native capability path.
 
+The request can start from a generic scenario and does not need to mention Agently explicitly.
+
+Examples that should still start here:
+
+- "help me kick off a model-powered internal tool"
+- "build a requirements assistant and validate the outputs"
+- "create a skills quality simulator and decide whether it should be one request or a workflow"
+
 - unresolved business or product request -> stay here first
 - provider wiring -> `agently-model-setup`
 - prompt composition or prompt config -> `agently-prompt-management`

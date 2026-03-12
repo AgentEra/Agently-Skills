@@ -1,6 +1,6 @@
 ---
 name: agently-migration-playbook
-description: Use when migrating an existing LangChain or LangGraph system into Agently and the first decision is whether the migration is agent-side LangChain work or workflow-side LangGraph orchestration work.
+description: Use when the user wants to migrate an existing LangChain or LangGraph system and the first decision is whether the source problem is agent-side or orchestration-side.
 ---
 
 # Agently Migration Playbook

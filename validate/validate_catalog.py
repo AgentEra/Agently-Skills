@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
+ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 EXPECTED_SKILLS = {
     "agently-playbook",
     "agently-model-setup",
@@ -66,6 +68,24 @@ def main() -> None:
     check("skills_dir_exists", SKILLS.exists(), "skills directory exists", failures, passes)
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
     check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches V2 skill set", failures, passes)
+
+    playbook_text = (SKILLS / "agently-playbook" / "SKILL.md").read_text(encoding="utf-8")
+    triggerflow_text = (SKILLS / "agently-triggerflow" / "SKILL.md").read_text(encoding="utf-8")
+    check(
+        "playbook_framework_name_optional",
+        "does not need to mention Agently explicitly" in playbook_text
+        and "Generic asks" in playbook_text,
+        "playbook explicitly allows scenario-led discovery without framework-name requirements",
+        failures,
+        passes,
+    )
+    check(
+        "triggerflow_framework_name_optional",
+        "does not need to say TriggerFlow or Agently" in triggerflow_text,
+        "triggerflow explicitly allows scenario-led discovery without framework-name requirements",
+        failures,
+        passes,
+    )
 
     for skill_name in sorted(EXPECTED_SKILLS):
         skill_dir = SKILLS / skill_name
@@ -128,6 +148,34 @@ def main() -> None:
             failures,
             passes,
         )
+
+    fixture_text = ROUTE_FIXTURES.read_text(encoding="utf-8")
+    fixture_data = json.loads(fixture_text)
+    fixture_cases = fixture_data.get("cases", [])
+    check(
+        "route_fixture_covers_generic_non_framework_case",
+        "generic-unresolved-no-framework-en" in fixture_text and "generic-unresolved-no-framework-zh" in fixture_text,
+        "route fixtures cover generic kickoff cases without Agently mentions",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_chinese_quality_validator_case",
+        any(case.get("id") == "skills-quality-simulator-kickoff-zh" for case in fixture_cases),
+        "route fixtures cover the Chinese skills-quality-validator kickoff scenario",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_direct_leaf_cases",
+        any(
+            any(path and path[0] != "agently-playbook" for path in case.get("expected_route_paths", []))
+            for case in fixture_cases
+        ),
+        "route fixtures cover direct leaf discovery cases",
+        failures,
+        passes,
+    )
 
     print("V2 catalog validation")
     print(f"passes: {len(passes)}")

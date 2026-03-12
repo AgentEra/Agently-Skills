@@ -1,11 +1,13 @@
 ---
 name: agently-model-response
-description: Use when the main task is Agently response lifecycle and consumption, including `get_response()`, `get_text()`, `get_data()`, metadata, async response APIs, and streaming consumers such as `delta`, `instant`, or `specific`.
+description: Use when the user wants to reuse one model result, read text/data/meta without re-requesting, or stream partial updates, including `get_response()`, async getters, `delta`, `instant`, and `specific`.
 ---
 
 # Agently Model Response
 
 Use this skill when the output contract is already chosen and the remaining issue is how the response instance should be consumed or reused.
+
+The user does not need to say `get_response()`. Requests to reuse one result as text, parsed data, metadata, or progressive updates should route here.
 
 ## Native-First Rules
 

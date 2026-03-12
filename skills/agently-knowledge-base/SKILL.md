@@ -1,6 +1,6 @@
 ---
 name: agently-knowledge-base
-description: Use when the main task is Agently embeddings, Chroma-backed indexing, retrieval, or retrieval-to-answer design, including embedding-agent setup, collection add/query, and KB-backed answer flows.
+description: Use when the user wants embeddings, vector indexing, retrieval, or retrieval-backed answers, including embedding-agent setup, Chroma-backed collections, collection add/query, and KB-to-answer flows.
 ---
 
 # Agently Knowledge Base

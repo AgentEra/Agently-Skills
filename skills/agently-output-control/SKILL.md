@@ -1,11 +1,13 @@
 ---
 name: agently-output-control
-description: Use when the main task is the output contract of one Agently request, including `.output(...)`, field ordering, required keys, `ensure_keys`, and structured output reliability.
+description: Use when the user wants stable structured fields, required keys, or reliable machine-readable output from one model request, including `.output(...)`, field ordering, and `ensure_keys`.
 ---
 
 # Agently Output Control
 
 Use this skill when the question is what shape the model should return and how that shape should stay reliable.
+
+The user does not need to say `.output(...)` or `ensure_keys`. Requests for stable JSON-like fields, structured reports, or machine-readable sections should route here.
 
 ## Native-First Rules
 

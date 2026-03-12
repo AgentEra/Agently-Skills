@@ -2,6 +2,51 @@
   "version": 2,
   "cases": [
     {
+      "id": "generic-unresolved-no-framework-en",
+      "query": "Help me kick off a model-powered internal tool for customer support with tools, memory, and approvals. I have not decided whether it should stay one request, become a short chain, or become a workflow.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "generic-unresolved-no-framework-zh",
+      "query": "帮我启动一个模型驱动的内部工具项目，要能理解需求、生成产物并校验结果，但我还没决定是一条请求、短链路还是工作流。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "skills-quality-simulator-kickoff-zh",
+      "query": "帮我做一个Skills质量模拟验证器，确保Skills定义和常见问题能够吻合，但我还没决定是单次请求、短链路还是工作流。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
       "id": "skills-quality-simulator-request",
       "query": "Build a skills quality simulator that compares skill definitions with common user questions, returns a stable structured report, and keeps the implementation inside one request family.",
       "installed_skills": [
@@ -10,10 +55,33 @@
         "agently-model-response",
         "agently-triggerflow"
       ],
-      "expected_route_path": [
+      "expected_route_paths": [
+        [
+          "agently-playbook",
+          "agently-output-control"
+        ],
+        [
+          "agently-output-control"
+        ]
+      ]
+    },
+    {
+      "id": "skills-quality-simulator-request-zh",
+      "query": "帮我做一个Skills质量模拟验证器，确保Skills定义和常见问题能够吻合，输出稳定的结构化报告，先按单次请求或短链路实现，不做工作流。",
+      "installed_skills": [
         "agently-playbook",
         "agently-output-control",
-        "agently-model-response"
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook",
+          "agently-output-control"
+        ],
+        [
+          "agently-output-control"
+        ]
       ]
     },
     {
@@ -25,57 +93,89 @@
         "agently-model-response",
         "agently-triggerflow"
       ],
-      "expected_route_path": [
+      "expected_route_paths": [
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ],
+        [
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "explicit-quality-loop-workflow-zh",
+      "query": "帮我设计一个可恢复的草稿-审核-修订流程，需要审批、暂停恢复和运行时流式状态。",
+      "installed_skills": [
         "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
         "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ],
+        [
+          "agently-triggerflow"
+        ]
       ]
     },
     {
       "id": "provider-setup",
-      "query": "Connect DeepSeek through dotenv-loaded OpenAICompatible settings and run a minimal connectivity check.",
+      "query": "Connect DeepSeek through dotenv-loaded settings and run a minimal connectivity check for the model-backed feature.",
       "installed_skills": [
         "agently-playbook",
         "agently-model-setup"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-model-setup"
+      "expected_route_paths": [
+        [
+          "agently-model-setup"
+        ]
       ]
     },
     {
       "id": "prompt-composition",
-      "query": "Show how to compose input, instruct, info, prompt config, and placeholder mappings for one Agently request.",
+      "query": "Show how to compose input, instruct, info, prompt config, and placeholder mappings for one request family.",
       "installed_skills": [
         "agently-playbook",
         "agently-prompt-management"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-prompt-management"
+      "expected_route_paths": [
+        [
+          "agently-playbook",
+          "agently-prompt-management"
+        ],
+        [
+          "agently-prompt-management"
+        ]
       ]
     },
     {
       "id": "session-memory",
-      "query": "I need session-backed continuity, memo, and restore after restart for an Agently request family.",
+      "query": "I need session-backed continuity, memo, and restore after restart for one request family.",
       "installed_skills": [
         "agently-playbook",
         "agently-session-memory"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-session-memory"
+      "expected_route_paths": [
+        [
+          "agently-session-memory"
+        ]
       ]
     },
     {
       "id": "extensions",
-      "query": "I need tools, MCP server access, and FastAPIHelper exposure without writing custom wrappers first.",
+      "query": "I need tools, MCP server access, and HTTP or streaming API exposure without writing custom wrappers first.",
       "installed_skills": [
         "agently-playbook",
         "agently-agent-extensions"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-agent-extensions"
+      "expected_route_paths": [
+        [
+          "agently-agent-extensions"
+        ]
       ]
     },
     {
@@ -85,24 +185,34 @@
         "agently-playbook",
         "agently-knowledge-base"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-knowledge-base"
+      "expected_route_paths": [
+        [
+          "agently-knowledge-base"
+        ]
       ]
     },
     {
       "id": "langgraph-migration",
-      "query": "Migrate a LangGraph flow with checkpoints, interrupts, persistence, and streaming into Agently.",
+      "query": "Migrate a LangGraph flow with checkpoints, interrupts, persistence, and streaming.",
       "installed_skills": [
         "agently-playbook",
         "agently-migration-playbook",
         "agently-langchain-to-agently",
         "agently-langgraph-to-triggerflow"
       ],
-      "expected_route_path": [
-        "agently-playbook",
-        "agently-migration-playbook",
-        "agently-langgraph-to-triggerflow"
+      "expected_route_paths": [
+        [
+          "agently-langgraph-to-triggerflow"
+        ],
+        [
+          "agently-migration-playbook",
+          "agently-langgraph-to-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-migration-playbook",
+          "agently-langgraph-to-triggerflow"
+        ]
       ]
     }
   ]

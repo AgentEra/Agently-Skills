@@ -1,11 +1,13 @@
 ---
 name: agently-playbook
-description: Top-level Agently router for unresolved model-powered product, assistant, internal-tool, or workflow requests. Use it first to select the right Agently-native capability path and prohibit custom replacements when a native surface already exists.
+description: Use when the user wants to build or validate a model-powered assistant, internal tool, automation, evaluator, or workflow from a business scenario or common problem statement, and it is still unclear whether the solution should stay a single request, add supporting capabilities, or become orchestration. The user does not need to mention Agently explicitly.
 ---
 
 # Agently Playbook
 
 Use this skill first when the request still starts from business goals, product behavior, or broad model-app language.
+
+The user does not need to say Agently, TriggerFlow, or any other framework term. Generic asks such as "build an assistant", "help me design an internal tool", or "create a validator for common problems" should still start here when the owner layer is unresolved.
 
 ## Workflow
 

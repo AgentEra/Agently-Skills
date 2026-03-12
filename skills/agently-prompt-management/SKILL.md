@@ -1,6 +1,6 @@
 ---
 name: agently-prompt-management
-description: Use when the main task is request-side prompt composition in Agently, including input slots, instruct/info layering, prompt config, mappings, reusable prompt templates, and prompt-state organization.
+description: Use when the user is shaping how one model request or request family should be instructed or templated, including prompt slots, input/instruct/info layering, mappings, prompt config, and reusable prompt structure.
 ---
 
 # Agently Prompt Management
