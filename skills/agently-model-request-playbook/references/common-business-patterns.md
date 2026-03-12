@@ -26,7 +26,17 @@ Typical fit:
 
 Use this when downstream code needs stable fields instead of only text.
 
-## 3. Structured Streaming UI
+## 3. Review, Scoring, Or Validation Report
+
+Typical fit:
+
+- `agently-model-setup`
+- `agently-eval-and-judge`
+- optionally `agently-output-control`
+
+Use this when one output should be graded, checked against a rubric, or turned into a pass-fail or issue report.
+
+## 4. Structured Streaming UI
 
 Typical fit:
 
@@ -36,7 +46,7 @@ Typical fit:
 
 Prefer `instant` or `streaming_parse` when the UI or downstream system should receive partial structured updates before the full result is done.
 
-## 4. Tool-Augmented Assistant
+## 5. Tool-Augmented Assistant
 
 Typical fit:
 
@@ -46,7 +56,7 @@ Typical fit:
 
 If the tools come from MCP instead of local Python or built-ins, add `agently-mcp`.
 
-## 5. Retrieval-Augmented Answer
+## 6. Retrieval-Augmented Answer
 
 Typical fit:
 
@@ -56,7 +66,7 @@ Typical fit:
 
 Use this when the answer should be grounded in a retrievable corpus.
 
-## 6. Multi-Turn Assistant
+## 7. Multi-Turn Assistant
 
 Typical fit:
 
@@ -65,7 +75,7 @@ Typical fit:
 
 Use this when continuity across turns matters.
 
-## 7. Config-Driven Prompting
+## 8. Config-Driven Prompting
 
 Typical fit:
 
@@ -74,7 +84,7 @@ Typical fit:
 
 Use this when prompt structure should live outside business code.
 
-## 8. API Exposure
+## 9. API Exposure
 
 Typical fit:
 
@@ -83,7 +93,7 @@ Typical fit:
 
 Use this when the issue is HTTP, SSE, or WebSocket exposure of the request surface.
 
-## 9. Escalate To TriggerFlow
+## 10. Escalate To TriggerFlow
 
 Escalate when the business requirement becomes:
 

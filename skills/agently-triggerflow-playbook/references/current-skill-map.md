@@ -114,6 +114,8 @@ Use for live interaction and wait-resume behavior:
   add `agently-triggerflow-state-and-resources`
 - TriggerFlow + provider setup:
   add `agently-model-setup`
+- TriggerFlow + rubric-based review, quality gates, or judge-model steps:
+  add `agently-eval-and-judge`
 - TriggerFlow + structured output or structured streaming:
   add `agently-output-control`
 - TriggerFlow + session-backed memory:

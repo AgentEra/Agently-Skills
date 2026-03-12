@@ -1,11 +1,11 @@
 ---
 name: agently-output-control
-description: Use only when the main task is direct output-side schema, retries, result parsing, or structured streaming for one Agently request, such as `.output(...)`, `ensure_keys`, response consumption, `instant`, `streaming_parse`, or response reuse.
+description: Use only when the main task is the output contract of one Agently request, such as structured fields, retries, parsed results, response consumption, or structured streaming with `.output(...)`, `ensure_keys`, `instant`, `streaming_parse`, or response reuse.
 ---
 
 # Agently Output Control
 
-This skill is the direct leaf for output-side control after the request path and input side are already roughly in place. It covers output schema definition, result parsing, reliability controls, response streaming, and response reuse in Agently. It does not choose between one request and neighboring Agently capabilities, and it does not cover model setup, provider configuration, embeddings, or the broader prompt-management lifecycle.
+This skill is the direct leaf for output-side control after the request path and input side are already roughly in place. It covers output schema definition, result parsing, reliability controls, response streaming, and response reuse in Agently. It does not choose between one request and neighboring Agently capabilities, and it does not cover model setup, rubric design, judge-model selection, embeddings, or the broader prompt-management lifecycle.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -35,6 +35,7 @@ Do not use this skill for:
 - `chat_history`, session management, or long-lived prompt memory
 - TriggerFlow runtime streaming
 - embeddings workflows
+- rubric or scoring design as the main problem
 
 ## Minimal Prompt Boundary
 

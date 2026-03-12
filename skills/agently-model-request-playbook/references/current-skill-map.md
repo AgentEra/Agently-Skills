@@ -31,6 +31,16 @@ Use for:
 - structured streaming
 - response reuse
 
+## `agently-eval-and-judge`
+
+Use for:
+
+- rubric scoring
+- pass or fail checks
+- issue lists and review reports
+- validator-model prompts
+- generator versus judge boundaries
+
 ## `agently-embeddings`
 
 Use for:
@@ -104,6 +114,7 @@ Use for:
 - planner-worker or supervisor-router patterns
 - parallel experts and synthesizer
 - reviewer-reviser design
+- generator-judge specialist design
 - agent handoff contracts and ownership boundaries
 
 ## Escalation

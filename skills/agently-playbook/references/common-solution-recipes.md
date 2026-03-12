@@ -20,6 +20,16 @@ Typical combination:
 - `agently-model-request-playbook`
 - `agently-output-control`
 
+## Generator with judge or validation report
+
+Typical combination:
+
+- `agently-model-request-playbook`
+- `agently-eval-and-judge`
+
+Add `agently-model-setup` when the generator and validator should use different models or a local Ollama judge.
+Add `agently-output-control` when the review result must be returned as stable machine-readable fields.
+
 ## Structured streaming or progressive UI feedback
 
 Typical combination:
@@ -62,6 +72,7 @@ Typical combination:
 - `agently-output-control`
 
 Add `agently-tools`, `agently-mcp`, `agently-knowledge-base-and-rag`, or `agently-session-memo` only for the specialist roles that really need them.
+Add `agently-eval-and-judge` when one specialist owns rubric-based review or quality gates.
 
 ## Complex planning and decomposition system
 

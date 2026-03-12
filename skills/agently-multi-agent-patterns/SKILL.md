@@ -1,6 +1,6 @@
 ---
 name: agently-multi-agent-patterns
-description: Use only when the problem is already known to need multiple specialized agents and the main task is choosing a multi-agent pattern, such as planner-worker, supervisor-router, parallel experts, reviewer-reviser, staged handoff design, or agent boundary and contract design.
+description: Use only when the problem is already known to need multiple specialized agents and the main task is choosing a specialist-team pattern, such as planner-worker, supervisor-router, parallel experts, reviewer-reviser, generator-judge, staged handoff design, or agent boundary and contract design.
 ---
 
 # Agently Multi-Agent Patterns
@@ -14,7 +14,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 Use this skill for:
 
 - deciding whether a business problem should stay one request or become a multi-agent design
-- planner-worker, supervisor-router, specialist handoff, reviewer-reviser, or parallel-expert patterns
+- planner-worker, supervisor-router, specialist handoff, reviewer-reviser, generator-judge, or parallel-expert patterns
 - deciding how agent boundaries, handoff schemas, and result ownership should work
 - deciding which parts should be isolated per agent and which should be shared at workflow level
 - combining multiple agents with TriggerFlow, tools, MCP, KB/RAG, session continuity, or FastAPI exposure
@@ -55,6 +55,7 @@ Weak reasons to use multiple agents:
 - one planner or supervisor decides which specialist should act next -> planner-worker or supervisor-router
 - several specialist agents should work independently, then one agent should synthesize the result -> parallel experts and synthesizer
 - one agent drafts and another agent critiques or revises -> reviewer-reviser
+- one agent generates and another agent grades, validates, or gates the result -> generator-judge
 - one agent collects or validates information, and another produces the final user-facing answer -> staged specialist pipeline
 - one workflow must pause for approval or external input between agent steps -> combine the pattern with `agently-triggerflow-interrupts-and-stream`
 - one design depends on explicit parent-child workflow isolation -> combine with `agently-triggerflow-subflows`

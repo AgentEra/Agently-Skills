@@ -84,6 +84,7 @@ npx skills add AgentEra/Agently-Skills --skill agently-output-control
 - `agently-session-memo`
 - `agently-prompt-config-files`
 - `agently-fastapi-helper`
+- `agently-eval-and-judge`
 - `agently-embeddings`
 - `agently-knowledge-base-and-rag`
 
@@ -157,11 +158,11 @@ The groups below describe the published catalog. The recommended runtime activat
 ### 1. Top-Level Entry Skills
 
 - `agently-playbook`
-  The cross-domain router for Agently work when it is not yet clear whether the solution should stay one request, become multi-agent, or become TriggerFlow orchestration.
+  The cross-domain router for model-powered work when it is not yet clear whether the solution should stay one request, become multi-agent, or become workflow orchestration.
 - `agently-model-request-playbook`
-  The router for one-request and request-adjacent work after the problem is already known to stay in the one-request domain.
+  The router for single-request and short request-chain work after the problem is already known to stay in that domain.
 - `agently-triggerflow-playbook`
-  The router for TriggerFlow-domain orchestration after the problem is already known to be a TriggerFlow workflow.
+  The router for workflow orchestration and event-driven processing after the problem is already known to be orchestration-first.
 
 ### 2. One-Request Core
 
@@ -184,6 +185,8 @@ The groups below describe the published catalog. The recommended runtime activat
   Direct YAML/JSON prompt-template config loading, mappings, `.alias`, and roundtrip export
 - `agently-fastapi-helper`
   Direct HTTP, SSE, and WebSocket exposure through `FastAPIHelper`
+- `agently-eval-and-judge`
+  Direct rubric scoring, pass-fail checks, review reports, and validator-model design
 - `agently-embeddings`
   Direct embeddings request setup, batching, vector consumption, and embedding-agent handoff
 - `agently-knowledge-base-and-rag`
@@ -367,6 +370,21 @@ Skill path:
 
 - `skills/agently-fastapi-helper/SKILL.md`
 
+### `agently-eval-and-judge`
+
+Use this skill when the main problem is direct evaluation, scoring, or judge-model design, including:
+
+- rubric scoring
+- pass-fail checks
+- issue reports and evidence-backed review
+- validator-model prompts
+- pairwise comparison
+- generator-versus-judge boundary decisions
+
+Skill path:
+
+- `skills/agently-eval-and-judge/SKILL.md`
+
 ### `agently-embeddings`
 
 Use this skill when the main problem is direct Agently embeddings request setup and vector consumption, including:
@@ -414,7 +432,7 @@ Skill path:
 
 ### `agently-triggerflow-playbook`
 
-Use this skill when the main problem is already TriggerFlow-domain workflow orchestration rather than generic Agently architecture selection, including:
+Use this skill when the main problem is already workflow orchestration or event-driven processing rather than generic architecture selection, including:
 
 - deciding whether the solution should use TriggerFlow
 - choosing between orchestration, state-and-resources, subflows, and interrupt-and-stream work
@@ -628,8 +646,9 @@ If you are new to this repository, start here:
 3. `agently-model-setup`
 4. `agently-input-composition`
 5. `agently-output-control`
-6. move into tools, MCP, session, FastAPI, embeddings, or RAG only as needed
-7. move into `agently-triggerflow-playbook` when the problem becomes a multi-step, async, restartable workflow
+6. `agently-eval-and-judge` when the problem becomes scoring, review, or validator-model design
+7. move into tools, MCP, session, FastAPI, embeddings, or RAG only as needed
+8. move into `agently-triggerflow-playbook` when the problem becomes a multi-step, async, restartable workflow
 
 ## Release Status
 

@@ -1,11 +1,11 @@
 ---
 name: agently-model-request-playbook
-description: Use when building an Agently-based model application that still mainly belongs to one-request work, including standard requests, higher-quality structured or streamed requests, or one-request extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
+description: Use when the problem is already known to fit a single request or short request chain, such as understanding, extraction, rewriting, expansion, generation, scoring, validation reports, or structured and streamed responses, including nearby extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
 ---
 
 # Agently Model Request Playbook
 
-This skill is the scenario-routing entry point for model-request-side work in Agently. Use it when the application still mainly belongs to one-request or request-adjacent work rather than cross-domain architecture selection. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
+This skill is the scenario-routing entry point for request-side model work in Agently. Use it when the application already mainly belongs to a single request or short request chain rather than cross-domain architecture selection. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,12 +13,12 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
-- request-centered model applications such as extraction services, tool-using assistants, retrieval-backed answer flows, or FastAPI-exposed model endpoints
-- deciding how a standard Agently model request should be built
-- deciding how a higher-quality request should be upgraded for structure, streaming, or reuse
+- request-centered model applications such as understanding, rewriting, expansion, extraction, generation, scoring, or validation-report services
+- deciding how a standard model request should be built
+- deciding how a higher-quality request should be upgraded for structure, streaming, evaluation, or reuse
 - deciding which parts belong to Agently and which parts belong to business logic
-- deciding when to add tools, MCP, knowledge-base or RAG retrieval, session continuity, prompt config, or FastAPI exposure
-- deciding when the problem has outgrown one request and should escalate to TriggerFlow
+- deciding when to add tools, MCP, knowledge-base or RAG retrieval, session continuity, prompt config, judge-model review, or FastAPI exposure
+- deciding when the problem has outgrown one request and should escalate to workflow orchestration
 
 Do not use this skill for:
 
@@ -40,6 +40,7 @@ Do not use this skill for:
 - provider setup, auth, proxy, request options, or minimal verification -> `agently-model-setup`
 - prompt slots, request-vs-agent prompt state, mappings, attachments, or low-level chat-history composition -> `agently-input-composition`
 - output schema, structured streaming, response reuse, or response consumption -> `agently-output-control`
+- rubric scoring, pass-fail checks, issue reports, judge-model prompts, or validator-model review -> `agently-eval-and-judge`
 - embeddings only, offline indexing, or online query embedding -> `agently-embeddings`
 - local tools, built-in tools, tool loop, or tool logs -> `agently-tools`
 - MCP server tools or MCP transport registration -> `agently-mcp`

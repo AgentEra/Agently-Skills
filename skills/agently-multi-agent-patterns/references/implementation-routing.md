@@ -7,6 +7,7 @@ Use this page after the business pattern is clear and the next question is how t
 - provider choice, proxy, auth, request options, or per-agent model setup -> `agently-model-setup`
 - per-agent input slots, attachments, or request-vs-agent prompt layering -> `agently-input-composition`
 - per-agent output schema, reviewer contracts, or structured streaming handoffs -> `agently-output-control`
+- rubric-based review logic, pass-fail reports, or judge-model evaluation prompts -> `agently-eval-and-judge`
 - local tools or built-in tools per specialist agent -> `agently-tools`
 - MCP-backed specialist agents -> `agently-mcp`
 - retrieval specialist or KB-backed expert agent -> `agently-knowledge-base-and-rag`
@@ -31,4 +32,4 @@ For most serious multi-agent systems in Agently, the practical combination is:
 - `agently-output-control`
 - `agently-triggerflow-playbook`
 
-Then add tools, MCP, KB/RAG, session, prompt config, or FastAPIHelper only where the business design truly needs them.
+Then add `agently-eval-and-judge`, tools, MCP, KB/RAG, session, prompt config, or FastAPIHelper only where the business design truly needs them.

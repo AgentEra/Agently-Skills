@@ -1,11 +1,11 @@
 ---
 name: agently-playbook
-description: Use when building an Agently-based model application, agent service, or workflow from business, product, or system requirements, especially for cross-domain architecture selection when it is still unclear whether the solution should stay one-request, become a multi-agent design, or become TriggerFlow workflow orchestration.
+description: Use when the request starts from a model-powered product, assistant, generator, evaluator, internal tool, or workflow need expressed in business, product, or system language, such as understanding intent, rewriting or expanding requirements, generating artifacts, or validating outputs, and it is still unclear whether the solution should stay a single request, become a specialist-agent design, or become workflow orchestration or event-driven processing.
 ---
 
 # Agently Playbook
 
-This skill is the top-level scenario-routing entry point for Agently work. Use it when model-service application development starts from business goals, product behavior, or system design and the architecture level is still undecided. It helps choose the right Agently capability path, the right skill combination, and the right escalation order. It does not replace the implementation skills themselves.
+This skill is the top-level scenario-routing entry point for model-powered work. Use it when a request starts from business goals, product behavior, system design, or generic model-app language and the architecture level is still undecided. It helps choose the right capability path, the right skill combination, and the right escalation order. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,12 +13,11 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
-- model-powered application, agent-service, assistant, internal-tool, or workflow requirements that should be guided into Agently first
-- deciding whether the problem should stay one request or become a workflow
-- deciding whether the design should use model requests, multi-agent patterns, or TriggerFlow
-- deciding whether the core problem is request quality, output control, specialist coordination, complex planning, or workflow orchestration
-- deciding when to add tools, MCP, retrieval, memory, prompt config, or FastAPI exposure
-- deciding when TriggerFlow should be used for concurrency management, long-running control flow, or mixed sync-and-async task orchestration even without model calls
+- model-powered application, assistant, generator, evaluator, internal-tool, or workflow requirements that start in business language rather than API language
+- deciding whether the problem should stay a single request, become a specialist-agent system, or become workflow orchestration
+- deciding whether the core problem is understanding, rewriting, generation, structured output, evaluation, specialist coordination, or orchestration
+- deciding when to add tools, MCP, retrieval, memory, prompt config, judge-model review, or FastAPI exposure
+- deciding when workflow orchestration should be used for concurrency management, long-running control flow, approvals, or mixed sync-and-async task orchestration even without model calls
 - deciding which parts belong to Agently and which parts belong to business logic
 - choosing an implementation order for real business scenarios
 
@@ -63,8 +62,8 @@ Agently's practical boundary is broader than model calling alone. It can own:
 
 ## Routing Rules
 
-- the problem is still fundamentally one request or one request family -> `agently-model-request-playbook`
-- the problem needs several specialized agents, reviewer-reviser flow, planner-worker, or parallel experts -> `agently-multi-agent-patterns`
+- the problem is still fundamentally one request, one short request chain, or one generator-plus-validator request family -> `agently-model-request-playbook`
+- the problem needs several specialized agents, reviewer-reviser flow, generator-judge separation, planner-worker, or parallel experts -> `agently-multi-agent-patterns`
 - the problem is now a real multi-step async workflow, long-running interaction, restartable orchestration, complex planning pipeline, bounded concurrency problem, or mixed sync-and-async function orchestration -> `agently-triggerflow-playbook`
 - the problem is mainly service exposure through FastAPIHelper -> combine with `agently-fastapi-helper`
 - the problem is mainly session-backed continuity or restore after restart -> combine with `agently-session-memo`

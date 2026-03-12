@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-playbook
-description: Use when building an Agently-based agent workflow or model-service system that already needs TriggerFlow-domain workflow orchestration, such as async workflow control, routing, concurrency, resume, interrupts, runtime stream, approvals, or model work inside a flow, and you need to choose the right TriggerFlow skill combination.
+description: Use when the problem is already known to be a workflow-orchestration or event-driven processing problem, such as multi-step routing, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, or model work inside a flow, and it should not stay a single request or a simple specialist-agent pattern.
 ---
 
 # Agently TriggerFlow Playbook
 
-This skill is the scenario-routing entry point for TriggerFlow work in Agently. Use it when the application has already grown into workflow orchestration in the TriggerFlow domain rather than generic Agently architecture selection. It helps choose the right implementation skill or skill combination. It does not replace the implementation skills themselves.
+This skill is the scenario-routing entry point for orchestration-side work in Agently. Use it when the application has already grown into workflow orchestration rather than generic architecture selection or ordinary request-side design. It helps choose the right implementation skill or skill combination. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -14,7 +14,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 Use this skill for:
 
 - agent workflows, approval flows, long-running model-service pipelines, and LangGraph-like orchestration concerns that should be implemented with TriggerFlow
-- deciding whether a business requirement should be implemented with TriggerFlow
+- deciding whether a workflow requirement should be implemented with TriggerFlow rather than a single request or a simple specialist-agent pattern
 - mapping a workflow requirement to the correct TriggerFlow skill
 - deciding when TriggerFlow should be combined with `agently-model-setup` or `agently-output-control`
 - selecting between general orchestration work, workflow-pattern work, state-and-resource work, sub-flow work, model-integration work, config work, execution-state work, and explicit interrupt or runtime-stream work

@@ -12,6 +12,7 @@ This page lists the current public skills in this repository by solution layer.
 - `agently-model-setup`
 - `agently-input-composition`
 - `agently-output-control`
+- `agently-eval-and-judge`
 - `agently-embeddings`
 - `agently-tools`
 - `agently-mcp`
@@ -42,4 +43,5 @@ This page lists the current public skills in this repository by solution layer.
 - specialized agent-team design -> `agently-multi-agent-patterns`
 - long-running or stateful workflow -> `agently-triggerflow-playbook`
 - complex planning, concurrency management, or mixed sync-and-async orchestration -> `agently-triggerflow-playbook`
+- direct scoring, rubric checks, validator-model review, or pass-fail reports inside the request domain -> `agently-model-request-playbook` then `agently-eval-and-judge`
 - transport exposure around an existing backend -> add `agently-fastapi-helper`

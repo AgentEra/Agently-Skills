@@ -1,11 +1,11 @@
 ---
 name: agently-model-setup
-description: Use only when the main task is direct Agently model connection or request-transport configuration for Chat LLM, Completions LLM, or VLM, including OpenAICompatible URL/auth/model setup, request_options, agent.options(), and minimal connectivity verification.
+description: Use only when the main task is model connection or request-transport setup, such as local Ollama, OpenAI-compatible endpoints, generator-model and judge-model wiring, URL and auth configuration, request options, or minimal connectivity verification for Agently requests.
 ---
 
 # Agently Model Setup
 
-This skill is the direct leaf for model connection and request-transport setup after the user already knows the work should stay on the Agently request path. It does not choose between one request, tools, MCP, session continuity, or TriggerFlow, and it does not cover structured output design, streaming result consumption details, or embedding workflows.
+This skill is the direct leaf for model connection and request-transport setup after the user already knows the work should stay on the Agently request side or workflow side. It does not choose between one request, tools, MCP, session continuity, or TriggerFlow, and it does not cover structured output design, scoring logic, streaming result consumption details, or embedding workflows.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -14,11 +14,12 @@ Prerequisite: Agently `>= 4.0.8.5`.
 Use this skill for:
 
 - Included: Chat LLM, Completions LLM, VLM
-- text chat, standard generation, completions, image understanding, visual Q&A, and OCR model setup
+- text chat, standard generation, completions, judge-model review, image understanding, visual Q&A, and OCR model setup
 - global model configuration with `Agently.set_settings("OpenAICompatible", {...})`
 - per-agent overrides with `agent.set_settings("OpenAICompatible", {...})`
 - endpoint, model, auth, and network-client setup: `base_url`, `full_url`, `model`, `auth`, `api_key`, `headers`, `proxy`, `timeout`, `client_options`
 - extra request parameters through `request_options` and `agent.options({...})`
+- separate generator-model and validator-model wiring
 - VLM-style attachment input through `attachment()`
 - a minimal runnable verification step to confirm URL, model name, auth, and basic response behavior
 - Excluded: Embeddings (handled by a separate skill)

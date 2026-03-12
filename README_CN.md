@@ -83,6 +83,7 @@ npx skills add AgentEra/Agently-Skills --skill agently-output-control
 - `agently-session-memo`
 - `agently-prompt-config-files`
 - `agently-fastapi-helper`
+- `agently-eval-and-judge`
 - `agently-embeddings`
 - `agently-knowledge-base-and-rag`
 
@@ -163,9 +164,9 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 ### 1. 顶层入口
 
 - `agently-playbook`
-  从业务目标、系统设计或产品需求出发，决定应该走单次请求、多智能体，还是 TriggerFlow。
+  从业务目标、系统设计或产品需求出发，决定应该走单次请求、多智能体，还是工作流编排。
 - `agently-model-request-playbook`
-  从单次模型请求角度出发，决定何时停留在一个请求内，何时升级到工具、MCP、RAG、Session、FastAPI 或 TriggerFlow。
+  从单次模型请求角度出发，决定何时停留在一个请求内，何时升级到工具、MCP、RAG、Session、FastAPI 或工作流编排。
 - `agently-triggerflow-playbook`
   从工作流与编排需求出发，决定该使用 TriggerFlow 的哪一组能力。
 
@@ -190,6 +191,8 @@ Agently 的能力边界已经不只是“发一个模型请求”：
   直接 YAML/JSON prompt 模板配置、mapping、`.alias` 与 roundtrip 导出
 - `agently-fastapi-helper`
   通过 `FastAPIHelper` 直接暴露 HTTP、SSE 与 WebSocket
+- `agently-eval-and-judge`
+  直接处理 rubric 打分、pass/fail 判定、review report 与 validator-model 设计
 - `agently-embeddings`
   直接 embeddings 请求配置、批处理、向量消费与 embedding-agent handoff
 - `agently-knowledge-base-and-rag`
@@ -267,8 +270,9 @@ skills/
 3. `agently-model-setup`
 4. `agently-input-composition`
 5. `agently-output-control`
-6. 再根据实际需求进入 tools / MCP / session / FastAPI / RAG
-7. 当问题变成多步、异步、可恢复流程时，再进入 `agently-triggerflow-playbook`
+6. 当问题开始变成打分、review 或 validator-model 设计时，进入 `agently-eval-and-judge`
+7. 再根据实际需求进入 tools / MCP / session / FastAPI / RAG
+8. 当问题变成多步、异步、可恢复流程时，再进入 `agently-triggerflow-playbook`
 
 ## 发布状态
 
