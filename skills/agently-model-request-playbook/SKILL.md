@@ -28,12 +28,13 @@ Do not use this skill for:
 
 ## Workflow
 
-1. Start with [references/standard-request-path.md](references/standard-request-path.md) when the requirement still looks like one ordinary model request.
-2. Read [references/high-quality-request-path.md](references/high-quality-request-path.md) when the request must be more reliable, structured, streamable, or reusable.
-3. Read [references/ownership-and-escalation.md](references/ownership-and-escalation.md) when the real question is who owns which part of the solution and when the request should be upgraded.
-4. Read [references/common-business-patterns.md](references/common-business-patterns.md) when the requirement starts from business scenarios such as extraction, tool use, retrieval-augmented answer, or service exposure.
-5. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
-6. Switch to the selected implementation skill and do the actual coding there.
+1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still short, fuzzy, or missing output, budget, or latency expectations.
+2. Start with [references/standard-request-path.md](references/standard-request-path.md) when the requirement still looks like one ordinary model request.
+3. Read [references/high-quality-request-path.md](references/high-quality-request-path.md) when the request must be more reliable, structured, streamable, or reusable.
+4. Read [references/ownership-and-escalation.md](references/ownership-and-escalation.md) when the real question is who owns which part of the solution and when the request should be upgraded.
+5. Read [references/common-business-patterns.md](references/common-business-patterns.md) when the requirement starts from business scenarios such as extraction, tool use, retrieval-augmented answer, or service exposure.
+6. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
+7. Switch to the selected implementation skill and do the actual coding there.
 
 ## Routing Rules
 
@@ -54,8 +55,11 @@ Do not use this skill for:
 ## Core Principles
 
 - single-request-first: solve the problem with one high-quality request before escalating into workflow orchestration
+- agent-first for serious request work: if prompt state, output control, or reuse matters, prefer an `Agent` as the request owner rather than a bare one-off call
 - async-first: if the runtime can use async APIs, prefer async request and response handling
 - explicit escalation: add tools, retrieval, memory, service exposure, or TriggerFlow only when the business need clearly requires it
+- reusable business prompts should usually move toward YAML or JSON prompt config instead of staying scattered through runtime logic
+- if quality already depends on explicit generator, judge, reflection, or revise stages, stop calling it a "short request chain" and upgrade the orchestration owner to TriggerFlow
 
 ## Escalation When Framework Support Looks Insufficient
 
@@ -91,6 +95,7 @@ To make the feedback actionable, include at least one of the following after san
 ## References
 
 - `references/source-map.md`
+- `references/spec-first-intake.md`
 - `references/standard-request-path.md`
 - `references/high-quality-request-path.md`
 - `references/ownership-and-escalation.md`

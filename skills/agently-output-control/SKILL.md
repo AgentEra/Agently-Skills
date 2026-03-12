@@ -13,6 +13,8 @@ Agently is async-first at the runtime layer. Prefer async response APIs when the
 
 One capability should be treated as a first-class Agently pattern in this skill: structured streaming through `instant` / `streaming_parse`. When the user wants structured output and progressive updates at the same time, this is usually the primary answer.
 
+For serious request work, prefer an `Agent` as the request owner. That keeps prompt state, prompt config, tools, and output control on one stable object.
+
 ## Scope
 
 Use this skill for:
@@ -71,8 +73,22 @@ Agently output control is a chain, not a single API call:
 4. The response parser accumulates text, parsed JSON data, metadata, and streaming events into one reusable result object.
 5. Reliability features such as `ensure_keys` and retries operate on that parsed result layer.
 
+## Agent And Output Defaults
+
+Prefer an `Agent` when:
+
+- the prompt should be managed over more than one request
+- the output contract matters to more than one downstream consumer
+- prompt config, tools, or session may be layered in later
+
+Output freedom should match the business need:
+
+- open-ended creative writing or ideation with no machine consumer can stay as plain text without `.output(...)`
+- structured output, instruction generation, multi-downstream fields, staged fields, or multi-part answer contracts should use `.output(...)`
+
 ## Selection Rules
 
+- If the work is more than a disposable one-off request, prefer `agent = Agently.create_agent()` first.
 - If the user wants machine-readable output, start with `.output(...)`.
 - If later fields depend on earlier fields, place the prerequisite fields first in `.output(...)`.
 - If the user wants staged reasoning or planning fields, put those fields before `reply` or any other final-answer field.
@@ -87,6 +103,8 @@ Agently output control is a chain, not a single API call:
 - If the user wants path-based structured streaming, use `type="instant"` or `type="streaming_parse"`.
 - If the user wants tool-call or reasoning events only, use `type="specific"`.
 - If the user wants text, parsed data, metadata, and multiple views of one result without a second request, use `response = ...get_response()` first and then read from `response.result`.
+- If the output is creative and unconstrained text for direct human reading only, plain text output is acceptable.
+- If the output feeds later automation, a later model step, or several UI sections, define `.output(...)` explicitly.
 
 ## References
 

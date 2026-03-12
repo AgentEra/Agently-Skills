@@ -8,6 +8,7 @@ Agently should own:
 
 - model connection and transport setup
 - prompt-state composition
+- request-side spec and output-contract shaping
 - structured output control
 - response streaming and reuse
 - tool-loop execution
@@ -33,6 +34,7 @@ Business code should own:
 
 Upgrade the request when:
 
+- the input is too compressed to implement safely -> write a short spec first
 - plain output is not reliable enough -> `agently-output-control`
 - one request must call local tools -> `agently-tools`
 - tools come from an MCP server -> `agently-mcp`
@@ -40,4 +42,4 @@ Upgrade the request when:
 - continuity must survive turns or restarts -> `agently-session-memo`
 - prompt structure should live as config data -> `agently-prompt-config-files`
 - the request must be exposed as an API endpoint -> `agently-fastapi-helper`
-- the problem becomes multi-step, stateful, concurrent, or interruptible -> `agently-triggerflow-playbook`
+- the problem becomes multi-step, stateful, concurrent, interruptible, or quality depends on explicit judge or revise stages -> `agently-triggerflow-playbook`

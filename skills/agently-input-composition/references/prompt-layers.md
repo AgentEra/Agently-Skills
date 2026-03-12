@@ -64,3 +64,13 @@ Typical path:
 - `request.set_prompt(...)`
 
 This keeps the input scope local to that request object.
+
+## 6. Prompt Asset Boundary
+
+If the prompt content should be:
+
+- reviewed outside runtime code
+- reused across services
+- versioned as data
+
+move the reusable part into YAML or JSON prompt config instead of keeping the whole prompt shape inline in Python.

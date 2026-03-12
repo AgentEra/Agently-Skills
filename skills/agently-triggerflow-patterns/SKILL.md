@@ -59,6 +59,8 @@ Good TriggerFlow pattern design is still async-first:
 - prefer async entrypoints
 - use explicit events, loop budgets, and bounded concurrency instead of implicit recursion or unbounded task spawning
 
+This is also the default home for bounded quality-improvement loops when the system needs several explicit model turns. That is especially useful when local or lower-cost models need an evaluator or reviser pass to reach acceptable output quality.
+
 ## Selection Rules
 
 - classify one request and send it down one branch -> router pattern

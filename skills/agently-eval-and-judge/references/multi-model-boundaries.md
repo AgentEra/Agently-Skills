@@ -13,6 +13,7 @@ Use this page when the question is whether generation and evaluation should stay
 - the review should be more neutral than the generator
 - the generator and judge should use different model sizes or providers
 - a local Ollama judge or cheaper validator model is desirable
+- the design accepts extra latency in exchange for a bounded quality loop
 
 Add `agently-model-setup` for the separate-model wiring.
 
@@ -25,5 +26,6 @@ Add `agently-model-setup` for the separate-model wiring.
 ## Escalate To `agently-triggerflow-playbook` When
 
 - evaluation becomes a multi-step workflow
+- the system needs bounded draft -> judge -> revise turns
 - approval, waiting, or resume is required between stages
 - batch evaluation, branching, or restart-safe orchestration is the main problem

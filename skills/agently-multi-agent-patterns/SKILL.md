@@ -59,6 +59,7 @@ Weak reasons to use multiple agents:
 - one agent collects or validates information, and another produces the final user-facing answer -> staged specialist pipeline
 - one workflow must pause for approval or external input between agent steps -> combine the pattern with `agently-triggerflow-interrupts-and-stream`
 - one design depends on explicit parent-child workflow isolation -> combine with `agently-triggerflow-subflows`
+- one specialist pattern needs several bounded draft, judge, or revise turns -> let TriggerFlow own the loop around the agent handoffs
 
 ## Important Boundaries
 
@@ -67,6 +68,7 @@ Weak reasons to use multiple agents:
 - agent handoffs should use explicit structured contracts whenever possible
 - per-agent chat history should stay isolated by default; share only the state that truly must cross agent boundaries
 - multi-agent design should stay async-first and use bounded fan-out instead of unbounded recursive delegation
+- if several specialist turns are explicit, TriggerFlow should usually own their order, budgets, and stop conditions
 
 ## References
 

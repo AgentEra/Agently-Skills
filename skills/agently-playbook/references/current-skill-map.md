@@ -39,9 +39,11 @@ This page lists the current public skills in this repository by solution layer.
 
 ## Practical entry rules
 
+- low-information-density request with unresolved architecture -> `agently-playbook` plus `spec-first-intake.md`
 - one request or one request family -> `agently-model-request-playbook`
 - specialized agent-team design -> `agently-multi-agent-patterns`
 - long-running or stateful workflow -> `agently-triggerflow-playbook`
 - complex planning, concurrency management, or mixed sync-and-async orchestration -> `agently-triggerflow-playbook`
+- explicit quality loops such as draft -> judge -> revise -> `agently-triggerflow-playbook`
 - direct scoring, rubric checks, validator-model review, or pass-fail reports inside the request domain -> `agently-model-request-playbook` then `agently-eval-and-judge`
 - transport exposure around an existing backend -> add `agently-fastapi-helper`

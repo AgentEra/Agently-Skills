@@ -57,6 +57,8 @@ Prompt generation then materializes that combined state into either:
 
 This matters most when low-level `chat_history` or `attachment` is involved, because rich content is only faithfully represented in message mode.
 
+Business prompt assets do not always belong in Python code. If the prompt should be versioned, shared, or owned outside runtime logic, move that part into YAML or JSON prompt config and combine this skill with `agently-prompt-config-files`.
+
 ## Selection Rules
 
 - long-lived baseline instructions -> agent-level prompt
@@ -69,6 +71,7 @@ This matters most when low-level `chat_history` or `attachment` is involved, bec
 - manual multi-turn conversation context without session lifecycle management -> `chat_history`
 - image or rich-content input -> `attachment(...)`
 - repeated prompt templates with variable substitution -> placeholder mappings
+- reusable prompt assets that should live outside runtime code -> combine with `agently-prompt-config-files`
 - exact inspection of multimodal payloads -> `to_messages(rich_content=True)`
 - activated session, session-backed `chat_history`, or automatic turn recording -> `agently-session-memo`
 

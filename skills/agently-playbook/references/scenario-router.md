@@ -2,6 +2,14 @@
 
 Use this page to classify the business problem before choosing any lower-level skill.
 
+## 0. Low-Information Requests
+
+If the request is still a one-line instruction or lacks output, quality, budget, or latency details:
+
+- start with `spec-first-intake.md`
+- write a short working spec
+- then return to this router
+
 ## 1. One-request problems
 
 Stay on the model-request side when the requirement is mainly:
@@ -12,6 +20,7 @@ Stay on the model-request side when the requirement is mainly:
 - one streamed or progressively structured result
 - one retrieval-augmented answer
 - one tool-augmented answer
+- one quality pass where the result still belongs to one request owner
 
 Route to:
 
@@ -37,6 +46,7 @@ Use TriggerFlow when the requirement is mainly:
 - several asynchronous steps with explicit control flow
 - several synchronous and asynchronous functions must be orchestrated under one control flow
 - planning, decomposition, fan-out, fan-in, or concurrency management is the core problem
+- several explicit model turns are needed for quality, such as draft -> judge -> revise or reflection loops
 - interrupts, resume, runtime stream, or long-running waits
 - restart-safe orchestration
 - stateful, multi-step business automation

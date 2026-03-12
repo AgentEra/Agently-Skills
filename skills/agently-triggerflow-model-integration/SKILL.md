@@ -54,6 +54,8 @@ Agently guidance for this skill should remain async-first:
 - prefer async chunk handlers
 - use sync wrappers only for sync-only demos or scripts
 
+For quality-focused flows, prefer explicit request stages under TriggerFlow instead of hidden nested calls. That keeps judge, revise, or reflection passes observable and budgeted.
+
 ## Selection Rules
 
 - one simple model step that only needs a final parsed result -> request `async_start()` / `async_get_data()`
@@ -63,6 +65,7 @@ Agently guidance for this skill should remain async-first:
 - one input must fan out into several model calls with clear orchestration structure -> `batch(...)`
 - a list of items should each trigger a model call -> `for_each(concurrency=...)`
 - several independent model calls belong to one chunk and do not need their own flow routing -> controlled `asyncio.gather(...)`
+- several explicit quality passes should happen in sequence -> separate them into visible TriggerFlow stages
 - plain text stream should drive UI or logs inside the flow -> `delta`
 - structured output should drive field-level updates or early downstream work -> `instant` / `streaming_parse`
 - model stream items should fan out into signal-driven downstream work -> consume the stream in one chunk, `async_emit(...)` custom events, then route with `when(...)`

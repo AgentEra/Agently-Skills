@@ -11,6 +11,7 @@ Choose TriggerFlow when the business requirement implies one or more of these pr
 - the workflow may need nested or reusable child flows
 - the workflow must wait for human or external-system input before continuing
 - the workflow should emit progressive business output while still running
+- the workflow should coordinate several explicit model turns for quality, such as reflection, revise, or judge stages
 
 ## Route To The Correct Skill
 
@@ -42,3 +43,5 @@ Choose TriggerFlow when the business requirement implies one or more of these pr
 ## Practical Boundary
 
 If the problem statement starts with business language such as "review pipeline", "approval workflow", "agent loop", "multi-step async processing", or "live progress UI", start here first and then route into the concrete implementation skill.
+
+If the requirement says quality should improve through several explicit model passes, start here even when the user does not say "workflow" out loud.

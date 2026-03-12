@@ -6,11 +6,14 @@ Use this page when one request is still the right unit, but the request quality 
 
 The high-quality request path is usually:
 
-1. correct model setup
-2. intentional input composition
-3. explicit output design
-4. async-first response handling
-5. response reuse instead of duplicate requests
+1. a short request spec with output, budget, and latency assumptions
+2. correct model setup
+3. an `Agent` as the request owner when reuse or control matters
+4. intentional input composition
+5. reusable prompt config when business prompts should live outside code
+6. explicit output design
+7. async-first response handling
+8. response reuse instead of duplicate requests
 
 In skill terms, that usually means:
 
@@ -24,6 +27,8 @@ In skill terms, that usually means:
 - UI needs progressive structured feedback -> use `instant` or `streaming_parse`
 - one request result must serve several consumers -> use response reuse instead of multiple shorthand getters
 - the runtime is async -> prefer async request and response APIs
+- prompt text should be versioned or shared -> add `agently-prompt-config-files`
+- quality only improves if several explicit draft, judge, or revise turns are introduced -> escalate to TriggerFlow instead of stretching the one-request story
 
 ## 3. When Not To Escalate Yet
 
@@ -37,3 +42,5 @@ If one request can still produce:
 - the metadata
 
 then keep it a request problem, not a workflow problem.
+
+If the design already requires explicit multi-turn quality control, it is no longer just a higher-quality single request.

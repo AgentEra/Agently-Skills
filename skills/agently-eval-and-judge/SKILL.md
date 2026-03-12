@@ -46,6 +46,8 @@ Good evaluation design usually has five parts:
 
 Evaluation quality usually fails because one of those parts is missing rather than because the model API is wrong.
 
+For higher-quality systems, evaluation often becomes more than one isolated prompt. If the design needs draft -> judge -> revise or several bounded review passes, TriggerFlow should usually own the loop.
+
 ## Selection Rules
 
 - one output should be graded against a rubric -> start here
@@ -54,7 +56,7 @@ Evaluation quality usually fails because one of those parts is missing rather th
 - the main issue is local Ollama or separate judge-model setup -> combine with `agently-model-setup`
 - the main issue is structured JSON review output, retries, or streamed evaluation fields -> combine with `agently-output-control`
 - the main issue is a dedicated generator agent and a dedicated judge agent with handoff contracts -> combine with `agently-multi-agent-patterns`
-- the main issue is a long-running approval or evaluation workflow -> combine with `agently-triggerflow-playbook`
+- the main issue is a long-running approval, reflection, or evaluation workflow -> combine with `agently-triggerflow-playbook`
 
 ## Important Boundaries
 

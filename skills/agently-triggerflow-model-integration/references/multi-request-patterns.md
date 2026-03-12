@@ -80,3 +80,8 @@ Avoid:
 - variable list of similar items -> `for_each(concurrency=...)`
 - small one-off set of internal helper requests -> controlled `asyncio.gather(...)`
 - progressive structured output that should trigger more work -> `instant` plus bounded flow routing
+
+For quality-focused systems:
+
+- visible draft, judge, revise stages -> separate TriggerFlow steps
+- cheaper or local models that need bounded improvement passes -> evaluator-optimizer plus explicit turn budget

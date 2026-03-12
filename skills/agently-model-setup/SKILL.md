@@ -109,6 +109,22 @@ After configuration, a minimal verification request is recommended:
 - Chat / Completions: send a one-line prompt and confirm that it returns reliably
 - VLM: use an image-understanding prompt with one text item and one `image_url`
 - when `debug` or `runtime.show_model_logs` is enabled, check `request_url`, `request_options`, and `stream` first
+- in practice, enable `debug` or `runtime.show_model_logs` early rather than only after several failed guesses
+
+## Model Tiering And Quality Strategy
+
+Model setup should reflect the planned quality path:
+
+- stronger and higher-cost models usually need fewer explicit review loops
+- local or lower-cost models can still reach good quality, but they often benefit from bounded judge, revise, or reflection stages
+- if those extra stages become explicit parts of the design, let TriggerFlow own the orchestration instead of hiding the logic in ad hoc request chaining
+
+For the final effect validation of a real Agently application, service, or module, prefer real model runs when possible:
+
+1. local model
+2. lower-cost online model
+3. authorized paid model
+4. no-model fallback only when real-model validation is not available
 
 ## References
 

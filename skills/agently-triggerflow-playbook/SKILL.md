@@ -15,6 +15,7 @@ Use this skill for:
 
 - agent workflows, approval flows, long-running model-service pipelines, and LangGraph-like orchestration concerns that should be implemented with TriggerFlow
 - deciding whether a workflow requirement should be implemented with TriggerFlow rather than a single request or a simple specialist-agent pattern
+- quality-focused flows where several explicit model turns such as reflection, judge, revise, or ReAct stages should be coordinated under one runtime
 - mapping a workflow requirement to the correct TriggerFlow skill
 - deciding when TriggerFlow should be combined with `agently-model-setup` or `agently-output-control`
 - selecting between general orchestration work, workflow-pattern work, state-and-resource work, sub-flow work, model-integration work, config work, execution-state work, and explicit interrupt or runtime-stream work
@@ -27,9 +28,11 @@ Do not use this skill for:
 
 ## Workflow
 
-1. Start with [references/scenario-router.md](references/scenario-router.md) to map the business requirement to the right capability area.
-2. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
-3. Switch to the selected implementation skill and do the actual coding there.
+1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still light on detail but already points toward several stages, waiting, or quality loops.
+2. Start with [references/scenario-router.md](references/scenario-router.md) to map the business requirement to the right capability area.
+3. Read [references/project-structure-guidance.md](references/project-structure-guidance.md) when the user is building a medium or large workflow project rather than one isolated flow file.
+4. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
+5. Switch to the selected implementation skill and do the actual coding there.
 
 ## Routing Rules
 
@@ -45,6 +48,18 @@ Do not use this skill for:
 - human approval, external resume, waiting execution, or live runtime stream -> `agently-triggerflow-interrupts-and-stream`
 - workflow step needs provider setup -> combine with `agently-model-setup`
 - workflow step needs detailed output-schema or structured-streaming semantics -> combine with `agently-output-control`
+
+## Default Quality Rule
+
+When quality depends on several explicit model turns, TriggerFlow should usually own the connection between those turns.
+
+Typical cases:
+
+- draft -> judge -> revise
+- reflection or self-check loops
+- ReAct-style think -> act -> observe cycles
+- lower-cost or local models that need bounded extra passes to reach acceptable quality
+- `instant` or runtime-stream output that should trigger downstream work before the whole flow ends
 
 ## Escalation When Framework Support Looks Insufficient
 
@@ -80,4 +95,6 @@ To make the feedback actionable, include at least one of the following after san
 ## References
 
 - `references/scenario-router.md`
+- `references/spec-first-intake.md`
+- `references/project-structure-guidance.md`
 - `references/current-skill-map.md`

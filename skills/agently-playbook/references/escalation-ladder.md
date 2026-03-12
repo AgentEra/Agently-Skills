@@ -2,6 +2,19 @@
 
 Choose the narrowest viable solution first.
 
+## 0. Spec-first intake
+
+Start here when:
+
+- the request is low-information-density
+- the quality target is unclear
+- output shape, budget, or latency expectations are missing
+
+Do first:
+
+- write a short working spec
+- collect output, downstream, model-tier, and latency assumptions
+
 ## 1. Standard single request
 
 Use this when:
@@ -23,6 +36,7 @@ Upgrade to this when:
 - response reuse matters
 - tool use, retrieval, or memory become necessary
 - output control and downstream consumption shape the product behavior more than raw prompt wording
+- one Agent should own prompt state and output control, but the work is still one request
 
 Stay in:
 
@@ -35,6 +49,7 @@ Upgrade to this when:
 - several specialized roles are genuinely needed
 - one final answer should be produced from several specialist stages or branches
 - reviewer-reviser or planner-worker separation improves safety or clarity
+- specialization and handoff ownership are the real problem, not just repeated quality loops
 
 Route to:
 
@@ -46,6 +61,7 @@ Upgrade to this when:
 
 - the problem is explicitly a workflow
 - steps should branch, fan out, pause, resume, or persist
+- quality depends on several explicit model turns such as reflection, judge, or revise stages
 - steps should be planned, decomposed, or concurrency-limited under one runtime
 - sync and async functions should be orchestrated under one business flow
 - runtime state and orchestration semantics matter more than prompt-only composition

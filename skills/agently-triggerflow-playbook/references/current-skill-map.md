@@ -120,3 +120,12 @@ Use for live interaction and wait-resume behavior:
   add `agently-output-control`
 - TriggerFlow + session-backed memory:
   add `agently-session-memo` only if the workflow design truly depends on session state outside the flow runtime itself
+
+## Common High-Quality Workflow Stack
+
+For bounded quality-improvement loops, a common combination is:
+
+- `agently-triggerflow-patterns`
+- `agently-triggerflow-model-integration`
+- `agently-output-control`
+- `agently-eval-and-judge` when explicit review criteria matter

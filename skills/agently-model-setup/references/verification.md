@@ -114,6 +114,11 @@ If the user is relying on a proxy, also confirm:
 - the proxy address itself is reachable
 - the failure is not caused by a wrong `base_url` being mistaken for a proxy problem
 
+Default advice:
+
+- turn on `debug` or `runtime.show_model_logs` early
+- confirm the actual request shape before rewriting prompt or transport logic
+
 ## 7. Common failure signals
 
 - `401 Unauthorized`
@@ -136,3 +141,16 @@ You can usually skip it only when:
 
 - the provider, model name, endpoint, and auth have not changed
 - only the prompt changed, not the model setup
+
+## 9. End-To-End Effect Validation
+
+For the final effect validation of a real Agently application, service, or module, prefer real model runs when possible.
+
+Validation order:
+
+1. local model
+2. lower-cost online model
+3. authorized paid model
+4. no-model fallback only when real-model validation is not available
+
+This is about validating the built application behavior, not about replacing every repository-level unit or behavior check with a model call.

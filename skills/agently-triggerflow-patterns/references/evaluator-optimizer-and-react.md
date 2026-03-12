@@ -18,6 +18,7 @@ Good fits:
 - maker-checker workflows
 - structured review loops
 - validation before side effects
+- local or lower-cost model setups that need bounded extra passes for quality
 
 Do not use this pattern when first-pass quality is already good enough or when no clear evaluation rule exists.
 
@@ -47,5 +48,6 @@ Good fits:
 
 - evaluator-optimizer is about iterative quality control
 - ReAct is about iterative action selection with observations
+- both patterns need explicit stop conditions and budgets
 - if model calls are the main implementation topic, switch to `agently-triggerflow-model-integration`
 - if a human should evaluate or approve, combine with `agently-triggerflow-interrupts-and-stream`

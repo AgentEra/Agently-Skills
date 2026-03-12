@@ -49,9 +49,12 @@ Prompt config in Agently is a serialized form of prompt state, not a new prompt 
 
 That means this feature is best used when prompt structure should live outside business code, be versioned as data, or be shared across services and environments.
 
+For medium and long-lived applications, this should usually be the default direction for business-owned prompts rather than a late cleanup step.
+
 ## Selection Rules
 
 - prompt template should live in YAML or JSON instead of Python -> use prompt config files
+- business prompt content should be separated from runtime orchestration code -> use prompt config files early
 - one config file contains multiple reusable prompt packs -> use `prompt_key_path`
 - placeholders should be filled at load time -> use `mappings`
 - prompt state should be exported and restored elsewhere -> use `get_yaml_prompt()` / `get_json_prompt()`

@@ -123,3 +123,9 @@ When a request is no longer just one request, route to:
 
 - `agently-multi-agent-patterns`
 - `agently-triggerflow-playbook`
+
+Typical TriggerFlow escalation signals:
+
+- draft -> judge -> revise loops
+- reflection or self-check stages with explicit budgets
+- several model requests whose order matters for quality

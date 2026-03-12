@@ -12,6 +12,8 @@ This page only covers model setup issues. It does not cover structured output or
 6. Check `stream`
 7. Then check auth and provider-specific fields
 
+Do not start by rewriting prompt logic or business flow until the request trace is understood.
+
 ## 2. `temperature` / `top_p` Does Not Take Effect
 
 Source-backed conclusion:
