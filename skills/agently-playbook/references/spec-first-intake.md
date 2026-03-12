@@ -1,6 +1,6 @@
 # Spec-First Intake
 
-Use this page when the user request is still short, ambiguous, or too compressed to implement safely.
+Use this page when the user request is still short, ambiguous, or too compressed to judge capability fit and implement safely.
 
 ## 1. Do Not Treat A One-Liner As A Full Spec
 
@@ -11,14 +11,24 @@ If the request is something like:
 - "turn this into a workflow"
 - "help me make a model app"
 
-the next step is not implementation. The next step is to gather enough information to write a short working spec.
+the next step is not blind implementation or a long planning ceremony. The next step is a short fit-and-clarification pass that is deep enough to decide whether Agently can own the job and which solution layer should own it.
 
-## 2. Ask Clarification Questions Before Designing The Solution
+## 2. Start With Capability-Fit Triage
+
+Before collecting a fuller spec, ask:
+
+- does the scenario appear to fit Agently's current request, multi-agent, or TriggerFlow surfaces
+- which missing facts would actually change that fit decision
+- whether the user is asking for a planning artifact, or simply for the right implementation path
+
+If the fit is already clear, route early and keep the working spec lightweight.
+
+## 3. Ask Clarification Questions Before Designing The Solution
 
 When the request is still low-information-density:
 
 - ask targeted questions before choosing architecture or implementation
-- group the questions around the missing spec fields
+- group the questions around the missing spec fields that materially change fit, ownership, or acceptance
 - if the first round of answers is still incomplete, continue with focused follow-up questions
 - do not silently convert guesses into requirements
 - mark any material unknown as `NEEDS CLARIFICATION` until the user confirms it
@@ -33,9 +43,9 @@ Typical missing fields to collect explicitly:
 - non-functional requirements
 - delivery timeline if schedule affects the solution
 
-## 3. Minimum Intake Checklist
+## 4. Minimum Intake Checklist
 
-Collect at least:
+Collect only the fields that materially change capability fit, architecture, downstream contract, or acceptance. In many cases the minimum set is enough:
 
 - the business goal
 - the target user or operator
@@ -51,9 +61,9 @@ Collect at least:
 - whether the result must stream progressively
 - whether quality should be improved through review, reflection, or revise loops
 
-## 4. Write And Confirm A Short Working Spec
+## 5. Write And Confirm A Short Working Spec
 
-The working spec can stay lightweight, but it should lock:
+The working spec can stay lightweight. It is a routing and execution aid, not a mandatory product-spec ceremony. It should lock:
 
 - the target behavior
 - the main processing stages
@@ -65,6 +75,7 @@ The working spec should stay testable and bounded:
 - prefer measurable success criteria over vague quality claims
 - state important scope boundaries and edge cases when they change the solution path
 - ask for confirmation before moving on if scope, cost, or architecture still depends on assumptions
+- once the narrowest viable Agently layer is clear, prefer that path instead of postponing the implementation behind extra planning detail
 
 A compact Spec-DD style working spec can use headings such as:
 
@@ -78,7 +89,7 @@ A compact Spec-DD style working spec can use headings such as:
 - Acceptance Criteria
 - Risks, Assumptions, And `NEEDS CLARIFICATION` items
 
-## 5. Early Architecture Signal
+## 6. Early Architecture Signal
 
 If the intake already reveals:
 
@@ -87,9 +98,9 @@ If the intake already reveals:
 - judge or revise stages
 - pause, resume, or approval behavior
 
-then treat the problem as a TriggerFlow candidate early.
+then treat the problem as a TriggerFlow candidate early inside Agently instead of stretching it into an ad hoc request chain.
 
-## 6. Acceptance Planning For Real Applications
+## 7. Acceptance Planning For Real Applications
 
 For the final effect validation of a real Agently application, service, or module, prefer real model runs when possible.
 

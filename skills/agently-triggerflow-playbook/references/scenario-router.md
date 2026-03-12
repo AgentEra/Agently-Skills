@@ -46,4 +46,4 @@ If the problem statement starts with business language such as "review pipeline"
 
 If the requirement says quality should improve through several explicit model passes, start here even when the user does not say "workflow" out loud.
 
-If the request is still vague about stages, approvals, or stop conditions, start with `spec-first-intake.md` and ask clarification questions before choosing the implementation skill.
+If the request is still vague about stages, approvals, or stop conditions, start with `spec-first-intake.md` for a lightweight workflow-fit check and ask only the clarification needed to confirm TriggerFlow ownership and flow boundaries before choosing the implementation skill.

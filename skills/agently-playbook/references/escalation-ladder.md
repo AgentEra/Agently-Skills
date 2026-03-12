@@ -2,20 +2,23 @@
 
 Choose the narrowest viable solution first.
 
-## 0. Spec-first intake
+## 0. Capability-fit triage and targeted intake
 
 Start here when:
 
 - the request is low-information-density
 - the quality target is unclear
 - output shape, budget, or latency expectations are missing
+- it is still unclear whether Agently's current capability tree can own the scenario
 
 Do first:
 
+- judge which current Agently layer is the leading fit candidate
 - ask targeted clarification questions
 - continue with follow-up questions if the first answers are still incomplete
 - write a short working spec only after the missing fields are usable
 - collect output, downstream, model-tier, and latency assumptions without silently inventing them
+- stop the intake once the narrowest viable Agently path is clear; do not turn it into a longer spec process by default
 
 ## 1. Standard single request
 
@@ -75,4 +78,6 @@ Route to:
 
 ## Practical rule
 
-Do not escalate only because the architecture sounds more advanced. Escalate only when the simpler layer cannot satisfy the actual business requirement.
+Prefer the smallest Agently layer that can actually satisfy the requirement.
+
+Do not escalate only because the architecture sounds more advanced. Escalate only when the simpler Agently layer cannot satisfy the actual business requirement, and escalate out of Agently only when a concrete capability gap remains after the fit check.

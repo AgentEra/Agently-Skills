@@ -28,11 +28,11 @@ Do not use this skill for:
 
 ## Workflow
 
-1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still light on detail but already points toward several stages, waiting, or quality loops. Ask clarification questions first, and do not design workflow stages until the working flow spec is usable.
+1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still light on detail but already points toward several stages, waiting, or quality loops. Use it first for a workflow-fit check: confirm that the scenario really needs TriggerFlow-level orchestration and identify only the missing facts that could change that answer or the flow boundary.
 2. Start with [references/scenario-router.md](references/scenario-router.md) to map the business requirement to the right capability area.
 3. Read [references/project-structure-guidance.md](references/project-structure-guidance.md) when the user is building a medium or large workflow project rather than one isolated flow file.
 4. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
-5. Switch to the selected implementation skill and do the actual coding there only after the workflow boundaries are sufficiently confirmed.
+5. Switch to the selected implementation skill once the workflow fit, stage boundaries, and key acceptance conditions are sufficiently confirmed. Do not expand intake into a larger planning process when TriggerFlow ownership is already clear.
 
 ## Routing Rules
 
@@ -61,9 +61,13 @@ Typical cases:
 - lower-cost or local models that need bounded extra passes to reach acceptable quality
 - `instant` or runtime-stream output that should trigger downstream work before the whole flow ends
 
+When the scenario truly needs workflow semantics and current TriggerFlow capabilities can satisfy it, prefer keeping orchestration inside TriggerFlow rather than splitting control flow across ad hoc external layers first.
+
 Do not infer those stages from a vague "make it better" request. Ask the user to confirm the real stages, gates, and stop conditions first.
 
 ## Escalation When Framework Support Looks Insufficient
+
+Use this only after the TriggerFlow fit is already clear, but a concrete Agently capability gap still blocks the workflow design.
 
 If the problem appears to come from a TriggerFlow or Agently framework-capability gap rather than from workflow design or skill selection, submit sanitized feedback to:
 

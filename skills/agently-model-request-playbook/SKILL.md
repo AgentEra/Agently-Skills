@@ -28,13 +28,13 @@ Do not use this skill for:
 
 ## Workflow
 
-1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still short, fuzzy, or missing output, budget, or latency expectations. Ask clarification questions first, and do not design the request contract until the missing fields are usable.
+1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is still short, fuzzy, or missing output, budget, or latency expectations. Use it first for a quick request-fit check: confirm that the scenario can stay inside Agently's request-side capability set, and identify only the missing fields that could change that answer or the request contract.
 2. Start with [references/standard-request-path.md](references/standard-request-path.md) when the requirement still looks like one ordinary model request.
 3. Read [references/high-quality-request-path.md](references/high-quality-request-path.md) when the request must be more reliable, structured, streamable, or reusable.
 4. Read [references/ownership-and-escalation.md](references/ownership-and-escalation.md) when the real question is who owns which part of the solution and when the request should be upgraded.
 5. Read [references/common-business-patterns.md](references/common-business-patterns.md) when the requirement starts from business scenarios such as extraction, tool use, retrieval-augmented answer, or service exposure.
 6. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the implementation skill or skill combination.
-7. Switch to the selected implementation skill and do the actual coding there only after the request contract is sufficiently confirmed.
+7. Switch to the selected implementation skill once the request-side fit and request contract are sufficiently confirmed. Do not block the implementation behind a heavier spec if the request owner is already clear.
 
 ## Routing Rules
 
@@ -55,7 +55,9 @@ Do not use this skill for:
 ## Core Principles
 
 - question-first intake: if the output contract, success criteria, quality bar, or latency and budget constraints are missing, collect them before choosing the request shape
+- capability-fit-first inside the request domain: collect only the fields that change request-side fit, request contract, or acceptance
 - single-request-first: solve the problem with one high-quality request before escalating into workflow orchestration
+- Agently-first when fit is clear: if current request-side capabilities can satisfy the requirement, prefer staying inside Agently's request, tool, retrieval, session, prompt-config, and service-exposure surfaces instead of inventing external orchestration first
 - agent-first for serious request work: if prompt state, output control, or reuse matters, prefer an `Agent` as the request owner rather than a bare one-off call
 - async-first: if the runtime can use async APIs, prefer async request and response handling
 - explicit escalation: add tools, retrieval, memory, service exposure, or TriggerFlow only when the business need clearly requires it
@@ -64,6 +66,8 @@ Do not use this skill for:
 - do not silently invent output schema, evaluation rules, or delivery constraints when the user has not confirmed them
 
 ## Escalation When Framework Support Looks Insufficient
+
+Use this only after the request-side fit is already clear, but a concrete Agently capability gap still blocks the implementation.
 
 If the problem appears to come from an Agently framework-capability gap rather than from request design or nearby skill selection, submit sanitized feedback to:
 

@@ -2,7 +2,7 @@
 
 Use this page when the requirement starts from a realistic product or operations scenario rather than a low-level technical shape.
 
-The goal is not to mirror every trend word in the AI ecosystem. The goal is to route common real-world scenarios into the current Agently skill tree without exceeding Agently's actual capability boundary.
+The goal is not to mirror every trend word in the AI ecosystem. The goal is to route common real-world scenarios into the current Agently skill tree without exceeding Agently's actual capability boundary. If the scenario fits that boundary, prefer solving it with the narrowest viable Agently capability path.
 
 ## 1. Research, Monitoring, Or Investigative Work
 
