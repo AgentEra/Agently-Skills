@@ -11,6 +11,7 @@ Its job is to:
 - route one-request and request-adjacent business needs to the right skill
 - preserve the single-request-first mindset
 - escalate to TriggerFlow only when the business shape exceeds one request
+- add a short spec-first intake when the request is still too compressed to implement safely
 
 It should not:
 
@@ -25,6 +26,9 @@ It should not:
 - Lead with scenario language such as understanding, rewriting, expansion, extraction, generation, scoring, or validation before naming internal framework surfaces.
 - Do not lead with provider setup, prompt-composition, output-control, or tool-registration API terms. Those belong to the implementation skills that this playbook routes to.
 - Mention TriggerFlow only as an escalation boundary, not as a parallel primary claim in the description.
+- Public guidance should prefer `Agent`-owned request design when prompt state, output control, or reuse matters.
+- Public guidance should recommend prompt config when business prompts should live outside runtime code.
+- Public guidance should stop the one-request story once explicit draft, judge, revise, or reflection stages become part of the design.
 
 ## Non-trigger examples
 

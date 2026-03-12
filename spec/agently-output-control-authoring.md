@@ -17,5 +17,7 @@ This file records author-side constraints for maintaining the `agently-output-co
 - Lead with output-contract problems such as structured fields, parsed results, retries, response reuse, or structured streaming before naming internal Agently API methods.
 - Published guidance for this skill should recommend async-first usage whenever the caller runtime can support it.
 - Frame sync getters and sync generators as compatibility wrappers over the async core, not as the primary execution model.
+- Public guidance should recommend `Agent` as the default request owner when output control is part of a broader application design.
+- Public guidance should allow unconstrained plain-text output for open-ended creative work, but require `.output(...)` guidance for structured, staged, or multi-downstream outputs.
 - Route provider setup, auth, endpoint, and transport questions to `agently-model-setup`.
 - Route prompt-slot, mapping, attachment-composition, and low-level `chat_history` questions to `agently-input-composition`.

@@ -11,6 +11,7 @@ Its job is to:
 - recognize TriggerFlow from business requirements
 - route to the correct implementation skill
 - point out required cross-skill combinations
+- present bounded quality-improvement loops as a natural TriggerFlow entry, not only as an advanced edge case
 
 It should not:
 
@@ -39,6 +40,8 @@ It should not:
 - The frontmatter should still be able to win when the user describes a long-running or resumable workflow without naming TriggerFlow explicitly.
 - Do not compete with implementation skills on explicit API names when the user has already named the concrete TriggerFlow surface.
 - Mention model setup or output control only as supporting combinations inside a TriggerFlow solution, not as primary trigger language.
+- Public guidance should include spec-first intake for under-specified workflow requests.
+- Public guidance should explicitly frame reflection, judge, revise, ReAct, and `instant`-driven follow-up work as normal TriggerFlow-quality patterns.
 
 ## Non-trigger examples
 

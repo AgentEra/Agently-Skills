@@ -34,6 +34,22 @@
       "reason": "The request is expressed in generic model-app language and the architecture level is still unresolved."
     },
     {
+      "id": "router-low-info-spec-first",
+      "group": "router_coexistence",
+      "query": "Build an Agently assistant for our internal ops team. I only know it should be reliable and maybe use workflows or tools, but I have not defined the output shape, budget, or latency target yet.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-request-playbook",
+        "agently-triggerflow-playbook"
+      ],
+      "should_trigger": "agently-playbook",
+      "should_not_trigger": [
+        "agently-model-request-playbook",
+        "agently-triggerflow-playbook"
+      ],
+      "reason": "The request is still low-information-density and needs top-level spec-first routing before choosing a domain."
+    },
+    {
       "id": "router-one-request-domain-known",
       "group": "router_coexistence",
       "query": "This should stay a single Agently request. Help me decide whether I just need a normal request, structured output, tools, or retrieval.",
@@ -146,6 +162,22 @@
       "reason": "This is a model-application scenario, but it is already known to need workflow orchestration."
     },
     {
+      "id": "router-triggerflow-quality-loop",
+      "group": "router_broad_app_dev_queries",
+      "query": "Use a local or low-cost model to draft, critique, revise, and re-check an answer until it passes or the quality budget is exhausted. Help me choose the right Agently approach.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-request-playbook",
+        "agently-triggerflow-playbook"
+      ],
+      "should_trigger": "agently-triggerflow-playbook",
+      "should_not_trigger": [
+        "agently-playbook",
+        "agently-model-request-playbook"
+      ],
+      "reason": "The quality path already implies bounded multi-stage model orchestration."
+    },
+    {
       "id": "request-leaf-provider-setup",
       "group": "request_domain_boundaries",
       "query": "Connect a local Ollama endpoint to Agently through OpenAICompatible, set the base URL and model, and run a minimal verification request.",
@@ -198,6 +230,22 @@
         "agently-input-composition"
       ],
       "reason": "This is direct output-shape and response-consumption work."
+    },
+    {
+      "id": "request-structured-single-request-contract",
+      "group": "request_domain_boundaries",
+      "query": "Keep this as one Agently agent request. I need a structured summary, action_items, and final instruction block for downstream automation in one response, not a workflow.",
+      "installed_skills": [
+        "agently-model-request-playbook",
+        "agently-output-control",
+        "agently-triggerflow-playbook"
+      ],
+      "should_trigger": "agently-model-request-playbook",
+      "should_not_trigger": [
+        "agently-output-control",
+        "agently-triggerflow-playbook"
+      ],
+      "reason": "This is still a request-side architecture decision with a structured contract, not a workflow escalation."
     },
     {
       "id": "request-leaf-eval-and-judge",

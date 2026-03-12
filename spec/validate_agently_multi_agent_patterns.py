@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 import re
 
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL_DIR = ROOT / "skills" / "agently-multi-agent-patterns"
 SKILL_MD = SKILL_DIR / "SKILL.md"
+TRIGGER_FIXTURES = ROOT / "spec" / "skill-trigger-fixtures.json"
 
 
 def check(name: str, condition: bool, details: str, failures: list[str], passes: list[str]):
@@ -69,6 +71,13 @@ def main():
         failures,
         passes,
     )
+    check(
+        "loop_ownership_guidance_present",
+        "TriggerFlow should usually own their order, budgets, and stop conditions" in text,
+        "public skill states that explicit specialist loops should be orchestrated by TriggerFlow",
+        failures,
+        passes,
+    )
 
     implementation_routing = (SKILL_DIR / "references" / "implementation-routing.md").read_text(encoding="utf-8")
     expected_skills = [
@@ -97,6 +106,23 @@ def main():
         failures,
         passes,
     )
+    check(
+        "trigger_fixtures_exist",
+        TRIGGER_FIXTURES.exists(),
+        "trigger fixture file exists",
+        failures,
+        passes,
+    )
+    if TRIGGER_FIXTURES.exists():
+        fixture_data = json.loads(TRIGGER_FIXTURES.read_text(encoding="utf-8"))
+        fixtures = fixture_data.get("cases", [])
+        check(
+            "trigger_fixture_covers_multi_agent_generator_judge_boundary",
+            any(case.get("id") == "architecture-generator-judge-pattern" for case in fixtures),
+            "trigger fixtures include a generator-judge specialist boundary case",
+            failures,
+            passes,
+        )
 
     readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
     check(

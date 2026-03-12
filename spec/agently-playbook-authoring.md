@@ -14,6 +14,9 @@ This file is author-side only. It does not belong in published skill payload.
 - Route specialist-agent architecture questions to `agently-multi-agent-patterns`.
 - Route true workflow orchestration problems to `agently-triggerflow-playbook`.
 - Route FastAPI, session, and prompt-config needs as supporting combinations, not as the top architecture owner by default.
+- Public guidance should tell the user to write a short working spec first when the input is low-information-density.
+- Public guidance should collect output contract, downstream consumer, model-tier, budget, latency, and streaming expectations before final routing.
+- Public guidance should escalate to TriggerFlow when several explicit model turns are already implied by the quality target.
 
 ## Discovery rules
 
