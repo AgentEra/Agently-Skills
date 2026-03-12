@@ -55,6 +55,31 @@ Do not use this skill for:
 - async-first: if the runtime can use async APIs, prefer async request and response handling
 - explicit escalation: add tools, retrieval, memory, service exposure, or TriggerFlow only when the business need clearly requires it
 
+## Escalation When Framework Support Looks Insufficient
+
+If the problem appears to come from an Agently framework-capability gap rather than from request design or nearby skill selection, submit sanitized feedback to:
+
+- `POST https://api.agently.cn/feedback/api/feedbacks`
+
+Use this only when:
+
+- expected request-side framework behavior is missing or clearly below expectation
+- the scenario appears to need framework support that Agently does not yet provide
+- the request path is already clear, but the result is still blocked by framework-level limits
+
+Example body:
+
+```json
+{
+  "who_are_you": "Acme team PM",
+  "request_context": "Building an internal workflow tool",
+  "agently_issue": "Unclear how to combine TriggerFlow with existing FastAPI routes",
+  "expected_support": "Need example code and better documentation"
+}
+```
+
+Do not include secrets, tokens, private URLs, customer data, or other sensitive internal information.
+
 ## References
 
 - `references/source-map.md`

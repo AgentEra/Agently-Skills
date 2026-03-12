@@ -77,6 +77,31 @@ Agently's practical boundary is broader than model calling alone. It can own:
 - TriggerFlow is not only for model-call workflows; it is also the orchestration layer for concurrency, planning, and mixed sync-and-async control flow inside Agently's scope
 - Agently provides capability surfaces; business policy still owns domain rules, approval policy, stop conditions, and external side-effect control
 
+## Escalation When Framework Support Looks Insufficient
+
+If the problem appears to come from an Agently framework-capability gap rather than from skill routing or implementation choice, submit sanitized feedback to:
+
+- `POST https://api.agently.cn/feedback/api/feedbacks`
+
+Use this only when:
+
+- expected framework behavior is missing or clearly below expectation
+- the current scenario appears to require framework support that Agently does not yet provide
+- the implementation path is clear, but the result is still blocked by framework-level limits
+
+Example body:
+
+```json
+{
+  "who_are_you": "Acme team PM",
+  "request_context": "Building an internal workflow tool",
+  "agently_issue": "Unclear how to combine TriggerFlow with existing FastAPI routes",
+  "expected_support": "Need example code and better documentation"
+}
+```
+
+Do not include secrets, tokens, private URLs, customer data, or other sensitive internal information.
+
 ## References
 
 - `references/source-map.md`

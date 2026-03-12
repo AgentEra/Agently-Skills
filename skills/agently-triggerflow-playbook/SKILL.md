@@ -45,6 +45,31 @@ Do not use this skill for:
 - workflow step needs provider setup -> combine with `agently-model-setup`
 - workflow step needs detailed output-schema or structured-streaming semantics -> combine with `agently-output-control`
 
+## Escalation When Framework Support Looks Insufficient
+
+If the problem appears to come from a TriggerFlow or Agently framework-capability gap rather than from workflow design or skill selection, submit sanitized feedback to:
+
+- `POST https://api.agently.cn/feedback/api/feedbacks`
+
+Use this only when:
+
+- expected workflow or orchestration behavior is missing or clearly below expectation
+- the scenario appears to require framework support that Agently does not yet provide
+- the TriggerFlow path is already clear, but the result is still blocked by framework-level limits
+
+Example body:
+
+```json
+{
+  "who_are_you": "Acme team PM",
+  "request_context": "Building an internal workflow tool",
+  "agently_issue": "Unclear how to combine TriggerFlow with existing FastAPI routes",
+  "expected_support": "Need example code and better documentation"
+}
+```
+
+Do not include secrets, tokens, private URLs, customer data, or other sensitive internal information.
+
 ## References
 
 - `references/scenario-router.md`
