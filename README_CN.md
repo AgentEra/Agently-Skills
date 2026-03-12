@@ -21,6 +21,8 @@
 
 这是 Agently 官方可安装 skills 仓库，用于增强 coding agent 对 Agently 的理解和实现能力。
 
+仓库会公开完整能力树，但运行时更适合按 bundle 大小激活，而不是默认让整棵树同时参与发现。
+
 安装后你能直接获得：
 
 - 从业务需求出发的总入口与路由能力
@@ -33,6 +35,77 @@
 - `Agently >= 4.0.8.5`
 
 ## 安装
+
+推荐的激活顺序：
+
+1. 先装一个入口 skill 或一个明确 bundle
+2. 只有当问题已经收敛到对应域时，再补相邻 leaf skill
+3. 只有在你明确希望整套 catalog 同时共存时，才安装整个仓库
+
+如果当前安装工具还不能直接表达 bundle，可以按下面的安装序列执行。
+
+### 入口安装
+
+通用 Agently 入口：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-playbook
+```
+
+单次请求为主的入口：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-model-request-playbook
+```
+
+TriggerFlow 为主的入口：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-playbook
+```
+
+### Bundle 安装序列
+
+`request-core`：把 active set 收敛在单次请求域内：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-model-request-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-model-setup
+npx skills add AgentEra/Agently-Skills --skill agently-input-composition
+npx skills add AgentEra/Agently-Skills --skill agently-output-control
+```
+
+`request-extensions`：先从 `request-core` 开始，再只补你真正需要的扩展 leaf：
+
+- `agently-tools`
+- `agently-mcp`
+- `agently-session-memo`
+- `agently-prompt-config-files`
+- `agently-fastapi-helper`
+- `agently-embeddings`
+- `agently-knowledge-base-and-rag`
+
+`triggerflow-core`：把 active set 收敛在 TriggerFlow 工作流域内：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-orchestration
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-patterns
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-state-and-resources
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-subflows
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-model-integration
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-config
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-execution-state
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-interrupts-and-stream
+```
+
+`migration`：把 active set 收敛在 LangChain / LangGraph 迁移域内：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-langchain-langgraph-migration-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-langchain-to-agently
+npx skills add AgentEra/Agently-Skills --skill agently-langgraph-to-triggerflow
+```
 
 安装整个仓库：
 
@@ -75,6 +148,8 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 这个仓库的作用，就是把这些高频知识组织成可安装、可触发、可路由的 skills。
 
 ## 能力总览
+
+下面这些分组描述的是公开 catalog。真正推荐的运行时激活集合，以前面的 entry installs 和 bundle install sequences 为准。
 
 ### 1. 顶层入口
 
@@ -195,3 +270,33 @@ skills/
 - 远程 `npx skills add AgentEra/Agently-Skills` 发现与安装烟测
 
 如果你在使用中发现某颗 skill 的边界、命中或路由不够准确，欢迎直接提 issue 或 PR。
+
+## 框架能力反馈
+
+如果实际使用中发现问题不只是 skill 路由或文档表达，而是 Agently 框架能力本身不足，可以直接通过反馈 API 提交脱敏后的能力反馈。
+
+适用场景包括：
+
+- 当前行为与合理预期不符
+- 你认为该场景下框架本应支持，但目前没有支持
+- 已经进入明确实现路径后，仍然因为框架能力限制而效果明显不达预期
+
+反馈接口：
+
+- `POST https://api.agently.cn/feedback/api/feedbacks`
+
+Body 样例：
+
+```json
+{
+  "who_are_you": "Acme team PM",
+  "request_context": "Building an internal workflow tool",
+  "agently_issue": "Unclear how to combine TriggerFlow with existing FastAPI routes",
+  "expected_support": "Need example code and better documentation"
+}
+```
+
+注意：
+
+- 提交前务必做脱敏
+- 不要携带密钥、token、内部 URL、客户数据或其他敏感信息

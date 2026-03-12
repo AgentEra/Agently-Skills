@@ -22,8 +22,9 @@ Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/do
 This repository publishes official Agently skills for coding-agent use.
 
 Best results usually come from starting with the narrowest entry skill that matches the problem domain, then adding nearby skills only as needed.
+Treat the repository as a published catalog, but treat runtime activation as a bundle-sized choice.
 
-When you install the full repository, you get:
+The full catalog contains:
 
 - top-level routing from business requirements into the right Agently implementation path
 - a complete one-request capability tree covering model setup, input composition, output control, tools, MCP, session, FastAPI, embeddings, and RAG
@@ -35,6 +36,16 @@ Prerequisite:
 - `Agently >= 4.0.8.5`
 
 ## Install
+
+Recommended activation order:
+
+1. start with one entry skill or one documented bundle
+2. add nearby leaf skills only after the request has already narrowed into that domain
+3. install the full repository only when you deliberately want the whole catalog to coexist
+
+If your tool cannot install a named bundle directly, use the install sequences below.
+
+### Entry installs
 
 Recommended first install for general Agently work:
 
@@ -52,6 +63,49 @@ Recommended first install for TriggerFlow-focused work:
 
 ```bash
 npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-playbook
+```
+
+### Bundle install sequences
+
+`request-core` keeps the active set centered on one-request Agently work:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-model-request-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-model-setup
+npx skills add AgentEra/Agently-Skills --skill agently-input-composition
+npx skills add AgentEra/Agently-Skills --skill agently-output-control
+```
+
+`request-extensions` is additive. Start from `request-core`, then add only the leaf skills you actually need:
+
+- `agently-tools`
+- `agently-mcp`
+- `agently-session-memo`
+- `agently-prompt-config-files`
+- `agently-fastapi-helper`
+- `agently-embeddings`
+- `agently-knowledge-base-and-rag`
+
+`triggerflow-core` keeps the active set inside the TriggerFlow workflow domain:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-orchestration
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-patterns
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-state-and-resources
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-subflows
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-model-integration
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-config
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-execution-state
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-interrupts-and-stream
+```
+
+`migration` keeps the active set focused on LangChain or LangGraph adaptation:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-langchain-langgraph-migration-playbook
+npx skills add AgentEra/Agently-Skills --skill agently-langchain-to-agently
+npx skills add AgentEra/Agently-Skills --skill agently-langgraph-to-triggerflow
 ```
 
 List installable skills from the repository:
@@ -88,6 +142,8 @@ Agently's practical boundary is much broader than "send one model request":
 If those boundaries must be re-explained from scratch in every coding session, the result is slower and less consistent. This repository turns that repeated knowledge into installable skills with explicit routing, boundaries, and implementation guidance.
 
 ## Capability Overview
+
+The groups below describe the published catalog. The recommended runtime activation sets are the entry installs and bundle sequences listed above.
 
 ### 1. Top-Level Entry Skills
 
@@ -575,3 +631,33 @@ This repository currently has:
 - remote discovery and install smoke tests through `npx skills add AgentEra/Agently-Skills`
 
 If you find that a skill boundary, trigger, or routing rule is still off, open an issue or PR.
+
+## Capability Feedback
+
+If real usage shows that the problem is not just skill routing or documentation quality, but an actual Agently framework-capability gap, submit sanitized capability feedback directly to the Agently feedback API.
+
+Use this path when:
+
+- current behavior does not match reasonable framework expectations
+- the framework appears to be missing support that the scenario should require
+- a concrete implementation path still performs materially below expectation because of framework-level limits
+
+Endpoint:
+
+- `POST https://api.agently.cn/feedback/api/feedbacks`
+
+Example body:
+
+```json
+{
+  "who_are_you": "Acme team PM",
+  "request_context": "Building an internal workflow tool",
+  "agently_issue": "Unclear how to combine TriggerFlow with existing FastAPI routes",
+  "expected_support": "Need example code and better documentation"
+}
+```
+
+Safety note:
+
+- sanitize the feedback before sending it
+- do not include secrets, tokens, private URLs, customer data, or other sensitive internal information
