@@ -1,11 +1,11 @@
 ---
 name: agently-model-request-playbook
-description: Use only when the problem already belongs to one-request Agently work and you need to choose between a standard request, a higher-quality structured or streamed request, or one-request extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
+description: Use when building an Agently-based model application that still mainly belongs to one-request work, including standard requests, higher-quality structured or streamed requests, or one-request extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
 ---
 
 # Agently Model Request Playbook
 
-This skill is the scenario-routing entry point for model-request-side work in Agently. Use it when the problem is already known to be one-request or request-adjacent work rather than cross-domain architecture selection. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
+This skill is the scenario-routing entry point for model-request-side work in Agently. Use it when the application still mainly belongs to one-request or request-adjacent work rather than cross-domain architecture selection. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,6 +13,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
+- request-centered model applications such as extraction services, tool-using assistants, retrieval-backed answer flows, or FastAPI-exposed model endpoints
 - deciding how a standard Agently model request should be built
 - deciding how a higher-quality request should be upgraded for structure, streaming, or reuse
 - deciding which parts belong to Agently and which parts belong to business logic
