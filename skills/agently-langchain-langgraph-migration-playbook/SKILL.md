@@ -1,6 +1,6 @@
 ---
 name: agently-langchain-langgraph-migration-playbook
-description: Use when migrating an existing LangChain or LangGraph system into Agently and the migration path is still unresolved, including deciding whether the source problem belongs to LangChain agent migration or LangGraph workflow migration, whether the Agently target should stay one request, become multi-agent, or become TriggerFlow, and which narrower migration skill or capability stack to use first.
+description: Use when migrating an existing LangChain or LangGraph system into Agently and it is still unresolved whether the source belongs to LangChain-side agent migration or LangGraph-side orchestration migration.
 ---
 
 # Agently LangChain LangGraph Migration Playbook
@@ -9,17 +9,17 @@ This skill is the migration-router entry point for work from LangChain or LangGr
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
 - an existing LangChain or LangGraph system where the main migration path is still unclear
-- deciding whether the source design is mainly LangChain-side or LangGraph-side
+- requests where it is still unresolved whether the source design is mainly LangChain-side or LangGraph-side
 - deciding whether the migration target should stay one request, become a multi-agent design, or become TriggerFlow orchestration
 - choosing the correct migration skill and implementation order
 - identifying which parts can map directly and which parts require redesign
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - direct migration work where the source side is already known to be LangChain agent migration
 - direct migration work where the source side is already known to be LangGraph orchestration migration

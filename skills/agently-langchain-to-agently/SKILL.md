@@ -1,6 +1,6 @@
 ---
 name: agently-langchain-to-agently
-description: Use when directly migrating LangChain agent-side surfaces into Agently after the migration is already known to stay on the LangChain side rather than LangGraph orchestration, including `create_agent`, `response_format`, `ProviderStrategy`, `ToolStrategy`, tools, short-term memory, middleware or guardrails, `HumanInTheLoopMiddleware`, retrieval, service exposure, or LangChain-style multi-agent handoff patterns that should map into Agently request, output, tool, memory, service, interrupt, or multi-agent skills.
+description: Use when directly migrating LangChain agent-side surfaces into Agently after the migration is already known to stay on the LangChain side rather than LangGraph orchestration, such as `create_agent`, tools, structured output, middleware, retrieval, or short-term memory.
 ---
 
 # Agently LangChain To Agently
@@ -9,7 +9,7 @@ This skill is the direct migration leaf for LangChain's agent-side surface into 
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
@@ -25,7 +25,7 @@ Use this skill for:
 - service exposure around an agent
 - LangChain-side handoff or specialist-agent patterns
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - unresolved migration-entry work where you still need to decide between LangChain-side and LangGraph-side migration
 - `StateGraph`, interrupts, persistence, or subgraph migration as the main problem

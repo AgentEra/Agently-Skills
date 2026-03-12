@@ -1,6 +1,6 @@
 ---
 name: agently-langgraph-to-triggerflow
-description: Use when directly migrating LangGraph orchestration surfaces into Agently TriggerFlow after the migration is already known to be workflow-orchestration-first rather than LangChain agent migration, including `StateGraph`, nodes, edges, `Send`, `Command`, graph state, threads, checkpoints, interrupts, persistence, streaming, subgraphs, human-in-the-loop, or durable execution, and when mapping those concepts into TriggerFlow orchestration, patterns, state, config, execution-state, and interrupt skills.
+description: Use when directly migrating LangGraph orchestration surfaces into Agently TriggerFlow after the migration is already known to be workflow-orchestration-first rather than LangChain agent migration, such as `StateGraph`, nodes and edges, `Send`, `Command`, checkpoints, interrupts, persistence, streaming, or subgraphs.
 ---
 
 # Agently LangGraph To TriggerFlow
@@ -9,7 +9,7 @@ This skill is the direct migration leaf for LangGraph orchestration concepts int
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
@@ -26,7 +26,7 @@ Use this skill for:
 - durable execution
 - LangGraph-based human-in-the-loop behavior
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - unresolved migration-entry work where you still need to decide between LangChain-side and LangGraph-side migration
 - one-request agent migration as the main problem

@@ -1,6 +1,6 @@
 ---
 name: agently-model-request-playbook
-description: Use when the problem is already known to fit a single request or short request chain, such as understanding, extraction, rewriting, expansion, generation, scoring, validation reports, or structured and streamed responses, including nearby extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
+description: Request-side Agently router for choosing the request-side path after the work is already confirmed to stay within one request owner, one short request chain, or one short request family, such as understanding, rewriting, extraction, generation, scoring, or validation-report services, even if it may need structured output, streaming, tools, retrieval, session continuity, prompt config, or API exposure. Not for cases where the user is still not sure whether the solution should stay one request, use specialist agents, or become workflow orchestration.
 ---
 
 # Agently Model Request Playbook
@@ -9,22 +9,22 @@ This skill is the scenario-routing entry point for request-side model work in Ag
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
-- request-centered model applications such as understanding, rewriting, expansion, extraction, generation, scoring, or validation-report services
-- deciding how a standard model request should be built
-- deciding how a higher-quality request should be upgraded for structure, streaming, evaluation, or reuse
-- deciding which parts belong to Agently and which parts belong to business logic
-- deciding when to add tools, MCP, knowledge-base or RAG retrieval, session continuity, prompt config, judge-model review, or FastAPI exposure
+- request-centered model applications such as understanding, rewriting, extraction, generation, scoring, or validation-report services
+- requests where the owner layer is already known to stay inside one request owner or one short request family
+- deciding how a standard or higher-quality request should be built for structure, streaming, evaluation, reuse, or nearby extensions
+- deciding when to add tools, MCP, knowledge-base or RAG retrieval, session continuity, prompt config, judge-model review, or FastAPI exposure around that request
 - deciding when the problem has outgrown one request and should escalate to workflow orchestration
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - direct API-level implementation details
 - provider-specific setup details
 - standalone TriggerFlow workflow design
+- cross-layer routing where the user is still choosing between one request, a specialist-agent design, or workflow orchestration, even if all options would stay inside Agently
 
 ## Workflow
 

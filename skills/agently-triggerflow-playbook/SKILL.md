@@ -1,6 +1,6 @@
 ---
 name: agently-triggerflow-playbook
-description: Use when the problem is already known to be a workflow-orchestration or event-driven processing problem, such as multi-step routing, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, or model work inside a flow, and it should not stay a single request or a simple specialist-agent pattern.
+description: Workflow-side Agently router for problems already confirmed to need orchestration semantics such as branching, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, or explicit draft-judge-revise and other multi-stage model flow. Not for cross-layer routing or standalone request-side design.
 ---
 
 # Agently TriggerFlow Playbook
@@ -9,18 +9,18 @@ This skill is the scenario-routing entry point for orchestration-side work in Ag
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
-- agent workflows, approval flows, long-running model-service pipelines, and LangGraph-like orchestration concerns that should be implemented with TriggerFlow
-- deciding whether a workflow requirement should be implemented with TriggerFlow rather than a single request or a simple specialist-agent pattern
+- workflows, approval flows, long-running model-service pipelines, and LangGraph-like orchestration concerns that should be implemented with TriggerFlow
+- requests where the owner layer is already known to need workflow orchestration rather than a single request or a simple specialist-agent pattern
 - quality-focused flows where several explicit model turns such as reflection, judge, revise, or ReAct stages should be coordinated under one runtime
 - mapping a workflow requirement to the correct TriggerFlow skill
 - deciding when TriggerFlow should be combined with `agently-model-setup` or `agently-output-control`
 - selecting between general orchestration work, workflow-pattern work, state-and-resource work, sub-flow work, model-integration work, config work, execution-state work, and explicit interrupt or runtime-stream work
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - direct API-level TriggerFlow implementation details
 - provider setup or model-request configuration details

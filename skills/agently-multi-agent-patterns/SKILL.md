@@ -1,6 +1,6 @@
 ---
 name: agently-multi-agent-patterns
-description: Use only when the problem is already known to need multiple specialized agents and the main task is choosing a specialist-team pattern, such as planner-worker, supervisor-router, parallel experts, reviewer-reviser, generator-judge, staged handoff design, or agent boundary and contract design.
+description: Use only when the problem is already known to need several specialized roles and the main task is choosing the agent-team pattern, handoff boundaries, or role contracts, such as planner-worker, supervisor-router, parallel experts, reviewer-reviser, or generator-judge.
 ---
 
 # Agently Multi-Agent Patterns
@@ -9,17 +9,17 @@ This skill is the pattern-routing leaf for multi-agent architecture after cross-
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
-- deciding whether a business problem should stay one request or become a multi-agent design
+- requests that are already known to need several specialized roles rather than one request owner
 - planner-worker, supervisor-router, specialist handoff, reviewer-reviser, generator-judge, or parallel-expert patterns
 - deciding how agent boundaries, handoff schemas, and result ownership should work
 - deciding which parts should be isolated per agent and which should be shared at workflow level
 - combining multiple agents with TriggerFlow, tools, MCP, KB/RAG, session continuity, or FastAPI exposure
 
-Do not use this skill for:
+## When Not To Use This Skill
 
 - direct `TriggerFlow` API questions as the main problem
 - direct model setup, output schema, tool loop, or MCP transport details as the main problem

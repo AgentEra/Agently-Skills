@@ -1,6 +1,6 @@
 ---
 name: agently-playbook
-description: Use when the request starts from a model-powered product, assistant, generator, evaluator, internal tool, or workflow need expressed in business, product, or system language, such as understanding intent, rewriting or expanding requirements, generating artifacts, or validating outputs, and it is still unclear whether the solution should stay a single request, become a specialist-agent design, or become workflow orchestration or event-driven processing.
+description: Top-level Agently router for model-powered product, assistant, internal tool, or workflow requests where the user is still not sure whether the solution should stay a single request, use specialist agents, or become workflow orchestration, including capability-fit checks and generic model-app tasks such as understanding requirements, drafting artifacts, or validating outputs before the owner layer is settled. Not for problems already confirmed as request-side or workflow-side.
 ---
 
 # Agently Playbook
@@ -9,20 +9,20 @@ This skill is the top-level scenario-routing entry point for model-powered work.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
-## Scope
+## When To Use This Skill
 
 Use this skill for:
 
-- model-powered application, assistant, generator, evaluator, internal-tool, or workflow requirements that start in business language rather than API language
-- deciding whether the problem should stay a single request, become a specialist-agent system, or become workflow orchestration
-- deciding whether the core problem is understanding, rewriting, generation, structured output, evaluation, specialist coordination, or orchestration
-- deciding when to add tools, MCP, retrieval, memory, prompt config, judge-model review, or FastAPI exposure
-- deciding when workflow orchestration should be used for concurrency management, long-running control flow, approvals, or mixed sync-and-async task orchestration even without model calls
+- model-powered application, assistant, internal-tool, or workflow requests that start in business language rather than API language
+- requests where it is still unclear whether the owning solution layer should stay a single request, become a specialist-agent system, or become workflow orchestration
+- capability-fit checks where the user already prefers Agently if it fits, but still needs the owner layer to be chosen
+- business scenarios where the user needs help choosing the right Agently path before going into implementation details
 - deciding which parts belong to Agently and which parts belong to business logic
-- choosing an implementation order for real business scenarios
 
-Do not use this skill for:
+## When Not To Use This Skill
 
+- requests already confirmed to stay inside one request owner or one short request family
+- requirements already confirmed to need workflow orchestration semantics such as approvals, waiting and resume, restart-safe execution, or explicit draft-judge-revise style quality loops
 - direct API-level implementation details
 - provider-specific configuration as the main problem
 - direct TriggerFlow or response-parsing mechanics as the main problem
