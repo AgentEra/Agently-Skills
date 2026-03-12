@@ -15,8 +15,6 @@ This file records author-side constraints for maintaining the `agently-model-set
 - Keep author-side constraints out of `SKILL.md` and the skill references unless they directly help the skill user complete a task.
 - Keep the frontmatter and opening paragraph phrased as a direct leaf for model connection and request-transport setup, not as a one-request architecture router.
 - Lead with scenario language such as local model setup, Ollama, OpenAI-compatible endpoints, generator-model and judge-model wiring, or connectivity checks before naming internal Agently APIs.
-- Public guidance should treat `debug` and `runtime.show_model_logs` as the default first inspection path for setup failures.
-- Public guidance should explain the tradeoff between stronger expensive models with fewer loops and cheaper or local models with bounded extra quality loops.
 - Route prompt-slot, mapping, attachment-composition, and low-level `chat_history` questions to `agently-input-composition`.
 - Route `.output(...)`, `ensure_keys`, structured streaming, and response-consumption questions to `agently-output-control`.
 - Route embeddings requests to `agently-embeddings`.

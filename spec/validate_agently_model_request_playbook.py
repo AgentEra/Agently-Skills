@@ -50,7 +50,6 @@ def main():
 
     referenced_files = [
         SKILL_DIR / "references" / "source-map.md",
-        SKILL_DIR / "references" / "spec-first-intake.md",
         SKILL_DIR / "references" / "standard-request-path.md",
         SKILL_DIR / "references" / "high-quality-request-path.md",
         SKILL_DIR / "references" / "ownership-and-escalation.md",
@@ -86,14 +85,6 @@ def main():
         all((ROOT / "skills" / skill).exists() for skill in expected_skills)
         and all(skill in skill_map for skill in expected_skills),
         "routing targets point to currently published skills",
-        failures,
-        passes,
-    )
-    check(
-        "public_guidance_mentions_agent_and_triggerflow_escalation",
-        "agent-first" in text
-        and "quality already depends on explicit generator, judge, reflection, or revise stages" in text,
-        "public playbook prefers Agent-owned request design and escalates explicit quality loops to TriggerFlow",
         failures,
         passes,
     )

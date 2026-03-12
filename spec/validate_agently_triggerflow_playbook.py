@@ -49,8 +49,6 @@ def main():
 
     referenced_files = [
         SKILL_DIR / "references" / "scenario-router.md",
-        SKILL_DIR / "references" / "spec-first-intake.md",
-        SKILL_DIR / "references" / "project-structure-guidance.md",
         SKILL_DIR / "references" / "current-skill-map.md",
     ]
     check(
@@ -85,15 +83,6 @@ def main():
         failures,
         passes,
     )
-    check(
-        "quality_loop_guidance_present",
-        "Default Quality Rule" in text
-        and "draft -> judge -> revise" in text
-        and ("local or lower-cost models" in text or "lower-cost or local models" in text),
-        "public playbook frames bounded quality loops as a normal TriggerFlow path",
-        failures,
-        passes,
-    )
 
     check(
         "trigger_fixtures_exist",
@@ -116,13 +105,6 @@ def main():
             "trigger_fixture_covers_generic_workflow_query",
             any(case.get("id") == "router-workflow-generic-domain-known" for case in fixtures),
             "trigger fixtures include a generic workflow query",
-            failures,
-            passes,
-        )
-        check(
-            "trigger_fixture_covers_quality_loop_query",
-            any(case.get("id") == "router-triggerflow-quality-loop" for case in fixtures),
-            "trigger fixtures include a quality-loop TriggerFlow query",
             failures,
             passes,
         )

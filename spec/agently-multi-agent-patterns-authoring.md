@@ -13,7 +13,6 @@ This file is author-side only. It does not belong in published skill payload.
   - TriggerFlow orchestration
   - structured handoffs through output control
   - tools, MCP, session, and KB/RAG as optional specialist capabilities
-- Public guidance should state clearly that TriggerFlow usually owns explicit multi-turn specialist loops, budgets, and stop conditions.
 
 ## Routing rules
 

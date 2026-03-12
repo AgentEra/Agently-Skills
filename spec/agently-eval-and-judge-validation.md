@@ -7,7 +7,6 @@ This note records the author-side validation boundary for `agently-eval-and-judg
 - validate the frontmatter and routing boundary of the evaluation skill
 - validate that the public references exist and stay English-only
 - validate that trigger fixtures cover direct judge-model and rubric scenarios
-- validate that the public skill distinguishes direct evaluation design from multi-turn workflow orchestration
 
 ## Expected Boundary
 
@@ -26,5 +25,3 @@ python spec/validate_agently_eval_and_judge.py
 ```
 
 The script exits non-zero on public-boundary failures.
-
-Repository validation here checks the skill boundary. Final acceptance for a built evaluator service should still use representative real-model runs.

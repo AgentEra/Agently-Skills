@@ -73,14 +73,6 @@ def main():
         failures,
         passes,
     )
-    check(
-        "quality_loop_boundary_present",
-        "draft -> judge -> revise" in text
-        and "TriggerFlow should usually own the loop" in text,
-        "public skill explains when evaluation becomes an explicit TriggerFlow quality loop",
-        failures,
-        passes,
-    )
 
     check(
         "trigger_fixtures_exist",

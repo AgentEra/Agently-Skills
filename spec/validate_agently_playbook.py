@@ -51,12 +51,10 @@ def main():
 
     referenced_files = [
         SKILL_DIR / "references" / "source-map.md",
-        SKILL_DIR / "references" / "spec-first-intake.md",
         SKILL_DIR / "references" / "scenario-router.md",
         SKILL_DIR / "references" / "escalation-ladder.md",
         SKILL_DIR / "references" / "real-world-scenarios.md",
         SKILL_DIR / "references" / "common-solution-recipes.md",
-        SKILL_DIR / "references" / "project-structure-guidance.md",
         SKILL_DIR / "references" / "current-skill-map.md",
     ]
     check(
@@ -74,15 +72,6 @@ def main():
         and "agently-triggerflow-playbook" in text
         and "top-level scenario-routing entry point" in text,
         "public playbook routes to the current domain entry skills",
-        failures,
-        passes,
-    )
-    check(
-        "spec_first_and_project_structure_guidance",
-        "spec-first-intake.md" in text
-        and "project-structure-guidance.md" in text
-        and "short working spec" in text,
-        "public playbook links spec-first intake and project-structure guidance",
         failures,
         passes,
     )
@@ -108,13 +97,6 @@ def main():
             "trigger_fixture_covers_generic_playbook_query",
             any(case.get("id") == "router-cross-domain-generic-model-app-unclear" for case in fixtures),
             "trigger fixtures include a generic non-Agently playbook query",
-            failures,
-            passes,
-        )
-        check(
-            "trigger_fixture_covers_low_info_playbook_query",
-            any(case.get("id") == "router-low-info-spec-first" for case in fixtures),
-            "trigger fixtures include a low-information-density playbook query",
             failures,
             passes,
         )

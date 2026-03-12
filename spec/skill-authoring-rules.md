@@ -45,15 +45,6 @@ These rules apply to every skill in this repository unless a future spec explici
 - Keep the public machine-readable bundle manifest in `bundles/manifest.json` synchronized with the author-side bundle manifest.
 - Keep repository-level entry docs, including root `AGENTS.md`, synchronized with the current published scope.
 
-## Public Guidance Quality Rules
-
-- When public guidance starts from a low-information-density request, prefer a short spec-first intake before implementation advice.
-- When several explicit model requests must be connected for quality, present TriggerFlow as the default orchestration owner unless the design is truly still one request.
-- When output control, prompt reuse, or nearby extensions matter, prefer `Agent`-owned request guidance over disposable one-off request snippets.
-- When business prompts should be versioned, reused, or reviewed outside runtime code, prefer YAML or JSON prompt config guidance over scattering prompt text through application logic.
-- Treat `debug` and request or prompt inspection as first-line observability guidance before speculative rewrites.
-- Keep repository-level skill validation scoped to skill content, routing, and confirmed behavior. Do not describe that as equivalent to downstream application acceptance.
-
 ## Trigger Validation Rules
 
 - Every routing skill and every high-overlap skill must have representative trigger fixtures in `spec/`.
