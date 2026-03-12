@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-playbook
-description: Use when analyzing a business requirement that may need TriggerFlow, especially to decide whether the solution should use TriggerFlow orchestration, reusable workflow patterns such as routers or loops, state-and-resource design, isolated sub flows, model integration, definition config, execution-state persistence, interrupt-and-resume interaction, runtime stream output, multi-agent coordination, or a combination of TriggerFlow with Agently model setup and output-control skills.
+description: Use only when the main problem is TriggerFlow-domain workflow orchestration, such as async workflow control, routing, concurrency, resume, interrupts, runtime stream, or model work inside a flow, and you need to choose the right TriggerFlow skill combination.
 ---
 
 # Agently TriggerFlow Playbook
 
-This skill is the scenario-routing entry point for TriggerFlow work in Agently. Use it when the request starts from business workflow requirements rather than specific TriggerFlow APIs. It helps choose the right implementation skill or skill combination. It does not replace the implementation skills themselves.
+This skill is the scenario-routing entry point for TriggerFlow work in Agently. Use it when the main problem is already workflow orchestration in the TriggerFlow domain rather than generic Agently architecture selection. It helps choose the right implementation skill or skill combination. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

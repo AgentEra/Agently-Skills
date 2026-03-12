@@ -21,7 +21,9 @@ Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/do
 
 This repository publishes official Agently skills for coding-agent use.
 
-After installation, you get:
+Best results usually come from starting with the narrowest entry skill that matches the problem domain, then adding nearby skills only as needed.
+
+When you install the full repository, you get:
 
 - top-level routing from business requirements into the right Agently implementation path
 - a complete one-request capability tree covering model setup, input composition, output control, tools, MCP, session, FastAPI, embeddings, and RAG
@@ -34,22 +36,34 @@ Prerequisite:
 
 ## Install
 
-Install the whole repository:
-
-```bash
-npx skills add AgentEra/Agently-Skills
-```
-
-Install one specific skill:
+Recommended first install for general Agently work:
 
 ```bash
 npx skills add AgentEra/Agently-Skills --skill agently-playbook
+```
+
+Recommended first install for one-request-focused work:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-model-request-playbook
+```
+
+Recommended first install for TriggerFlow-focused work:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-triggerflow-playbook
 ```
 
 List installable skills from the repository:
 
 ```bash
 npx skills add AgentEra/Agently-Skills -l --full-depth
+```
+
+Install the whole repository only if you want the full capability tree to coexist in one environment:
+
+```bash
+npx skills add AgentEra/Agently-Skills
 ```
 
 ## Core Resources
@@ -78,20 +92,20 @@ If those boundaries must be re-explained from scratch in every coding session, t
 ### 1. Top-Level Entry Skills
 
 - `agently-playbook`
-  Starts from business goals, product behavior, or system design and decides whether the solution should stay one request, become a multi-agent design, or escalate to TriggerFlow.
+  The cross-domain router for Agently work when it is not yet clear whether the solution should stay one request, become multi-agent, or become TriggerFlow orchestration.
 - `agently-model-request-playbook`
-  Starts from one-request business needs and decides when to stay within one request and when to add tools, MCP, RAG, session, FastAPI, or TriggerFlow.
+  The router for one-request and request-adjacent work after the problem is already known to stay in the one-request domain.
 - `agently-triggerflow-playbook`
-  Starts from workflow and orchestration needs and routes into the right TriggerFlow capability group.
+  The router for TriggerFlow-domain orchestration after the problem is already known to be a TriggerFlow workflow.
 
 ### 2. One-Request Core
 
 - `agently-model-setup`
-  Model connection, `OpenAICompatible`, provider switching, auth, proxy, timeout, and `client_options`
+  Direct model connection and request-transport setup: `OpenAICompatible`, auth, endpoint, proxy, timeout, `request_options`, and minimal verification
 - `agently-input-composition`
-  Input organization, prompt slots, mappings, attachments, and low-level `chat_history`
+  Direct input-side prompt composition: prompt slots, prompt layering, mappings, attachments, low-level `chat_history`, and prompt inspection
 - `agently-output-control`
-  Output schema design, `ensure_keys`, response consumption, `instant`, and `streaming_parse`
+  Direct output-side schema, retries, response consumption, and structured streaming with `instant` / `streaming_parse`
 
 ### 3. Request-Enhancement Skills
 
@@ -111,13 +125,13 @@ If those boundaries must be re-explained from scratch in every coding session, t
 ### 5. TriggerFlow Capability Tree
 
 - `agently-triggerflow-orchestration`
-  Basic signal-driven orchestration
+  Low-level TriggerFlow primitives, execution entrypoints, contracts, and result semantics
 - `agently-triggerflow-patterns`
-  Common workflow patterns such as routers, fan-out and fan-in, safe loops, ReAct loops, and approval gates
+  Reusable workflow shapes such as routers, fan-out and fan-in, safe loops, ReAct loops, and approval gates
 - `agently-triggerflow-state-and-resources`
   `runtime_data`, `flow_data`, and resource boundaries
 - `agently-triggerflow-subflows`
-  Child flow boundaries, `capture`, and `write_back`
+  Explicit child-flow boundaries through `to_sub_flow(...)`, `capture`, and `write_back`
 - `agently-triggerflow-model-integration`
   Model requests inside workflows, including `delta` and `instant`
 - `agently-triggerflow-config`
@@ -131,7 +145,7 @@ If those boundaries must be re-explained from scratch in every coding session, t
 
 ### `agently-playbook`
 
-Use this skill when the request starts from a business or system requirement rather than one Agently API, including:
+Use this skill when the request starts from a cross-domain business or system requirement and it is still unclear which Agently solution level owns the problem, including:
 
 - deciding whether the solution should stay one model request
 - deciding whether it should become a multi-agent design
@@ -145,7 +159,7 @@ Skill path:
 
 ### `agently-model-request-playbook`
 
-Use this skill when the request starts from business needs around one Agently model request, including:
+Use this skill when the problem is already known to belong to one-request Agently work, including:
 
 - the standard request path
 - the high-quality request path
@@ -159,7 +173,7 @@ Skill path:
 
 ### `agently-model-setup`
 
-Use this skill when configuring Agently model access for Chat LLM, Completions LLM, or VLM, including:
+Use this skill when the main problem is direct Agently model connection or request-transport setup, including:
 
 - `OpenAICompatible` setup
 - provider switching
@@ -175,7 +189,7 @@ Skill path:
 
 ### `agently-input-composition`
 
-Use this skill when composing Agently request input before sending a model call, including:
+Use this skill when the main problem is direct input-side prompt composition before one Agently request, including:
 
 - prompt slots
 - quick prompt methods
@@ -192,7 +206,7 @@ Skill path:
 
 ### `agently-output-control`
 
-Use this skill when defining or consuming Agently model output, including:
+Use this skill when the main problem is direct output-side schema, retry, parsing, or structured-streaming behavior, including:
 
 - `.output(...)` schema design
 - `ensure_keys` and retries
@@ -328,7 +342,7 @@ Skill path:
 
 ### `agently-triggerflow-playbook`
 
-Use this skill when the request starts from business workflow analysis rather than TriggerFlow APIs, including:
+Use this skill when the main problem is already TriggerFlow-domain workflow orchestration rather than generic Agently architecture selection, including:
 
 - deciding whether the solution should use TriggerFlow
 - choosing between orchestration, state-and-resources, subflows, and interrupt-and-stream work
@@ -340,7 +354,7 @@ Skill path:
 
 ### `agently-triggerflow-orchestration`
 
-Use this skill when building basic TriggerFlow workflows, including:
+Use this skill when the main problem is low-level TriggerFlow primitives and execution semantics, including:
 
 - async-first signal-driven orchestration
 - `chunk`, `to(...)`, `when(...)`, `if_condition(...)`, and `match(...)`
@@ -352,7 +366,7 @@ Skill path:
 
 ### `agently-triggerflow-patterns`
 
-Use this skill when selecting or implementing common TriggerFlow workflow patterns, including:
+Use this skill when the main problem is choosing or implementing reusable TriggerFlow workflow shapes, including:
 
 - routers and classify-then-route workflows
 - fan-out and fan-in
@@ -381,7 +395,7 @@ Skill path:
 
 ### `agently-triggerflow-subflows`
 
-Use this skill when a TriggerFlow workflow needs an isolated child flow, including:
+Use this skill when the main problem is an isolated child-flow boundary in TriggerFlow, including:
 
 - `to_sub_flow(...)`
 - `capture` and `write_back`

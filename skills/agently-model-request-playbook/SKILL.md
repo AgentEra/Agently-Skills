@@ -1,11 +1,11 @@
 ---
 name: agently-model-request-playbook
-description: Use when analyzing a business requirement around one Agently model request or request-adjacent capability, especially to decide whether the solution should stay a standard single request, become a high-quality structured or streamed request, add tools or MCP, add knowledge-base or RAG retrieval, add session continuity, expose FastAPIHelper endpoints, become a multi-agent design, or escalate into TriggerFlow.
+description: Use only when the problem already belongs to one-request Agently work and you need to choose between a standard request, a higher-quality structured or streamed request, or one-request extensions such as tools, MCP, RAG, session, prompt config, or FastAPI exposure.
 ---
 
 # Agently Model Request Playbook
 
-This skill is the scenario-routing entry point for model-request-side work in Agently. Use it when the request starts from business needs rather than one specific API. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
+This skill is the scenario-routing entry point for model-request-side work in Agently. Use it when the problem is already known to be one-request or request-adjacent work rather than cross-domain architecture selection. It helps choose the right request skill or skill combination. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

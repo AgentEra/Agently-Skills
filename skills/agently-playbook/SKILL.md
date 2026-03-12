@@ -1,11 +1,11 @@
 ---
 name: agently-playbook
-description: Use when the request starts from a business or system requirement rather than one Agently API, especially to decide whether the solution should stay one model request, become a higher-quality structured or streamed request, add tools, MCP, KB/RAG, session continuity, or FastAPI exposure, become a multi-agent design, or escalate into TriggerFlow for complex planning, async concurrency management, runtime-stream interaction, or even mixed sync-and-async function orchestration with or without model calls.
+description: Use only when an Agently task starts from a cross-domain business or system goal and it is still unclear whether the solution should stay one-request, become a multi-agent design, or become TriggerFlow workflow orchestration.
 ---
 
 # Agently Playbook
 
-This skill is the top-level scenario-routing entry point for Agently work. Use it when the problem starts from business goals, product behavior, or system design rather than one specific API. It helps choose the right Agently capability path, the right skill combination, and the right escalation order. It does not replace the implementation skills themselves.
+This skill is the top-level scenario-routing entry point for Agently work. Use it when the problem starts from business goals, product behavior, or system design and the architecture level is still undecided. It helps choose the right Agently capability path, the right skill combination, and the right escalation order. It does not replace the implementation skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
