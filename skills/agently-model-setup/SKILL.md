@@ -1,6 +1,6 @@
 ---
 name: agently-model-setup
-description: Use only when the main task is model connection or request-transport setup, such as local Ollama, OpenAI-compatible endpoints, generator-model and judge-model wiring, URL and auth configuration, request options, or minimal connectivity verification for Agently requests.
+description: Use only when the main task is model connection or request-transport setup, such as local Ollama, DeepSeek or other OpenAI-compatible endpoints, environment-variable or dotenv-loaded base_url, model, and auth wiring, generator-model and judge-model wiring, URL and auth configuration, request options, or minimal connectivity verification for Agently requests.
 ---
 
 # Agently Model Setup
@@ -18,6 +18,7 @@ Use this skill for:
 - global model configuration with `Agently.set_settings("OpenAICompatible", {...})`
 - per-agent overrides with `agent.set_settings("OpenAICompatible", {...})`
 - endpoint, model, auth, and network-client setup: `base_url`, `full_url`, `model`, `auth`, `api_key`, `headers`, `proxy`, `timeout`, `client_options`
+- environment-variable or `.env`-loaded provider config for fields such as base URL, model, and auth
 - extra request parameters through `request_options` and `agent.options({...})`
 - separate generator-model and validator-model wiring
 - VLM-style attachment input through `attachment()`
