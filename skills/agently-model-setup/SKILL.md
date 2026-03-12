@@ -1,6 +1,6 @@
 ---
 name: agently-model-setup
-description: Use when the user is wiring a model endpoint, env vars, or connectivity check for a model-powered feature, including dotenv-loaded DeepSeek or other OpenAI-compatible settings, auth, request options, and minimal verification.
+description: Use when the request is already narrowed to wiring a model endpoint, env vars, or connectivity check for a model-powered feature, including local Ollama, dotenv-loaded DeepSeek or other OpenAI-compatible settings, auth, request options, and minimal verification.
 ---
 
 # Agently Model Setup

@@ -9,6 +9,7 @@ Examples that should still start here:
 - "help me kick off a model-powered internal tool"
 - "build a requirements assistant and validate the outputs"
 - "create a skills quality simulator and decide whether it should be one request or a workflow"
+- "build a heuristic skill creation tool with a UI and local Ollama"
 
 - unresolved business or product request -> stay here first
 - provider wiring -> `agently-model-setup`

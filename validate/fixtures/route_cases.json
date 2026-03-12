@@ -47,6 +47,26 @@
       ]
     },
     {
+      "id": "skill-creation-tool-ui-ollama-zh",
+      "query": "我做一个启发式的skill创作工具，你可以使用本机ollama提供的模型服务，我想要一个带界面的。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-output-control",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ],
+        [
+          "agently-playbook",
+          "agently-model-setup"
+        ]
+      ]
+    },
+    {
       "id": "skills-quality-simulator-request",
       "query": "Build a skills quality simulator that compares skill definitions with common user questions, returns a stable structured report, and keeps the implementation inside one request family.",
       "installed_skills": [

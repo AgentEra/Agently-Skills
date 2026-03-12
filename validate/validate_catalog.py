@@ -167,6 +167,13 @@ def main() -> None:
         passes,
     )
     check(
+        "route_fixture_covers_ui_ollama_skill_tool_case",
+        any(case.get("id") == "skill-creation-tool-ui-ollama-zh" for case in fixture_cases),
+        "route fixtures cover the Chinese UI plus local Ollama skill-tool kickoff scenario",
+        failures,
+        passes,
+    )
+    check(
         "route_fixture_covers_direct_leaf_cases",
         any(
             any(path and path[0] != "agently-playbook" for path in case.get("expected_route_paths", []))

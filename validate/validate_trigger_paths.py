@@ -87,6 +87,18 @@ def main() -> None:
         passes,
     )
     check(
+        "ui_ollama_skill_tool_case",
+        any(
+            case.get("id") == "skill-creation-tool-ui-ollama-zh"
+            and any(path and path[0] == "agently-playbook" for path in case.get("expected_route_paths", []))
+            and "agently" not in case.get("query", "").lower()
+            for case in cases
+        ),
+        "fixtures cover the Chinese UI plus local Ollama skill-tool case without Agently mention",
+        failures,
+        passes,
+    )
+    check(
         "direct_leaf_cases_present",
         any(
             isinstance(case.get("expected_route_paths"), list)

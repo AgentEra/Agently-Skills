@@ -125,6 +125,7 @@ async def judge_route_case(case: dict) -> dict:
         "- If the request starts from a generic product or workflow scenario, or the owner layer is unresolved, include agently-playbook first when it is installed.\n"
         "- If the request explicitly says the owner layer is not decided yet, do not route past agently-playbook.\n"
         "- Mentions of possible capabilities such as tools, memory, approvals, streaming, or retrieval do not justify a later skill when the owner layer is still undecided.\n"
+        "- Mentions of a UI, web page, desktop shell, or local model service such as Ollama are supporting constraints and do not disqualify agently-playbook when the request is still about building a model-powered tool.\n"
         "- If one installed non-playbook skill directly and narrowly owns the request, prefer that leaf skill without agently-playbook.\n"
         "- If the request is still unresolved between one request family and workflow orchestration, stop at agently-playbook.\n"
         "- If the request clearly stays inside one request family and asks for stable structured fields, required keys, or machine-readable reports, continue with agently-output-control when installed.\n"
