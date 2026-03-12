@@ -29,20 +29,20 @@ Do not use this skill for:
 
 ## Workflow
 
-1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is underspecified, low-information-density, or expressed as one short business instruction.
+1. Start with [references/spec-first-intake.md](references/spec-first-intake.md) when the request is underspecified, low-information-density, or expressed as one short business instruction. Ask targeted clarification questions first, and do not route or implement until a short working spec exists.
 2. Read [references/scenario-router.md](references/scenario-router.md) to classify the business requirement.
 3. Read [references/escalation-ladder.md](references/escalation-ladder.md) to choose the narrowest viable solution and the correct upgrade path.
 4. Read [references/real-world-scenarios.md](references/real-world-scenarios.md) when the request starts from a realistic product or operations scenario rather than a technical shape.
 5. Read [references/common-solution-recipes.md](references/common-solution-recipes.md) when the requirement resembles a standard production scenario.
 6. Read [references/project-structure-guidance.md](references/project-structure-guidance.md) when the user is building a medium or large Agently application, service, or workflow project.
 7. Read [references/current-skill-map.md](references/current-skill-map.md) to choose the exact implementation skill or skill combination.
-8. Switch to the selected implementation skill and do the actual coding there.
+8. Switch to the selected implementation skill and do the actual coding there only after the working spec is sufficiently confirmed.
 
 ## Core Mental Model
 
 Agently should usually be adopted in layers:
 
-0. clarify the request and write a short working spec when the input is still fuzzy
+0. ask targeted clarification questions, continue until the missing spec fields are usable, then write a short working spec
 1. one good request
 2. one higher-quality request
 3. one request plus supporting capabilities
@@ -58,8 +58,15 @@ Good solution design is still async-first:
 
 Default intake should collect at least:
 
+- the one-sentence requirement in the user's own words
+- the target user or operator
+- the main usage scenario
 - desired output type and whether downstream systems need machine-readable fields
 - who or what consumes the result next
+- success criteria and who accepts the result
+- existing system constraints
+- non-functional requirements when they affect the solution path
+- delivery timeline when schedule changes scope or architecture
 - expected quality level and whether reflection, review, or revise stages are acceptable
 - model tier, budget, and whether local or lower-cost models are preferred
 - latency sensitivity and whether progressive output or runtime stream matters
@@ -84,6 +91,8 @@ Agently's practical boundary is broader than model calling alone. It can own:
 ## Important Boundaries
 
 - start with the smallest architecture that satisfies the requirement
+- do not replace the user's product decisions with guessed goals, users, constraints, or delivery assumptions
+- if the spec is still incomplete after one answer, ask follow-up questions instead of treating your best guess as the requirement
 - do not jump to multi-agent or TriggerFlow if one high-quality request can solve the problem
 - one request, multi-agent design, and workflow orchestration are different solution levels, not interchangeable buzzwords
 - if quality work already implies draft -> judge -> revise, reflection loops, or several explicit model stages, do not hide that inside an ad hoc "short chain"; upgrade to TriggerFlow early

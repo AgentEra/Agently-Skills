@@ -7,7 +7,9 @@ Use this page to classify the business problem before choosing any lower-level s
 If the request is still a one-line instruction or lacks output, quality, budget, or latency details:
 
 - start with `spec-first-intake.md`
-- write a short working spec
+- ask targeted clarification questions first
+- do not route or implement yet
+- write a short working spec after the answers are usable
 - then return to this router
 
 ## 1. One-request problems

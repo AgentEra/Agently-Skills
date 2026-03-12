@@ -45,3 +45,5 @@ Choose TriggerFlow when the business requirement implies one or more of these pr
 If the problem statement starts with business language such as "review pipeline", "approval workflow", "agent loop", "multi-step async processing", or "live progress UI", start here first and then route into the concrete implementation skill.
 
 If the requirement says quality should improve through several explicit model passes, start here even when the user does not say "workflow" out loud.
+
+If the request is still vague about stages, approvals, or stop conditions, start with `spec-first-intake.md` and ask clarification questions before choosing the implementation skill.

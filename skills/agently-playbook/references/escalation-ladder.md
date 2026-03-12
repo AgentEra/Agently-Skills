@@ -12,8 +12,10 @@ Start here when:
 
 Do first:
 
-- write a short working spec
-- collect output, downstream, model-tier, and latency assumptions
+- ask targeted clarification questions
+- continue with follow-up questions if the first answers are still incomplete
+- write a short working spec only after the missing fields are usable
+- collect output, downstream, model-tier, and latency assumptions without silently inventing them
 
 ## 1. Standard single request
 

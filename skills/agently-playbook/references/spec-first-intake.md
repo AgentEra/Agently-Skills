@@ -13,20 +13,45 @@ If the request is something like:
 
 the next step is not implementation. The next step is to gather enough information to write a short working spec.
 
-## 2. Minimum Intake Checklist
+## 2. Ask Clarification Questions Before Designing The Solution
+
+When the request is still low-information-density:
+
+- ask targeted questions before choosing architecture or implementation
+- group the questions around the missing spec fields
+- if the first round of answers is still incomplete, continue with focused follow-up questions
+- do not silently convert guesses into requirements
+- mark any material unknown as `NEEDS CLARIFICATION` until the user confirms it
+
+Typical missing fields to collect explicitly:
+
+- the one-sentence requirement in the user's own words
+- the target user, operator, or audience
+- the core usage scenario
+- the success criteria and who accepts the result
+- existing system constraints
+- non-functional requirements
+- delivery timeline if schedule affects the solution
+
+## 3. Minimum Intake Checklist
 
 Collect at least:
 
 - the business goal
+- the target user or operator
+- the main usage scenario
 - the main input materials or source data
 - the expected output form
 - whether downstream systems need structured fields
-- who owns final acceptance
+- the success criteria and final acceptance owner
+- the existing system constraints
+- the non-functional requirements
+- the delivery timeline when scope or architecture depends on it
 - whether cost, latency, or local-model use matters
 - whether the result must stream progressively
 - whether quality should be improved through review, reflection, or revise loops
 
-## 3. Write A Short Working Spec
+## 4. Write And Confirm A Short Working Spec
 
 The working spec can stay lightweight, but it should lock:
 
@@ -35,7 +60,25 @@ The working spec can stay lightweight, but it should lock:
 - the key risks
 - the likely Agently solution level: one request, specialist-agent design, or TriggerFlow workflow
 
-## 4. Early Architecture Signal
+The working spec should stay testable and bounded:
+
+- prefer measurable success criteria over vague quality claims
+- state important scope boundaries and edge cases when they change the solution path
+- ask for confirmation before moving on if scope, cost, or architecture still depends on assumptions
+
+A compact Spec-DD style working spec can use headings such as:
+
+- Background And Goal
+- Users And Scenarios
+- Functional List
+- User Flow Or Workflow
+- Data Structure And Interface Sketch
+- Boundaries And Exceptions
+- Non-Functional Requirements
+- Acceptance Criteria
+- Risks, Assumptions, And `NEEDS CLARIFICATION` items
+
+## 5. Early Architecture Signal
 
 If the intake already reveals:
 
@@ -46,7 +89,7 @@ If the intake already reveals:
 
 then treat the problem as a TriggerFlow candidate early.
 
-## 5. Acceptance Planning For Real Applications
+## 6. Acceptance Planning For Real Applications
 
 For the final effect validation of a real Agently application, service, or module, prefer real model runs when possible.
 

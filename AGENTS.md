@@ -11,6 +11,8 @@ This repository contains published Agently skills under `skills/` and author-sid
 
 ## Authoring Priorities
 
+- Prefer question-first clarification for under-specified product, app, or workflow requests before routing, architecture choice, or implementation.
+- Do not let skills silently fill missing business choices, success criteria, system constraints, non-functional requirements, or delivery expectations without user confirmation.
 - Keep frontmatter discovery boundaries explicit and mutually exclusive, especially for nearby routing skills.
 - Prefer scenario-led trigger language over framework-led trigger language when the user may reasonably ask for the same capability without naming Agently.
 - Treat internal product words such as `Agently` or `TriggerFlow` as supporting confirmation terms, not as the primary discovery requirement, unless the user already names the exact framework surface.
