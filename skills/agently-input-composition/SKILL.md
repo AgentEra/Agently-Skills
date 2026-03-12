@@ -1,11 +1,11 @@
 ---
 name: agently-input-composition
-description: Use when composing Agently model input through prompt slots, quick prompt methods, agent-vs-request prompt layering, placeholder mappings, chat history, attachments, or other serializable prompt data before the request is sent.
+description: Use only when the main task is direct input-side prompt composition before one Agently request, such as prompt slots, quick prompt methods, agent-vs-request layering, placeholder mappings, low-level chat history, attachments, or other serializable prompt data.
 ---
 
 # Agently Input Composition
 
-This skill covers how to compose model input in Agently before the request is sent. It focuses on prompt slots, prompt layering, quick prompt methods, placeholder mappings, serializable prompt data, low-level `chat_history`, and attachments. It does not cover model setup, output schema control, YAML/JSON prompt template files, or session lifecycle management.
+This skill is the direct leaf for input-side prompt composition after the request domain is already known. It focuses on prompt slots, prompt layering, quick prompt methods, placeholder mappings, serializable prompt data, low-level `chat_history`, and attachments. It does not choose between one request and neighboring Agently capabilities, and it does not cover model setup, output schema control, YAML/JSON prompt template files, or session lifecycle management.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

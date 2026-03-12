@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-patterns
-description: Use when implementing common TriggerFlow orchestration patterns such as routers, fan-out and fan-in, `batch(...)`, `for_each(...)`, `collect(...)`, `side_branch(...)`, safe loops, evaluator-optimizer loops, ReAct or tool loops, or human-in-the-loop approval-gate patterns.
+description: Use only when the main task is choosing or implementing reusable TriggerFlow workflow shapes, such as routers, fan-out and fan-in, `batch(...)`, `for_each(...)`, `collect(...)`, `side_branch(...)`, safe loops, evaluator-optimizer loops, ReAct or tool loops, or approval-gate patterns.
 ---
 
 # Agently TriggerFlow Patterns
 
-This skill covers common business workflow patterns in TriggerFlow. It focuses on routing, fan-out and fan-in, item-wise worker patterns, safe loops, evaluator-optimizer loops, ReAct-style tool loops, and human-in-the-loop gate patterns. It does not replace the lower-level skills for core TriggerFlow primitives, state placement, sub-flow boundaries, explicit interrupt mechanics, model-request implementation, flow config, or execution-state restore.
+This skill is the workflow-shape leaf inside the TriggerFlow domain. It focuses on routing, fan-out and fan-in, item-wise worker patterns, safe loops, evaluator-optimizer loops, ReAct-style tool loops, and human-in-the-loop gate patterns. It does not decide whether the user should use TriggerFlow in the first place, and it does not replace the lower-level skills for core TriggerFlow primitives, state placement, sub-flow boundaries, explicit interrupt mechanics, model-request implementation, flow config, or execution-state restore.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

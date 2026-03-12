@@ -1,11 +1,11 @@
 ---
 name: agently-output-control
-description: Use when defining Agently output schemas, enforcing required keys with retries, consuming responses as text/data/object/meta, using `instant` or `streaming_parse` for structured streaming, or reusing the same response without sending another request.
+description: Use only when the main task is direct output-side schema, retries, result parsing, or structured streaming for one Agently request, such as `.output(...)`, `ensure_keys`, response consumption, `instant`, `streaming_parse`, or response reuse.
 ---
 
 # Agently Output Control
 
-This skill covers output schema definition, result parsing, reliability controls, response streaming, and response reuse in Agently. It does not cover model setup, provider configuration, embeddings, or the broader prompt-management lifecycle.
+This skill is the direct leaf for output-side control after the request path and input side are already roughly in place. It covers output schema definition, result parsing, reliability controls, response streaming, and response reuse in Agently. It does not choose between one request and neighboring Agently capabilities, and it does not cover model setup, provider configuration, embeddings, or the broader prompt-management lifecycle.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

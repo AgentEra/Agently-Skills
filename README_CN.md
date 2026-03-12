@@ -88,11 +88,11 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 ### 2. 单次模型请求核心
 
 - `agently-model-setup`
-  模型连接、`OpenAICompatible`、Provider 切换、认证、代理、超时与 `client_options`
+  直接模型连接与请求传输配置：`OpenAICompatible`、认证、地址、代理、超时、`request_options` 与最小验证
 - `agently-input-composition`
-  输入组织、prompt slots、mapping、附件、低层 `chat_history`
+  直接输入侧 prompt 组织：prompt slots、prompt 分层、mapping、附件、低层 `chat_history`
 - `agently-output-control`
-  输出结构定义、`ensure_keys`、结果消费、`instant` / `streaming_parse`
+  直接输出侧结构、重试、结果消费与 `instant` / `streaming_parse` 结构化流式处理
 
 ### 3. 请求增强能力
 
@@ -112,13 +112,13 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 ### 5. TriggerFlow 能力树
 
 - `agently-triggerflow-orchestration`
-  基础信号驱动编排
+  底层 TriggerFlow 原语、执行入口、contract 与结果语义
 - `agently-triggerflow-patterns`
-  常见工作流模式，如 router、fan-out/fan-in、safe loop、ReAct loop、approval gate
+  可复用工作流形态，如 router、fan-out/fan-in、safe loop、ReAct loop、approval gate
 - `agently-triggerflow-state-and-resources`
   `runtime_data` / `flow_data` / resources 边界
 - `agently-triggerflow-subflows`
-  子流程、`capture`、`write_back`
+  显式子流程边界：`to_sub_flow(...)`、`capture`、`write_back`
 - `agently-triggerflow-model-integration`
   在 flow 中发起模型请求、消费 `delta` / `instant`
 - `agently-triggerflow-config`

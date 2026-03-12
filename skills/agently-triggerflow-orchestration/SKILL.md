@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-orchestration
-description: Use when building basic TriggerFlow workflows for async-first, signal-driven orchestration with chunks, events, `to(...)`, `when(...)`, `if_condition(...)`, `match(...)`, execution entrypoints, result semantics, or typed TriggerFlow contracts through `set_contract(...)` and `get_contract()`.
+description: Use only when the main task is low-level TriggerFlow primitives, execution entrypoints, contracts, or result semantics, such as `to(...)`, `when(...)`, `if_condition(...)`, `match(...)`, `create_execution()`, `start()/async_start()`, or `set_contract(...)`.
 ---
 
 # Agently TriggerFlow Orchestration
 
-This skill covers TriggerFlow as an async-first, signal-driven orchestration runtime in Agently. It focuses on chunks, signals, event routing, execution entrypoints, and result ownership. It does not cover reusable workflow-pattern selection, state-placement design, runtime-resource boundaries, sub-flow-specific parent-child boundaries, interrupt handling, runtime stream, flow-config export/import, Mermaid generation, or execution-state persistence and restore.
+This skill is the low-level primitive and runtime leaf inside the TriggerFlow domain. It focuses on chunks, signals, event routing, execution entrypoints, contracts, and result ownership. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover reusable workflow-pattern selection, state-placement design, runtime-resource boundaries, sub-flow-specific parent-child boundaries, interrupt handling, runtime stream, flow-config export/import, Mermaid generation, or execution-state persistence and restore.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

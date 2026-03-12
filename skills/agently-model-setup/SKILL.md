@@ -1,11 +1,11 @@
 ---
 name: agently-model-setup
-description: Use when configuring Agently model access for Chat LLM, Completions LLM, or VLM, including OpenAICompatible settings, provider switching, auth and URL setup, request_options, agent.options(), and minimal connection verification.
+description: Use only when the main task is direct Agently model connection or request-transport configuration for Chat LLM, Completions LLM, or VLM, including OpenAICompatible URL/auth/model setup, request_options, agent.options(), and minimal connectivity verification.
 ---
 
 # Agently Model Setup
 
-This skill only covers model access and connection setup in Agently. It does not cover structured output design, streaming result consumption details, or embedding workflows.
+This skill is the direct leaf for model connection and request-transport setup after the user already knows the work should stay on the Agently request path. It does not choose between one request, tools, MCP, session continuity, or TriggerFlow, and it does not cover structured output design, streaming result consumption details, or embedding workflows.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -22,6 +22,13 @@ Use this skill for:
 - VLM-style attachment input through `attachment()`
 - a minimal runnable verification step to confirm URL, model name, auth, and basic response behavior
 - Excluded: Embeddings (handled by a separate skill)
+
+Do not use this skill for:
+
+- deciding whether the solution should stay one request or escalate to tools, MCP, RAG, session continuity, multi-agent design, or TriggerFlow
+- prompt-slot composition, placeholder mappings, `chat_history`, or attachment design as the main problem
+- `.output(...)`, `ensure_keys`, structured streaming, or result parsing as the main problem
+- embeddings workflows
 
 ## Workflow
 

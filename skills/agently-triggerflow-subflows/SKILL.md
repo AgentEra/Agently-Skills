@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-subflows
-description: Use when a TriggerFlow workflow needs an isolated child flow through `to_sub_flow(...)`, especially for reusable nested workflows, `capture`, `write_back`, child-flow state isolation, parent-child runtime-stream bridging, or sub-flow-specific boundaries and limits.
+description: Use only when the main task is an isolated TriggerFlow child-flow boundary through `to_sub_flow(...)`, `capture`, `write_back`, child-flow state isolation, or parent-child runtime-stream bridging.
 ---
 
 # Agently TriggerFlow Subflows
 
-This skill covers TriggerFlow sub flows in Agently. It focuses on `to_sub_flow(...)`, parent-child data handoff through `capture` and `write_back`, isolated child state, resource handoff, runtime-stream bridging, and the current sub-flow limits. It does not cover generic branching or batching, model-request details, interrupt handling as a standalone topic, flow-config export/import, or execution-state persistence.
+This skill is the child-flow-boundary leaf inside the TriggerFlow domain. It focuses on `to_sub_flow(...)`, parent-child data handoff through `capture` and `write_back`, isolated child state, resource handoff, runtime-stream bridging, and the current sub-flow limits. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover generic branching or batching, model-request details, interrupt handling as a standalone topic, flow-config export/import, or execution-state persistence.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
