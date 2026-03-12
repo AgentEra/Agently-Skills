@@ -1,11 +1,11 @@
 ---
 name: agently-mcp
-description: Use when exposing MCP server tools to Agently through `agent.use_mcp(...)` or `tool.use_mcp(...)`, including stdio or HTTP transports, schema mapping into Agently tool metadata, agent-scoped MCP tool visibility, or interpreting structured MCP tool results and errors.
+description: Use only when the main task is direct MCP server registration into Agently tools through `agent.use_mcp(...)` or `tool.use_mcp(...)`, including stdio or HTTP transports, schema mapping, agent-scoped MCP tool visibility, or MCP result and error handling.
 ---
 
 # Agently MCP
 
-This skill covers Agently's MCP integration path for registering external MCP server tools and making them available to Agently agents. It focuses on transport registration, schema mapping, agent scoping, and result behavior. It does not replace the general tool-loop skill or TriggerFlow workflow design.
+This skill is the direct leaf for MCP-backed tool registration after the user already knows the tool should come from an external MCP server. It focuses on transport registration, schema mapping, agent scoping, and result behavior. It does not choose between local tools, generic tool-loop design, or service exposure, and it does not replace the general tool-loop skill or TriggerFlow workflow design.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

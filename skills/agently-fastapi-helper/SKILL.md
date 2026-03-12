@@ -1,11 +1,11 @@
 ---
 name: agently-fastapi-helper
-description: Use when exposing an Agently `BaseAgent`, `ModelRequest`, `TriggerFlow`, `TriggerFlowExecution`, or generator function through `FastAPIHelper`, including POST or GET APIs, SSE, WebSocket, request payload shape, response wrapping, async-first service entrypoints, or TriggerFlow-contract-aware request, response, and OpenAPI behavior.
+description: Use only when the main task is direct HTTP, SSE, or WebSocket exposure through `FastAPIHelper`, including POST or GET APIs, payload shape, response wrapping, provider binding, or TriggerFlow-contract-aware request, response, and OpenAPI behavior.
 ---
 
 # Agently FastAPI Helper
 
-This skill covers Agently's `FastAPIHelper` integration surface. It focuses on exposing an agent, request, flow, execution, or generator as HTTP, SSE, or WebSocket endpoints with the helper's standard payload and response wrapper. It does not cover full service architecture or multi-component business-system design.
+This skill is the service-exposure leaf for `FastAPIHelper` after the underlying Agently provider is already known. It focuses on exposing an agent, request, flow, execution, or generator as HTTP, SSE, or WebSocket endpoints with the helper's standard payload and response wrapper. It does not choose between one-request extensions or TriggerFlow design paths, and it does not cover full service architecture or multi-component business-system design.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

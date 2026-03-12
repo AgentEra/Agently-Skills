@@ -1,11 +1,11 @@
 ---
 name: agently-langchain-langgraph-migration-playbook
-description: Use when migrating a LangChain or LangGraph codebase, mental model, or architecture into Agently, especially to decide whether the source design maps to one-request Agently skills, multi-agent patterns, or TriggerFlow, and to choose the correct migration skill combination and implementation order.
+description: Use when migrating an existing LangChain or LangGraph system into Agently and the migration path is still unresolved, including deciding whether the source problem belongs to LangChain agent migration or LangGraph workflow migration, whether the Agently target should stay one request, become multi-agent, or become TriggerFlow, and which narrower migration skill or capability stack to use first.
 ---
 
 # Agently LangChain LangGraph Migration Playbook
 
-This skill is the top-level routing entry point for migration work from LangChain or LangGraph into Agently. Use it when the request starts from an existing LangChain or LangGraph codebase, concept, or architecture rather than an Agently API. It helps choose the right migration path and the right Agently skill combination. It does not replace the implementation skills themselves.
+This skill is the migration-router entry point for work from LangChain or LangGraph into Agently. Use it only when the request starts from an existing LangChain or LangGraph codebase, concept, or architecture and the migration path is still unresolved. It helps choose the right migration path and the right Agently skill combination. It does not replace the narrower migration skills themselves.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,6 +13,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
+- an existing LangChain or LangGraph system where the main migration path is still unclear
 - deciding whether the source design is mainly LangChain-side or LangGraph-side
 - deciding whether the migration target should stay one request, become a multi-agent design, or become TriggerFlow orchestration
 - choosing the correct migration skill and implementation order
@@ -20,6 +21,8 @@ Use this skill for:
 
 Do not use this skill for:
 
+- direct migration work where the source side is already known to be LangChain agent migration
+- direct migration work where the source side is already known to be LangGraph orchestration migration
 - direct Agently API implementation details
 - one isolated LangChain or LangGraph feature with no migration-design question
 - general business design that is not starting from LangChain or LangGraph
@@ -37,6 +40,7 @@ Do not use this skill for:
 - LangGraph `StateGraph`, node/edge/state, interrupt, persistence, streaming, subgraphs, or durable execution -> `agently-langgraph-to-triggerflow`
 - LangChain agent built on LangGraph and the real complexity lives in workflow orchestration -> start with `agently-langgraph-to-triggerflow`, then add `agently-langchain-to-agently` for agent internals
 - source project should be simplified during migration rather than translated literally -> use this playbook first, then route to the narrower migration skill
+- once the source side and target shape are already clear, stop using this router and switch to the narrower migration skill
 
 ## Important Boundaries
 

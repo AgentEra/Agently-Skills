@@ -1,11 +1,11 @@
 ---
 name: agently-prompt-config-files
-description: Use when Agently prompts need to be externalized as YAML or JSON config, loaded from files or strings, selected by key path, parameterized with mappings, executed through `.alias`, or exported back to reusable prompt config.
+description: Use only when the main task is externalized YAML or JSON prompt-template config in Agently, such as loading prompt config from files or strings, selecting by key path, applying mappings, executing `.alias`, or exporting prompt state back to reusable config.
 ---
 
 # Agently Prompt Config Files
 
-This skill covers YAML and JSON prompt config in Agently. It focuses on prompt templates as data assets: loading prompt config from files or strings, routing config into agent/request prompt layers, applying mappings, selecting nested prompt packs, executing `.alias`, and exporting current prompt state back to YAML or JSON. It does not cover session serialization, TriggerFlow config/export, provider setup, or response consumption.
+This skill is the direct leaf for prompt-template config externalization after the request path is already known. It focuses on prompt templates as data assets: loading prompt config from files or strings, routing config into agent/request prompt layers, applying mappings, selecting nested prompt packs, executing `.alias`, and exporting current prompt state back to YAML or JSON. It does not choose between direct Python prompt composition, session restore, or TriggerFlow definition export, and it does not cover provider setup or response consumption.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

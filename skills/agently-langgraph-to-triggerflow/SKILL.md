@@ -1,11 +1,11 @@
 ---
 name: agently-langgraph-to-triggerflow
-description: Use when migrating LangGraph orchestration concepts into Agently TriggerFlow, especially `StateGraph`, nodes, edges, `Send`, `Command`, graph state, threads, checkpoints, interrupts, persistence, streaming, subgraphs, human-in-the-loop, or durable execution, and when mapping those concepts into TriggerFlow orchestration, patterns, state, config, execution-state, and interrupt skills.
+description: Use when directly migrating LangGraph orchestration surfaces into Agently TriggerFlow after the migration is already known to be workflow-orchestration-first rather than LangChain agent migration, including `StateGraph`, nodes, edges, `Send`, `Command`, graph state, threads, checkpoints, interrupts, persistence, streaming, subgraphs, human-in-the-loop, or durable execution, and when mapping those concepts into TriggerFlow orchestration, patterns, state, config, execution-state, and interrupt skills.
 ---
 
 # Agently LangGraph To TriggerFlow
 
-This skill covers migration from LangGraph orchestration concepts into Agently TriggerFlow. It focuses on `StateGraph`, graph state, interrupts, persistence, streaming, subgraphs, and durable execution. It does not cover high-level LangChain agent migration unless that agent layer is secondary to the orchestration problem.
+This skill is the direct migration leaf for LangGraph orchestration concepts into Agently TriggerFlow. Use it when the source problem is already known to be workflow-orchestration-first rather than LangChain agent migration. It focuses on `StateGraph`, graph state, interrupts, persistence, streaming, subgraphs, and durable execution. It does not cover high-level LangChain agent migration unless that agent layer is secondary to the orchestration problem.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,6 +13,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
+- direct migration of a known LangGraph orchestration design into TriggerFlow capabilities
 - `StateGraph`
 - nodes and edges
 - `Send` or dynamic worker fan-out
@@ -27,6 +28,7 @@ Use this skill for:
 
 Do not use this skill for:
 
+- unresolved migration-entry work where you still need to decide between LangChain-side and LangGraph-side migration
 - one-request agent migration as the main problem
 - direct model-provider setup as the main problem
 - non-migration TriggerFlow implementation work that already starts from Agently
@@ -76,6 +78,7 @@ not a syntax-by-syntax rewrite.
 - definition export/import or graph visualization -> `agently-triggerflow-config`
 - checkpoint-like restore of a running instance -> `agently-triggerflow-execution-state`
 - interrupts, `Command`-style resume, and human-in-the-loop continuation -> `agently-triggerflow-interrupts-and-stream`
+- the migration still needs a top-level LangChain-vs-LangGraph routing decision -> `agently-langchain-langgraph-migration-playbook`
 
 ## Important Boundaries
 

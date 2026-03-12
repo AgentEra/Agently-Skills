@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-interrupts-and-stream
-description: Use when implementing explicit TriggerFlow interrupt or runtime-stream behavior, such as human-in-the-loop waiting, external resume, pending-interrupt handling, live runtime stream output, contract-aware stream semantics, long-lived interactive loops, or forwarding live model output into TriggerFlow runtime stream.
+description: Use only when the main task is live TriggerFlow waiting, resume, or runtime-stream behavior, such as `pause_for(...)`, `continue_with(...)`, pending interrupts, runtime-stream lifecycle, or forwarding live model output into TriggerFlow runtime stream.
 ---
 
 # Agently TriggerFlow Interrupts And Stream
 
-This skill covers TriggerFlow interrupt handling and runtime stream. It focuses on `pause_for(...)`, `continue_with(...)`, pending interrupts, runtime stream lifecycle, interactive wait-and-resume loops, and forwarding live model output into TriggerFlow runtime stream. It does not cover general orchestration patterns, flow config export/import, or execution-state persistence and restore.
+This skill is the live-interaction leaf inside the TriggerFlow domain. It focuses on `pause_for(...)`, `continue_with(...)`, pending interrupts, runtime stream lifecycle, interactive wait-and-resume loops, and forwarding live model output into TriggerFlow runtime stream. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover general orchestration patterns, flow config export/import, or execution-state persistence and restore.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

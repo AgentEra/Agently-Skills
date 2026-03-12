@@ -1,11 +1,11 @@
 ---
 name: agently-embeddings
-description: Use when configuring and sending Agently embeddings requests through OpenAICompatible, including `model_type="embeddings"`, single or batch input, parsed vector results, async embedding calls, offline indexing, or online query embedding.
+description: Use only when the main task is direct Agently embeddings request setup and vector consumption through OpenAICompatible, including `model_type="embeddings"`, single or batch `input(...)`, parsed vector results, async embedding calls, or embedding-agent handoff.
 ---
 
 # Agently Embeddings
 
-This skill covers embedding requests in Agently. It focuses on `OpenAICompatible` embeddings setup, request shape, input batching, async usage, parsed vector results, and the embedding-agent handoff used by vector-store integrations. It does not cover general chat/completions setup, structured output control, prompt-template management, or full retrieval pipeline design.
+This skill is the direct leaf for embeddings requests after the user already knows the task is vector generation rather than a retrievable knowledge base or answer-generation flow. It focuses on `OpenAICompatible` embeddings setup, request shape, input batching, async usage, parsed vector results, and the embedding-agent handoff used by vector-store integrations. It does not choose between plain embeddings and KB/RAG orchestration, and it does not cover general chat/completions setup, structured output control, prompt-template management, or full retrieval pipeline design.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

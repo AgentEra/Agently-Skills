@@ -97,17 +97,24 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 ### 3. 请求增强能力
 
 - `agently-tools`
+  直接本地与内建工具注册，以及请求期 tool loop 控制
 - `agently-mcp`
+  直接把 MCP Server 注册为 Agently 工具，处理 transport 与 schema 映射
 - `agently-session-memo`
+  Session 驱动的会话连续性、memo、裁剪、序列化与恢复
 - `agently-prompt-config-files`
+  直接 YAML/JSON prompt 模板配置、mapping、`.alias` 与 roundtrip 导出
 - `agently-fastapi-helper`
+  通过 `FastAPIHelper` 直接暴露 HTTP、SSE 与 WebSocket
 - `agently-embeddings`
+  直接 embeddings 请求配置、批处理、向量消费与 embedding-agent handoff
 - `agently-knowledge-base-and-rag`
+  直接基于 Chroma 的知识库索引、检索与 retrieval-to-answer 流程
 
 ### 4. 多智能体与复杂系统
 
 - `agently-multi-agent-patterns`
-  面向 planner-worker、parallel experts、reviewer-reviser 等多智能体设计模式。
+  在已确定需要多智能体后，选择 pattern 与 handoff contract 的设计层技能。
 
 ### 5. TriggerFlow 能力树
 
@@ -116,17 +123,17 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 - `agently-triggerflow-patterns`
   可复用工作流形态，如 router、fan-out/fan-in、safe loop、ReAct loop、approval gate
 - `agently-triggerflow-state-and-resources`
-  `runtime_data` / `flow_data` / resources 边界
+  状态放置与运行时资源边界，如 `runtime_data` / `flow_data` / `data.set_resource(...)`
 - `agently-triggerflow-subflows`
   显式子流程边界：`to_sub_flow(...)`、`capture`、`write_back`
 - `agently-triggerflow-model-integration`
-  在 flow 中发起模型请求、消费 `delta` / `instant`
+  在 flow 中执行模型请求，包括 request 创建、并发控制、`delta` / `instant`
 - `agently-triggerflow-config`
-  工作流定义导出、导入、Mermaid、contract metadata
+  TriggerFlow 定义导出、导入、blueprint copy、Mermaid 与 contract metadata
 - `agently-triggerflow-execution-state`
-  执行态保存、恢复、继续运行
+  运行中 execution 的保存、恢复、继续运行与 runtime resource reinjection
 - `agently-triggerflow-interrupts-and-stream`
-  中断、恢复、runtime stream、交互式等待
+  等待、恢复、runtime stream 生命周期与实时交互
 
 ## Skill 结构
 
@@ -159,11 +166,11 @@ skills/
 如果你的系统原来基于 LangChain 或 LangGraph，可以直接从迁移 skills 开始：
 
 - `agently-langchain-langgraph-migration-playbook`
-  总入口，先判断应该走 LangChain 迁移还是 LangGraph 迁移
+  只在迁移入口还未收敛时使用，先判断应该走 LangChain 迁移还是 LangGraph 迁移
 - `agently-langchain-to-agently`
-  处理 `create_agent`、structured output、middleware、tools、memory、service exposure 等迁移
+  作为 LangChain agent 侧的 direct migration leaf，处理 `create_agent`、structured output、middleware、tools、memory、service exposure 等迁移
 - `agently-langgraph-to-triggerflow`
-  处理 `StateGraph`、`Send`、`Command`、threads/checkpoints、interrupts、streaming、subgraphs 等迁移
+  作为 LangGraph orchestration 侧的 direct migration leaf，处理 `StateGraph`、`Send`、`Command`、threads/checkpoints、interrupts、streaming、subgraphs 等迁移
 
 这些迁移 skill 的目标不是做“逐行替换”，而是把原有能力翻译并重组到 Agently 当前的能力树上。
 

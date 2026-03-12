@@ -1,11 +1,11 @@
 ---
 name: agently-tools
-description: Use when registering, attaching, or controlling Agently tools, including `@agent.tool_func`, `register_tool(...)`, `use_tools(...)`, built-in tools such as Search, Browse, or Cmd, tool-loop settings, custom plan or execution handlers, or reading tool logs from one model request.
+description: Use only when the main task is direct local or built-in Agently tool registration and request-time tool-loop control, including `@agent.tool_func`, `register_tool(...)`, `use_tools(...)`, Search, Browse, Cmd, custom tool-loop handlers, or tool logs.
 ---
 
 # Agently Tools
 
-This skill covers Agently's tool system for local Python tools, built-in tools, and request-time tool loops. It focuses on tool registration, agent scoping, loop control, built-in Search/Browse/Cmd usage, and result inspection. It does not cover MCP transport registration, TriggerFlow orchestration, or generic web-service design.
+This skill is the direct leaf for local and built-in tool usage after the Agently request path is already known. It focuses on tool registration, agent scoping, loop control, built-in Search/Browse/Cmd usage, and result inspection. It does not choose between local tools, MCP-backed tools, session continuity, or service exposure, and it does not cover TriggerFlow orchestration or generic web-service design.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

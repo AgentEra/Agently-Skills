@@ -1,11 +1,11 @@
 ---
 name: agently-multi-agent-patterns
-description: Use when designing a multi-agent solution in Agently, especially to decide whether the business problem should stay one request, become a team of specialized agents, use planner-worker or supervisor-router patterns, run parallel experts and a synthesizer, use reviewer-reviser loops, isolate agent contexts and handoff contracts, or combine multiple agents with TriggerFlow, tools, MCP, session continuity, or structured output.
+description: Use only when the problem is already known to need multiple specialized agents and the main task is choosing a multi-agent pattern, such as planner-worker, supervisor-router, parallel experts, reviewer-reviser, staged handoff design, or agent boundary and contract design.
 ---
 
 # Agently Multi-Agent Patterns
 
-This skill covers multi-agent solution design in Agently. It focuses on when multi-agent architecture is justified, which multi-agent pattern fits the business problem, how agent boundaries and handoff contracts should be defined, and how the design should route into existing Agently implementation skills. It does not claim that Agently has a separate multi-agent runtime primitive. In Agently, multi-agent systems are composed from multiple specialized agents plus TriggerFlow, output control, tools, MCP, session, or service exposure as needed.
+This skill is the pattern-routing leaf for multi-agent architecture after cross-domain architecture selection is already resolved in favor of multiple specialized agents. It focuses on which multi-agent pattern fits the business problem, how agent boundaries and handoff contracts should be defined, and how the design should route into existing Agently implementation skills. It does not claim that Agently has a separate multi-agent runtime primitive. In Agently, multi-agent systems are composed from multiple specialized agents plus TriggerFlow, output control, tools, MCP, session, or service exposure as needed.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

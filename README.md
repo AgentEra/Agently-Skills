@@ -110,17 +110,24 @@ If those boundaries must be re-explained from scratch in every coding session, t
 ### 3. Request-Enhancement Skills
 
 - `agently-tools`
+  Direct local and built-in tool registration plus request-time tool-loop control
 - `agently-mcp`
+  Direct MCP server registration into Agently tools with transport and schema mapping
 - `agently-session-memo`
+  Session-backed conversation continuity, memo, resize, serialization, and restore
 - `agently-prompt-config-files`
+  Direct YAML/JSON prompt-template config loading, mappings, `.alias`, and roundtrip export
 - `agently-fastapi-helper`
+  Direct HTTP, SSE, and WebSocket exposure through `FastAPIHelper`
 - `agently-embeddings`
+  Direct embeddings request setup, batching, vector consumption, and embedding-agent handoff
 - `agently-knowledge-base-and-rag`
+  Direct Chroma-backed knowledge-base indexing, retrieval, and retrieval-to-answer flow
 
 ### 4. Multi-Agent and Complex Systems
 
 - `agently-multi-agent-patterns`
-  Covers planner-worker, parallel experts, reviewer-reviser, and other multi-agent design patterns built from current Agently capabilities.
+  Multi-agent pattern selection and handoff design after the architecture is already known to need multiple specialized agents.
 
 ### 5. TriggerFlow Capability Tree
 
@@ -129,17 +136,17 @@ If those boundaries must be re-explained from scratch in every coding session, t
 - `agently-triggerflow-patterns`
   Reusable workflow shapes such as routers, fan-out and fan-in, safe loops, ReAct loops, and approval gates
 - `agently-triggerflow-state-and-resources`
-  `runtime_data`, `flow_data`, and resource boundaries
+  State placement and runtime-resource boundaries such as `runtime_data`, `flow_data`, and `data.set_resource(...)`
 - `agently-triggerflow-subflows`
   Explicit child-flow boundaries through `to_sub_flow(...)`, `capture`, and `write_back`
 - `agently-triggerflow-model-integration`
-  Model requests inside workflows, including `delta` and `instant`
+  Model execution inside workflows, including request creation, bounded concurrency, `delta`, and `instant`
 - `agently-triggerflow-config`
-  Flow definition export, import, Mermaid, and contract metadata
+  TriggerFlow definition export, import, blueprint copy, Mermaid, and contract metadata
 - `agently-triggerflow-execution-state`
-  Execution save, restore, and resume
+  Running-execution save, restore, resume, and runtime-resource reinjection
 - `agently-triggerflow-interrupts-and-stream`
-  Interrupts, resume, runtime stream, and interactive waiting
+  Waiting, resume, runtime-stream lifecycle, and live interaction
 
 ## Detailed Skill List
 
@@ -220,7 +227,7 @@ Skill path:
 
 ### `agently-tools`
 
-Use this skill when registering, attaching, or controlling Agently tools, including:
+Use this skill when the main problem is direct local or built-in Agently tool registration and request-time tool-loop control, including:
 
 - `@agent.tool_func`
 - `register_tool(...)`
@@ -236,7 +243,7 @@ Skill path:
 
 ### `agently-mcp`
 
-Use this skill when exposing MCP server tools to Agently, including:
+Use this skill when the main problem is direct MCP server registration into Agently tools, including:
 
 - `agent.use_mcp(...)`
 - `Agently.tool.use_mcp(...)`
@@ -251,7 +258,7 @@ Skill path:
 
 ### `agently-session-memo`
 
-Use this skill when managing Agently session-backed conversation memory, including:
+Use this skill when the main problem is Session-backed conversation continuity and restore, including:
 
 - `activate_session()` and `deactivate_session()`
 - session-backed `chat_history`
@@ -266,7 +273,7 @@ Skill path:
 
 ### `agently-prompt-config-files`
 
-Use this skill when managing Agently prompts as YAML or JSON config, including:
+Use this skill when the main problem is externalized YAML or JSON prompt-template config in Agently, including:
 
 - `load_yaml_prompt(...)` and `load_json_prompt(...)`
 - `get_yaml_prompt(...)` and `get_json_prompt(...)`
@@ -280,7 +287,7 @@ Skill path:
 
 ### `agently-fastapi-helper`
 
-Use this skill when exposing Agently through `FastAPIHelper`, including:
+Use this skill when the main problem is direct HTTP, SSE, or WebSocket exposure through `FastAPIHelper`, including:
 
 - Agent, ModelRequest, TriggerFlow, or generator providers
 - POST and GET endpoints
@@ -297,7 +304,7 @@ Skill path:
 
 ### `agently-embeddings`
 
-Use this skill when configuring and sending Agently embeddings requests, including:
+Use this skill when the main problem is direct Agently embeddings request setup and vector consumption, including:
 
 - `model_type="embeddings"`
 - single or batch `input(...)`
@@ -312,7 +319,7 @@ Skill path:
 
 ### `agently-knowledge-base-and-rag`
 
-Use this skill when building Agently knowledge-base or RAG flows, including:
+Use this skill when the main problem is Agently's Chroma-backed knowledge-base or retrieval-to-answer path, including:
 
 - `ChromaCollection`
 - embedding-agent-backed indexing
@@ -327,7 +334,7 @@ Skill path:
 
 ### `agently-multi-agent-patterns`
 
-Use this skill when designing a multi-agent solution in Agently, including:
+Use this skill when the problem is already known to need multiple specialized agents and the main task is choosing a multi-agent pattern, including:
 
 - deciding whether the problem should stay one request or become a specialized agent team
 - planner-worker or supervisor-router patterns
@@ -381,7 +388,7 @@ Skill path:
 
 ### `agently-triggerflow-state-and-resources`
 
-Use this skill when a TriggerFlow design question is really about state or dependency boundaries, including:
+Use this skill when the main problem is TriggerFlow state placement or runtime-dependency boundaries, including:
 
 - `runtime_data` vs `flow_data`
 - flow-level vs execution-level runtime resources
@@ -409,7 +416,7 @@ Skill path:
 
 ### `agently-triggerflow-model-integration`
 
-Use this skill when a TriggerFlow workflow needs model execution inside the flow, including:
+Use this skill when the main problem is Agently model execution inside TriggerFlow flow logic, including:
 
 - request creation inside chunks
 - async-first model requests per step, branch, or item
@@ -423,7 +430,7 @@ Skill path:
 
 ### `agently-triggerflow-config`
 
-Use this skill when a TriggerFlow definition should be copied, exported, imported, or visualized, including:
+Use this skill when the main problem is TriggerFlow definition export, import, copy, or visual inspection, including:
 
 - `save_blue_print()` and `load_blue_print()`
 - `get_flow_config()`
@@ -437,7 +444,7 @@ Skill path:
 
 ### `agently-triggerflow-execution-state`
 
-Use this skill when a running TriggerFlow execution should be saved, restored, or resumed, including:
+Use this skill when the main problem is saving, loading, or resuming one running TriggerFlow execution instance, including:
 
 - `execution.save()` and `execution.load()`
 - waiting or ready-result restore
@@ -450,7 +457,7 @@ Skill path:
 
 ### `agently-triggerflow-interrupts-and-stream`
 
-Use this skill when a TriggerFlow workflow needs live interaction, including:
+Use this skill when the main problem is TriggerFlow waiting, resume, or runtime-stream behavior, including:
 
 - `pause_for(...)` and `continue_with(...)`
 - pending-interrupt handling
@@ -464,7 +471,7 @@ Skill path:
 
 ### `agently-langchain-langgraph-migration-playbook`
 
-Use this skill when migrating a LangChain or LangGraph codebase or mental model into Agently, including:
+Use this skill when migrating a LangChain or LangGraph codebase or mental model into Agently and the migration entry is still unresolved, including:
 
 - deciding whether the source design maps to LangChain-side or LangGraph-side migration
 - choosing between one-request, multi-agent, or TriggerFlow migration targets
@@ -476,7 +483,7 @@ Skill path:
 
 ### `agently-langchain-to-agently`
 
-Use this skill when migrating LangChain agent-side concepts into Agently, including:
+Use this skill when directly migrating known LangChain agent-side concepts into Agently, including:
 
 - `create_agent`
 - `response_format`, `ProviderStrategy`, and `ToolStrategy`
@@ -493,7 +500,7 @@ Skill path:
 
 ### `agently-langgraph-to-triggerflow`
 
-Use this skill when migrating LangGraph orchestration concepts into Agently TriggerFlow, including:
+Use this skill when directly migrating known LangGraph orchestration concepts into Agently TriggerFlow, including:
 
 - `StateGraph`
 - nodes and edges
@@ -539,11 +546,11 @@ The `spec/` directory is author-side only. It exists for writing, validation, an
 If your current system is based on LangChain or LangGraph, start with the migration skills:
 
 - `agently-langchain-langgraph-migration-playbook`
-  Top-level router for deciding whether the migration is LangChain-side or LangGraph-side
+  Top-level router only when the migration entry is still unresolved and you must choose LangChain-side vs LangGraph-side
 - `agently-langchain-to-agently`
-  Covers `create_agent`, structured output, middleware, tools, memory, and service exposure
+  Direct migration leaf for LangChain agent-side surfaces such as `create_agent`, structured output, middleware, tools, memory, and service exposure
 - `agently-langgraph-to-triggerflow`
-  Covers `StateGraph`, `Send`, `Command`, threads and checkpoints, interrupts, streaming, and subgraphs
+  Direct migration leaf for LangGraph orchestration surfaces such as `StateGraph`, `Send`, `Command`, threads and checkpoints, interrupts, streaming, and subgraphs
 
 The goal of these migration skills is not line-by-line replacement. The goal is to translate the source capabilities into Agently's current capability tree and redesign the implementation where a literal rewrite would be misleading.
 

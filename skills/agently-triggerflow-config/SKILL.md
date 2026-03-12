@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-config
-description: Use when exporting, importing, copying, or inspecting TriggerFlow definitions, including `save_blue_print()`, `load_blue_print()`, `get_flow_config()`, `get_json_flow()`, `get_yaml_flow()`, `load_json_flow()`, `load_yaml_flow()`, Mermaid visualization, or exported TriggerFlow contract metadata.
+description: Use only when the main task is TriggerFlow definition export, import, copy, or visual inspection, including `save_blue_print()`, `load_blue_print()`, `get_flow_config()`, `get_json_flow()`, `get_yaml_flow()`, `load_json_flow()`, `load_yaml_flow()`, Mermaid, or exported contract metadata.
 ---
 
 # Agently TriggerFlow Config
 
-This skill covers TriggerFlow definition-level export, import, copy, and inspection. It focuses on blueprint copy, flow-config roundtrip, JSON or YAML flow files, handler registration for restored flows, and Mermaid visualization. It does not cover execution save/load, pause-and-resume runtime state persistence, or provider-specific model configuration.
+This skill is the definition-surface leaf inside the TriggerFlow domain. It focuses on blueprint copy, flow-config roundtrip, JSON or YAML flow files, handler registration for restored flows, and Mermaid visualization. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover execution save/load, pause-and-resume runtime state persistence, or provider-specific model configuration.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

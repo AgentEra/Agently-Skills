@@ -1,11 +1,11 @@
 ---
 name: agently-knowledge-base-and-rag
-description: Use when building Agently knowledge-base or RAG workflows with `agently.integrations.chromadb`, including `ChromaCollection`, embedding-agent-backed indexing, collection `add(...)` and `query(...)`, query-to-`info(...)` answer flow, lower-level `ChromaData` or `ChromaEmbeddingFunction`, or process-level reuse of a knowledge base across requests.
+description: Use only when the main task is Agently's Chroma-backed knowledge-base or retrieval-to-answer path, including `ChromaCollection`, embedding-agent-backed indexing, collection `add(...)` and `query(...)`, query-to-`info(...)` answer flow, lower-level `ChromaData` or `ChromaEmbeddingFunction`, or process-level KB reuse.
 ---
 
 # Agently Knowledge Base And RAG
 
-This skill covers Agently's current knowledge-base and RAG path built around `agently.integrations.chromadb`. It focuses on embedding-agent-backed indexing, Chroma collection usage, retrieval, and the common pattern of injecting retrieval results into a normal request. It does not attempt to document generic vector-database strategy outside Agently's current Chroma integration surface.
+This skill is the direct leaf for Agently's current Chroma-backed KB/RAG path after the user already knows the task is retrieval and answer grounding rather than plain vector generation. It focuses on embedding-agent-backed indexing, Chroma collection usage, retrieval, and the common pattern of injecting retrieval results into a normal request. It does not attempt to document generic vector-database strategy outside Agently's current Chroma integration surface.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

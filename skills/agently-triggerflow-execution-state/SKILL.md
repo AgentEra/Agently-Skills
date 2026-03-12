@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-execution-state
-description: Use when saving, loading, or resuming a running TriggerFlow execution, including `execution.save()`, `execution.load()`, restoring waiting or ready result state, continuing after restore, loading from dict/JSON/YAML/file, and reinjecting runtime resources for resumed execution.
+description: Use only when the main task is saving, loading, or resuming one running TriggerFlow execution instance, including `execution.save()`, `execution.load()`, restoring waiting or ready result state, continuing after restore, loading from dict/JSON/YAML/file, or reinjecting runtime resources.
 ---
 
 # Agently TriggerFlow Execution State
 
-This skill covers runtime-instance persistence for TriggerFlow executions. It focuses on `execution.save()`, `execution.load()`, resume-after-restore, waiting-interrupt recovery, ready-result recovery, file or string state loading, and runtime-resource reinjection. It does not cover flow-definition export/import or Mermaid.
+This skill is the runtime-instance persistence leaf inside the TriggerFlow domain. It focuses on `execution.save()`, `execution.load()`, resume-after-restore, waiting-interrupt recovery, ready-result recovery, file or string state loading, and runtime-resource reinjection. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover flow-definition export/import or Mermaid.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

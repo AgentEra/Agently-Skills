@@ -1,11 +1,11 @@
 ---
 name: agently-langchain-to-agently
-description: Use when migrating LangChain agent-side concepts into Agently, especially `create_agent`, `response_format`, `ProviderStrategy`, `ToolStrategy`, tools, short-term memory, middleware or guardrails, `HumanInTheLoopMiddleware`, retrieval, service exposure, or LangChain-style multi-agent handoff patterns that should map into Agently request, output, tool, memory, service, interrupt, or multi-agent skills.
+description: Use when directly migrating LangChain agent-side surfaces into Agently after the migration is already known to stay on the LangChain side rather than LangGraph orchestration, including `create_agent`, `response_format`, `ProviderStrategy`, `ToolStrategy`, tools, short-term memory, middleware or guardrails, `HumanInTheLoopMiddleware`, retrieval, service exposure, or LangChain-style multi-agent handoff patterns that should map into Agently request, output, tool, memory, service, interrupt, or multi-agent skills.
 ---
 
 # Agently LangChain To Agently
 
-This skill covers migration from LangChain's agent-side surface into Agently. It focuses on `create_agent`, tools, structured output, short-term memory, middleware-like behavior, retrieval, service exposure, and LangChain-side multi-agent patterns. It does not cover graph-orchestration-first migration from LangGraph; use `agently-langgraph-to-triggerflow` for that.
+This skill is the direct migration leaf for LangChain's agent-side surface into Agently. Use it when the source problem is already known to belong to LangChain agent migration rather than LangGraph orchestration. It focuses on `create_agent`, tools, structured output, short-term memory, middleware-like behavior, retrieval, service exposure, and LangChain-side multi-agent patterns. It does not cover graph-orchestration-first migration from LangGraph; use `agently-langgraph-to-triggerflow` for that.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
@@ -13,6 +13,7 @@ Prerequisite: Agently `>= 4.0.8.5`.
 
 Use this skill for:
 
+- direct migration of a known LangChain agent-side design into current Agently capabilities
 - `create_agent`
 - `response_format`, `ProviderStrategy`, or `ToolStrategy`
 - tools
@@ -26,6 +27,7 @@ Use this skill for:
 
 Do not use this skill for:
 
+- unresolved migration-entry work where you still need to decide between LangChain-side and LangGraph-side migration
 - `StateGraph`, interrupts, persistence, or subgraph migration as the main problem
 - direct TriggerFlow API implementation as the main problem
 - non-migration Agently implementation work that already starts from Agently
@@ -71,6 +73,7 @@ So the migration target is usually:
 - middleware-based approval, guardrail escalation, or resume-after-approval behavior -> `agently-triggerflow-interrupts-and-stream` and often `agently-triggerflow-playbook`
 - handoff or specialist-agent design -> `agently-multi-agent-patterns`
 - the source design is actually a workflow rather than one agent -> `agently-triggerflow-playbook`
+- the migration still needs a top-level LangChain-vs-LangGraph routing decision -> `agently-langchain-langgraph-migration-playbook`
 
 ## Important Boundaries
 

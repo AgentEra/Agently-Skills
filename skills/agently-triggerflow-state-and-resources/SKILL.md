@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-state-and-resources
-description: Use when designing TriggerFlow state placement and dependency boundaries, including `runtime_data` vs `flow_data`, flow-level vs execution-level runtime resources, `data.set_resource(...)`, save/load resource-key boundaries, sub-flow state handoff, or restart-safe state and resource design.
+description: Use only when the main task is TriggerFlow state placement or runtime-dependency boundaries, including `runtime_data` vs `flow_data`, flow-level vs execution-level runtime resources, `data.set_resource(...)`, resource persistence boundaries, or restart-safe state and resource design.
 ---
 
 # Agently TriggerFlow State And Resources
 
-This skill covers TriggerFlow runtime state placement and runtime-only dependency design in Agently. It focuses on `runtime_data` versus `flow_data`, flow-level versus execution-level runtime resources, execution-scoped `data.set_resource(...)`, what survives execution save/load, what does not, and how state or resources cross sub-flow boundaries. It does not cover generic branching patterns, model requests, interrupts as a standalone topic, flow-config export/import, or the mechanics of execution restore.
+This skill is the state-boundary leaf inside the TriggerFlow domain. It focuses on `runtime_data` versus `flow_data`, flow-level versus execution-level runtime resources, execution-scoped `data.set_resource(...)`, what survives execution save/load, what does not, and how state or resources cross sub-flow boundaries. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover generic branching patterns, model requests, interrupts as a standalone topic, flow-config export/import, or the mechanics of execution restore.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

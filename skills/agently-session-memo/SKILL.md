@@ -1,11 +1,11 @@
 ---
 name: agently-session-memo
-description: Use when managing Agently conversation continuity through `activate_session()`, session ids, session-backed chat history, automatic turn recording, `session.input_keys`, `session.reply_keys`, context-window resizing, memo updates, session export and restore, or restoring chat continuity after service restart.
+description: Use only when the main task is Session-backed conversation continuity and restore for Agently requests, such as `activate_session()`, session ids, session-backed chat history, `session.input_keys`, `session.reply_keys`, memo, context-window resizing, or session serialization.
 ---
 
 # Agently Session Memo
 
-This skill covers Agently session-backed conversation state. It focuses on session activation, session isolation by id, session-backed `chat_history`, automatic request/reply recording, `full_context`, `context_window`, `memo`, resize strategies, and session serialization. It does not cover low-level prompt composition in general, provider setup, structured output control, or TriggerFlow runtime-data memo.
+This skill is the direct leaf for Session-backed conversation continuity after the request path is already known. It focuses on session activation, session isolation by id, session-backed `chat_history`, automatic request/reply recording, `full_context`, `context_window`, `memo`, resize strategies, and session serialization. It does not choose between low-level prompt history, service exposure, or workflow state design, and it does not cover provider setup, structured output control, or TriggerFlow runtime-data memo.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 

@@ -1,11 +1,11 @@
 ---
 name: agently-triggerflow-model-integration
-description: Use when a TriggerFlow workflow needs Agently model requests inside flow chunks, including async-first request execution, per-step request isolation, concurrent multiple model requests, structured output inside flow logic, or using delta or instant streaming to drive downstream TriggerFlow work.
+description: Use only when the main task is running Agently model requests inside TriggerFlow flow logic, including async-first request execution, per-step request isolation, concurrent model calls, or using `delta` or `instant` streaming to drive downstream TriggerFlow work.
 ---
 
 # Agently TriggerFlow Model Integration
 
-This skill covers how TriggerFlow chunks integrate with Agently model requests. It focuses on async-first request execution inside flow handlers, request isolation per step or per item, multiple concurrent model requests, and using `delta` or `instant` streaming inside the flow. It does not cover provider setup, prompt-config files, or the standalone details of output-schema design.
+This skill is the model-execution leaf inside the TriggerFlow domain. It focuses on async-first request execution inside flow handlers, request isolation per step or per item, multiple concurrent model requests, and using `delta` or `instant` streaming inside the flow. It does not decide whether the user should use TriggerFlow in the first place, and it does not cover provider setup, prompt-config files, or the standalone details of output-schema design.
 
 Prerequisite: Agently `>= 4.0.8.5`.
 
