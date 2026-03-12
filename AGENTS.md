@@ -1,33 +1,32 @@
 # Agently Skills Repository
 
-This repository contains published Agently skills under `skills/` and author-side planning, validation, and maintenance material under `spec/`.
+This repository publishes the Agently Skills V2 catalog under `skills/`.
 
 ## Repository Layout
 
 - `skills/`
-  Published installable skill payloads.
+  Published installable V2 skill payloads.
+- `validate/`
+  Shared V2 validation sources and fixtures that stay under version control.
 - `spec/`
-  Author-side rules, roadmap notes, validation scripts, and trigger fixtures. These files do not belong in published skill payloads.
+  Local-only author workspace. Ignore it and do not treat it as publishable content.
 
 ## Authoring Priorities
 
-- Prefer question-first clarification for under-specified product, app, or workflow requests before routing, architecture choice, or implementation.
-- Do not let skills silently fill missing business choices, success criteria, system constraints, non-functional requirements, or delivery expectations without user confirmation.
-- Keep frontmatter discovery boundaries explicit and mutually exclusive, especially for nearby routing skills.
-- Prefer scenario-led trigger language over framework-led trigger language when the user may reasonably ask for the same capability without naming Agently.
-- Treat internal product words such as `Agently` or `TriggerFlow` as supporting confirmation terms, not as the primary discovery requirement, unless the user already names the exact framework surface.
-- Prefer narrow install guidance and explicit bundle boundaries over assuming full-repository coexistence.
-- Keep public install docs aligned with the current bundle-first activation story, not only the catalog layout.
-- Keep the public `bundles/manifest.json` aligned with README install guidance and internal bundle validation.
-- Add or update trigger fixtures when changing routing descriptions or other high-overlap metadata, including generic model-app requests that do not mention Agently explicitly.
+- Route unresolved product, assistant, and workflow requests through `agently-playbook` first.
+- Prefer Agently-native capabilities before custom output parsers, retry loops, or orchestration layers.
+- Keep public skill boundaries capability-first and mutually exclusive.
+- Treat multi-agent, judge, and review flows as scenario recipes unless they need a dedicated framework surface.
+- Keep `bundles/manifest.json`, README install guidance, and V2 validators in sync.
+- When changing trigger boundaries, update both route fixtures and implementation fixtures.
 
 ## Primary References
 
-- `spec/skill-authoring-rules.md`
 - `bundles/manifest.json`
-- `spec/skill-bundles.json`
-- `spec/validate_skill_bundles.py`
-- `spec/validate_skill_trigger_live.py`
-- `spec/skill-discovery-and-packaging-plan.md`
-- `spec/*-authoring.md`
-- `spec/*-validation.md`
+- `validate/fixtures/route_cases.json`
+- `validate/fixtures/implementation_cases.json`
+- `validate/validate_catalog.py`
+- `validate/validate_bundle_manifest.py`
+- `validate/validate_trigger_paths.py`
+- `validate/validate_native_usage.py`
+- `validate/validate_live_scenarios.py`

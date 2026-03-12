@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "cases": [
+    {
+      "id": "output-contract-native",
+      "reference_example": "skills/agently-output-control/examples/minimal.py",
+      "required_primitives": [
+        ".output(",
+        "ensure_keys"
+      ],
+      "forbidden_antipatterns": [
+        "json.loads(",
+        "re.search(",
+        "while True"
+      ],
+      "live_smoke_profile": "deepseek"
+    },
+    {
+      "id": "response-reuse-native",
+      "reference_example": "skills/agently-model-response/examples/minimal.py",
+      "required_primitives": [
+        "get_response()",
+        "result.get_data("
+      ],
+      "forbidden_antipatterns": [
+        "requests.post(",
+        "json.loads(",
+        "for _ in range(3)"
+      ],
+      "live_smoke_profile": "deepseek"
+    },
+    {
+      "id": "triggerflow-native",
+      "reference_example": "skills/agently-triggerflow/examples/minimal.py",
+      "required_primitives": [
+        "TriggerFlow",
+        ".to("
+      ],
+      "forbidden_antipatterns": [
+        "while True",
+        "asyncio.create_task(",
+        "custom_state_machine"
+      ],
+      "live_smoke_profile": "local"
+    },
+    {
+      "id": "provider-setup-native",
+      "reference_example": "skills/agently-model-setup/examples/minimal.py",
+      "required_primitives": [
+        "Agently.set_settings(",
+        "\"OpenAICompatible\""
+      ],
+      "forbidden_antipatterns": [
+        "httpx.post(",
+        "requests.post(",
+        "custom_auth_header"
+      ],
+      "live_smoke_profile": "deepseek"
+    }
+  ]
+}

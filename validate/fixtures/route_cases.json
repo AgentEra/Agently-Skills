@@ -1,0 +1,109 @@
+{
+  "version": 2,
+  "cases": [
+    {
+      "id": "skills-quality-simulator-request",
+      "query": "Build a skills quality simulator that compares skill definitions with common user questions, returns a stable structured report, and keeps the implementation inside one request family.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response"
+      ]
+    },
+    {
+      "id": "explicit-quality-loop-workflow",
+      "query": "Build a resumable draft judge revise workflow with explicit stop conditions, waiting and resume, and runtime stream updates.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ]
+    },
+    {
+      "id": "provider-setup",
+      "query": "Connect DeepSeek through dotenv-loaded OpenAICompatible settings and run a minimal connectivity check.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-model-setup"
+      ]
+    },
+    {
+      "id": "prompt-composition",
+      "query": "Show how to compose input, instruct, info, prompt config, and placeholder mappings for one Agently request.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-prompt-management"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-prompt-management"
+      ]
+    },
+    {
+      "id": "session-memory",
+      "query": "I need session-backed continuity, memo, and restore after restart for an Agently request family.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-session-memory"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-session-memory"
+      ]
+    },
+    {
+      "id": "extensions",
+      "query": "I need tools, MCP server access, and FastAPIHelper exposure without writing custom wrappers first.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-agent-extensions"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-agent-extensions"
+      ]
+    },
+    {
+      "id": "knowledge-base",
+      "query": "Build a Chroma-backed knowledge-base flow with embeddings and retrieval-to-answer behavior.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-knowledge-base"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-knowledge-base"
+      ]
+    },
+    {
+      "id": "langgraph-migration",
+      "query": "Migrate a LangGraph flow with checkpoints, interrupts, persistence, and streaming into Agently.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-migration-playbook",
+        "agently-langchain-to-agently",
+        "agently-langgraph-to-triggerflow"
+      ],
+      "expected_route_path": [
+        "agently-playbook",
+        "agently-migration-playbook",
+        "agently-langgraph-to-triggerflow"
+      ]
+    }
+  ]
+}
