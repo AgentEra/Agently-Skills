@@ -44,6 +44,7 @@ Recommended activation order:
 3. install the full repository only when you deliberately want the whole catalog to coexist
 
 If your tool cannot install a named bundle directly, use the install sequences below.
+For client-side activation, use the public bundle manifest at `bundles/manifest.json` and activate only one bundle-sized skill set by default.
 
 ### Entry installs
 
@@ -86,6 +87,12 @@ npx skills add AgentEra/Agently-Skills --skill agently-output-control
 - `agently-embeddings`
 - `agently-knowledge-base-and-rag`
 
+`multi-agent` keeps the active set focused on specialist-agent architecture only:
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-multi-agent-patterns
+```
+
 `triggerflow-core` keeps the active set inside the TriggerFlow workflow domain:
 
 ```bash
@@ -120,6 +127,8 @@ Install the whole repository only if you want the full capability tree to coexis
 npx skills add AgentEra/Agently-Skills
 ```
 
+Even after a full-repository install, client integrators should still prefer activating one bundle from `bundles/manifest.json` instead of exposing the full catalog by default.
+
 ## Core Resources
 
 - Main repository: <https://github.com/AgentEra/Agently>
@@ -143,7 +152,7 @@ If those boundaries must be re-explained from scratch in every coding session, t
 
 ## Capability Overview
 
-The groups below describe the published catalog. The recommended runtime activation sets are the entry installs and bundle sequences listed above.
+The groups below describe the published catalog. The recommended runtime activation sets are the entry installs, bundle sequences above, and the public machine-readable bundle manifest at `bundles/manifest.json`.
 
 ### 1. Top-Level Entry Skills
 
@@ -661,3 +670,9 @@ Safety note:
 
 - sanitize the feedback before sending it
 - do not include secrets, tokens, private URLs, customer data, or other sensitive internal information
+
+To make the feedback actionable, include at least one of the following after sanitization:
+
+- the usage code that shows how you are using Agently
+- the framework code file path and line numbers that you believe are problematic
+- a small code block that reproduces the issue or expectation gap

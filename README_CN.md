@@ -43,6 +43,7 @@
 3. 只有在你明确希望整套 catalog 同时共存时，才安装整个仓库
 
 如果当前安装工具还不能直接表达 bundle，可以按下面的安装序列执行。
+客户端如果需要做激活控制，请读取公开的 `bundles/manifest.json`，默认只激活一个 bundle 大小的 skill 集合。
 
 ### 入口安装
 
@@ -85,6 +86,12 @@ npx skills add AgentEra/Agently-Skills --skill agently-output-control
 - `agently-embeddings`
 - `agently-knowledge-base-and-rag`
 
+`multi-agent`：把 active set 收敛在多智能体架构选择上：
+
+```bash
+npx skills add AgentEra/Agently-Skills --skill agently-multi-agent-patterns
+```
+
 `triggerflow-core`：把 active set 收敛在 TriggerFlow 工作流域内：
 
 ```bash
@@ -112,6 +119,8 @@ npx skills add AgentEra/Agently-Skills --skill agently-langgraph-to-triggerflow
 ```bash
 npx skills add AgentEra/Agently-Skills
 ```
+
+即使安装了整个仓库，客户端默认也仍然应该按 `bundles/manifest.json` 只激活一个 bundle，而不是直接暴露整个 catalog。
 
 只安装某一颗 skill：
 
@@ -149,7 +158,7 @@ Agently 的能力边界已经不只是“发一个模型请求”：
 
 ## 能力总览
 
-下面这些分组描述的是公开 catalog。真正推荐的运行时激活集合，以前面的 entry installs 和 bundle install sequences 为准。
+下面这些分组描述的是公开 catalog。真正推荐的运行时激活集合，以前面的 entry installs、bundle install sequences，以及公开的 `bundles/manifest.json` 为准。
 
 ### 1. 顶层入口
 
@@ -300,3 +309,9 @@ Body 样例：
 
 - 提交前务必做脱敏
 - 不要携带密钥、token、内部 URL、客户数据或其他敏感信息
+
+为了让反馈更可处理，建议在脱敏后至少提供以下一种信息：
+
+- 你实际使用 Agently 的代码
+- 你认为有问题的框架代码文件路径与行号
+- 能复现问题或体现预期落差的最小代码块
