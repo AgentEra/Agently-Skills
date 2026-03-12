@@ -70,6 +70,12 @@ Example body:
 
 Do not include secrets, tokens, private URLs, customer data, or other sensitive internal information.
 
+To make the feedback actionable, include at least one of the following after sanitization:
+
+- the usage code that shows how you are using Agently
+- the framework code file path and line numbers that you believe are problematic
+- a small code block that reproduces the issue or expectation gap
+
 ## References
 
 - `references/scenario-router.md`
