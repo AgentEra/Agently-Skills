@@ -145,6 +145,8 @@ async def judge_route_case(case: dict) -> dict:
         "- If the request explicitly wants config files or YAML to bridge frontend-controlled behavior into prompt or request behavior, prefer agently-prompt-management when installed.\n"
         "- If that same config-bridge request also says the config should drive workflow stages or flow parameters, append agently-triggerflow after agently-prompt-management when installed.\n"
         "- If the request explicitly says provider settings, model selection, or auth should stay in settings or env placeholders rather than workflow code, append agently-model-setup when installed.\n"
+        "- If the request is about initializing or scaffolding a new model-powered project and the owner layers are not decided yet, stop at agently-playbook.\n"
+        "- If the request is about initializing or scaffolding a new project into separate settings, prompt, and workflow layers, keep agently-playbook first even when later leaf skills are explicit.\n"
         "- If the request is mainly provider wiring or connectivity, continue with agently-model-setup when installed.\n"
         f"- Every item in route_path must be exactly one of: {allowed}.\n"
     )

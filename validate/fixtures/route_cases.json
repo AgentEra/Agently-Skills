@@ -96,6 +96,9 @@
       ],
       "expected_route_paths": [
         [
+          "agently-playbook"
+        ],
+        [
           "agently-playbook",
           "agently-output-control"
         ],
@@ -117,6 +120,9 @@
         "agently-triggerflow"
       ],
       "expected_route_paths": [
+        [
+          "agently-playbook"
+        ],
         [
           "agently-playbook",
           "agently-output-control"
@@ -223,6 +229,9 @@
         "agently-triggerflow"
       ],
       "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
         [
           "agently-triggerflow",
           "agently-output-control"
@@ -386,6 +395,54 @@
       "expected_route_paths": [
         [
           "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-init-unresolved-zh",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "zh",
+      "intent_style": "project-init-unresolved",
+      "query": "帮我初始化一个 Agently 项目骨架，但我还没决定是先做 request side，还是一开始就拆成 TriggerFlow 工作流；我只知道模型配置、Prompt 和流程后面都要能独立演进。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-init-explicit-en",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "en",
+      "intent_style": "project-init-explicit",
+      "query": "Scaffold a new Agently project with a settings layer, prompt files, and a TriggerFlow workflow skeleton so model setup, prompt evolution, and flow logic stay separate from day one.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-prompt-management",
+          "agently-model-setup"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-model-setup",
+          "agently-prompt-management"
         ]
       ]
     },
