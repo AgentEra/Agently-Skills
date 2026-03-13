@@ -39,7 +39,7 @@ For example, a broad request such as `build a travel planning tool on top of loc
 - They improve scenario capture for broad, under-specified model-app requests.
 - They encode Agently-native best practices instead of generic framework-agnostic habits.
 - They include guidance on project layout, routing, performance optimization, and design philosophy.
-- They are validated with both route fixtures and implementation fixtures, so the skills are checked against real scenario language rather than only hand-written examples.
+- They are checked against realistic scenario language instead of relying only on hand-written snippets.
 
 ## Routing Model
 
@@ -61,6 +61,30 @@ The most important routing rules are:
 - embeddings, indexing, retrieval, or KB-to-answer -> `agently-knowledge-base`
 - explicit orchestration, TriggerFlow, mixed sync/async execution, event-driven fan-out, process-clarity refactors, or resumable multi-stage flows -> `agently-triggerflow`
 - migration from LangChain or LangGraph -> `agently-migration-playbook`, then the matching migration leaf
+
+## Standard Project Shape
+
+When an Agently project needs to stay maintainable, initialize or refactor it around explicit capability boundaries instead of one oversized `app.py`.
+
+The default shape should usually separate:
+
+- `SETTINGS.yaml` or a settings layer for provider config, `${ENV.xxx}` placeholders, workflow/search/browse knobs, and other deployment-time switches
+- an app or integration layer that loads settings, validates required env names when needed, calls `Agently.set_settings(..., auto_load_env=True)`, and wires tools plus the main flow
+- `prompts/` for YAML or JSON prompt contracts that own `input`, `info`, `instruct`, and `output`
+- `workflow/` for TriggerFlow graphs and chunk implementations
+- `tools/` for replaceable search, browse, MCP, or external adapters
+- `outputs/` and `logs/` for runtime artifacts instead of mixing them into source folders
+
+Two source-backed details matter here:
+
+- Configure Prompt supports placeholder mappings recursively across prompt values and keys. Keep `${topic}`, `${language}`, `${column_title}`, and similar variables in prompt files and inject them through `load_yaml_prompt(..., mappings={...})` or `load_json_prompt(...)`.
+- Model settings can keep `${ENV.NAME}` placeholders and let `Agently.set_settings(..., auto_load_env=True)` resolve them by finding and loading a local `.env` file.
+
+This is the pattern used by `Agently-Daily-News-Collector`: settings stay in `SETTINGS.yaml`, prompt contracts stay in `prompts/`, flow construction stays in `workflow/`, and the app layer does env loading plus Agently wiring.
+
+Project initialization should not be a separate public skill. It belongs to `agently-playbook`: decide the owner layers, create the skeleton, and then hand implementation work to the owning leaf skills.
+
+A fuller public reference lives in [`skills/agently-playbook/references/project-framework.md`](skills/agently-playbook/references/project-framework.md).
 
 ## Public Catalog
 

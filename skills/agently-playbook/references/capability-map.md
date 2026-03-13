@@ -10,10 +10,12 @@ Examples that should still start here:
 - "build a requirements assistant and validate the outputs"
 - "create a skills quality simulator and decide whether it should be one request or a workflow"
 - "build a heuristic skill creation tool with a UI and local Ollama"
+- "scaffold a new Agently project and decide how settings, prompts, and workflow should be split"
 
 - unresolved business, product, or refactor request -> stay here first
-- provider wiring or settings-file model separation -> `agently-model-setup`
-- prompt composition, prompt config, or config-file bridge for prompt behavior -> `agently-prompt-management`
+- project initialization, repo skeleton, or first-pass standard structure for a model app -> stay here first
+- provider wiring, settings-file model separation, `${ENV.xxx}` placeholders, or auto `.env` loading -> `agently-model-setup`
+- prompt composition, prompt config, placeholder mappings, or config-file bridge for prompt behavior -> `agently-prompt-management`
 - output contract and required keys -> `agently-output-control`
 - response reuse, metadata, and stream consumption -> `agently-model-response`
 - session continuity or restore -> `agently-session-memory`

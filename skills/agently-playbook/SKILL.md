@@ -1,6 +1,6 @@
 ---
 name: agently-playbook
-description: Use when the user wants to build, validate, optimize, or refactor a model-powered assistant, internal tool, automation, evaluator, or workflow from a business scenario or common problem statement, including project-structure refactors that may separate model setup, prompt config, and orchestration, even if the request also mentions a UI, app shell, or local model service such as Ollama, and it is still unclear whether the solution should stay a single request, add supporting capabilities, or become orchestration. The user does not need to mention Agently explicitly.
+description: Use when the user wants to build, initialize, validate, optimize, or refactor a model-powered assistant, internal tool, automation, evaluator, or workflow from a business scenario or common problem statement, including project-structure refactors or starter skeletons that may separate model setup, prompt config, and orchestration, even if the request also mentions a UI, app shell, or local model service such as Ollama, and it is still unclear whether the solution should stay a single request, add supporting capabilities, or become orchestration. The user does not need to mention Agently explicitly.
 ---
 
 # Agently Playbook
@@ -14,14 +14,15 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 ## Workflow
 
 1. Reduce the request into scenario and atomic goals.
-2. Choose the narrowest native Agently capability path.
-3. Name the concrete operations or primitives that should be used.
-4. Name the validation rule that proves the design stayed native-first.
+2. If the request is a project initialization or structure refactor, choose the owner layers and repo skeleton first.
+3. Choose the narrowest native Agently capability path.
+4. Name the concrete operations or primitives that should be used.
+5. Name the validation rule that proves the design stayed native-first.
 
 ## Capability Routing
 
-- model provider setup or settings-file-based model separation -> `agently-model-setup`
-- request-side prompt design or config-file prompt bridge -> `agently-prompt-management`
+- model provider setup, settings-file-based model separation, or `${ENV.xxx}`-backed settings loading -> `agently-model-setup`
+- request-side prompt design, prompt placeholder injection, or config-file prompt bridge -> `agently-prompt-management`
 - output schema and reliability -> `agently-output-control`
 - response reuse, metadata, or streaming consumption -> `agently-model-response`
 - session continuity or restore -> `agently-session-memory`
@@ -34,8 +35,10 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 
 - do not skip this playbook when the owner layer is unresolved
 - do not invent custom output parsers, retry loops, or orchestration first
+- do not split project initialization into a fake standalone framework surface before the owner layers are chosen
 - do not treat multi-agent, judge, or review flows as separate framework surfaces before checking native Agently capabilities
 
 ## Read Next
 
 - `references/capability-map.md`
+- `references/project-framework.md`

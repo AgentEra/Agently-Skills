@@ -39,7 +39,7 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 - 它更擅长捕获宽泛、没有明确约束的模型应用开发诉求。
 - 它沉淀的是 Agently 原生最佳实践，而不是泛用框架式的局部技巧。
 - 它不仅覆盖功能调用，还覆盖目录规划、设计哲学、性能优化和编排重构。
-- 它自带 route fixtures 和 implementation fixtures，验证的是“真实场景表达能否命中”，而不是只靠少量手写示例。
+- 它会针对真实场景表达做校验，而不是只靠少量手写示例。
 
 ## 路由心智模型
 
@@ -61,6 +61,30 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 - embeddings、索引、检索、KB-to-answer -> `agently-knowledge-base`
 - 显式工作流编排、TriggerFlow、混合同异步执行、事件驱动 fan-out、流程清晰化重构、可恢复多阶段流程 -> `agently-triggerflow`
 - LangChain / LangGraph 迁移 -> `agently-migration-playbook`，再进入对应迁移 leaf
+
+## 标准项目形态
+
+当一个 Agently 项目需要保持可维护性时，初始化或重构都应该围绕明确的能力边界来做，而不是把所有东西继续塞进一个巨大的 `app.py`。
+
+默认建议拆成这些层：
+
+- `SETTINGS.yaml` 或独立 settings 层，负责 provider 配置、`${ENV.xxx}` 占位、workflow/search/browse 参数和其他部署期开关
+- app / integration 层，负责加载 settings、按需校验必需环境变量、调用 `Agently.set_settings(..., auto_load_env=True)`，并完成 tools 与主流程的装配
+- `prompts/`，负责 YAML / JSON Prompt contract，承载 `input`、`info`、`instruct`、`output`
+- `workflow/`，负责 TriggerFlow 图和 chunk 实现
+- `tools/`，负责可替换的 search、browse、MCP 或其他外部适配层
+- `outputs/` 和 `logs/`，负责运行产物，而不是把这些内容混进源码目录
+
+这里有两个需要明确写进规范的源码级细节：
+
+- Configure Prompt 支持对 prompt 的 key 和 value 做递归 placeholder 注入。像 `${topic}`、`${language}`、`${column_title}` 这类变量，应保留在 prompt 文件里，再通过 `load_yaml_prompt(..., mappings={...})` 或 `load_json_prompt(...)` 注入。
+- 模型配置可以直接保留 `${ENV.NAME}` 占位，并让 `Agently.set_settings(..., auto_load_env=True)` 在运行时自动查找并加载本地 `.env` 后完成替换。
+
+`Agently-Daily-News-Collector` 用的就是这个模式：settings 留在 `SETTINGS.yaml`，prompt contract 留在 `prompts/`，流程构造留在 `workflow/`，而 app 层负责 `.env` 加载和 Agently wiring。
+
+项目初始化不建议拆成单独的 public skill。它应该属于 `agently-playbook` 的重要执行步骤：先决定 owner layers 和 skeleton，再把具体实现分发给对应 leaf skills。
+
+更完整的公开规范可以看 [`skills/agently-playbook/references/project-framework.md`](skills/agently-playbook/references/project-framework.md)。
 
 ## 公开 Catalog
 
