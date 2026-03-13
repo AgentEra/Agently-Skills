@@ -1,6 +1,6 @@
 ---
 name: agently-output-control
-description: Use when the user wants stable structured fields, required keys, or reliable machine-readable output from one model request, including `.output(...)`, field ordering, and `ensure_keys`.
+description: Use when the user wants stable structured fields, required keys, reliable machine-readable sections, or downstream-consumable output from one model request, including `.output(...)`, field ordering, and `ensure_keys`.
 ---
 
 # Agently Output Control
@@ -13,7 +13,7 @@ The user does not need to say `.output(...)` or `ensure_keys`. Requests for stab
 
 - prefer `.output(...)` for machine-readable results
 - prefer `ensure_keys` when required fields must be enforced
-- keep output schema explicit when downstream systems or later model steps consume the result
+- keep output schema explicit when downstream systems, workflow branches, or later model steps consume the result
 
 ## Anti-Patterns
 

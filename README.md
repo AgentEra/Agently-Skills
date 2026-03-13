@@ -35,7 +35,7 @@ Key rules:
 - `agently-knowledge-base`
   Embeddings plus Chroma-backed indexing, retrieval, and retrieval-to-answer flows.
 - `agently-triggerflow`
-  TriggerFlow orchestration, state, runtime stream, sub flows, and workflow-side model execution.
+  TriggerFlow orchestration, state, runtime stream, sub flows, workflow-side model execution, event-driven fan-out, and mixed sync/async orchestration.
 - `agently-migration-playbook`
   Migration router for existing LangChain or LangGraph systems.
 - `agently-langchain-to-agently`
@@ -100,6 +100,8 @@ V2 validates both routing and implementation quality:
 - `validate/validate_trigger_paths.py`
 - `validate/validate_native_usage.py`
 - `validate/validate_live_scenarios.py`
+
+Route fixtures are intent-driven. Each high-value scenario should include user-like natural-language expressions and verify whether they hit the expected entry skill or skill combination.
 
 Live validation auto-loads `.env` with `dotenv.find_dotenv()` and uses:
 

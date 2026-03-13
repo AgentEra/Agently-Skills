@@ -1,6 +1,6 @@
 ---
 name: agently-prompt-management
-description: Use when the user is shaping how one model request or request family should be instructed or templated, including prompt slots, input/instruct/info layering, mappings, prompt config, and reusable prompt structure.
+description: Use when the user is shaping how one model request or request family should be instructed or templated, including prompt slots, input/instruct/info layering, mappings, prompt config, YAML or config-file-driven prompt behavior, and reusable prompt structure.
 ---
 
 # Agently Prompt Management
@@ -10,8 +10,9 @@ Use this skill when the core problem is how prompt state should be structured be
 ## Native-First Rules
 
 - prefer `input(...)`, `instruct(...)`, `info(...)`, and `output(...)` over concatenated prompt strings
-- move reusable prompt structure into prompt config instead of ad hoc literals
+- move reusable prompt structure into prompt config or YAML instead of ad hoc literals
 - keep prompt composition separate from transport and orchestration
+- use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
 ## Anti-Patterns
 

@@ -35,7 +35,7 @@ V2 只保留一个公开路由入口，并按 Agently 原生能力面重构 cata
 - `agently-knowledge-base`
   embeddings、Chroma 索引、检索与 retrieval-to-answer。
 - `agently-triggerflow`
-  TriggerFlow 编排、状态、runtime stream、sub flow 与工作流内模型执行。
+  TriggerFlow 编排、状态、runtime stream、sub flow、工作流内模型执行、事件驱动 fan-out 与混合同异步编排。
 - `agently-migration-playbook`
   LangChain / LangGraph 迁移总入口。
 - `agently-langchain-to-agently`
@@ -98,6 +98,8 @@ V2 只保留 5 类验证：
 - `validate/validate_trigger_paths.py`
 - `validate/validate_native_usage.py`
 - `validate/validate_live_scenarios.py`
+
+route fixtures 采用意图驱动检查。每个高价值场景都应该补充接近真实用户表达的自然语言输入，并验证它们是否命中期望的入口 skill 或技能组合。
 
 live 验证会自动寻找 `.env`，并默认使用：
 

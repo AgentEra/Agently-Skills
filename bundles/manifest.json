@@ -55,7 +55,7 @@
     {
       "id": "workflow-core",
       "kind": "core",
-      "purpose": "Workflow orchestration with TriggerFlow and response-control companions.",
+      "purpose": "Workflow orchestration with TriggerFlow and response-control companions for event-driven fan-out, performance-sensitive refactors, and mixed sync/async flows.",
       "entry_skill": "agently-playbook",
       "active_skills": [
         "agently-playbook",
