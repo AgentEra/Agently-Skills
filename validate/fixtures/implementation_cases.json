@@ -44,6 +44,21 @@
       "live_smoke_profile": "local"
     },
     {
+      "id": "triggerflow-response-fanout-native",
+      "reference_example": "skills/agently-triggerflow/examples/response_fanout.py",
+      "required_primitives": [
+        "TriggerFlow",
+        ".output(",
+        "get_response()"
+      ],
+      "forbidden_antipatterns": [
+        "while True",
+        "asyncio.create_task(",
+        "custom_event_bus"
+      ],
+      "live_smoke_profile": "local"
+    },
+    {
       "id": "provider-setup-native",
       "reference_example": "skills/agently-model-setup/examples/minimal.py",
       "required_primitives": [
