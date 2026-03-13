@@ -183,6 +183,46 @@ def main() -> None:
         failures,
         passes,
     )
+    check(
+        "route_fixture_uses_intent_group_metadata",
+        all(
+            isinstance(case.get("scenario_id"), str)
+            and isinstance(case.get("locale"), str)
+            and isinstance(case.get("intent_style"), str)
+            for case in fixture_cases
+        ),
+        "route fixtures group natural-language expressions by scenario and intent style",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_output_efficiency_refactor_group",
+        sum(case.get("scenario_id") == "triggerflow-output-efficiency-refactor" for case in fixture_cases) >= 4,
+        "route fixtures cover the TriggerFlow output-efficiency refactor scenario with multiple user expressions",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_mixed_sync_async_group",
+        sum(case.get("scenario_id") == "triggerflow-mixed-sync-async-orchestration" for case in fixture_cases) >= 3,
+        "route fixtures cover the mixed sync/async TriggerFlow orchestration scenario with multiple user expressions",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_process_clarity_group",
+        sum(case.get("scenario_id") == "triggerflow-process-clarity-refactor" for case in fixture_cases) >= 3,
+        "route fixtures cover the TriggerFlow process-clarity refactor scenario with multiple user expressions",
+        failures,
+        passes,
+    )
+    check(
+        "route_fixture_covers_project_structure_group",
+        sum(case.get("scenario_id") == "project-structure-separated-refactor" for case in fixture_cases) >= 4,
+        "route fixtures cover the project-structure separation refactor scenario with multiple user expressions",
+        failures,
+        passes,
+    )
 
     print("V2 catalog validation")
     print(f"passes: {len(passes)}")

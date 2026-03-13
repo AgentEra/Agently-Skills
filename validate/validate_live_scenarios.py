@@ -117,20 +117,34 @@ async def judge_route_case(case: dict) -> dict:
         "Installed skills and frontmatter descriptions:\n"
         f"{installed_block}\n\n"
         "Routing rules:\n"
-        "- Return an ordered route path of 1 to 3 skills.\n"
+        "- Return an ordered route path of 1 to 4 skills.\n"
         "- Choose only from the installed skills.\n"
         "- Match by scenario, capability, and problem shape first.\n"
         "- Set decision=sure only when the route path is clearly supported by the metadata and the best alternative skills are meaningfully worse.\n"
         "- Set decision=unsure when the metadata overlap is still high or the boundary is not explicit enough.\n"
         "- If the request starts from a generic product or workflow scenario, or the owner layer is unresolved, include agently-playbook first when it is installed.\n"
         "- If the request explicitly says the owner layer is not decided yet, do not route past agently-playbook.\n"
+        "- If the request explicitly says it has not decided between patching one request and upgrading to workflow orchestration, stop at agently-playbook even when the likely eventual owner could be agently-triggerflow.\n"
+        "- If the request explicitly says it has not decided between helper chains, function chains, config cleanup, or workflow orchestration, stop at agently-playbook even when agently-triggerflow looks likely later.\n"
         "- Mentions of possible capabilities such as tools, memory, approvals, streaming, or retrieval do not justify a later skill when the owner layer is still undecided.\n"
         "- Mentions of a UI, web page, desktop shell, or local model service such as Ollama are supporting constraints and do not disqualify agently-playbook when the request is still about building a model-powered tool.\n"
         "- If one installed non-playbook skill directly and narrowly owns the request, prefer that leaf skill without agently-playbook.\n"
         "- If the request is still unresolved between one request family and workflow orchestration, stop at agently-playbook.\n"
+        "- If the request explicitly says it should stay inside one request family, treat that as resolved away from workflow orchestration rather than unresolved.\n"
         "- If the request clearly stays inside one request family and asks for stable structured fields, required keys, or machine-readable reports, continue with agently-output-control when installed.\n"
         "- If the same request also needs response reuse, metadata consumption, or partial structured updates, continue with agently-model-response when installed.\n"
         "- If the request clearly needs branching, concurrency, approvals, waiting and resume, runtime stream, or explicit draft-review-revise loops, continue with agently-triggerflow when installed.\n"
+        "- If the request is about simplifying tangled process expression, making stages or dependencies explicit, or making flow management easier to understand, prefer agently-triggerflow when installed.\n"
+        "- If the request is a performance optimization or refactor caused by splitting one transaction across multiple model requests just to separate user-facing progress from structured downstream instructions, prefer agently-triggerflow when installed.\n"
+        "- If the workflow request also needs one response instance to serve text, parsed data, metadata, or partial updates without re-requesting, append agently-model-response after agently-triggerflow when installed.\n"
+        "- If the workflow request explicitly mentions stable structured objects, required keys, machine-readable blocks, action lists, or downstream branches/workers consuming the result, append agently-output-control after agently-triggerflow when installed.\n"
+        "- Do not omit agently-output-control when the request explicitly asks for required keys or a stable machine-readable object from one model step.\n"
+        "- If both workflow-side response reuse and workflow-side structured fan-out are explicit, prefer agently-triggerflow first and then add the most central companion skill before any secondary companion.\n"
+        "- If the request is about mixed sync and async function, module, or process orchestration, branch-collect, or waiting for multiple events, prefer agently-triggerflow even when some steps are not model calls.\n"
+        "- If the request explicitly wants prompt management, model setup, and business workflow split into separate layers, prefer agently-triggerflow first for the workflow layer, then append agently-prompt-management and agently-model-setup when installed.\n"
+        "- If the request explicitly wants config files or YAML to bridge frontend-controlled behavior into prompt or request behavior, prefer agently-prompt-management when installed.\n"
+        "- If that same config-bridge request also says the config should drive workflow stages or flow parameters, append agently-triggerflow after agently-prompt-management when installed.\n"
+        "- If the request explicitly says provider settings, model selection, or auth should stay in settings or env placeholders rather than workflow code, append agently-model-setup when installed.\n"
         "- If the request is mainly provider wiring or connectivity, continue with agently-model-setup when installed.\n"
         f"- Every item in route_path must be exactly one of: {allowed}.\n"
     )
@@ -162,7 +176,7 @@ async def judge_route_case(case: dict) -> dict:
 
 
 async def validate_route_case(case: dict, *, timeout_seconds: int) -> dict:
-    case_name = f"route_{case['id']}"
+    case_name = f"route_{case['scenario_id']}_{case['id']}"
     try:
         judged = await asyncio.wait_for(judge_route_case(case), timeout=timeout_seconds)
     except TimeoutError:
@@ -184,6 +198,7 @@ async def validate_route_case(case: dict, *, timeout_seconds: int) -> dict:
         "name": case_name,
         "ok": judged["decision"] == "sure" and predicted in expected_paths,
         "details": (
+            f"scenario={case['scenario_id']} locale={case['locale']} intent_style={case['intent_style']} "
             f"expected={expected_paths} predicted={predicted} decision={judged['decision']} "
             f"reason={judged['reason']} evidence={judged['evidence']}"
         ),

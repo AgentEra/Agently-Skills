@@ -3,6 +3,9 @@
   "cases": [
     {
       "id": "generic-unresolved-no-framework-en",
+      "scenario_id": "generic-unresolved-kickoff",
+      "locale": "en",
+      "intent_style": "owner-unresolved",
       "query": "Help me kick off a model-powered internal tool for customer support with tools, memory, and approvals. I have not decided whether it should stay one request, become a short chain, or become a workflow.",
       "installed_skills": [
         "agently-playbook",
@@ -13,11 +16,18 @@
       "expected_route_paths": [
         [
           "agently-playbook"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
         ]
       ]
     },
     {
       "id": "generic-unresolved-no-framework-zh",
+      "scenario_id": "generic-unresolved-kickoff",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
       "query": "帮我启动一个模型驱动的内部工具项目，要能理解需求、生成产物并校验结果，但我还没决定是一条请求、短链路还是工作流。",
       "installed_skills": [
         "agently-playbook",
@@ -33,6 +43,9 @@
     },
     {
       "id": "skills-quality-simulator-kickoff-zh",
+      "scenario_id": "skills-quality-simulator",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
       "query": "帮我做一个Skills质量模拟验证器，确保Skills定义和常见问题能够吻合，但我还没决定是单次请求、短链路还是工作流。",
       "installed_skills": [
         "agently-playbook",
@@ -48,6 +61,9 @@
     },
     {
       "id": "skill-creation-tool-ui-ollama-zh",
+      "scenario_id": "skill-creation-tool-ui",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
       "query": "我做一个启发式的skill创作工具，你可以使用本机ollama提供的模型服务，我想要一个带界面的。",
       "installed_skills": [
         "agently-playbook",
@@ -68,6 +84,9 @@
     },
     {
       "id": "skills-quality-simulator-request",
+      "scenario_id": "skills-quality-simulator",
+      "locale": "en",
+      "intent_style": "request-explicit",
       "query": "Build a skills quality simulator that compares skill definitions with common user questions, returns a stable structured report, and keeps the implementation inside one request family.",
       "installed_skills": [
         "agently-playbook",
@@ -87,6 +106,9 @@
     },
     {
       "id": "skills-quality-simulator-request-zh",
+      "scenario_id": "skills-quality-simulator",
+      "locale": "zh",
+      "intent_style": "request-explicit",
       "query": "帮我做一个Skills质量模拟验证器，确保Skills定义和常见问题能够吻合，输出稳定的结构化报告，先按单次请求或短链路实现，不做工作流。",
       "installed_skills": [
         "agently-playbook",
@@ -106,6 +128,9 @@
     },
     {
       "id": "explicit-quality-loop-workflow",
+      "scenario_id": "explicit-quality-loop-workflow",
+      "locale": "en",
+      "intent_style": "orchestration-explicit",
       "query": "Build a resumable draft judge revise workflow with explicit stop conditions, waiting and resume, and runtime stream updates.",
       "installed_skills": [
         "agently-playbook",
@@ -125,6 +150,9 @@
     },
     {
       "id": "explicit-quality-loop-workflow-zh",
+      "scenario_id": "explicit-quality-loop-workflow",
+      "locale": "zh",
+      "intent_style": "orchestration-explicit",
       "query": "帮我设计一个可恢复的草稿-审核-修订流程，需要审批、暂停恢复和运行时流式状态。",
       "installed_skills": [
         "agently-playbook",
@@ -143,7 +171,335 @@
       ]
     },
     {
+      "id": "output-efficiency-unresolved-zh",
+      "scenario_id": "triggerflow-output-efficiency-refactor",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "我在做一个模型应用性能优化：现在为了同时给用户返回流式状态、展示处理中思路、再产出下游消费的结构化行动指令，被拆成了多次模型请求。我还没决定该继续在单请求里打补丁，还是改成工作流编排。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "output-efficiency-response-refactor-zh",
+      "scenario_id": "triggerflow-output-efficiency-refactor",
+      "locale": "zh",
+      "intent_style": "response-reuse-explicit",
+      "query": "帮我重构这条流程：同一个模型结果既要当用户可见的进度文本被持续消费，又要作为下游的局部更新数据，不要为了 text、data、stream 反复重发请求，并且在行动片段一生成完就继续后续处理。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow",
+          "agently-model-response"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-model-response"
+        ]
+      ]
+    },
+    {
+      "id": "output-efficiency-structured-fanout-en",
+      "scenario_id": "triggerflow-output-efficiency-refactor",
+      "locale": "en",
+      "intent_style": "structured-fanout-explicit",
+      "query": "Build an orchestration that emits a stable action-plan object with required keys from one model step, waits for the plan to finish, fans out the actions to downstream branches, and collects every branch result before continuing.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow",
+          "agently-output-control"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-output-control"
+        ]
+      ]
+    },
+    {
+      "id": "output-efficiency-full-combo-en",
+      "scenario_id": "triggerflow-output-efficiency-refactor",
+      "locale": "en",
+      "intent_style": "combo-explicit",
+      "query": "Optimize a model-app workflow that currently splits one transaction into separate calls for human-readable progress, exposed reasoning, and machine-readable action blocks with required fields for downstream workers. Collapse it into one orchestrated response, reuse the same result as text, data, and partial updates, and dispatch downstream work when the structured block is complete.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-output-control",
+        "agently-model-response",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow",
+          "agently-model-response",
+          "agently-output-control"
+        ],
+        [
+          "agently-triggerflow",
+          "agently-output-control",
+          "agently-model-response"
+        ]
+      ]
+    },
+    {
+      "id": "mixed-sync-async-unresolved-zh",
+      "scenario_id": "triggerflow-mixed-sync-async-orchestration",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "我们要重构一条业务链路，里面混着同步函数、异步函数、模块调用和多任务处理。我还没决定是继续手写线程或协程补丁，还是升级成工作流编排。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "mixed-sync-async-orchestration-en",
+      "scenario_id": "triggerflow-mixed-sync-async-orchestration",
+      "locale": "en",
+      "intent_style": "orchestration-explicit",
+      "query": "Orchestrate mixed sync and async functions in one flow, run branches in parallel, wait for all branch results with branch-collect semantics, and continue only after every task finishes.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "mixed-sync-async-event-wait-zh",
+      "scenario_id": "triggerflow-mixed-sync-async-orchestration",
+      "locale": "zh",
+      "intent_style": "event-wait-explicit",
+      "query": "帮我把同步函数线程化后混入异步流程，用 when() 等多个事件都完成再汇总继续，不要自己写事件总线或状态机。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "process-clarity-unresolved-zh",
+      "scenario_id": "triggerflow-process-clarity-refactor",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "我们这条业务流程越写越绕，步骤和依赖都藏在函数里了。我想简化流程表达、让流程管理更清晰，但还没决定是继续写函数链，还是改成显式工作流。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "process-clarity-explicit-zh",
+      "scenario_id": "triggerflow-process-clarity-refactor",
+      "locale": "zh",
+      "intent_style": "process-clarity-explicit",
+      "query": "帮我把散在模块里的业务步骤整理成清晰的阶段化流程，显式表达依赖、等待点和分支，让后续维护时一眼能看懂流程管理。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "process-clarity-stage-visibility-en",
+      "scenario_id": "triggerflow-process-clarity-refactor",
+      "locale": "en",
+      "intent_style": "stage-visibility-explicit",
+      "query": "Refactor this business pipeline so hidden helper-to-helper jumps become explicit stages, branches, and wait points with visible flow ownership.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-separated-unresolved-zh",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "我想重构一个模型应用项目，把 Prompt 管理、模型配置和业务流程拆开，但还没决定只是做配置层整理，还是要一起升级成工作流结构。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-playbook"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-separated-combo-zh",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "zh",
+      "intent_style": "separation-explicit",
+      "query": "按 Daily News Collector 那种目录结构重构项目：把模型配置放 SETTINGS 或 env 占位，把 Prompt 独立成配置文件，把业务流程独立成 TriggerFlow 工作流，避免把三者硬写在一起。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow",
+          "agently-prompt-management",
+          "agently-model-setup"
+        ],
+        [
+          "agently-triggerflow",
+          "agently-model-setup",
+          "agently-prompt-management"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-prompt-management"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-prompt-management",
+          "agently-model-setup"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-model-setup",
+          "agently-prompt-management"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-separated-flow-en",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "en",
+      "intent_style": "structure-refactor-explicit",
+      "query": "Split a model app into a settings layer for provider configuration, a prompt-config layer, and a TriggerFlow workflow layer so transport, prompt evolution, and business flow can change independently.",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-model-setup",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow",
+          "agently-prompt-management",
+          "agently-model-setup"
+        ],
+        [
+          "agently-triggerflow",
+          "agently-model-setup",
+          "agently-prompt-management"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-prompt-management",
+          "agently-model-setup"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow",
+          "agently-model-setup",
+          "agently-prompt-management"
+        ]
+      ]
+    },
+    {
+      "id": "project-structure-config-bridge-zh",
+      "scenario_id": "project-structure-separated-refactor",
+      "locale": "zh",
+      "intent_style": "config-bridge-explicit",
+      "query": "前端经常改筛选项和文案，我想让前端通过配置文件驱动 Prompt 和流程参数，作为桥梁减少前端变化对后端整体结构的冲击。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-prompt-management",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-prompt-management",
+          "agently-triggerflow"
+        ],
+        [
+          "agently-triggerflow",
+          "agently-prompt-management"
+        ],
+        [
+          "agently-playbook",
+          "agently-prompt-management",
+          "agently-triggerflow"
+        ]
+      ]
+    },
+    {
       "id": "provider-setup",
+      "scenario_id": "provider-setup",
+      "locale": "en",
+      "intent_style": "direct-leaf",
       "query": "Connect DeepSeek through dotenv-loaded settings and run a minimal connectivity check for the model-backed feature.",
       "installed_skills": [
         "agently-playbook",
@@ -157,6 +513,9 @@
     },
     {
       "id": "prompt-composition",
+      "scenario_id": "prompt-composition",
+      "locale": "en",
+      "intent_style": "direct-leaf",
       "query": "Show how to compose input, instruct, info, prompt config, and placeholder mappings for one request family.",
       "installed_skills": [
         "agently-playbook",
@@ -174,6 +533,9 @@
     },
     {
       "id": "session-memory",
+      "scenario_id": "session-memory",
+      "locale": "en",
+      "intent_style": "direct-leaf",
       "query": "I need session-backed continuity, memo, and restore after restart for one request family.",
       "installed_skills": [
         "agently-playbook",
@@ -187,6 +549,9 @@
     },
     {
       "id": "extensions",
+      "scenario_id": "agent-extensions",
+      "locale": "en",
+      "intent_style": "direct-leaf",
       "query": "I need tools, MCP server access, and HTTP or streaming API exposure without writing custom wrappers first.",
       "installed_skills": [
         "agently-playbook",
@@ -200,6 +565,9 @@
     },
     {
       "id": "knowledge-base",
+      "scenario_id": "knowledge-base",
+      "locale": "en",
+      "intent_style": "direct-leaf",
       "query": "Build a Chroma-backed knowledge-base flow with embeddings and retrieval-to-answer behavior.",
       "installed_skills": [
         "agently-playbook",
@@ -213,6 +581,9 @@
     },
     {
       "id": "langgraph-migration",
+      "scenario_id": "langgraph-migration",
+      "locale": "en",
+      "intent_style": "migration-explicit",
       "query": "Migrate a LangGraph flow with checkpoints, interrupts, persistence, and streaming.",
       "installed_skills": [
         "agently-playbook",
