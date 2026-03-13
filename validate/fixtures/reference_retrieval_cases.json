@@ -1,0 +1,136 @@
+{
+  "version": 2,
+  "cases": [
+    {
+      "id": "project-framework-daily-news-zh",
+      "query": "如果我要按 Daily News Collector 那种方式初始化或重构项目，确认模型配置、Prompt 和 TriggerFlow 的分层，同时把 Configure Prompt 的动态变量注入和 `${ENV.xxx}` + `.env` 的模型设置约束都找出来，我应该先看哪些配套文档？",
+      "matched_skills": [
+        "agently-playbook"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-playbook/references/project-framework.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "project_layer_split",
+          "description": "Standard project split uses settings, prompts, workflow, tools, and runtime artifact folders."
+        },
+        {
+          "id": "prompt_placeholder_mappings",
+          "description": "Prompt files keep `${...}` placeholders and inject values through mappings at load time."
+        },
+        {
+          "id": "settings_auto_load_env",
+          "description": "Provider settings can keep `${ENV.xxx}` placeholders and be applied through `Agently.set_settings(..., auto_load_env=True)`."
+        },
+        {
+          "id": "playbook_owns_initialization",
+          "description": "Project initialization stays inside agently-playbook rather than becoming a separate public skill."
+        }
+      ],
+      "required_concepts": [
+        "project_layer_split",
+        "prompt_placeholder_mappings",
+        "settings_auto_load_env",
+        "playbook_owns_initialization"
+      ]
+    },
+    {
+      "id": "prompt-placeholder-config-en",
+      "query": "After prompt-management is already matched, I need the supporting doc that explains keeping `${topic}` and `${language}` inside YAML prompt files, injecting them through mappings, and using config files as a bridge for request-side behavior. Which file should I open first?",
+      "matched_skills": [
+        "agently-prompt-management"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-prompt-management/SKILL.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "recursive_placeholder_injection",
+          "description": "Prompt files keep `${...}` placeholders and receive values through mappings at load time."
+        },
+        {
+          "id": "request_contract_in_prompt_files",
+          "description": "Reusable request-side `input`, `info`, `instruct`, and `output` contracts live in prompt config or YAML."
+        },
+        {
+          "id": "config_bridge_request_side",
+          "description": "Config files can bridge UI or product changes into request-side prompt behavior without rewriting workflow code."
+        }
+      ],
+      "required_concepts": [
+        "recursive_placeholder_injection",
+        "request_contract_in_prompt_files",
+        "config_bridge_request_side"
+      ]
+    },
+    {
+      "id": "model-settings-env-en",
+      "query": "After model-setup is already matched, I need the supporting doc that explains keeping provider settings in config files, using `${ENV.xxx}` placeholders, calling `Agently.set_settings(..., auto_load_env=True)`, and optionally failing fast on missing env names. Which file should I read first?",
+      "matched_skills": [
+        "agently-model-setup"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-model-setup/SKILL.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "env_placeholder_settings",
+          "description": "Provider settings live in settings files and use `${ENV.xxx}` placeholders instead of committed secrets."
+        },
+        {
+          "id": "auto_load_env",
+          "description": "Use `Agently.set_settings(..., auto_load_env=True)` when the settings payload depends on `.env`."
+        },
+        {
+          "id": "fail_fast_validate_env",
+          "description": "The integration layer can validate required env names before calling Agently."
+        }
+      ],
+      "required_concepts": [
+        "env_placeholder_settings",
+        "auto_load_env",
+        "fail_fast_validate_env"
+      ]
+    },
+    {
+      "id": "response-fanout-example-en",
+      "query": "Routing already decided this is TriggerFlow plus response reuse and structured output. I now need the concrete supporting file that shows one workflow step producing a stable plan object, reusing the same response as preview text and parsed actions, and dispatching downstream work after that plan is available. Which file should I open first?",
+      "matched_skills": [
+        "agently-triggerflow",
+        "agently-model-response",
+        "agently-output-control"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-triggerflow/examples/response_fanout.py"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "structured_output_contract",
+          "description": "The model step declares a stable structured object with `.output(...)`."
+        },
+        {
+          "id": "response_reuse_no_rerequest",
+          "description": "The same response instance is reused as both text and parsed data without re-requesting."
+        },
+        {
+          "id": "workflow_dispatch_after_plan",
+          "description": "The workflow dispatches downstream handling after the plan object becomes available."
+        }
+      ],
+      "required_concepts": [
+        "structured_output_contract",
+        "response_reuse_no_rerequest",
+        "workflow_dispatch_after_plan"
+      ]
+    }
+  ]
+}

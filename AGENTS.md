@@ -25,8 +25,10 @@ This repository publishes the Agently Skills V2 catalog under `skills/`.
 - `bundles/manifest.json`
 - `validate/fixtures/route_cases.json`
 - `validate/fixtures/implementation_cases.json`
+- `validate/fixtures/reference_retrieval_cases.json`
 - `validate/validate_catalog.py`
 - `validate/validate_bundle_manifest.py`
 - `validate/validate_trigger_paths.py`
 - `validate/validate_native_usage.py`
 - `validate/validate_live_scenarios.py`
+- `validate/validate_reference_retrieval.py`

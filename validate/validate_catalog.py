@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
+REFERENCE_FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 EXPECTED_SKILLS = {
     "agently-playbook",
     "agently-model-setup",
@@ -152,6 +153,8 @@ def main() -> None:
     fixture_text = ROUTE_FIXTURES.read_text(encoding="utf-8")
     fixture_data = json.loads(fixture_text)
     fixture_cases = fixture_data.get("cases", [])
+    reference_fixture_data = json.loads(REFERENCE_FIXTURES.read_text(encoding="utf-8"))
+    reference_cases = reference_fixture_data.get("cases", [])
     check(
         "route_fixture_covers_generic_non_framework_case",
         "generic-unresolved-no-framework-en" in fixture_text and "generic-unresolved-no-framework-zh" in fixture_text,
@@ -220,6 +223,41 @@ def main() -> None:
         "route_fixture_covers_project_structure_group",
         sum(case.get("scenario_id") == "project-structure-separated-refactor" for case in fixture_cases) >= 4,
         "route fixtures cover the project-structure separation refactor scenario with multiple user expressions",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_present",
+        bool(reference_cases),
+        "reference retrieval fixtures exist",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_project_framework",
+        any(case.get("id") == "project-framework-daily-news-zh" for case in reference_cases),
+        "reference retrieval fixtures cover project framework guidance",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_prompt_placeholders",
+        any(case.get("id") == "prompt-placeholder-config-en" for case in reference_cases),
+        "reference retrieval fixtures cover prompt placeholder mappings",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_env_settings",
+        any(case.get("id") == "model-settings-env-en" for case in reference_cases),
+        "reference retrieval fixtures cover env-backed model settings",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_response_fanout",
+        any(case.get("id") == "response-fanout-example-en" for case in reference_cases),
+        "reference retrieval fixtures cover TriggerFlow response-fanout support docs",
         failures,
         passes,
     )
