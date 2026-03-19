@@ -11,6 +11,7 @@ Agently is a framework for building model-powered applications and workflows.
 
 It provides native surfaces for:
 
+- async-first model requests, streaming consumption, and web-service integration
 - model setup and provider settings
 - prompt composition and prompt config
 - structured output and required-key enforcement
@@ -62,6 +63,12 @@ The most important routing rules are:
 - explicit orchestration, TriggerFlow, mixed sync/async execution, event-driven fan-out, process-clarity refactors, or resumable multi-stage flows -> `agently-triggerflow`
 - migration from LangChain or LangGraph -> `agently-migration-playbook`, then the matching migration leaf
 
+Async should usually be the default execution stance:
+
+- prefer async APIs for service code, streaming, TriggerFlow, tool concurrency, and any path that may benefit from overlap or cancellation
+- treat sync APIs as convenience wrappers for local scripts, teaching examples, or compatibility bridges
+- if the solution will live behind HTTP, SSE, WebSocket, or a long-running worker, assume async-first unless a concrete constraint proves otherwise
+
 ## Standard Project Shape
 
 When an Agently project needs to stay maintainable, initialize or refactor it around explicit capability boundaries instead of one oversized `app.py`.
@@ -69,16 +76,24 @@ When an Agently project needs to stay maintainable, initialize or refactor it ar
 The default shape should usually separate:
 
 - `SETTINGS.yaml` or a settings layer for provider config, `${ENV.xxx}` placeholders, workflow/search/browse knobs, and other deployment-time switches
-- an app or integration layer that loads settings, validates required env names when needed, calls `Agently.set_settings(..., auto_load_env=True)`, and wires tools plus the main flow
+- `app/` or another integration layer that loads settings, validates required env names when needed, chooses async boundaries, and wires tools plus the main flow
 - `prompts/` for YAML or JSON prompt contracts that own `input`, `info`, `instruct`, and `output`
+- `services/` for request wrappers, response normalization, and business-facing adapters
+- `domain/` or `schemas/` for enums, request/response contracts, and shared value objects
 - `workflow/` for TriggerFlow graphs and chunk implementations
 - `tools/` for replaceable search, browse, MCP, or external adapters
+- `tests/` for settings smoke checks, prompt/response checks, and API or flow validation
 - `outputs/` and `logs/` for runtime artifacts instead of mixing them into source folders
 
 Two source-backed details matter here:
 
 - Configure Prompt supports placeholder mappings recursively across prompt values and keys. Keep `${topic}`, `${language}`, `${column_title}`, and similar variables in prompt files and inject them through `load_yaml_prompt(..., mappings={...})` or `load_json_prompt(...)`.
-- Model settings can keep `${ENV.NAME}` placeholders and let `Agently.set_settings(..., auto_load_env=True)` resolve them by finding and loading a local `.env` file.
+- Model settings can keep `${ENV.NAME}` placeholders and let `Agently.load_settings("yaml_file", "...", auto_load_env=True)` resolve them by finding and loading a local `.env` file. If settings are created inline instead of in a file, use `Agently.set_settings(...)`.
+
+Two high-frequency rules prevent common drift:
+
+- keep stable shared output contracts in prompt config rather than scattering them across Python helpers
+- keep `OpenAICompatible` and similar provider settings under the plugin namespace that the requester actually reads, for example `plugins.ModelRequester.OpenAICompatible.*`
 
 This is the pattern used by `Agently-Daily-News-Collector`: settings stay in `SETTINGS.yaml`, prompt contracts stay in `prompts/`, flow construction stays in `workflow/`, and the app layer does env loading plus Agently wiring.
 
@@ -131,10 +146,16 @@ The public catalog currently contains 12 skills.
 
 ## Install
 
-You can install the whole official skills repository:
+Fastest full install across all detected agents:
 
 ```bash
-npx skills add AgentEra/Agently-Skills
+npx skills add AgentEra/Agently-Skills --all
+```
+
+Safer full install when you want to control the target agent explicitly:
+
+```bash
+npx skills add AgentEra/Agently-Skills --agent codex --skill '*' -y
 ```
 
 You can also ask your coding agent to install `AgentEra/Agently-Skills`.

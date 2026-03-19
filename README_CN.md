@@ -11,6 +11,7 @@ Agently 是一个用于构建模型应用和工作流的框架。
 
 它提供的原生能力面包括：
 
+- 异步优先的模型请求、streaming 消费与服务集成
 - 模型接入和 provider settings
 - Prompt 组合与 prompt config
 - 结构化输出与 required keys 约束
@@ -62,6 +63,12 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 - 显式工作流编排、TriggerFlow、混合同异步执行、事件驱动 fan-out、流程清晰化重构、可恢复多阶段流程 -> `agently-triggerflow`
 - LangChain / LangGraph 迁移 -> `agently-migration-playbook`，再进入对应迁移 leaf
 
+执行方式上，默认应采用 async-first 心智：
+
+- 面向服务、streaming、TriggerFlow、tool 并发、长连接消费的场景，优先选择异步 API
+- 同步 API 更适合作为本地脚本、教学最小示例或兼容桥接层
+- 如果目标形态是 HTTP、SSE、WebSocket、后台 worker 或任何需要重叠执行的系统，除非有明确限制，否则默认按异步优先设计
+
 ## 标准项目形态
 
 当一个 Agently 项目需要保持可维护性时，初始化或重构都应该围绕明确的能力边界来做，而不是把所有东西继续塞进一个巨大的 `app.py`。
@@ -69,16 +76,24 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 默认建议拆成这些层：
 
 - `SETTINGS.yaml` 或独立 settings 层，负责 provider 配置、`${ENV.xxx}` 占位、workflow/search/browse 参数和其他部署期开关
-- app / integration 层，负责加载 settings、按需校验必需环境变量、调用 `Agently.set_settings(..., auto_load_env=True)`，并完成 tools 与主流程的装配
+- `app/` 或 integration 层，负责加载 settings、按需校验必需环境变量、明确异步边界，并完成 tools 与主流程的装配
 - `prompts/`，负责 YAML / JSON Prompt contract，承载 `input`、`info`、`instruct`、`output`
+- `services/`，负责请求封装、结果规范化和业务适配
+- `domain/` 或 `schemas/`，负责枚举、输入输出协议和共享值对象
 - `workflow/`，负责 TriggerFlow 图和 chunk 实现
 - `tools/`，负责可替换的 search、browse、MCP 或其他外部适配层
+- `tests/`，负责 settings smoke check、Prompt/响应检查、API 或 flow 验证
 - `outputs/` 和 `logs/`，负责运行产物，而不是把这些内容混进源码目录
 
 这里有两个需要明确写进规范的源码级细节：
 
 - Configure Prompt 支持对 prompt 的 key 和 value 做递归 placeholder 注入。像 `${topic}`、`${language}`、`${column_title}` 这类变量，应保留在 prompt 文件里，再通过 `load_yaml_prompt(..., mappings={...})` 或 `load_json_prompt(...)` 注入。
-- 模型配置可以直接保留 `${ENV.NAME}` 占位，并让 `Agently.set_settings(..., auto_load_env=True)` 在运行时自动查找并加载本地 `.env` 后完成替换。
+- 模型配置可以直接保留 `${ENV.NAME}` 占位；如果配置来自文件，优先用 `Agently.load_settings("yaml_file", path, auto_load_env=True)` 在运行时自动查找并加载本地 `.env` 后完成替换；如果配置来自 Python 内联映射，再使用 `Agently.set_settings(...)`。
+
+还有两个容易踩坑、应当默认明确的规则：
+
+- 稳定共享的 output contract 优先放进 Prompt config，例如 `.request.output`，而不是散落在多个 Python helper 里
+- `OpenAICompatible` 之类 provider 配置，应放在插件实际读取的命名空间下，例如 `plugins.ModelRequester.OpenAICompatible.*`
 
 `Agently-Daily-News-Collector` 用的就是这个模式：settings 留在 `SETTINGS.yaml`，prompt contract 留在 `prompts/`，流程构造留在 `workflow/`，而 app 层负责 `.env` 加载和 Agently wiring。
 
@@ -131,10 +146,16 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 
 ## 安装
 
-你可以先直接安装整套官方 Skills：
+最快的整包安装方式，是直接把全部 skills 装到当前检测到的所有 agents：
 
 ```bash
-npx skills add AgentEra/Agently-Skills
+npx skills add AgentEra/Agently-Skills --all
+```
+
+如果你希望更稳妥，明确指定目标 agent，同时仍然整包安装：
+
+```bash
+npx skills add AgentEra/Agently-Skills --agent codex --skill '*' -y
 ```
 
 也可以直接让你的 coding agent 安装 `AgentEra/Agently-Skills`。
