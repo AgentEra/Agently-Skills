@@ -14,10 +14,16 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 ## Workflow
 
 1. Reduce the request into scenario and atomic goals.
-2. If the request is a project initialization or structure refactor, choose the owner layers and repo skeleton first.
+2. If the request is a project initialization or structure refactor, choose the owner layers, async boundary, and repo skeleton first.
 3. Choose the narrowest native Agently capability path.
 4. Name the concrete operations or primitives that should be used.
 5. Name the validation rule that proves the design stayed native-first.
+
+## Native-First Rules
+
+- default to async-first guidance for service code, streaming, TriggerFlow, and any path that may overlap work or benefit from cancellation
+- treat sync APIs as wrappers for scripts, REPL use, or compatibility bridges unless the host truly requires sync-only integration
+- when the request is a project-shape refactor, separate settings, prompts, services, domain contracts, workflow, and tests before discussing low-level implementation details
 
 ## Capability Routing
 
@@ -35,6 +41,7 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 
 - do not skip this playbook when the owner layer is unresolved
 - do not invent custom output parsers, retry loops, or orchestration first
+- do not let sync-first sample code dictate the service architecture when the target is clearly async-capable
 - do not split project initialization into a fake standalone framework surface before the owner layers are chosen
 - do not treat multi-agent, judge, or review flows as separate framework surfaces before checking native Agently capabilities
 

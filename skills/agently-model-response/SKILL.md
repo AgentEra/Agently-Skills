@@ -12,7 +12,8 @@ The user does not need to say `get_response()`. Requests to reuse one result as 
 ## Native-First Rules
 
 - prefer `get_response()` when one request result must be consumed more than once
-- prefer async response APIs in async runtimes
+- default to async-first response APIs in services, streaming paths, TriggerFlow steps, and any integration that may overlap work
+- treat sync getters and generators as convenience wrappers for scripts, REPL use, or compatibility bridges
 - use `delta`, `instant`, `specific`, or `all` instead of custom stream splitting logic
 
 ## Anti-Patterns

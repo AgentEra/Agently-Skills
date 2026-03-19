@@ -13,6 +13,7 @@ Use this skill when the core problem is how prompt state should be structured be
 - move reusable prompt structure into prompt config or YAML instead of ad hoc literals
 - keep runtime variables as `${...}` placeholders in prompt files and inject them through mappings at load time
 - keep task-specific request contracts in prompt config, and keep only widely reused persona setup in small code-side factories
+- when the output contract is stable and shared across a request family, keep it in prompt config such as `.request.output` instead of rebuilding it ad hoc in Python
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
@@ -20,6 +21,7 @@ Use this skill when the core problem is how prompt state should be structured be
 
 - do not flatten business context into one opaque string unless the task is trivial
 - do not rebuild prompt templates through ad hoc `.format(...)` or string concatenation when prompt mappings already fit
+- do not scatter stable prompt or output contracts across multiple Python helpers when one prompt config can own them
 - do not use prompt config files as a substitute for workflow state
 
 ## Read Next

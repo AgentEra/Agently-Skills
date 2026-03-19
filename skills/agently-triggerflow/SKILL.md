@@ -12,6 +12,8 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 ## Native-First Rules
 
 - prefer TriggerFlow for explicit multi-stage quality loops, branching, concurrency, waiting/resume, restart-safe execution, output-fan-out performance refactors, process-clarity refactors, or mixed sync/async orchestration
+- default to async-first workflow handlers, execution entrypoints, and runtime stream consumers
+- treat sync TriggerFlow APIs as wrappers for scripts or compatibility bridges, not as the default service interface
 - keep workflow stages visible instead of hiding nested request loops
 - combine with `agently-model-response` when one workflow step must reuse one model result as text, parsed data, metadata, or partial updates
 - combine with `agently-output-control` when downstream branches need stable structured fields or required keys
@@ -19,8 +21,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 ## Anti-Patterns
 
 - do not invent a custom event bus or state machine before checking TriggerFlow
+- do not pass raw model stream paths directly to the UI when the workflow can translate them into stable business events
 - do not hide draft/judge/revise or similar loops inside one opaque helper
 
 ## Read Next
 
 - `references/overview.md`
+- `references/stream-bridge.md`
