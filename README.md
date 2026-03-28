@@ -18,6 +18,7 @@ It provides native surfaces for:
 - response reuse, metadata access, and streaming consumption
 - tools, MCP, memory, and knowledge-base flows
 - workflow orchestration through TriggerFlow
+- optional developer tooling through `agently-devtools`
 
 ## What Is Agently-Skills?
 
@@ -58,9 +59,9 @@ The most important routing rules are:
 - stable structured fields, required keys, or machine-readable output -> `agently-output-control`
 - reuse one response as text, data, metadata, or streaming updates -> `agently-model-response`
 - session continuity or restore-after-restart -> `agently-session-memory`
-- tools, MCP, FastAPIHelper, `auto_func`, or `KeyWaiter` -> `agently-agent-extensions`
+- tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, Browse with Playwright or PyAutoGUI, or optional `agently-devtools` integration -> `agently-agent-extensions`
 - embeddings, indexing, retrieval, or KB-to-answer -> `agently-knowledge-base`
-- explicit orchestration, TriggerFlow, mixed sync/async execution, event-driven fan-out, process-clarity refactors, or resumable multi-stage flows -> `agently-triggerflow`
+- explicit orchestration, TriggerFlow, mixed sync/async execution, event-driven fan-out, process-clarity refactors, graph-friendly workflow definitions, or resumable multi-stage flows -> `agently-triggerflow`
 - migration from LangChain or LangGraph -> `agently-migration-playbook`, then the matching migration leaf
 
 Async should usually be the default execution stance:
@@ -84,6 +85,7 @@ The default shape should usually separate:
 - `tools/` for replaceable search, browse, MCP, or external adapters
 - `tests/` for settings smoke checks, prompt/response checks, and API or flow validation
 - `outputs/` and `logs/` for runtime artifacts instead of mixing them into source folders
+- optional `agently-devtools` wiring in the integration layer for local observation, evaluation, playground, and logs
 
 Two source-backed details matter here:
 
@@ -94,6 +96,7 @@ Two high-frequency rules prevent common drift:
 
 - keep stable shared output contracts in prompt config rather than scattering them across Python helpers
 - keep `OpenAICompatible` and similar provider settings under the plugin namespace that the requester actually reads, for example `plugins.ModelRequester.OpenAICompatible.*`
+- keep optional DevTools endpoints and bridge wiring outside prompt files and workflow helpers; use `ObservationBridge`, `EvaluationBridge`, or `create_local_observation_app(...)` from the public `agently-devtools` package instead of repo-specific install guidance
 
 This is the pattern used by `Agently-Daily-News-Collector`: settings stay in `SETTINGS.yaml`, prompt contracts stay in `prompts/`, flow construction stays in `workflow/`, and the app layer does env loading plus Agently wiring.
 
@@ -126,14 +129,25 @@ The public catalog currently contains 12 skills.
 ### Request Extensions
 
 - `agently-agent-extensions`
-  Tools, MCP, FastAPIHelper, `auto_func`, and `KeyWaiter`.
+  Tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, Browse with Playwright or PyAutoGUI, and optional `agently-devtools` integration.
 - `agently-knowledge-base`
   Embeddings plus Chroma-backed indexing, retrieval, and retrieval-to-answer flows.
 
 ### Workflow
 
 - `agently-triggerflow`
-  TriggerFlow orchestration, runtime state, runtime stream, workflow-side model execution, event-driven fan-out, process-clarity refactors, and mixed sync/async orchestration.
+  TriggerFlow orchestration, runtime state, runtime stream, workflow-side model execution, event-driven fan-out, process-clarity refactors, mixed sync/async orchestration, and graph-friendly workflow definitions for debugging and visualization.
+
+## Optional Companion Package
+
+Agently `v4.0.9` also introduces `agently-devtools` as an optional developer-tooling companion package.
+
+- Install: `pip install -U agently agently-devtools`
+- Compatibility line: `agently-devtools 0.1.x` targets `agently >=4.0.9,<4.1.0`
+- Public entrypoints: `ObservationBridge`, `EvaluationBridge`, `EvaluationRunner`, and `create_local_observation_app`
+- Recommended startup: `agently-devtools start`
+
+Use this package when an Agently app needs local runtime observation, evaluations, logs, or playground support during development and debugging. The skills package treats this as an optional extension surface, not as a required source-repo dependency.
 
 ### Migration
 

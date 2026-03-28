@@ -39,6 +39,7 @@ The default Agently project should usually separate these layers:
 - keep business stages explicit as chunks or sub flows instead of helper-to-helper jumps
 - inject tool instances, loggers, and other dependencies as runtime resources rather than hardcoding them inside chunk logic
 - use sub flows when a repeated business pipeline deserves an explicit reusable unit
+- keep chunk names readable enough that exported flow configs, Mermaid diagrams, and local observation graphs stay understandable
 
 ## Async Rules
 
@@ -52,6 +53,14 @@ The default Agently project should usually separate these layers:
 - when frontend teams need to adjust wording, fields, or behavior frequently, prefer config files as the bridge
 - if the config only changes request-side prompt behavior, route it through prompt config
 - if the config also changes stage counts, branch counts, concurrency, or other flow parameters, route it through settings plus TriggerFlow
+
+## Optional DevTools Loop
+
+- use `agently-devtools` as an optional PyPI-installed companion package for development, debugging, and evaluation
+- keep DevTools endpoints in env or settings, for example `AGENTLY_DEVTOOLS_BASE_URL` and `AGENTLY_DEVTOOLS_INGEST_URL`
+- attach `ObservationBridge` or `EvaluationBridge` in the app or integration layer instead of hiding them inside request or workflow helpers
+- if the team needs a local observation API inside its own server process, use `create_local_observation_app(...)`
+- do not require the DevTools source repository or editable installs in public integration guidance
 
 ## Initialization Decision
 

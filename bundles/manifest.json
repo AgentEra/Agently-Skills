@@ -36,7 +36,7 @@
     {
       "id": "request-extensions",
       "kind": "addon",
-      "purpose": "Optional request-side extensions for tools, memory, and knowledge-base work.",
+      "purpose": "Optional request-side extensions for tools, memory, knowledge-base work, and developer tooling such as agently-devtools integration.",
       "entry_skill": "agently-playbook",
       "base_bundle": "request-core",
       "active_skills": [
@@ -55,7 +55,7 @@
     {
       "id": "workflow-core",
       "kind": "core",
-      "purpose": "Workflow orchestration with TriggerFlow and response-control companions for event-driven fan-out, performance-sensitive refactors, and mixed sync/async flows.",
+      "purpose": "Workflow orchestration with TriggerFlow and response-control companions for event-driven fan-out, performance-sensitive refactors, mixed sync/async flows, and graph-friendly workflow debugging.",
       "entry_skill": "agently-playbook",
       "active_skills": [
         "agently-playbook",

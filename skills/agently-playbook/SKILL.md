@@ -32,9 +32,9 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 - output schema and reliability -> `agently-output-control`
 - response reuse, metadata, or streaming consumption -> `agently-model-response`
 - session continuity or restore -> `agently-session-memory`
-- tools, MCP, FastAPIHelper, `auto_func`, or `KeyWaiter` -> `agently-agent-extensions`
+- tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools` observation and evaluation integration -> `agently-agent-extensions`
 - embeddings, KB, or retrieval-to-answer -> `agently-knowledge-base`
-- branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, runtime stream, or explicit multi-stage quality loops -> `agently-triggerflow`
+- branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, runtime stream, graph-friendly workflow definitions, or explicit multi-stage quality loops -> `agently-triggerflow`
 - migration choice between LangChain and LangGraph -> `agently-migration-playbook`
 
 ## Anti-Patterns

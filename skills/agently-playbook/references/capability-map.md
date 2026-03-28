@@ -19,7 +19,7 @@ Examples that should still start here:
 - output contract and required keys -> `agently-output-control`
 - response reuse, metadata, and stream consumption -> `agently-model-response`
 - session continuity or restore -> `agently-session-memory`
-- tools, MCP, FastAPIHelper, `auto_func`, or `KeyWaiter` -> `agently-agent-extensions`
+- tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools` observation/evaluation/playground integration -> `agently-agent-extensions`
 - embeddings and retrieval -> `agently-knowledge-base`
-- branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, or multi-stage quality loops -> `agently-triggerflow`
+- branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, graph-friendly workflow definitions, or multi-stage quality loops -> `agently-triggerflow`
 - unresolved migration ownership -> `agently-migration-playbook`

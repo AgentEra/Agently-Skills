@@ -14,6 +14,7 @@ Use this file as installation-time guidance after the skills are added into anot
 - Route unresolved product, assistant, and workflow requests through `agently-playbook` first.
 - Prefer Agently-native capabilities before custom output parsers, retry loops, or orchestration layers.
 - Default to async-first guidance for services, streaming, TriggerFlow, and concurrent execution. Treat sync APIs as wrappers for scripts, REPL use, or compatibility bridges unless there is a clear reason not to.
+- Treat `agently-devtools` as an optional companion package installed from PyPI, not as a required source-repo dependency.
 - Keep public skill boundaries capability-first and mutually exclusive.
 - Treat multi-agent, judge, and review flows as scenario recipes unless they need a dedicated framework surface.
 
@@ -23,6 +24,7 @@ Use this file as installation-time guidance after the skills are added into anot
 - Keep stable shared prompt and output contracts in prompt config rather than scattering them across Python helpers.
 - Keep provider settings under the namespace actually read by the active plugin. For `OpenAICompatible`, prefer `plugins.ModelRequester.OpenAICompatible.*`.
 - Prefer `Agently.load_settings("yaml_file", path, auto_load_env=True)` for file-backed settings. Use `Agently.set_settings(...)` for inline overrides.
+- Keep optional DevTools wiring in the integration layer through `ObservationBridge`, `EvaluationBridge`, or `create_local_observation_app` instead of scattering debug hooks across workflow code.
 
 ## Skill Routing Reminders
 
@@ -31,10 +33,12 @@ Use this file as installation-time guidance after the skills are added into anot
 - `agently-prompt-management`: prompt config, mappings, reusable request contracts, and prompt-side output contracts
 - `agently-output-control`: structured output shape, required keys, reliability, and structured streaming
 - `agently-model-response`: response reuse, async getters, metadata, and stream consumption
-- `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, and workflow-owned business events
+- `agently-agent-extensions`: tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
+- `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
 
 ## Anti-Patterns
 
 - Do not treat sync sample code as the default architecture for async-capable services.
 - Do not expose raw model parser paths directly to the UI when the workflow can translate them into stable business events.
 - Do not keep provider auth, model name, or base URL in ad hoc Python literals when settings plus `${ENV.xxx}` placeholders fit.
+- Do not tell users to clone or editable-install the private DevTools source when the public package `pip install agently-devtools` already matches the supported integration path.

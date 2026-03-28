@@ -1,6 +1,6 @@
 ---
 name: agently-triggerflow
-description: Use when the user needs workflow orchestration such as branching, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, mixed sync/async function or module orchestration, event-driven fan-out, process-clarity refactors that make stages explicit, performance-oriented refactors that collapse split requests, or explicit draft-review-revise style multi-stage flows. The user does not need to say TriggerFlow explicitly.
+description: Use when the user needs workflow orchestration such as branching, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, mixed sync/async function or module orchestration, event-driven fan-out, process-clarity refactors that make stages explicit, performance-oriented refactors that collapse split requests, or workflow definitions and chunk-level runtime metadata that must stay visible for debugging and visualization. The user does not need to say TriggerFlow explicitly.
 ---
 
 # Agently TriggerFlow
@@ -15,6 +15,8 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - default to async-first workflow handlers, execution entrypoints, and runtime stream consumers
 - treat sync TriggerFlow APIs as wrappers for scripts or compatibility bridges, not as the default service interface
 - keep workflow stages visible instead of hiding nested request loops
+- name chunks and stage boundaries so exported flow configs, Mermaid diagrams, and runtime graphs stay readable
+- let TriggerFlow definition export and runtime metadata drive visualization instead of maintaining a second manual graph description
 - combine with `agently-model-response` when one workflow step must reuse one model result as text, parsed data, metadata, or partial updates
 - combine with `agently-output-control` when downstream branches need stable structured fields or required keys
 
@@ -23,8 +25,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - do not invent a custom event bus or state machine before checking TriggerFlow
 - do not pass raw model stream paths directly to the UI when the workflow can translate them into stable business events
 - do not hide draft/judge/revise or similar loops inside one opaque helper
+- do not make DevTools or graph tooling the source of truth for workflow structure when TriggerFlow definitions already are
 
 ## Read Next
 
 - `references/overview.md`
 - `references/stream-bridge.md`
+- `references/devtools-graph.md`

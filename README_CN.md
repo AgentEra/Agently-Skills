@@ -18,6 +18,7 @@ Agently 是一个用于构建模型应用和工作流的框架。
 - 响应复用、metadata 读取与 streaming 消费
 - tools、MCP、memory、knowledge-base 等扩展能力
 - 基于 TriggerFlow 的工作流编排
+- 通过 `agently-devtools` 提供的可选开发者工具能力
 
 ## 什么是 Agently-Skills？
 
@@ -58,9 +59,9 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 - 稳定结构化输出、required keys、机器可消费结果 -> `agently-output-control`
 - 一个响应结果需要被文本、数据、metadata、stream 多次消费 -> `agently-model-response`
 - session 连续性与 restore-after-restart -> `agently-session-memory`
-- tools、MCP、FastAPIHelper、`auto_func`、`KeyWaiter` -> `agently-agent-extensions`
+- tools、MCP、FastAPIHelper、`auto_func`、`KeyWaiter`、带 Playwright / PyAutoGUI 的 Browse，或可选 `agently-devtools` 集成 -> `agently-agent-extensions`
 - embeddings、索引、检索、KB-to-answer -> `agently-knowledge-base`
-- 显式工作流编排、TriggerFlow、混合同异步执行、事件驱动 fan-out、流程清晰化重构、可恢复多阶段流程 -> `agently-triggerflow`
+- 显式工作流编排、TriggerFlow、混合同异步执行、事件驱动 fan-out、流程清晰化重构、图可视化友好的流程定义、可恢复多阶段流程 -> `agently-triggerflow`
 - LangChain / LangGraph 迁移 -> `agently-migration-playbook`，再进入对应迁移 leaf
 
 执行方式上，默认应采用 async-first 心智：
@@ -84,6 +85,7 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 - `tools/`，负责可替换的 search、browse、MCP 或其他外部适配层
 - `tests/`，负责 settings smoke check、Prompt/响应检查、API 或 flow 验证
 - `outputs/` 和 `logs/`，负责运行产物，而不是把这些内容混进源码目录
+- integration 层里的可选 `agently-devtools` 接入，用于本地 observation、evaluation、playground 与 logs
 
 这里有两个需要明确写进规范的源码级细节：
 
@@ -94,6 +96,7 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 
 - 稳定共享的 output contract 优先放进 Prompt config，例如 `.request.output`，而不是散落在多个 Python helper 里
 - `OpenAICompatible` 之类 provider 配置，应放在插件实际读取的命名空间下，例如 `plugins.ModelRequester.OpenAICompatible.*`
+- 可选 DevTools 端点和 bridge wiring 应放在 integration 层，而不是 Prompt 文件或 workflow helper 里；对外只写公共包 `agently-devtools` 的安装与入口，不写源码仓库接入说明
 
 `Agently-Daily-News-Collector` 用的就是这个模式：settings 留在 `SETTINGS.yaml`，prompt contract 留在 `prompts/`，流程构造留在 `workflow/`，而 app 层负责 `.env` 加载和 Agently wiring。
 
@@ -126,14 +129,25 @@ Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 ### Request Extensions
 
 - `agently-agent-extensions`
-  tools、MCP、FastAPIHelper、`auto_func` 与 `KeyWaiter`。
+  tools、MCP、FastAPIHelper、`auto_func`、`KeyWaiter`、带 Playwright / PyAutoGUI 的 Browse，以及可选 `agently-devtools` 集成。
 - `agently-knowledge-base`
   embeddings、Chroma 索引、检索与 retrieval-to-answer。
 
 ### Workflow
 
 - `agently-triggerflow`
-  TriggerFlow 编排、运行时状态、runtime stream、工作流内模型执行、事件驱动 fan-out、流程清晰化重构与混合同异步编排。
+  TriggerFlow 编排、运行时状态、runtime stream、工作流内模型执行、事件驱动 fan-out、流程清晰化重构、混合同异步编排，以及面向调试和可视化的图友好流程定义。
+
+## 可选配套包
+
+Agently `v4.0.9` 还引入了可选开发者工具配套包 `agently-devtools`。
+
+- 安装：`pip install -U agently agently-devtools`
+- 兼容线：`agently-devtools 0.1.x` 对应 `agently >=4.0.9,<4.1.0`
+- 公共入口：`ObservationBridge`、`EvaluationBridge`、`EvaluationRunner`、`create_local_observation_app`
+- 推荐启动命令：`agently-devtools start`
+
+当 Agently 应用在开发、调试阶段需要本地 runtime observation、评测、日志或 playground 时，应把它当作可选扩展能力接入，而不是要求用户接触 DevTools 源码仓库。
 
 ### Migration
 

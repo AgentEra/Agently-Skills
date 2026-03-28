@@ -621,6 +621,23 @@
       ]
     },
     {
+      "id": "devtools-observation-zh",
+      "scenario_id": "agent-extensions-devtools",
+      "locale": "zh",
+      "intent_style": "direct-leaf",
+      "query": "帮我把 agently-devtools 接到现有 Agently 应用里，我想在本地看 runtime observation、logs 和 playground，但不想自己写上传桥。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-agent-extensions",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-agent-extensions"
+        ]
+      ]
+    },
+    {
       "id": "knowledge-base",
       "scenario_id": "knowledge-base",
       "locale": "en",
@@ -660,6 +677,28 @@
           "agently-playbook",
           "agently-migration-playbook",
           "agently-langgraph-to-triggerflow"
+        ]
+      ]
+    },
+    {
+      "id": "triggerflow-graph-debug-zh",
+      "scenario_id": "triggerflow-graph-debug",
+      "locale": "zh",
+      "intent_style": "direct-leaf",
+      "query": "我已经在用 TriggerFlow，想让执行图里把还没跑到的分支也显示出来，并且保留 chunk signal 和 origin 信息方便排查流程。",
+      "installed_skills": [
+        "agently-playbook",
+        "agently-agent-extensions",
+        "agently-triggerflow",
+        "agently-model-response"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-triggerflow"
+        ],
+        [
+          "agently-playbook",
+          "agently-triggerflow"
         ]
       ]
     }
