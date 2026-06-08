@@ -43,7 +43,7 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - treat `create_execution(concurrency=N)` and `execution.set_concurrency(N)` as an execution-wide handler dispatch budget, including nested dispatch from chunk continuations and `data.async_emit(...)`; use operator-local `batch(..., concurrency=...)` or `for_each(..., concurrency=...)` only for local fan-out caps
 - use `execution.result` when services, UIs, stream consumers, or intervention-aware workflows need multiple views of one execution outcome, such as state, compatibility final result, interventions, and metadata; use `execution.close()` / `execution.async_close()` for close snapshots
 - use runtime intervention for optional supplemental context added while an execution is already running: define explicit `.intervention_point(...)` boundaries so execution creation can infer planned mode, or create the execution with `intervention_mode="auto"` for boundary policy insertion; chunks read inserted context with `data.get_interventions(...)` and explicitly audit usage with `data.async_mark_intervention_consumed(...)`, relying on the chunk-name consumer default unless another consumer identity is clearer
-- for human approvals, webhooks, or externally resumed waits, use `pause_for(..., resume_to="next" | "self" | {"event": ...})`; treat it as a durable graph interrupt, not Python coroutine stack persistence; teach model-decided autonomous interrupts with model-owned `pause_for(..., resume_to="self")`, and teach prearranged approval gates with an explicit pause chunk plus `when(...)`
+- for human approvals, webhooks, or externally resumed waits, use `pause_for(..., resume_to="next" | "self" | {"event": ...})`; treat it as a durable graph interrupt, not Python coroutine stack persistence; teach model-decided autonomous interrupts with model-owned `pause_for(..., resume_to="self")`, where the resumed chunk handles `data.is_resume` and the default `max_resumes=1` prevents unbounded self-replay; teach prearranged approval gates with an explicit pause chunk plus `when(...)`
 - for framework policy approvals, use the global PolicyApproval contract and
   represent pending approvals as `pause_for(type="policy_approval", ...)`
   interrupts that resume through `continue_with(...)`
@@ -51,12 +51,39 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - close waiting executions explicitly: `close()` / `async_close()` rejects pending interrupts by default, and `pending_interrupts="cancel"` must be chosen deliberately when abandoning waits
 - when a sub-flow can pause, keep the external API rooted at the parent execution id plus projected root interrupt id; do not require callers to manage child execution ids
 - use `emit_nowait(...)` / `async_emit_nowait(...)` when a chunk must fan out without blocking the current handler, and rely on execution close to drain registered tasks
+- after starting a finite workflow that uses execution-managed nowait fan-out,
+  call `await execution.async_close()` to drain registered tasks and collect the
+  close snapshot. Do not add `while True` status polling loops such as
+  `execution.result.get_state("status")` unless a chunk explicitly owns and
+  updates that status contract
 - rely on chunk-internal `data.emit(...)`, `data.async_emit(...)`, `data.emit_nowait(...)`, and `data.async_emit_nowait(...)` to inherit the current TriggerFlow runtime scope; do not assume unrelated external emits can be paired by `when(..., mode="and")` unless the host routes them through one scoped flow stage or carries explicit correlation in the payload
 - use execution runtime state through `get_state(...)` / `set_state(...)` instead of legacy runtime-data helpers in new examples
 - treat shared flow data as a risky cross-execution surface and avoid it unless the task explicitly needs shared state
 - for service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface; prefer module-level named chunks and conditions, inject stable dependencies through flow-level `runtime_resources`, and inject request-specific dependencies through execution-level `runtime_resources`
 - route model-generated or app-submitted DAG data to `agently-dynamic-task`; Dynamic Task is a first-class Agently API that uses TriggerFlow as an execution substrate, not a TriggerFlow sub-API
 - use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins; definition idempotence must not be confused with runtime signal deduplication
+- for a developer-owned Todo DAG or other dependency graph represented as
+  stable Python flow code, express multi-dependency joins with
+  `flow.when(["task_a_done", "task_b_done"], mode="and").to(...)` and have
+  upstream chunks call `data.emit_nowait("task_a_done", payload)`. Do not
+  replace joins with sleeps, polling loops, local `completed` sets, or
+  `pause_for(..., resume_to="self")` unless the workflow is genuinely waiting
+  for external input across process time
+- when a model-generated Todo List is produced at runtime but the host owns the
+  executor code, compile the returned task list into TriggerFlow definitions
+  immediately after generation: root tasks attach to the execution start
+  boundary with `flow.to(handler, name=...)`, dependent tasks attach with
+  `flow.when(dep_signals, mode="and").to(handler)`, and task handlers emit their
+  own completion signals. Do not implement a generic local scheduler that scans
+  `task_status`, `completed`, or dependency lists to decide which task is ready;
+  that hides the DAG from TriggerFlow and defeats graph visibility. Do not pass
+  `lambda data: async_task_handler(data, task)` to `flow.to(...)`; that registers
+  a sync lambda whose return coroutine may not be awaited. Use a normal factory
+  that returns `async def handler(data): ...` and register that handler
+- when a TriggerFlow + SkillsExecutor example relies on a trusted local Skill
+  bundle to provide declared helper capabilities, pass selector-level
+  `auto_allow=True`; explicit host `configure_skill_capabilities(...)` policy
+  still wins and Skill metadata alone is not a capability grant
 - keep runtime stream consumers safe by relying on execution close to stop the stream
 - keep workflow stages visible instead of hiding nested request loops
 - name chunks and stage boundaries so exported flow configs, Mermaid diagrams, and runtime graphs stay readable
@@ -68,7 +95,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 When generating or editing Python code, use the actual Agently API shape:
 
 ```python
-from agently import TriggerFlow, TriggerFlowRuntimeData
+from agently import Agently, TriggerFlow, TriggerFlowRuntimeData
+
+agent = Agently.create_agent()
+flow = TriggerFlow(name="workflow-name")
 ```
 
 `when`, `emit_nowait`, and `pause_for` are not top-level imports from
@@ -79,11 +109,27 @@ from agently import TriggerFlow, TriggerFlowRuntimeData
 - pause from inside a chunk with `await data.async_pause_for(...)`
 - create and close long-running/manual executions with
   `execution = flow.create_execution(auto_close=False)`,
-  `await execution.async_start(input_value)`, and
+  `await execution.async_start(input_value)` using a positional start value, and
   `snapshot = await execution.async_close()`
+- do not call `execution.async_start(input_value=...)`; pass the start value
+  positionally
+- do not assume `execution.async_start("start")` emits a custom `"start"` event.
+  It starts the execution with `"start"` as the start input. Use `flow.to(...)`
+  for start-bound chunks, or explicitly call `await execution.async_emit("start", payload)`
+  after start when a custom event is intentional
+- `async_close()` / `close()` returns the close snapshot as a dict. Read it as
+  `snapshot["key"]` or inspect execution state through
+  `execution.result.get_state("key")`; do not write `snapshot.state`,
+  `snapshot.pending_interrupts`, or `execution.result.state`
+- create named flows with `TriggerFlow(name="...")` or unnamed flows with
+  `TriggerFlow()`. Do not write `TriggerFlow("name")`; the first positional
+  argument is not the workflow name in the current API
 
 Do not write `from agently import when, emit_nowait, pause_for`, and do not use
 `@flow.when(...)` as a decorator.
+Do not import `Agent` from `agently` or call `Agent()` directly; create agents
+with `Agently.create_agent()` so plugin manager and settings ownership stay
+inside the framework boundary.
 
 ## Dynamic Task Boundary
 
