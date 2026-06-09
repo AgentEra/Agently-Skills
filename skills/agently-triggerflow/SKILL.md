@@ -59,7 +59,19 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - rely on chunk-internal `data.emit(...)`, `data.async_emit(...)`, `data.emit_nowait(...)`, and `data.async_emit_nowait(...)` to inherit the current TriggerFlow runtime scope; do not assume unrelated external emits can be paired by `when(..., mode="and")` unless the host routes them through one scoped flow stage or carries explicit correlation in the payload
 - use execution runtime state through `get_state(...)` / `set_state(...)` instead of legacy runtime-data helpers in new examples
 - treat shared flow data as a risky cross-execution surface and avoid it unless the task explicitly needs shared state
-- when discussing restart or future distributed recovery, describe `execution.save()` as an execution snapshot that includes a `checkpoint` section with durable TriggerFlow progress and resource requirement keys; do not imply live `runtime_resources`, clients, callbacks, tasks, semaphores, or Python coroutine frames are serialized. Rehydrate by loading the snapshot and re-injecting fresh runtime resources before `continue_with(...)` or external emits
+- when discussing restart or distributed recovery, describe `execution.save()`
+  as an execution snapshot that includes a versioned `checkpoint` envelope with
+  durable TriggerFlow progress, interrupt/resume ledgers, resource
+  requirements, lease metadata, and managed execution environment requirements.
+  Do not imply live `runtime_resources`, clients, callbacks, tasks, semaphores,
+  or Python coroutine frames are serialized. Declare future resources with
+  `flow.declare_resource_requirement(...)` or
+  `execution.declare_resource_requirement(...)`, inspect or restore with
+  `execution.inspect_rehydration(...)` / `execution.async_rehydrate(...)`, pass a
+  stable `resume_request_id` to `continue_with(...)` for external callbacks, and
+  persist through a checkpoint store that implements `put_checkpoint(...)` while
+  the production store owns atomic claim, lease enforcement, and conflict
+  handling
 - for service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface; prefer module-level named chunks and conditions, inject stable dependencies through flow-level `runtime_resources`, and inject request-specific dependencies through execution-level `runtime_resources`
 - route model-generated or app-submitted DAG data to `agently-dynamic-task`; Dynamic Task is a first-class Agently API that uses TriggerFlow as an execution substrate, not a TriggerFlow sub-API
 - use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins; definition idempotence must not be confused with runtime signal deduplication
