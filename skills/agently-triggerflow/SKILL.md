@@ -61,8 +61,9 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - treat shared flow data as a risky cross-execution surface and avoid it unless the task explicitly needs shared state
 - when discussing restart or distributed recovery, describe `execution.save()`
   as an execution snapshot that includes a versioned `checkpoint` envelope with
-  durable TriggerFlow progress, interrupt/resume ledgers, resource
-  requirements, lease metadata, and managed execution environment requirements.
+  durable TriggerFlow progress, flow definition fingerprint validation,
+  interrupt/resume ledgers, resource requirements, lease metadata, and managed
+  execution environment requirements.
   Do not imply live `runtime_resources`, clients, callbacks, tasks, semaphores,
   or Python coroutine frames are serialized. Declare future resources with
   `flow.declare_resource_requirement(...)` or
@@ -71,7 +72,9 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   stable `resume_request_id` to `continue_with(...)` for external callbacks, and
   persist through a checkpoint store that implements `put_checkpoint(...)` while
   the production store owns atomic claim, lease enforcement, and conflict
-  handling
+  handling. If a checkpoint fingerprint is missing or does not match the
+  current flow definition, `inspect_rehydration(...)` reports
+  `invalid_snapshot` and `load(...)` rejects the snapshot
 - for service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface; prefer module-level named chunks and conditions, inject stable dependencies through flow-level `runtime_resources`, and inject request-specific dependencies through execution-level `runtime_resources`
 - route model-generated or app-submitted DAG data to `agently-dynamic-task`; Dynamic Task is a first-class Agently API that uses TriggerFlow as an execution substrate, not a TriggerFlow sub-API
 - use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins; definition idempotence must not be confused with runtime signal deduplication
