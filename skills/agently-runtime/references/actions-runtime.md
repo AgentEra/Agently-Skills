@@ -141,6 +141,15 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   Workspace root and can require `expected_files`, and `write_file` in
   coding-agent mode requires prior read state or an expected hash unless the
   host disables that guard. Prefer these actions for file IO instead of shell.
+- `agent.enable_python(...)`, `agent.enable_shell(...)`,
+  `agent.enable_nodejs(...)`, and `agent.enable_code_runtime(...)` use
+  Docker-backed runtime profiles and fail closed when Docker CLI or daemon
+  preflight fails. Strict profiles report missing images; developer and CI
+  profiles may pull missing images with `image_pull_policy="if_missing"` and
+  prepare standard dependencies with `dependency_policy="install"`. Use
+  `sandbox="trusted_local"` only for trusted compatibility paths. Dependency
+  installation belongs to host/provider resource preparation, not
+  model-visible action inputs.
 - `agent.enable_shell(...)` defaults to a small safe shell profile when
   `commands` is omitted. Treat shell as a test/build/git/read-only diagnostics
   capability; stdout/stderr are bounded by `max_output_chars`, and oversized

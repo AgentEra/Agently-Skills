@@ -84,15 +84,21 @@ processes, or broad sandboxes when the environment can be declared and managed
 through ExecutionResource.
 
 For runnable main-repo examples, check the current execution-resource examples.
-Start with the local `agent.enable_python(...)` quickstart, then use the
-Ollama/DeepSeek examples for model-driven Action selection. The TriggerFlow
+Start with the trusted-local `agent.enable_python(..., sandbox="trusted_local")`
+quickstart when no Docker service is available, then use the Docker-backed
+Ollama/DeepSeek and common-language code runtime examples. The TriggerFlow
 example is for workflow or framework developers who need managed
 execution-local resources.
 For built-in Search/Browse package examples, check `examples/builtin_actions/`.
 
 Do not turn Skills into a parallel executor. Skill scripts should map to built-in
 Actions and component helpers such as `agent.enable_python(...)`,
-`agent.enable_shell(...)`, `agent.enable_nodejs(...)`, and `agent.enable_sqlite(...)`; MCP assets should map to
+`agent.enable_shell(...)`, `agent.enable_nodejs(...)`,
+`agent.enable_code_runtime(...)`, and `agent.enable_sqlite(...)`; Python,
+shell, Node.js, and common-language code runtime helpers use Docker-backed
+runtime profiles, while dependency installation remains host/provider resource
+preparation rather than model-visible package-manager commands. MCP assets
+should map to
 MCP-backed Actions plus ExecutionResource requirements; workflow templates
 should map to TriggerFlow. Multi-step Skills strategies should reuse
 TriggerFlow for orchestration and ActionFlow/ActionRuntime for tool/action
@@ -186,9 +192,23 @@ to call both packages.
 
 ### Dependency Install Or Other Broad Shell Work
 
-If the user wants to install packages, run migrations, or do other shell-heavy work, do not route that through Python sandbox.
+If the user wants to install packages, run migrations, or do other shell-heavy
+work, do not route that through Python sandbox or model-visible package-manager
+commands.
 
-Use a bash sandbox action with a deliberate allowlist such as `["python", "pip", "uv", "poetry", "git"]` only for trusted flows, or move to a custom Docker executor when you need a stronger boundary.
+For code execution in common languages, prefer Docker-backed helpers with
+host-selected provisioning policy:
+
+```python
+agent.enable_code_runtime(
+    language="go",
+    provisioning_profile="developer",
+)
+```
+
+Use a bash sandbox action with a deliberate allowlist such as
+`["python", "pip", "uv", "poetry", "git"]` only for trusted maintenance flows
+where shell is the product behavior.
 
 ```python
 agent.action.register_bash_sandbox_action(
@@ -203,7 +223,10 @@ agent.action.register_bash_sandbox_action(
 )
 ```
 
-If you need internet-enabled package installation, prefer a custom Docker executor with `network_mode="enabled"` over relaxing the Python sandbox. The built-in Python sandbox is for code execution, not environment mutation.
+If you need internet-enabled dependency preparation for model-planned code,
+prefer `provisioning_profile="developer"` or `"ci"` with an explicit
+`dependency_policy` over relaxing the Python sandbox. The legacy trusted-local
+Python sandbox is for compatibility, not environment mutation.
 
 ### When You Really Want Big Permission
 
