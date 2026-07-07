@@ -71,8 +71,10 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
 - use `get_result()` when the same result must be read multiple ways. Agent
   quick prompt chains return `AgentExecutionResult`; direct low-level
   ModelRequest calls return `ModelRequestResult`. `ModelResponseResult` is
-  retired. `get_response()` remains a compatibility alias where present, but
-  new Agent examples should prefer `get_result()`
+  retired. For AgentExecutionResult, `get_data()` is the business-result view;
+  use `get_full_data()` only when a task-strategy caller needs the full
+  route/task envelope. `get_response()` remains a compatibility alias where
+  present, but new Agent examples should prefer `get_result()`
 - keep Session memory separate from TriggerFlow execution state; when durable
   long-term memory is needed, use `session.use_memory(mode="AgentlyMemory",
   workspace=...)` or bind it through an Agent session instead of inventing a

@@ -175,7 +175,9 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   while useful but unaccepted artifacts remain `artifact_status="partial"` and
   should explain unmet requirements instead of being reported as completed.
   `get_text()` / `async_get_text()` may prefer `final_response` for
-  task-strategy result dicts; `get_data()` still returns the structured result.
+  task-strategy result dicts; `get_data()` / `async_get_data()` return the
+  business `final_result` view when present, while `get_full_data()` /
+  `async_get_full_data()` return the complete route/task envelope.
   TaskBoard terminal payloads may include bounded `taskboard.completion_notes`
   for card summaries, known gaps, verifier notes, and acceptance progress; use
   them to disclose final-response limitations, but treat them as projection-only
@@ -294,8 +296,10 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   `result = execution.get_result()` and `result.get_data()` /
   `await result.async_get_data()`, or use `execution.get_async_generator()` and
   `await execution.async_get_meta()` when the app needs streams or process
-  facts. Direct low-level ModelRequest calls return ModelRequestResult; do not
-  use the retired ModelResponseResult name.
+  facts. For task-strategy route internals such as `status`, `artifact_status`,
+  `taskboard`, or diagnostics, use `result.get_full_data()` /
+  `await result.async_get_full_data()`. Direct low-level ModelRequest calls
+  return ModelRequestResult; do not use the retired ModelResponseResult name.
 - when the host owns a developer loop and needs one bounded Agent step, choose
   `agent.create_execution(lineage=..., limits=...)` plus explicit
   `execution.async_record_workspace(...)` observation/checkpoint writes before

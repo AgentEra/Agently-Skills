@@ -243,8 +243,9 @@ here for Actions, ExecutionResource, service, or DevTools details.
   boundary; useful but unaccepted artifacts and blocked outcomes should also
   include `final_response` so callers can show what was produced, where work
   stopped, and which requirements remain unmet. Prefer `final_response` for
-  task-strategy `get_text()` display, while `get_data()` remains the structured
-  result; when semantic content quality
+  task-strategy `get_text()` display; use `get_data()` for the business
+  `final_result` view and `get_full_data()` for the complete route/task
+  envelope. When semantic content quality
   matters, combine deterministic smoke checks with current docs/spec/source
   references or an Agently model-judge request, and do not use counts, keyword
   hits, or task verifier acceptance alone as the primary acceptance signal
@@ -633,8 +634,9 @@ here for Actions, ExecutionResource, service, or DevTools details.
   semantics
 - inspect AgentExecution runtime facts through AgentExecutionResult or the
   execution facade: `result = execution.get_result()`, `result.get_text()`,
-  `result.get_data()`, `result.get_meta()`, `execution.get_async_generator()`,
-  and `await execution.async_get_meta()`. `meta["task_frame"]`,
+  `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,
+  `execution.get_async_generator()`, and `await execution.async_get_meta()`.
+  `meta["task_frame"]`,
   `meta["task_graph"]`, and `meta["execution_blocks"]` record the selected Task
   structure and concrete execution lowering, while `meta["logs"]` exposes model
   response ids, ActionRuntime action logs, task refs, and artifact refs when available; use those
