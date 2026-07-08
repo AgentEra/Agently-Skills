@@ -75,11 +75,20 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
   use `get_full_data()` only when a task-strategy caller needs the full
   route/task envelope. `get_response()` remains a compatibility alias where
   present, but new Agent examples should prefer `get_result()`
-- treat completed `AgentExecution` objects as immutable run records. For
-  compatibility with older fluent chains, prompt/config mutators called on a
-  completed execution return a fresh execution draft; continue from that
-  returned object, and prefer one execution per request boundary in service
-  code
+- treat completed `AgentExecution` objects as immutable one-run records.
+  Ordinary `agent.input(...).output(...).start()` expressions create a fresh
+  execution for that expression, so they remain valid in loops and services.
+  Once code keeps an explicit execution object and starts it, prompt/config
+  mutators on that completed object should fail fast; create a new execution
+  with `agent.input(...)`, `agent.create_execution(...)`, or
+  `execution.create_execution(...)` for the next request
+- inspect one-run prompt and response facts on the execution/result facade:
+  capture `execution = agent.input(...).output(...)` before starting when the
+  code needs `execution.get_prompt_text()`, `execution.get_data_object()`,
+  `execution.get_key_result(...)`, `execution.wait_keys(...)`,
+  `execution.get_async_generator(type="specific")`, or
+  `execution.streaming_print()`. Use `agent.get_prompt_text()` only for
+  persistent Agent definition prompt, not for discarded one-run prompt chains
 - keep Session memory separate from TriggerFlow execution state; when durable
   long-term memory is needed, use `session.use_memory(mode="AgentlyMemory",
   workspace=...)` or bind it through an Agent session instead of inventing a

@@ -520,11 +520,16 @@ here for Actions, ExecutionResource, service, or DevTools details.
   MCP config dictionaries for stdio/multi-server local integrations; treat SSE
   as a legacy compatibility transport
 - treat chained Agent quick prompt methods as AgentExecution-local configuration
-  for one request/execution surface. For multi-statement execution setup, use
-  `execution = agent.create_execution()` and mutate the execution, not the
-  shared Agent pending prompt. `semantic_outputs=` is only a deprecated
-  compatibility alias for direct Skills execution, while Dynamic Task still
-  uses `semantic_outputs` inside TaskDAG specs
+  for one request/execution surface. Ordinary
+  `agent.input(...).output(...).start()` expressions create a fresh execution
+  for that expression, including inside loops. For multi-statement execution
+  setup, use `execution = agent.create_execution()` and mutate the execution
+  before it starts, not the shared Agent pending prompt. A completed explicit
+  `AgentExecution` is an immutable run record; prompt/config mutators should
+  fail fast on that object, and the next request should use a new execution.
+  `semantic_outputs=` is only a deprecated compatibility alias for direct
+  Skills execution, while Dynamic Task still uses `semantic_outputs` inside
+  TaskDAG specs
 - for framework-side Skills execution, keep standard `SKILL.md` as the only
   capability definition; selected Skills default to a `single_shot`
   compatibility label that lowers to handler-backed model-request execution,
@@ -635,7 +640,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
 - inspect AgentExecution runtime facts through AgentExecutionResult or the
   execution facade: `result = execution.get_result()`, `result.get_text()`,
   `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,
-  `execution.get_async_generator()`, and `await execution.async_get_meta()`.
+  `execution.get_prompt_text()`, `execution.get_data_object()`,
+  `execution.get_key_result(...)`, `execution.wait_keys(...)`,
+  `execution.get_async_generator()`, `execution.streaming_print()`, and
+  `await execution.async_get_meta()`.
   `meta["task_frame"]`,
   `meta["task_graph"]`, and `meta["execution_blocks"]` record the selected Task
   structure and concrete execution lowering, while `meta["logs"]` exposes model

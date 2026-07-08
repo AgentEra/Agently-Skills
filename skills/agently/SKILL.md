@@ -294,15 +294,20 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 - consume Agent quick prompt results through `AgentExecutionResult`:
   `execution = agent.input(...).output(...)`, then
   `result = execution.get_result()` and `result.get_data()` /
-  `await result.async_get_data()`, or use `execution.get_async_generator()` and
-  `await execution.async_get_meta()` when the app needs streams or process
-  facts. For task-strategy route internals such as `status`, `artifact_status`,
+  `await result.async_get_data()`, or use execution facade methods such as
+  `execution.get_prompt_text()`, `execution.get_data_object()`,
+  `execution.get_key_result(...)`, `execution.wait_keys(...)`,
+  `execution.get_async_generator(type="specific")`,
+  `execution.streaming_print()`, and `await execution.async_get_meta()` when the
+  app needs prompt inspection, object/key readers, streams, or process facts.
+  For task-strategy route internals such as `status`, `artifact_status`,
   `taskboard`, or diagnostics, use `result.get_full_data()` /
   `await result.async_get_full_data()`. Direct low-level ModelRequest calls
   return ModelRequestResult; do not use the retired ModelResponseResult name.
-  Completed `AgentExecution` objects are immutable run records; compatibility
-  prompt/config mutators return a fresh draft when called after completion, so
-  older fluent chains must continue from the returned object.
+  Ordinary `agent.input(...).start()` expressions create a fresh one-run
+  execution each time and remain valid in loops. Explicit completed
+  `AgentExecution` objects are immutable run records; do not reconfigure or
+  rerun the same object, and create a new execution for the next request.
 - when the host owns a developer loop and needs one bounded Agent step, choose
   `agent.create_execution(lineage=..., limits=...)` plus explicit
   `execution.async_record_workspace(...)` observation/checkpoint writes before
