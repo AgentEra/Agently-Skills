@@ -75,6 +75,11 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
   use `get_full_data()` only when a task-strategy caller needs the full
   route/task envelope. `get_response()` remains a compatibility alias where
   present, but new Agent examples should prefer `get_result()`
+- treat completed `AgentExecution` objects as immutable run records. For
+  compatibility with older fluent chains, prompt/config mutators called on a
+  completed execution return a fresh execution draft; continue from that
+  returned object, and prefer one execution per request boundary in service
+  code
 - keep Session memory separate from TriggerFlow execution state; when durable
   long-term memory is needed, use `session.use_memory(mode="AgentlyMemory",
   workspace=...)` or bind it through an Agent session instead of inventing a

@@ -300,6 +300,9 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   `taskboard`, or diagnostics, use `result.get_full_data()` /
   `await result.async_get_full_data()`. Direct low-level ModelRequest calls
   return ModelRequestResult; do not use the retired ModelResponseResult name.
+  Completed `AgentExecution` objects are immutable run records; compatibility
+  prompt/config mutators return a fresh draft when called after completion, so
+  older fluent chains must continue from the returned object.
 - when the host owns a developer loop and needs one bounded Agent step, choose
   `agent.create_execution(lineage=..., limits=...)` plus explicit
   `execution.async_record_workspace(...)` observation/checkpoint writes before
@@ -356,6 +359,11 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   against the release candidate, use real DeepSeek or local Ollama when
   model-owned behavior is involved, and fail closed if the example effect is
   missing, broken, or only proven by tests
+- for public API or compatibility-line releases, run the public typing allowlist
+  gate. `compatibility/public-typing-allowlist.json` is an exception ledger for
+  documented `Any` boundaries with owner, reason, narrowing plan, and expiry;
+  it is not a public-method allowlist, so new public methods must be fully
+  typed unless they add a reviewed exception.
 - route complex arithmetic, long-number computation, weighting, aggregation, or
   statistical work through executable code or tools; use the model to produce or
   review the calculation plan, not to be the calculator.
