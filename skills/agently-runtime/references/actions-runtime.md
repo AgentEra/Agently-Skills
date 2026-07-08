@@ -125,7 +125,8 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   deterministic file info, `sha256`, file refs, and structured diagnostics;
   handlers own plain text IO, optional PDF/Office extraction, image/VLM
   attachment preparation, and export rendering. Do not implement format parsing
-  in ActionRuntime, SkillsExecutor, or AgentExecution strategy code.
+  in ActionRuntime, SkillsManager, the legacy SkillsExecutor facade, or
+  AgentExecution strategy code.
 - `agent.enable_workspace_file_actions(...)` exposes list/search/read/write over
   the Workspace file root. It registers `export_file` only when `export=True`
   and `write=True`, delegates to the bound Workspace when roots match, and must
@@ -368,11 +369,11 @@ Use this skill when the problem is agent-side extension rather than prompt shape
 - keep the permission profile explicit: search-only, local-files-only, network-read, install-capable shell, or trusted broad executor
 - use Python sandbox for pure computation or small data shaping; do not use it for imports, filesystem mutation, network access, or dependency installation
 - use Bash sandbox or a custom executor when the task needs shell access, package install, or broader command control
-- for Skills Executor work, do not ask apps to execute third-party Skill
+- for SkillsManager / legacy SkillsExecutor work, do not ask apps to execute third-party Skill
   scripts directly. Resolve them to controlled Actions, Bash/Python/Node
   sandboxes, MCP/API bindings, or fallback branches; if no substitute exists,
   return a blocked or approval-required result with a user-facing explanation.
-- for Skills Executor or artifact-producing workflows, missing local libraries
+- for SkillsManager or artifact-producing workflows, missing local libraries
   are not a natural degraded-success path; plan a controlled install-capable
   Action or ExecutionResource ensure step, preserve the ActionResult, and
   fail closed if policy denies or installation fails

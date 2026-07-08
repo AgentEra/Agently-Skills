@@ -67,7 +67,7 @@ retried node as automatic task success.
 
 When a submitted DAG needs Skill guidance, use the Skills Manager resolver
 adapter instead of inventing a scheduler. Register
-`Agently.skills_manager.task_dag_resolver()` with `TaskDAGExecutor` and model
+`Agently.skills_executor.task_dag_resolver()` with `TaskDAGExecutor` and model
 that step as `kind: "skill"` with `inputs.skill_ids`, `inputs.task`,
 `inputs.intent`, and optional include flags. The node result is an
 `agently.skills.context_pack.v1` payload for downstream planner or model steps;

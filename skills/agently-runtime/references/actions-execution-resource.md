@@ -29,7 +29,7 @@ an Action or TriggerFlow execution can run.
   consume the bound Workspace to materialize remote PDF/Office/image/download
   bytes, but Workspace still owns the file boundary and file IO handlers own
   parsing.
-- Skills Executor and artifact-producing workflows should repair missing local
+- SkillsManager and artifact-producing workflows should repair missing local
   libraries, binaries, browser runtimes, or MCP packages through controlled
   install-capable Actions or ExecutionResource ensure steps. Do not silently
   downgrade the business result just because a local dependency is absent; if

@@ -452,9 +452,13 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `agent_execution.stream` RuntimeEvents for flat and TaskBoard execution
   progress; DevTools may display those facts but must not own task strategy
   selection.
-- for framework-side Skills Manager work, prefer the `Agently.skills_manager`
-  facade backed by the builtin `SkillsManager` plugin; Agently 4.1.2.5 did not
-  ship `Agently.skills` as a compatibility alias
+- for framework-side Skills work, treat `SkillsManager` as an internal
+  capability-adapter owner, not a new public recommended facade. Internal code
+  should depend on SkillsManager; user-facing examples should prefer
+  `agent.use_skills(...)` and AgentExecution Skills selection. Use legacy
+  `Agently.skills_executor` only when a compatibility registry/resolver hook is
+  required. Context-pack calls are advanced custom-planner/TaskDAG integration
+  surfaces, not the ordinary user path.
 - for Agently 4.1.3 Skills runtime work, prefer Action-like management:
   declare installed ids or remote source selectors on `agent.use_skills(...)`
   and let Skills Manager lazily discover, install, and expose selected
@@ -473,24 +477,25 @@ here for Actions, ExecutionResource, service, or DevTools details.
 - `Agently.skills_executor` and `agent.run_skills_task(...)` are pre-4.2
   compatibility facades only. They still lower direct Skills execution through
   the current Blocks runtime, but new examples and app guidance should use
-  `Agently.skills_manager` and AgentExecution Skills selection instead.
+  Agent APIs and AgentExecution Skills selection instead.
 - when a custom planner, Dynamic Task, or TaskDAG node needs full Skill context
   without forcing Skill activation execution, use
   `agent.build_skills_context_pack(...)`,
   `agent.async_build_skills_context_pack(...)`, or
-  `Agently.skills_manager.build_context_pack(...)`; the returned
+  the legacy `Agently.skills_executor.build_context_pack(...)` facade; the returned
   `agently.skills.context_pack.v1` payload can include `SKILL.md` guidance,
   task-relevant references/examples/assets, citations, diagnostics, optional
   public lookup, and policy-gated script Action candidates
 - when a planner needs progressive Skill context before lowering a Task to a
   `skill_activation` ExecutionBlock,
-  use `Agently.skills_manager.activate_skill(...)` or the
-  `capability_adapter()` facade. Treat the returned SkillActivation as
+  use the internal SkillsManager adapter or the legacy
+  `Agently.skills_executor.activate_skill(...)` compatibility facade. Treat the
+  returned SkillActivation as
   skill-context evidence and capability need discovery only; it does not execute
   bundled resources, grant Actions/MCP/shell/browser access, or prove side
   effects
 - for DAG-shaped consumers of Skill context, pass
-  `Agently.skills_manager.task_dag_resolver()` to `TaskDAGExecutor` and use
+  `Agently.skills_executor.task_dag_resolver()` to `TaskDAGExecutor` and use
   `kind="skill"` nodes; do not build a separate scheduler or execute bundled
   scripts while constructing context packs
 - for explicit required Skills, create an AgentExecution draft, set prompt and
@@ -586,15 +591,24 @@ here for Actions, ExecutionResource, service, or DevTools details.
   profiles, `fail_closed` when a host wants pending diagnostics or TriggerFlow
   policy interrupts, `input` for local CLI interruption, or a host-provided
   durable/network handler
+- trusted hosts may grant automatic approval through settings-backed
+  `access_control_policy.auto_allow`, using
+  `Agently.set_settings("access_control_policy.auto_allow", True)`,
+  `agent.set_settings("access_control_policy.auto_allow", True)`, execution
+  `.access_control_policy({"auto_allow": True})`, or selector-level
+  `auto_allow=True` for a matching Skill. Do not introduce
+  `configure_access_control_policy(...)`; if a wrapper is ever added, it must
+  delegate to settings and own no independent state
 - production services should choose a PolicyApproval handler that matches the
   service wrapping the TriggerFlow execution: database pending record, HTTP
   callback, webhook resume, SSE/WebSocket pending stream, save-and-return
   interrupt id, or another host-owned approval channel; tests may use
   `auto_approve`
 - script resources under `scripts/` can be wrapped as scoped shell actions only
-  when host policy allows `script_run`; the action root must be the installed
-  Skill directory and execution still goes through ActionRuntime /
-  ExecutionResource boundaries
+  when host policy allows `script_run` or a host-owned auto_allow grant applies;
+  selector-level auto_allow is scoped to matching Skill ids. The action root must
+  be the installed Skill directory and execution still goes through ActionRuntime
+  / ExecutionResource boundaries
 - public Agent Skills `allowed-tools` is experimental and, if supported, can
   only restrict or pre-approve already-mounted host tools; it must not create
   tools, synthesize backends, mount MCP, or choose Skills execution strategy by
