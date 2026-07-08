@@ -117,6 +117,16 @@ def main() -> None:
         passes,
     )
     check(
+        "triggerflow_execution_state_owner_guidance",
+        "per-execution data store and chunk-to-chunk handoff contract" in triggerflow_text
+        and "translation helper" in triggerflow_text
+        and "durable cross-run data" in triggerflow_text
+        and "flow_data" in triggerflow_text,
+        "triggerflow documents execution state as runtime data owner and custom state helpers as anti-patterns",
+        failures,
+        passes,
+    )
+    check(
         "taskdag_foundation_dynamic_task_facade",
         "TaskDAG is the Agently DAG foundation capability" in dynamic_task_text
         and "compatibility and convenience facade" in dynamic_task_text

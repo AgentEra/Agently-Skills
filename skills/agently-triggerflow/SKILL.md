@@ -68,8 +68,9 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   `execution.result.get_state("status")` unless a chunk explicitly owns and
   updates that status contract
 - rely on chunk-internal `data.emit(...)`, `data.async_emit(...)`, `data.emit_nowait(...)`, and `data.async_emit_nowait(...)` to inherit the current TriggerFlow runtime scope; do not assume unrelated external emits can be paired by `when(..., mode="and")` unless the host routes them through one scoped flow stage or carries explicit correlation in the payload
-- use execution runtime state through `get_state(...)` / `set_state(...)` instead of legacy runtime-data helpers in new examples
-- treat shared flow data as a risky cross-execution surface and avoid it unless the task explicitly needs shared state
+- use execution runtime state through `data.get_state(...)` / `data.set_state(...)`, async variants, and `execution.result.get_state(...)` as the per-execution data store and chunk-to-chunk handoff contract. Do not create parallel per-execution stores, storage helpers, translation helpers, or shadow dictionaries to shuttle workflow runtime data between chunks
+- use Workspace, provider, or host storage only when data must outlive one execution, be shared across runs, or be externalized as a large artifact; keep compact refs, status, and audit facts in TriggerFlow execution state so runtime graphs and recovery snapshots stay coherent
+- treat shared flow data / `flow_data` as a risky cross-execution surface and avoid it unless the task explicitly needs shared state; do not use it as a substitute for execution state
 - when discussing restart or distributed pause/resume, describe TriggerFlow as
   providing foundations for host-managed recovery, not a complete production
   distributed workflow engine. `execution.save()` is a versioned top-level
@@ -240,6 +241,7 @@ the developer owns in code.
 - do not treat repeated silence after one deprecation warning as approval; Agently emits each deprecated API warning once per Python process
 - do not treat `runtime.show_deprecation_warnings=False` as a migration substitute; it is only a production noise-control setting
 - do not use flow data for per-execution state
+- do not bypass TriggerFlow execution state with a custom per-execution state store, storage helper, translation helper, or closure/global dict for chunk-to-chunk runtime data; if durable cross-run data is required, externalize it through Workspace, provider, or host persistence and store the ref/status in execution state
 - do not write guidance that depends on code after `await data.async_pause_for(...)` surviving a process restart; put post-resume logic in the downstream chunk, `data.is_resume` branch, or explicit resume event handler
 - do not make service chunks depend on closure-captured business context when `runtime_resources` would keep the handler reusable, testable, and export-friendly
 - do not pass raw model stream paths directly to the UI when the workflow can translate them into stable business events
