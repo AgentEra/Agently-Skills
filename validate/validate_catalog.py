@@ -108,6 +108,15 @@ def main() -> None:
         passes,
     )
     check(
+        "triggerflow_loop_back_edge_guidance",
+        "graph-visible back edge" in triggerflow_text
+        and "`while True`" in triggerflow_text
+        and "chunk handler" in triggerflow_text,
+        "triggerflow documents graph-visible loop edges and chunk-level while True as an anti-pattern",
+        failures,
+        passes,
+    )
+    check(
         "taskdag_foundation_dynamic_task_facade",
         "TaskDAG is the Agently DAG foundation capability" in dynamic_task_text
         and "compatibility and convenience facade" in dynamic_task_text

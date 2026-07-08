@@ -134,7 +134,7 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   PolicyApproval waits must be registered or provided by the host. Blocks
   wait blocks record waiting evidence, while resume state remains in the
   TriggerFlow interrupt/resume ledger
-- use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins; definition idempotence must not be confused with runtime signal deduplication
+- use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins. Express looping behavior as a graph-visible back edge: a chunk emits the next iteration, retry, or revision signal and `flow.when(...).to(...)` routes it to the target chunk, or the flow uses an intentional `.to(...)` continuation back to an earlier named chunk. Definition idempotence must not be confused with runtime signal deduplication
 - for a developer-owned Todo DAG or other dependency graph represented as
   stable Python flow code, express multi-dependency joins with
   `flow.when(["task_a_done", "task_b_done"], mode="and").to(...)` and have
@@ -244,6 +244,7 @@ the developer owns in code.
 - do not make service chunks depend on closure-captured business context when `runtime_resources` would keep the handler reusable, testable, and export-friendly
 - do not pass raw model stream paths directly to the UI when the workflow can translate them into stable business events
 - do not hide draft/judge/revise or similar loops inside one opaque helper
+- do not put workflow lifecycle loops, retries, or revision cycles inside a chunk handler with `while True`; use TriggerFlow graph edges, `emit(...)` / `emit_nowait(...)`, `when(...)`, and explicit stop conditions so each iteration remains observable and recoverable
 - do not make DevTools or graph tooling the source of truth for workflow structure when TriggerFlow definitions already are
 
 ## Read Next
