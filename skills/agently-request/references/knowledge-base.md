@@ -28,14 +28,20 @@ capability surface.
   keyword versus hybrid from Workspace retrieval policy; `rerank=None` uses the
   structural rerank gate and does not become mandatory just because embeddings
   are configured
-- if vector mode is requested and the backend only has `NoopVectorIndex`, expect
-  deterministic fallback plus diagnostics rather than silent failure
-- the default local Workspace backend keeps `NoopVectorIndex`; provider-specific
-  embedding clients belong in business code, custom backends, or plugins that
-  install a backend `vector_index`. Workspace core does not own the embedding
-  provider. If callers install the built-in `LocalVectorIndex(embedder)`, the
-  default similarity formula is cosine; dot product and L2 are explicit
-  options. Custom vector indexes own their own distance formula
+- if vector mode is requested without both an `EmbeddingProvider` and a
+  `VectorStoreProvider`, expect deterministic fallback plus diagnostics such as
+  `embedding_provider_unavailable` or `vector_store_unavailable` rather than
+  silent failure
+- the default local Workspace backend uses `db_store_provider="sqlite"` for the
+  record DB and `vector_store_provider="auto"` for vector storage: Chroma is
+  used when available and initialized successfully, otherwise Workspace falls
+  back to a SQLite vector table. Record DB adapters attach through
+  `db_store_provider`, embedding clients attach through `embedding_provider`,
+  and vector storage attaches through `vector_store_provider`. Lower-capability
+  `DBStoreProvider` implementations keep the same protocol surface and return
+  empty/absent values for unsupported advanced features. `LocalVectorIndex(embedder)`
+  remains only as a compatibility adapter for older code that combines
+  embedding and local vector scoring
 - use `workspace.get_data(...)` for structured records/checkpoints and
   `workspace.links(...)` for decision/evidence lineage when retrieval feeds a
   later loop step
