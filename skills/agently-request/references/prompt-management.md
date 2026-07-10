@@ -5,6 +5,14 @@ Use this skill when the core problem is how prompt state should be structured be
 ## Native-First Rules
 
 - prefer `input(...)`, `instruct(...)`, `info(...)`, and `output(...)` over concatenated prompt strings
+- when model output must satisfy a documented API request, SDK/module
+  interface, or function signature, compose the prompt as one integration
+  contract: runtime facts in `input`, authoritative API/schema documentation,
+  signatures, and docstrings in `info`, transformation and call rules in
+  `instruct`, and the exact downstream-consumable shape in `output`. This
+  contract information is necessary boundary control, not business-logic
+  intrusion; do not assume ordinary requests can see Python docstrings or
+  external schemas unless they are supplied
 - move reusable prompt structure into prompt config or YAML instead of ad hoc literals
 - keep runtime variables as `${...}` placeholders in prompt files and inject them through mappings at load time
 - use render-time slot references when one prompt slot should point the model to

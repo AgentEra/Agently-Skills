@@ -10,6 +10,14 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
 - prefer prompt-config-owned output contracts such as `.execution.output` when
   the schema is stable and shared across a request family
 - prefer `.output(...)` for machine-readable results when the schema is dynamic, exploratory, or easier to keep close to code
+- when parsed output feeds an API, SDK, module interface, or function, mirror
+  the consumed request/argument structure instead of returning an opaque dict.
+  Describe every consumed field with its contract meaning, exact type,
+  requiredness, and any applicable enum, format, range, unit, nullability, or
+  cross-field dependency. Pair the schema with authoritative interface material
+  in `info(...)`, request facts in `input(...)`, and transformation/call rules
+  in `instruct(...)`. This field-level output control is not business-logic
+  intrusion and does not replace deterministic validation before side effects
 - choose output format deliberately:
   - omitted `.output(..., format=...)` reads `prompt.default_output_format`;
     the framework default is `json`, and individual agents or requests may

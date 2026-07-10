@@ -58,6 +58,11 @@ Use this file as installation-time guidance after the skills are added into anot
   replaced, ask for the current work version. If the intended task branch is
   not specified, ask for the branch before editing implementation, specs, docs,
   examples, compatibility metadata, or companion guidance.
+- Simple documentation or behavior-guidance-only updates may be edited and
+  committed directly on `dev` without asking for or creating a branch when they
+  do not change public APIs, runtime behavior, examples, compatibility metadata,
+  or spec contracts. If the scope expands beyond those boundaries, stop and
+  apply the ordinary independent-branch rule before continuing.
 - The main repository release commit must update `pyproject.toml`, `agently/compatibility.py`, `compatibility/index.json`, and the matching `compatibility/releases/<version>.json`; keep `compatibility/in-development.json` aligned until the release line moves on.
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
@@ -108,6 +113,14 @@ Use this file as installation-time guidance after the skills are added into anot
 
 - Prefer separating `settings/`, `prompts/`, `services/`, `domain/` or `schemas/`, `workflow/`, `tools/`, and `tests/` when the project is more than a tiny demo.
 - Keep stable shared prompt and output contracts in prompt config rather than scattering them across Python helpers.
+- When model output must strictly satisfy a documented API request, module
+  interface, or function call, use one explicit integration contract: runtime
+  facts in `input`, authoritative API/schema documentation, signatures, and
+  docstrings in `info`, transformation and call rules in `instruct`, and the
+  exact machine-consumable shape in `output`. Add field-level type, semantics,
+  requiredness, enum, format, range, nullability, and dependency details where
+  applicable. This is necessary boundary/output control, not business-logic
+  intrusion; deterministic validation still runs before the real call.
 - Keep provider settings under the namespace actually read by the active plugin. For `OpenAICompatible`, prefer `plugins.ModelRequester.OpenAICompatible.*`.
 - Prefer `Agently.load_settings("yaml_file", path, auto_load_env=True)` for file-backed settings. Use `Agently.set_settings(...)` for inline overrides.
 - Keep optional DevTools wiring in the integration layer through `ObservationBridge`, `EvaluationBridge`, or `create_local_observation_app` instead of scattering debug hooks across workflow code.

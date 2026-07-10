@@ -31,6 +31,14 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
 
 - keep provider settings outside prompt and workflow code; prefer settings files with `${ENV.xxx}` placeholders when deployment values differ by environment
 - keep stable prompt and output contracts in prompt config when shared across a request family
+- when model output feeds a documented API request, module interface, or
+  function call, use the positive integration-contract recipe: runtime values
+  and source facts in `input`, authoritative API/schema docs, signatures, and
+  docstrings in `info`, transformation/call rules in `instruct`, and the exact
+  machine-consumable type and nested shape in `output`. Add field-level type,
+  meaning, requiredness, enum, format, range, nullability, and dependency
+  details where applicable. This is boundary/output control rather than
+  business-logic intrusion; validate deterministically before the real call
 - for VLM image requests, prefer `.image(question=..., file=...|url=...|files=[...]|urls=[...])`; use `.attachment([...])` only when the caller already owns provider-style rich content blocks
 - use `.output(...)` tuple ensure flags for fixed required leaves; use runtime `ensure_keys` only for runtime-dependent paths
 - order output fields from supporting information to final decision. Agently
