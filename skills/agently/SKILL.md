@@ -48,6 +48,16 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   classification, output quality checks, grading, and review decisions should
   be model-owned unless the check is only a deterministic smoke gate for
   structure or required-field presence.
+- when model output must strictly satisfy a documented API request, module
+  interface, or function call, build one explicit integration contract: put
+  runtime facts in `.input(...)`, authoritative API/schema documentation,
+  signatures, and docstrings in `.info(...)`, transformation and call rules in
+  `.instruct(...)`, and the exact machine-consumable type and shape in
+  `.output(...)`. Describe every downstream-consumed field with its type,
+  semantics, requiredness, and any applicable enum, format, range, nullability,
+  or cross-field constraint. This is necessary boundary/output control, not
+  business-logic intrusion. Keep unrelated business decisions out of the
+  contract and run deterministic validation before a real call.
 - when adding or refactoring Agently framework internals under `core/` or
   `builtins/`, prefer a subdirectory package when the feature has multiple
   roles such as facade, manager, backend/provider, registry, adapter, policy, or
