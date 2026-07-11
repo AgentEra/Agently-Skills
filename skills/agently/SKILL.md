@@ -299,8 +299,11 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   Nested AgentExecution instances inherit the parent strategy context unless
   the child explicitly overrides it.
 - treat Blocks as the internal lowering bridge from AgentTask
-  `ExecutionPlan` / `PlanBlock` instances and validated TaskDAG nodes to
-  TriggerFlow-backed `ExecutionBlockGraph`, not as a public task lifecycle.
+  `ExecutionPlan` / `PlanBlock` instances to TriggerFlow-backed
+  `ExecutionBlockGraph`, not as a public task lifecycle. Validated TaskDAG nodes
+  use this carrier only through explicit `compile_blocks(...)` /
+  `async_run_blocks(...)`; ordinary `TaskDAGExecutor.async_run(...)` compiles
+  directly to TriggerFlow.
   PlanBlock selection is evidence of need, not permission; ExecutionBlocks
   cannot accept task completion. Blocks registries fail closed on unknown block
   kinds, invalid runtime bindings, invalid signal contracts, denied

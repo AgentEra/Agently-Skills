@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import ast
 import json
 import re
 from pathlib import Path
@@ -9,6 +10,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "implementation_cases.json"
 TRIGGERFLOW_EXAMPLES = ROOT / "skills" / "agently-triggerflow" / "examples"
+AGENTLY_ROOT = ROOT.parent / "Agently"
+SUBMITTED_DAG_EXAMPLES = [
+    AGENTLY_ROOT / "examples" / "cookbook" / "03_todo_concurrent_model.py",
+    AGENTLY_ROOT / "examples" / "step_by_step" / "12-patterns-02_todo_concurrent.py",
+]
+REAL_MODEL_PROVIDER_TOKENS = {
+    "03_todo_concurrent_model": ["configure_model("],
+    "12-patterns-02_todo_concurrent": ["DEEPSEEK_API_KEY", "OLLAMA_BASE_URL"],
+}
 TRIGGERFLOW_LEGACY_ALLOWLIST: set[Path] = set()
 DEPRECATED_TRIGGERFLOW_TOKENS = [
     ".end(",
@@ -106,6 +116,66 @@ def main() -> None:
             failures,
             passes,
         )
+
+    if AGENTLY_ROOT.exists():
+        for example_path in SUBMITTED_DAG_EXAMPLES:
+            check(
+                f"submitted_dag_example_{example_path.stem}_exists",
+                example_path.exists(),
+                "submitted TaskDAG example exists",
+                failures,
+                passes,
+            )
+            if not example_path.exists():
+                continue
+            content = example_path.read_text(encoding="utf-8")
+            syntax_tree = ast.parse(content)
+            submitted_plan = None
+            for node in syntax_tree.body:
+                if not isinstance(node, (ast.Assign, ast.AnnAssign)):
+                    continue
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                if any(isinstance(target, ast.Name) and target.id == "SUBMITTED_PLAN" for target in targets):
+                    submitted_plan = ast.literal_eval(node.value)
+                    break
+            submitted_tasks = (
+                submitted_plan.get("tasks", []) if isinstance(submitted_plan, dict) else []
+            )
+            check(
+                f"submitted_dag_example_{example_path.stem}_uses_dynamic_task",
+                "Agently.create_dynamic_task(" in content and "plan=SUBMITTED_PLAN" in content,
+                "submitted TaskDAG example uses the DynamicTask facade with an explicit plan",
+                failures,
+                passes,
+            )
+            check(
+                f"submitted_dag_example_{example_path.stem}_all_tasks_use_real_model",
+                bool(submitted_tasks)
+                and all(
+                    isinstance(task, dict)
+                    and task.get("kind") == "model"
+                    and "binding" not in task
+                    for task in submitted_tasks
+                )
+                and "handlers=" not in content
+                and all(
+                    token in content
+                    for token in REAL_MODEL_PROVIDER_TOKENS[example_path.stem]
+                ),
+                "submitted TaskDAG example keeps every node model-owned and configures a real provider",
+                failures,
+                passes,
+            )
+            check(
+                f"submitted_dag_example_{example_path.stem}_no_ad_hoc_runtime_compiler",
+                "while pending" not in content
+                and "asyncio.gather(" not in content
+                and "TriggerFlow(" not in content
+                and ".async_plan(" not in content,
+                "submitted TaskDAG example avoids manual readiness and runtime graph compilation",
+                failures,
+                passes,
+            )
 
     print("V2 native usage validation")
     print(f"passes: {len(passes)}")

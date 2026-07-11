@@ -91,6 +91,9 @@ def main() -> None:
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
+    dynamic_task_overview_text = (
+        SKILLS / "agently-dynamic-task" / "references" / "overview.md"
+    ).read_text(encoding="utf-8")
     triggerflow_text = (SKILLS / "agently-triggerflow" / "SKILL.md").read_text(encoding="utf-8")
     check(
         "playbook_framework_name_optional",
@@ -114,6 +117,48 @@ def main() -> None:
         and "TriggerFlow is" in dynamic_task_text
         and "execution substrate" in dynamic_task_text,
         "TaskDAG is documented as the DAG foundation, with Dynamic Task as facade and TriggerFlow as substrate",
+        failures,
+        passes,
+    )
+    check(
+        "taskdag_default_direct_blocks_opt_in",
+        "default direct path" in dynamic_task_overview_text
+        and "Blocks path is opt-in" in dynamic_task_overview_text,
+        "TaskDAG overview distinguishes direct execution from the opt-in Blocks carrier",
+        failures,
+        passes,
+    )
+    check(
+        "runtime_dag_data_not_direct_triggerflow_definitions",
+        "Do not compile model-generated or app-submitted DAG data directly into new TriggerFlow definitions"
+        in triggerflow_text,
+        "runtime-generated/submitted DAG data routes through TaskDAG instead of ad hoc TriggerFlow definitions",
+        failures,
+        passes,
+    )
+    check(
+        "triggerflow_flow_data_snapshot_semantics",
+        re.search(
+            r"execution\.save\(\).{0,80}snapshot includes a serialized copy",
+            triggerflow_text,
+            re.DOTALL,
+        )
+        is not None
+        and re.search(
+            r"load\(\).{0,40}replaces\s+the\s+current\s+flow-shared\s+value",
+            triggerflow_text,
+            re.DOTALL,
+        )
+        is not None,
+        "TriggerFlow guidance states the exact shared flow_data save/load behavior",
+        failures,
+        passes,
+    )
+    check(
+        "triggerflow_hidden_execution_scope",
+        "finite, self-closing" in triggerflow_text
+        and "execution handle" in triggerflow_text,
+        "TriggerFlow guidance scopes hidden execution sugar by lifecycle needs",
         failures,
         passes,
     )
