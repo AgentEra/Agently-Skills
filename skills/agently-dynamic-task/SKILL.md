@@ -1,6 +1,6 @@
 ---
 name: agently-dynamic-task
-description: Use when the user needs Agently TaskDAG / Dynamic Task, model-generated or app-submitted DAG planning, TaskDAG validation, DynamicTaskResolver handlers, TaskDAGExecutor execution, or the Agently.create_dynamic_task compatibility facade. TaskDAG is the DAG foundation capability; Dynamic Task is the convenience facade over it and uses TriggerFlow as the execution substrate.
+description: Use when the user needs Agently TaskDAG / Dynamic Task, model-generated or app-submitted DAG planning, TaskDAG validation, TaskDAGResolver handlers, TaskDAGExecutor execution, or the Agently.create_dynamic_task compatibility facade. TaskDAG is the DAG foundation capability; Dynamic Task is the convenience facade over it and uses TriggerFlow as the execution substrate.
 ---
 
 # Agently Dynamic Task
@@ -22,6 +22,8 @@ When lower-level evidence or runtime visualization matters, use
 owns graph validation, dependency semantics, and semantic outputs; Blocks only
 lowers the validated DAG segment into a TriggerFlow-backed
 `ExecutionBlockGraph` and maps EvidenceEnvelope/ResultAdapter output.
+The default `TaskDAGExecutor.async_run(...)` path does not pass through Blocks;
+it compiles the validated DAG directly to TriggerFlow.
 
 ## Native-First Rules
 
@@ -30,7 +32,7 @@ lowers the validated DAG segment into a TriggerFlow-backed
   independently and pass its snapshot to AgentExecution as evidence; do not
   expose DynamicTask as an AgentExecution route candidate or turn the Dynamic
   Task facade into the long-running AgentTask lifecycle owner
-- split into `AgentlyTaskDAGPlanner`, `TaskDAGValidator`, `DynamicTaskResolver`, and `TaskDAGExecutor` only when staged control is required
+- split into `AgentlyTaskDAGPlanner`, `TaskDAGValidator`, `TaskDAGResolver`, and `TaskDAGExecutor` only when staged control is required
 - use `TaskDAGExecutor.compile_blocks(...)` or `async_run_blocks(...)` when the
   caller needs the Blocks lifecycle evidence path; do not bypass
   `TaskDAGValidator` or treat Blocks as the DAG owner
@@ -162,9 +164,9 @@ Lower-level integration:
 
 ```python
 from agently.builtins.plugins import AgentlyTaskDAGPlanner
-from agently.core import DynamicTaskResolver, TaskDAGExecutor, TaskDAGValidator
+from agently.core import TaskDAGExecutor, TaskDAGResolver, TaskDAGValidator
 
-resolver = DynamicTaskResolver({"risk_check_handler": risk_check_handler})
+resolver = TaskDAGResolver({"risk_check_handler": risk_check_handler})
 validator = TaskDAGValidator(resolver)
 planner = AgentlyTaskDAGPlanner(validator=validator)
 
@@ -192,7 +194,7 @@ still revalidates the graph.
 Layer ownership:
 
 - `TaskDAG` / `TaskDAGNode` data contracts and YAML/JSON graph config belong to `agently.types.data`
-- `TaskDAGExecutor`, `TaskDAGValidator`, and `DynamicTaskResolver` belong to core
+- `TaskDAGExecutor`, `TaskDAGValidator`, and `TaskDAGResolver` belong to core
 - `AgentlyTaskDAGPlanner` owns planner output schema, ensure keys, and planner instructions as a plugin concern
 - `Agently.create_dynamic_task(...)` is the app-facing facade entrypoint;
   `agent.create_dynamic_task(...)` is compatibility-only guidance
@@ -205,6 +207,9 @@ Layer ownership:
 - do not expose `actions` or `skills` to the planner by default
 - do not hide model-owned classification, drafting, quality checks, or final response generation behind deterministic local substitutes in recommended examples
 - do not call low-level `TaskDAGExecutor` from ordinary app code when `Agently.create_dynamic_task(...)` is enough
+- do not describe Blocks as mandatory for TaskDAG execution; the ordinary
+  `async_run(...)` path is direct, while Blocks requires explicit
+  `compile_blocks(...)` / `async_run_blocks(...)`
 - do not use vague handler names such as `risk_check`; use `risk_check_handler` or another name that describes the callable role
 - do not duplicate TriggerFlow docs here; explain only that Dynamic Task compiles to TriggerFlow internally
 

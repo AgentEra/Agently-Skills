@@ -14,14 +14,22 @@ DynamicTask facade
         |
         +-- AgentlyTaskDAGPlanner
         +-- TaskDAGValidator
-        +-- DynamicTaskResolver
+        +-- TaskDAGResolver
         +-- TaskDAGExecutor
                 |
-                v
-          Blocks ExecutionBlockGraph
+                +-- default direct path: async_run(...)
+                |        |
+                |        v
+                |   TriggerFlow execution substrate
                 |
-                v
-          TriggerFlow execution substrate
+                +-- Blocks path is opt-in:
+                         compile_blocks(...) / async_run_blocks(...)
+                         |
+                         v
+                   Blocks ExecutionBlockGraph
+                         |
+                         v
+                   TriggerFlow execution substrate
 ```
 
 Layer ownership:
@@ -36,6 +44,8 @@ Layer ownership:
 - `TaskDAGExecutor.compile_blocks(...)` and `async_run_blocks(...)` keep
   TaskDAG validation and semantic-output ownership in TaskDAG, then lower the
   validated segment through Blocks to TriggerFlow-backed execution and evidence.
+- `TaskDAGExecutor.async_run(...)` is the default direct path from validated
+  TaskDAG data to TriggerFlow; it does not pass through Blocks.
 - `Agently.create_dynamic_task(...)` is the app-facing facade entrypoint.
   `agent.create_dynamic_task(...)` is retained as a compatibility facade for
   legacy prompt-snapshot callers, not as default guidance.
@@ -120,7 +130,7 @@ Recommended API boundaries:
 - app code: `Agently.create_dynamic_task(...)`
 - planner control: `AgentlyTaskDAGPlanner`
 - graph validation: `TaskDAGValidator`
-- handler lookup: `DynamicTaskResolver`
+- handler lookup: `TaskDAGResolver`
 - execution integration: `TaskDAGExecutor`
 - Blocks lifecycle evidence: `TaskDAGExecutor.compile_blocks(...)` /
   `TaskDAGExecutor.async_run_blocks(...)`

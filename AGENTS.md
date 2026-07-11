@@ -120,6 +120,20 @@ Use this file as installation-time guidance after the skills are added into anot
 ## Project Defaults
 
 - Prefer separating `settings/`, `prompts/`, `services/`, `domain/` or `schemas/`, `workflow/`, `tools/`, and `tests/` when the project is more than a tiny demo.
+- Route model-generated or application-submitted DAG data through TaskDAG /
+  DynamicTask validation and resolution; do not compile unvalidated runtime DAG
+  data directly into new TriggerFlow definitions. Stable topology owned in
+  trusted source code remains a direct TriggerFlow use case. The default
+  `TaskDAGExecutor.async_run(...)` path compiles directly to TriggerFlow; Blocks
+  is explicit opt-in through `compile_blocks(...)` / `async_run_blocks(...)`.
+- Treat TriggerFlow `flow_data` as flow-shared even though `execution.save()`
+  serializes a copy and `load()` replaces the current flow-shared value with it.
+  Save/load does not make it isolated or concurrency-safe; per-run data belongs
+  in execution state.
+- Use TriggerFlow hidden execution sugar only for finite, self-closing runs when
+  the caller does not need an execution handle. Pause/resume, external emits,
+  save/load, intervention, inspection, cancellation, or controlled close require
+  an explicit execution.
 - Keep stable shared prompt and output contracts in prompt config rather than scattering them across Python helpers.
 - When model output must strictly satisfy a documented API request, module
   interface, or function call, use one explicit integration contract: runtime

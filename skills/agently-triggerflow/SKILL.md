@@ -50,6 +50,12 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   emits for bounded concurrent work and graph-visible joins. Choosing an
   all-serial topology without this analysis is a prohibited anti-pattern
 - prefer explicit execution lifecycle control with `close()` / `async_close()` for completion and cleanup
+- use `flow.start(...)` / `flow.async_start(...)` and flow-level runtime-stream
+  helpers only for a finite, self-closing run when the caller does not need an
+  execution handle. The boundary is lifecycle control, not script versus
+  service: a bounded request handler may use hidden sugar, while pause/resume,
+  external emits, save/load, intervention, inspection, cancellation, or
+  host-controlled close requires an explicit execution
 - treat `create_execution(concurrency=N)` and `execution.set_concurrency(N)` as an execution-wide handler dispatch budget, including nested dispatch from chunk continuations and `data.async_emit(...)`; use operator-local `batch(..., concurrency=...)` or `for_each(..., concurrency=...)` only for local fan-out caps
 - expose pressure controls at the layer that owns them: host admission and
   in-flight execution/coroutine limits, TriggerFlow execution concurrency,
@@ -83,6 +89,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
 - use execution runtime state through `data.get_state(...)` / `data.set_state(...)`, async variants, and `execution.result.get_state(...)` as the per-execution data store and chunk-to-chunk handoff contract. Do not create parallel per-execution stores, storage helpers, translation helpers, or shadow dictionaries to shuttle workflow runtime data between chunks
 - use Workspace, provider, or host storage only when data must outlive one execution, be shared across runs, or be externalized as a large artifact; keep compact refs, status, and audit facts in TriggerFlow execution state so runtime graphs and recovery snapshots stay coherent
 - treat shared flow data / `flow_data` as a risky cross-execution surface and avoid it unless the task explicitly needs shared state; do not use it as a substitute for execution state
+- document its compatibility persistence exactly: the `execution.save()`
+  snapshot includes a serialized copy of `flow_data`, and `load()` replaces the
+  current flow-shared value with that copy. This does not provide
+  execution-local isolation, CAS, merge behavior, or concurrency safety
 - when discussing restart or distributed pause/resume, describe TriggerFlow as
   providing foundations for host-managed recovery, not a complete production
   distributed workflow engine. `execution.save()` is a versioned top-level
@@ -147,6 +157,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   PolicyApproval waits must be registered or provided by the host. Blocks
   wait blocks record waiting evidence, while resume state remains in the
   TriggerFlow interrupt/resume ledger
+- ordinary `TaskDAGExecutor.async_run(...)` validates and compiles directly to
+  TriggerFlow. Blocks is an explicit opt-in carrier only through
+  `compile_blocks(...)` / `async_run_blocks(...)` when the caller needs an
+  `ExecutionBlockGraph`, Blocks evidence, or result adapters
 - use `when(...)` + `emit_nowait(...)` as the native signal-driven pattern for fan-out, loops, side branches, and dependency joins. Express looping behavior as a graph-visible back edge: a chunk emits the next iteration, retry, or revision signal and `flow.when(...).to(...)` routes it to the target chunk, or the flow uses an intentional `.to(...)` continuation back to an earlier named chunk. Definition idempotence must not be confused with runtime signal deduplication
 - for a developer-owned Todo DAG or other dependency graph represented as
   stable Python flow code, express multi-dependency joins with
@@ -155,17 +169,11 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   replace joins with sleeps, polling loops, local `completed` sets, or
   `pause_for(..., resume_to="self")` unless the workflow is genuinely waiting
   for external input across process time
-- when a model-generated Todo List is produced at runtime but the host owns the
-  executor code, compile the returned task list into TriggerFlow definitions
-  immediately after generation: root tasks attach to the execution start
-  boundary with `flow.to(handler, name=...)`, dependent tasks attach with
-  `flow.when(dep_signals, mode="and").to(handler)`, and task handlers emit their
-  own completion signals. Do not implement a generic local scheduler that scans
-  `task_status`, `completed`, or dependency lists to decide which task is ready;
-  that hides the DAG from TriggerFlow and defeats graph visibility. Do not pass
-  `lambda data: async_task_handler(data, task)` to `flow.to(...)`; that registers
-  a sync lambda whose return coroutine may not be awaited. Use a normal factory
-  that returns `async def handler(data): ...` and register that handler
+- Do not compile model-generated or app-submitted DAG data directly into new TriggerFlow definitions.
+  Route that data through TaskDAG / DynamicTask validation and resolver
+  handlers. Direct `flow.to(...)` / `flow.when(...)` wiring is reserved for
+  stable topology that the developer owns in trusted source code, not runtime
+  plan data
 - when a TriggerFlow + Skills example relies on a trusted local Skill
   bundle to provide declared helper capabilities, pass selector-level
   `auto_allow=True` or use settings-backed

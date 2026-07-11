@@ -30,7 +30,14 @@ Prefer explicit execution lifecycle control. New TriggerFlow code should create 
 
 Use `execution.result` when code needs more than one view of the same execution outcome. It is a facade over execution-owned state, not a second result store. Use `await execution.async_close()` for the finalized close snapshot, `execution.result.get_state("key")` for state reads before or after close, `await execution.result.async_get_final_result()` only for compatibility final-result bridging, and `execution.result.get_meta()` for execution id, flow name, status, lifecycle state, timestamps, close reason, and state version. Intervention-aware code may use `execution.result.get_interventions(...)` when the runtime intervention ledger is enabled; otherwise the reader is an empty-list no-op.
 
-For short scripts that need a synchronous wrapper, `flow.start(...)` is acceptable as an outer boundary: it waits for execution close and returns the close snapshot. If legacy `.end()` / `set_result()` compatibility is present, the snapshot may include `"$final_result"`. Hidden `flow.start(...)` uses immediate idle auto-close by default; do not use it as the default service/streaming pattern, and keep an execution handle plus explicit `close()` / `async_close()` for services.
+Hidden `flow.start(...)` / `flow.async_start(...)` and flow-level runtime-stream
+helpers are acceptable for a finite, self-closing run when the caller needs only
+the close snapshot or bounded stream and does not need the execution handle.
+That can be a script, test, or bounded service request. Hidden start uses
+immediate idle auto-close by default; use an explicit execution for
+pause/resume, external emits, save/load, intervention, inspection,
+cancellation, or host-controlled close. If legacy `.end()` / `set_result()`
+compatibility is present, the snapshot may include `"$final_result"`.
 
 Use execution-managed nowait emit for event fan-out that should not block the current chunk. Prefer `emit_nowait(...)` / `async_emit_nowait(...)` over raw `asyncio.create_task(data.async_emit(...))` so the execution can register the task and drain it during `close()` / `async_close()`.
 
@@ -44,7 +51,14 @@ Use execution state (`get_state(...)`, `set_state(...)`, and async variants) for
 
 For service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface and `create_execution(...)` / `start_execution(...)` as the boundary into one run. Prefer module-level named chunks and conditions. Put stable live dependencies such as `agent_factory`, clients, prompt paths, or loggers into flow-level `runtime_resources`; put request- or tenant-specific values into execution-level `runtime_resources`. Chunks should read required live dependencies with `data.require_resource(...)` and write per-request business values to execution state. Closures are acceptable for compact scripts, but they are not the recommended service shape because they reduce handler reuse, testing, and config/blueprint round-trip clarity.
 
-For model-app dynamic planning, keep reusable main flows and sub-flow templates module-safe, then compile model-generated To-Do Lists or dependency graphs into request-local or plan-local executors. Use task ids as dynamic stage identities, drive dependency execution with `when(...)` + `emit_nowait(...)`, and store generated plan data and task results in execution input/state rather than shared flow data. Looping behavior should be graph-visible: a chunk emits the next iteration, retry, or revision signal and `when(...).to(...)` routes the execution to the next or previous chunk. Do not express workflow lifecycle loops as `while True` inside one chunk. Definition idempotence prevents duplicate graph declarations; it must not dedupe runtime signals, because repeated emits are real business events.
+For model-app dynamic planning, route model-generated or app-submitted To-Do /
+DAG data through TaskDAG / DynamicTask so validation and resolver binding happen
+before execution. Do not turn runtime plan data into new TriggerFlow definitions.
+Keep reusable developer-owned main flows and sub-flow templates module-safe;
+their looping behavior should remain graph-visible through emits and
+`when(...).to(...)`, not `while True` inside one chunk. Definition idempotence
+prevents duplicate graph declarations; it must not dedupe runtime signals,
+because repeated emits are real business events.
 
 In Agently `v4.1.2.5`, TriggerFlow definitions, chunk signal metadata, origin-chunk payloads, resume context, and sub-flow interrupt projection are strong enough to support graph-oriented debugging and local DevTools visualization without duplicating the workflow description.
 

@@ -117,6 +117,18 @@ def main() -> None:
     if AGENTLY_INDEX.exists():
         index = json.loads(AGENTLY_INDEX.read_text(encoding="utf-8"))
         release_files = index.get("release_files", {})
+        current_target = index.get("latest_release")
+        if AGENTLY_IN_DEVELOPMENT.exists():
+            current_target = json.loads(
+                AGENTLY_IN_DEVELOPMENT.read_text(encoding="utf-8")
+            ).get("target_version", current_target)
+        check(
+            "aligned_current_framework_target",
+            aligned_version == current_target,
+            "Agently-Skills aligned version matches the current Agently development/release target",
+            failures,
+            passes,
+        )
         release_path = release_files.get(aligned_version)
         if not isinstance(release_path, str) and AGENTLY_IN_DEVELOPMENT.exists():
             in_development = json.loads(AGENTLY_IN_DEVELOPMENT.read_text(encoding="utf-8"))
