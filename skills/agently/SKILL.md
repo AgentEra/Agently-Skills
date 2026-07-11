@@ -41,6 +41,13 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 
 - default to async-first guidance for service code, streaming, TriggerFlow, and any path that may overlap work or benefit from cancellation
 - treat sync APIs as wrappers for scripts, REPL use, or compatibility bridges unless the host truly requires sync-only integration
+- before choosing the execution shape for a complex service or script, map the
+  real stage dependencies. Keep genuine ordering constraints serial, but run
+  independent work concurrently with bounded pressure controls. Use provisional
+  `instant` fields for UI or cancelable/idempotent preparation and TriggerFlow
+  signals/joins for
+  application-owned coordination. An all-serial design chosen without this
+  analysis is an anti-pattern
 - when the request is a project-shape refactor, separate settings, prompts, services, domain contracts, workflow, and tests before discussing low-level implementation details
 - when a development script, service module, or test needs semantic judgment
   over model-owned behavior, use Agently model requests with explicit output
@@ -425,6 +432,8 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   local helper functions that only count words, split tokens, search keywords,
   or compare snapshots when an Agently model request can own the judgment
 - do not let sync-first sample code dictate the service architecture when the target is clearly async-capable
+- do not default a complex service or script to all-serial execution without
+  first identifying real data, ordering, side-effect, and capacity constraints
 - do not split project initialization into a fake standalone framework surface before the owner layers are chosen
 - do not treat multi-agent, judge, or review flows as separate framework surfaces before checking native Agently capabilities
 - do not normalize long-lived business patches, workarounds, compatibility glue,

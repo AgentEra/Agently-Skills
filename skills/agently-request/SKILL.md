@@ -117,6 +117,15 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
   when building explicit loops that store structured state and record lineage
 - keep retrieval explicit when its results feed a later request or workflow step
 - default to async-first response consumption in services, streaming paths, and workflows
+- when structured partial fields can unblock UI or workflow progress, consume
+  `get_async_generator(type="instant")` and then use the same result's
+  `async_get_data()` for the final parsed object after configured validation.
+  Treat `instant` updates as provisional: use them for UI or explicitly
+  cancelable/idempotent preparation, not irreversible side effects. If several
+  independent requests can overlap, keep them async; use TriggerFlow when the
+  application owns graph-visible multi-stage fan-out, joins, lifecycle, or
+  runtime state, while a small local aggregation may stay at the async caller
+  boundary
 
 ## Anti-Patterns
 
