@@ -42,8 +42,20 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   pass/fail verdicts or deterministic quality judgments
 - default to async-first workflow handlers, execution entrypoints, and runtime stream consumers
 - treat sync TriggerFlow APIs as wrappers for scripts or compatibility bridges, not as the default service interface
+- derive complex workflow topology from the real business dependencies before
+  implementation: mark required serial edges, independent branches, provisional
+  structured progress that can support UI or cancelable/idempotent preparation,
+  and side-effect/capacity
+  constraints. Use `batch(...)`, `for_each(...)`, or `when(...)` plus managed
+  emits for bounded concurrent work and graph-visible joins. Choosing an
+  all-serial topology without this analysis is a prohibited anti-pattern
 - prefer explicit execution lifecycle control with `close()` / `async_close()` for completion and cleanup
 - treat `create_execution(concurrency=N)` and `execution.set_concurrency(N)` as an execution-wide handler dispatch budget, including nested dispatch from chunk continuations and `data.async_emit(...)`; use operator-local `batch(..., concurrency=...)` or `for_each(..., concurrency=...)` only for local fan-out caps
+- expose pressure controls at the layer that owns them: host admission and
+  in-flight execution/coroutine limits, TriggerFlow execution concurrency,
+  operator-local fan-out caps, model scheduler concurrency/rate limits, and
+  host worker or thread-pool sizes when blocking code is isolated. Do not
+  present worker or thread counts as a universal TriggerFlow setting
 - use `execution.result` when services, UIs, stream consumers, or intervention-aware workflows need multiple views of one execution outcome, such as state, compatibility final result, interventions, and metadata; use `execution.close()` / `execution.async_close()` for close snapshots
 - use runtime intervention for optional guidance context added while an execution is already running: define explicit `.intervention_point(...)` boundaries so execution creation can infer planned mode, or create the execution with `intervention_mode="auto"` for boundary policy insertion; chunks read inserted context with `data.get_interventions(...)` and explicitly audit usage with `data.async_mark_intervention_consumed(...)`, relying on the chunk-name consumer default unless another consumer identity is clearer
 - for human approvals, webhooks, or externally resumed waits, use `pause_for(..., resume_to="next" | "self" | {"event": ...})`; treat it as a durable graph interrupt, not Python coroutine stack persistence; teach model-decided autonomous interrupts with model-owned `pause_for(..., resume_to="self")`, where the resumed chunk handles `data.is_resume` and the default `max_resumes=1` prevents unbounded self-replay; teach prearranged approval gates with an explicit pause chunk plus `when(...)`
@@ -229,6 +241,9 @@ the developer owns in code.
 
 ## Anti-Patterns
 
+- do not default a complex workflow to serial execution merely because a serial
+  loop is easier to write; keep serial edges only where dependencies, ordering,
+  side-effect safety, or external capacity require them
 - do not invent a custom event bus or state machine before checking TriggerFlow
 - do not implement a custom DAG scheduler in TriggerFlow when Dynamic Task can validate and execute submitted task graphs
 - do not use untracked `asyncio.create_task(data.async_emit(...))` as the default nowait pattern when execution-managed `emit_nowait(...)` is available

@@ -19,6 +19,14 @@ Use this file as installation-time guidance after the skills are added into anot
   method, facade, or compatibility patch when an existing Agently surface already
   carries the concept clearly. Prefer a narrow alias or docs clarification for unclear names.
 - Default to async-first guidance for services, streaming, TriggerFlow, and concurrent execution. Treat sync APIs as wrappers for scripts, REPL use, or compatibility bridges unless there is a clear reason not to.
+- Before designing a complex Agently service or script, map its real serial and
+  parallel dependencies. Prefer async Agently APIs, provisional `instant`
+  structured streams for UI or cancelable/idempotent preparation, and
+  TriggerFlow signal networks for explicit
+  fan-out, joins, and downstream triggers. Run independent work concurrently
+  under bounded execution, operator, model-scheduler, and host admission limits;
+  expose host worker/thread-pool settings when blocking code is present.
+  Defaulting an unanalyzed complex workflow to all-serial execution is prohibited.
 - Treat `agently-devtools` as an optional companion package installed from PyPI, not as a required source-repo dependency.
 - Keep public skill boundaries capability-first and mutually exclusive.
 - Treat multi-agent, judge, and review flows as scenario recipes unless they need a dedicated framework surface.
@@ -136,6 +144,8 @@ Use this file as installation-time guidance after the skills are added into anot
 ## Anti-Patterns
 
 - Do not treat sync sample code as the default architecture for async-capable services.
+- Do not choose an all-serial complex workflow before identifying its real data,
+  ordering, side-effect, and capacity constraints.
 - Do not expose raw model parser paths directly to the UI when the workflow can translate them into stable business events.
 - Do not keep provider auth, model name, or base URL in ad hoc Python literals when settings plus `${ENV.xxx}` placeholders fit.
 - Do not tell users to clone or editable-install the private DevTools source when the public package `pip install agently-devtools` already matches the supported integration path.
