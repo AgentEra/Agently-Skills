@@ -82,6 +82,11 @@ remain AgentExecution-owned execution facts; DevTools should ingest, store,
 query, and display them through run lineage and payload fields such as
 `execution_id`, `path`, `task_id`, `execution_strategy`, and
 `effective_execution_strategy`, without becoming the task strategy owner.
+The terminal result stream item and terminal lifecycle event carry the same
+bounded projection. DevTools must not reconstruct the full business result from
+those events; resolve `terminal_retained_refs` when durable content is needed.
+Optional diagnostics such as `action_artifact_release` are additive payload
+fields and should remain fail-open for older DevTools consumers.
 
 AgentTask action observations may appear as `agent_task.action.started`,
 `agent_task.action.completed`, and `agent_task.action.failed`. DevTools should

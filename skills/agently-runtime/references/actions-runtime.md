@@ -417,6 +417,15 @@ raw = agent.action.read_action_artifact(
 )
 ```
 
+The private Action artifact store retains the exact transferred value. Its
+digest and observation preview are bounded/redacted projections only, not the
+authoritative payload. Standalone direct, TriggerFlow, and DAG Action runs
+release their exact artifact scopes when the run closes. An AgentExecution
+instead transfers only refs selected by the host from a successful route;
+model-produced `accepted` fields do not grant selection authority. If Workspace
+promotion fails, the selected source artifact remains available under its
+stable identity for retry while unselected artifacts are released.
+
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
 returned records are empty. Later response materialization for that same prompt

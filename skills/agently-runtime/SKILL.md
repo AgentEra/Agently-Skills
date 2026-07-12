@@ -651,6 +651,16 @@ here for Actions, ExecutionResource, service, or DevTools details.
   AgentExecution remains explicit, while AgentTask owns its strategy-level
   persistence; do not make Workspace depend on AgentExecution-specific strategy
   semantics
+- treat AgentExecution terminal storage as one host-owned bounded projection:
+  the result stream and terminal lifecycle event must carry the same projection,
+  while the full result remains in the in-memory result API and durable bodies
+  are reached through canonical retained refs
+- pass the execution's explicitly scoped Workspace into a routed AgentTask so
+  the physical scope is `AgentExecution -> AgentTask -> Action`; Task retention
+  must not clear a sibling Task or its owning execution scope
+- after an owner is terminal, reject new process/recovery records but allow
+  deliverable/audit records and apply retention immediately; active recovery or
+  lease state defers destructive retention until the lifecycle is safe
 - inspect AgentExecution runtime facts through AgentExecutionResult or the
   execution facade: `result = execution.get_result()`, `result.get_text()`,
   `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,
