@@ -77,7 +77,7 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   `project_execution_exchanges(execution)`; do not make host code depend on raw
   TriggerFlow interrupt internals as the UI contract
 - do not put `pause_for(...)` behind hidden execution sugar such as `flow.start()` or flow-level runtime stream helpers; create an explicit execution handle and consume `get_pending_interrupts()` / `continue_with(...)`
-- close waiting executions explicitly: `close()` / `async_close()` rejects pending interrupts by default, and `pending_interrupts="cancel"` must be chosen deliberately when abandoning waits
+- close waiting executions explicitly: `close()` / `async_close()` rejects pending interrupts by default, and `pending_interrupts="cancel"` must be chosen deliberately when abandoning waits; for a live ActionFlow exchange, use `execution_exchange.async_abandon(...)` so the owning execution closes and its temporary Action artifact scope is released, while successful `async_respond(...)` closes and releases after the final interrupt
 - when a sub-flow can pause, keep the external API rooted at the parent execution id plus projected root interrupt id; do not require callers to manage child execution ids
 - use `emit_nowait(...)` / `async_emit_nowait(...)` when a chunk must fan out without blocking the current handler, and rely on execution close to drain registered tasks
 - after starting a finite workflow that uses execution-managed nowait fan-out,

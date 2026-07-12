@@ -406,26 +406,39 @@ and similar explicit-instruction Actions, later model rounds should receive a
 compact digest rather than full raw code, command output, SQL result sets, page
 HTML, screenshots, or logs.
 
-Use the digest for normal planning and replies. Read redacted raw details only
-while the ref explicitly reports `available=true` and the model or application
-asks for them:
+Use the digest for normal planning and replies. While the owning ActionFlow
+scope is live and the candidate reports `available=true`, the model can request
+redacted raw detail through the built-in readback Action:
 
 ```python
-artifact_ref = records[0]["artifact_refs"][0]
-raw = agent.action.read_action_artifact(
-    artifact_id=artifact_ref["artifact_id"],
-    action_call_id=artifact_ref["action_call_id"],
-)
+readback_call = {
+    "action_id": "read_action_artifact",
+    "action_input": {"selection_key": artifact_candidate["selection_key"]},
+}
 ```
+
+Do not teach host code to read that selection key after a standalone ActionFlow
+returns; the scope is released and the candidate reports `available=false`.
+Use a durably promoted Workspace ref for post-run application readback.
 
 The private Action artifact store retains the exact transferred value. Its
 digest and observation preview are bounded/redacted projections only, not the
 authoritative payload. Standalone direct, TriggerFlow, and DAG Action runs
-release their exact artifact scopes when the run closes. An AgentExecution
-instead transfers only refs selected by the host from a successful route;
-model-produced `accepted` fields do not grant selection authority. If Workspace
+release their exact artifact scopes when the run closes. Model-visible Action
+candidates carry one host-issued `selection_key` plus task-relevant facts, not
+canonical ids, call ids, scope, digest, size, or provenance. An AgentExecution
+accepts a key only when its bridge offered it exactly once and the terminal
+result returned it exactly once; host code resolves that key with the expected
+execution scope and reconstructs the canonical identity and exact value.
+Unknown keys, duplicate keys, copied canonical refs, and cross-scope lookups fail
+closed. Provider artifact ids are provenance only; the local store always
+allocates a fresh scope-isolated id. Model-produced `accepted` fields do not
+grant selection authority. If Workspace
 promotion fails, the selected source artifact remains available under its
 stable identity for retry while unselected artifacts are released.
+Standalone TriggerFlow Action scopes remain live while a durable exchange is
+pending; final response/resume, explicit abandonment, and direct host close all
+release the scope exactly once after the execution closes.
 After a standalone scope closes, returned refs are historical projections with
 `available=false` and `full_value_available=false`; keep their bounded
 digest/preview for audit, but do not call `read_action_artifact` for the deleted

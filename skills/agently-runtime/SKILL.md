@@ -644,8 +644,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   counting now describe the bounded step without a public mode name
 - keep AgentExecution memory explicit through its bound Workspace. Do not use a
   fresh `async_record_workspace(..., purpose="process"|"recovery")` call as a
-  post-run checkpoint shortcut: an internal wait may complete the execution and
-  the API then rejects that terminal write. Post-terminal deliverable/audit
+  checkpoint shortcut: process/recovery writes require an already active
+  running execution, never start or wait for a fresh execution, and use the
+  canonical AgentExecution id. The API rejects non-active and terminal writes.
+  Post-terminal deliverable/audit
   writes require their explicit purpose and immediate Workspace governance;
   ordinary one-turn AgentExecution remains explicit, while AgentTask owns its
   strategy-level persistence
@@ -657,6 +659,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   the physical scope is `AgentExecution -> AgentTask -> Action`; Task retention
   keeps the inherited parent `execution_id`, narrows by exact `task_id`, and must
   not clear a sibling Task or its owning execution scope
+- on AgentTask failure, discard ordinary process records/files/checkpoints but
+  anchor the compact `task_id::resume` snapshot from the last completed
+  iteration when one exists; successful and cancelled tasks do not retain that
+  recovery point by default
 - after an owner is terminal, reject new process/recovery records but allow
   deliverable/audit records and apply retention immediately; active recovery or
   lease state comes from `Workspace.get_retention_lifecycle(...)` and defers
