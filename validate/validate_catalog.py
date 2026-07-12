@@ -104,6 +104,21 @@ def main() -> None:
         passes,
     )
     check(
+        "playbook_trusted_identifier_join_boundary",
+        "one host-issued trusted selection key" in playbook_text
+        and re.search(
+            r"reconstruct\s+UUIDs,\s+metadata,\s+and\s+other\s+identifiers\s+deterministically",
+            playbook_text,
+        )
+        is not None
+        and "do not ask the model to reproduce" in playbook_text
+        and "application-local projection" in playbook_text
+        and "required string constrained to the offered key set" in playbook_text,
+        "playbook keeps opaque identity and metadata joins host-owned",
+        failures,
+        passes,
+    )
+    check(
         "triggerflow_framework_name_optional",
         "does not need to say TriggerFlow or Agently" in triggerflow_text,
         "triggerflow explicitly allows scenario-led discovery without framework-name requirements",
