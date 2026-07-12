@@ -69,7 +69,9 @@ here for Actions, ExecutionResource, service, or DevTools details.
   an explicitly selected domain; do not rely on separate explicit Workspaces to
   communicate; use
   `flow.create_execution(workspace=False)` only when an execution should have no
-  Workspace binding
+  Workspace binding; finite internal ActionFlow and TaskDAG executions use this
+  no-Workspace path, while TriggerFlowActionFlow binds a lazy Workspace only
+  when an approval pause needs save/resume recovery
 - move information between separate Workspaces in application or TriggerFlow
   business logic by searching/reading the source Workspace, writing or
   storing records in the destination Workspace, and linking refs as needed;
@@ -144,7 +146,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   while TriggerFlow still owns pause/resume, replay, DAG readiness, and
   approval/exchange lifecycle semantics; durable RuntimeEvent records now carry
   parent signal, aggregation scope, operator id, interrupt id, resume request
-  id, actor id, lease owner id, snapshot refs, and artifact refs
+  id, actor id, lease owner id, snapshot refs, and artifact refs. This storage
+  is opt-in, so ordinary observation stays in logging/DevTools
+  unless the host explicitly binds `runtime_event_store` or appends Workspace
+  RuntimeEvents
 - for ModelRequest observability, read `payload.model_request_telemetry` from
   existing `model.*` RuntimeEvents when present; it is a compact diagnostic
   payload for provider/model, attempt, run lineage, duration, raw usage,
@@ -409,7 +414,7 @@ here for Actions, ExecutionResource, service, or DevTools details.
   verdicts; judgment belongs to the AgentTask verifier or an independent
   Agently model-judge request
 - for app developers, prefer `agent.enable_python(...)`, `agent.enable_shell(...)`, `agent.enable_workspace_file_actions(...)`, `agent.enable_coding_agent_actions(...)`, `agent.enable_nodejs(...)`, `agent.enable_code_runtime(...)`, and `agent.enable_sqlite(...)` before direct manager/provider APIs; Python, shell, Node.js, and common-language code runtime helpers use Docker-backed runtime profiles and fail closed when Docker preflight fails. Strict profiles report missing images, while developer/CI profiles may pull missing images and prepare standard dependencies as host-owned provisioning. Use `sandbox="trusted_local"` only for trusted compatibility paths. Shell is for tests, builds, git inspection, and read-only diagnostics, while Workspace file actions own file read/search/edit/write semantics
-- for instruction-heavy or large Actions, expect later model rounds to see compact execution digests, bounded previews, artifact refs, and file refs; if the digest is still too large for planning or reply hot paths, ActionRuntime may replace duplicate data/model_digest fields with same_as=result pointers and omit artifact preview bodies from hot-path refs; previews are not complete evidence, so use `agent.action.read_action_artifact(...)` only when full raw code, command output, SQL results, page content, or logs are needed
+- for instruction-heavy or large Actions, expect later model rounds to see compact execution digests, bounded previews, artifact refs, and file refs; oversized complete records are bounded before direct return or TriggerFlow state storage, including large kwargs/instructions, and may replace duplicate data/model_digest fields with same_as=result pointers; previews are not complete evidence, so use `agent.action.read_action_artifact(selection_key=...)` only inside the currently bound AgentExecution, AgentTask, or standalone ActionFlow scope when full raw code, command output, SQL results, page content, or logs are needed. TaskBoard host code binds current task lineage for sibling-card readback; artifact id/action-call id fallback and cross-task/cross-execution readback fail closed; model/terminal `artifact_refs` and `artifacts` aliases must resolve to the same selection-key-only list
 - treat model-planned Action inputs as untrusted: ActionDispatcher filters
   `structured_plan` and `native_tool_calls` kwargs to registered
   `ActionSpec.kwargs`, records stripped keys in `ActionResult.diagnostics`, and
@@ -661,8 +666,11 @@ here for Actions, ExecutionResource, service, or DevTools details.
   not clear a sibling Task or its owning execution scope
 - on AgentTask failure, discard ordinary process records/files/checkpoints but
   anchor the compact `task_id::resume` snapshot from the last completed
-  iteration when one exists; successful and cancelled tasks do not retain that
-  recovery point by default
+  iteration when one exists; task cleanup joins checkpoint rows through scoped
+  record identity across task and resume run ids, deletes their matching
+  `checkpoint.latest.*` manifests, and preserves the anchored resume row plus
+  manifest; successful and cancelled tasks do not retain that recovery point by
+  default
 - after an owner is terminal, reject new process/recovery records but allow
   deliverable/audit records and apply retention immediately; active recovery or
   lease state comes from `Workspace.get_retention_lifecycle(...)` and defers

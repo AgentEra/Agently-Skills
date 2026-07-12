@@ -364,8 +364,9 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   previews are not complete evidence, so full raw payloads should be read
   explicitly from the Action artifact store or Workspace when needed;
   use `workspace.append_runtime_event(...)` / `workspace.query_runtime_events(...)`
-  only for durable execution facts, not as a replacement for TriggerFlow
-  pause/resume or approval/exchange policy
+  only for explicitly configured durable execution facts, not ordinary
+  observation and not as a replacement for TriggerFlow pause/resume or
+  approval/exchange policy
 - keep the permission profile explicit: search-only, local-files-only, network-read, install-capable shell, or trusted broad executor
 - use Python sandbox for pure computation or small data shaping; do not use it for imports, filesystem mutation, network access, or dependency installation
 - use Bash sandbox or a custom executor when the task needs shell access, package install, or broader command control
@@ -420,6 +421,11 @@ readback_call = {
 Do not teach host code to read that selection key after a standalone ActionFlow
 returns; the scope is released and the candidate reports `available=false`.
 Use a durably promoted Workspace ref for post-run application readback.
+The public reader accepts only `selection_key` and resolves it against the
+currently bound AgentExecution, AgentTask, or standalone ActionFlow scope.
+TaskBoard host code binds current task lineage so sibling cards can share one
+retained artifact. Missing scope, cross-task/cross-execution lookup, and
+artifact-id/action-call-id fallback fail closed.
 
 The private Action artifact store retains the exact transferred value. Its
 digest and observation preview are bounded/redacted projections only, not the
@@ -443,6 +449,13 @@ After a standalone scope closes, returned refs are historical projections with
 `available=false` and `full_value_available=false`; keep their bounded
 digest/preview for audit, but do not call `read_action_artifact` for the deleted
 private value.
+Oversized complete Action records are compacted before direct return or
+TriggerFlow state storage, including records whose growth comes from
+kwargs/instructions rather than output. Finite internal ActionFlow and TaskDAG
+executions use `workspace=False`; TriggerFlowActionFlow binds a lazy Workspace
+only when an approval pause needs save/resume recovery. At model and terminal
+boundaries, `artifact_refs` and `artifacts` are normalized together to the same
+selection-key-only list.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
