@@ -642,25 +642,25 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `agent.create_execution(lineage=..., limits=..., options=...)`; lineage,
   diagnostics, stream correlation metadata, and shared model-request budget
   counting now describe the bounded step without a public mode name
-- keep AgentExecution memory explicit: write observations/checkpoints/artifacts
-  through the execution's bound Workspace helper, such as
-  `await execution.async_record_workspace(collection="observations", checkpoint=True)`,
-  which writes requested checkpoints through the Workspace checkpoint-store port
-  and records an evidence link between the AgentExecution record and checkpoint;
-  then call `workspace.build_context(...)` for the next step; ordinary one-turn
-  AgentExecution remains explicit, while AgentTask owns its strategy-level
-  persistence; do not make Workspace depend on AgentExecution-specific strategy
-  semantics
+- keep AgentExecution memory explicit through its bound Workspace. Do not use a
+  fresh `async_record_workspace(..., purpose="process"|"recovery")` call as a
+  post-run checkpoint shortcut: an internal wait may complete the execution and
+  the API then rejects that terminal write. Post-terminal deliverable/audit
+  writes require their explicit purpose and immediate Workspace governance;
+  ordinary one-turn AgentExecution remains explicit, while AgentTask owns its
+  strategy-level persistence
 - treat AgentExecution terminal storage as one host-owned bounded projection:
   the result stream and terminal lifecycle event must carry the same projection,
   while the full result remains in the in-memory result API and durable bodies
   are reached through canonical retained refs
 - pass the execution's explicitly scoped Workspace into a routed AgentTask so
   the physical scope is `AgentExecution -> AgentTask -> Action`; Task retention
-  must not clear a sibling Task or its owning execution scope
+  keeps the inherited parent `execution_id`, narrows by exact `task_id`, and must
+  not clear a sibling Task or its owning execution scope
 - after an owner is terminal, reject new process/recovery records but allow
   deliverable/audit records and apply retention immediately; active recovery or
-  lease state defers destructive retention until the lifecycle is safe
+  lease state comes from `Workspace.get_retention_lifecycle(...)` and defers
+  destructive retention until the lifecycle is safe
 - inspect AgentExecution runtime facts through AgentExecutionResult or the
   execution facade: `result = execution.get_result()`, `result.get_text()`,
   `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,

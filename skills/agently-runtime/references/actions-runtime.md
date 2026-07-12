@@ -407,7 +407,8 @@ compact digest rather than full raw code, command output, SQL result sets, page
 HTML, screenshots, or logs.
 
 Use the digest for normal planning and replies. Read redacted raw details only
-when the model or application asks for them:
+while the ref explicitly reports `available=true` and the model or application
+asks for them:
 
 ```python
 artifact_ref = records[0]["artifact_refs"][0]
@@ -425,6 +426,10 @@ instead transfers only refs selected by the host from a successful route;
 model-produced `accepted` fields do not grant selection authority. If Workspace
 promotion fails, the selected source artifact remains available under its
 stable identity for retry while unselected artifacts are released.
+After a standalone scope closes, returned refs are historical projections with
+`available=false` and `full_value_available=false`; keep their bounded
+digest/preview for audit, but do not call `read_action_artifact` for the deleted
+private value.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
