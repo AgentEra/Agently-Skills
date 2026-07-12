@@ -135,6 +135,14 @@ Use this file as installation-time guidance after the skills are added into anot
   save/load, intervention, inspection, cancellation, or controlled close require
   an explicit execution.
 - Keep stable shared prompt and output contracts in prompt config rather than scattering them across Python helpers.
+- Keep record identity joins in host code. Give the model one trusted selection
+  key per candidate plus only task-relevant facts, require only that key in the
+  model judgment, validate it against the offered set, and then reconstruct
+  UUIDs, canonical ids, opaque refs, metadata, and full records
+  deterministically. Passing complete identity-heavy objects through the model
+  and asking it to copy multiple ids or unrelated meta is an anti-pattern. Treat
+  the selection key as an application-local required string constrained to the
+  offered set, not as a second canonical identity.
 - When model output must strictly satisfy a documented API request, module
   interface, or function call, use one explicit integration contract: runtime
   facts in `input`, authoritative API/schema documentation, signatures, and

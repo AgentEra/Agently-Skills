@@ -65,6 +65,18 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   or cross-field constraint. This is necessary boundary/output control, not
   business-logic intrusion. Keep unrelated business decisions out of the
   contract and run deterministic validation before a real call.
+- when the model must judge, select, rank, or reference host records, project
+  each candidate with one host-issued trusted selection key plus only
+  task-relevant facts. Ask the model to return that one key as the index for its
+  judgment; do not ask the model to reproduce UUIDs, multiple ids, opaque refs,
+  full records, or unrelated metadata. Validate the returned key against the
+  offered set, then look up and reconstruct UUIDs, metadata, and other
+  identifiers deterministically in host code. Sending identity-heavy objects
+  through the model and trusting it to transcribe every field is an
+  anti-pattern, not useful model-owned reasoning. The selection key is an
+  application-local projection, not another canonical identity; define it as a
+  required string constrained to the offered key set, and reject unknown or
+  disallowed duplicate keys before lookup
 - when adding or refactoring Agently framework internals under `core/` or
   `builtins/`, prefer a subdirectory package when the feature has multiple
   roles such as facade, manager, backend/provider, registry, adapter, policy, or
