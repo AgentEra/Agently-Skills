@@ -472,8 +472,11 @@ official `action.*` events, and compatibility `tool.*` events. Plan observations
 carry one canonical `decision.action_calls` list instead of the duplicated
 legacy aliases; commands expose canonical `action_id` plus bounded/redacted
 `action_input`; record and repeated-failure convergence observations use bounded
-record carriers. Complete private Action values remain outside observation and
-log payloads.
+record carriers. `payload` and `error` share the complete observation budget. A
+raw exception is projected once to a bounded/redacted ErrorInfo-compatible
+mapping before direct callbacks; official `action.*` and compatibility `tool.*`
+events reuse that mapping and do not rebuild the original message or traceback.
+Complete private Action values remain outside observation and log payloads.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
