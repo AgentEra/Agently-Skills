@@ -456,6 +456,12 @@ executions use `workspace=False`; TriggerFlowActionFlow binds a lazy Workspace
 only when an approval pause needs save/resume recovery. At model and terminal
 boundaries, `artifact_refs` and `artifacts` are normalized together to the same
 selection-key-only list.
+Custom execution-handler records use this same bounded carrier before
+AgentExecution context, RuntimeEvents, TriggerFlow state, logs, metadata, and
+public return. Route logs keep one semantic payload without nested `raw` or
+duplicate data/model_digest records. A standalone AgentTask releases its exact
+task scope at terminal; a routed task explicitly transfers that scope to its
+parent AgentExecution until terminal selection/promotion and release complete.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
