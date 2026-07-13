@@ -476,6 +476,12 @@ record carriers. `payload` and `error` share the complete observation budget. A
 raw exception is projected once to a bounded/redacted ErrorInfo-compatible
 mapping before direct callbacks; official `action.*` and compatibility `tool.*`
 events reuse that mapping and do not rebuild the original message or traceback.
+Opaque string or bytes exception arguments never retain a raw prefix: they
+project to a fixed redacted summary plus original UTF-8 byte length and SHA-256
+digest. Explicitly structured arguments may retain bounded facts after
+sensitive-key redaction. Projected tracebacks contain structural frame facts
+only and exclude the formatted exception/source line, notes, locals, cause, and
+context.
 Complete private Action values remain outside observation and log payloads.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
