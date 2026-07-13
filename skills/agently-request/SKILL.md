@@ -117,6 +117,20 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
   when building explicit loops that store structured state and record lineage
 - keep retrieval explicit when its results feed a later request or workflow step
 - default to async-first response consumption in services, streaming paths, and workflows
+- when no caller consumes progressive updates, directly await `async_get_data()`
+  on the request/execution result. Do not create a discard-only `instant` drain
+  loop before reading the final object; it adds stream queue, event iteration,
+  and parser work without consumer value. Use a generator only when its items
+  are published, recorded, applied to UI/state, or used for explicitly
+  cancelable/idempotent preparation, then read final data from the same result
+- for retrieval-backed natural-language answers, give the model one short
+  trusted `ref_id` or existing evidence `cite_as` per selected source and require
+  application-level `[[ref:<ref_id>]]` tokens such as `[[ref:r1]]`. Host code
+  must validate tokens against the offered ref map, render safe links, and emit
+  application-approved source-card records separately for hover cards, source
+  lists, or attached result cards. Avoid bare `${ref_id}` because `${...}` already belongs to
+  Agently prompt/TaskDAG placeholders; do not ask the model to reproduce URLs or
+  complete retrieval metadata
 - when structured partial fields can unblock UI or workflow progress, consume
   `get_async_generator(type="instant")` and then use the same result's
   `async_get_data()` for the final parsed object after configured validation.
@@ -133,6 +147,8 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
 - do not rebuild prompt templates with ad hoc string formatting when prompt mappings fit
 - do not handwrite JSON repair/retry loops before using output contracts and validation
 - do not re-request the same model call only to get text, parsed data, or metadata separately
+- do not drain `get_async_generator(type="instant")` and discard every item when
+  `async_get_data()` is the only value the caller needs
 - do not hide retrieval inside unrelated prompt code
 
 ## Read Next

@@ -135,6 +135,17 @@ Use this file as installation-time guidance after the skills are added into anot
   save/load, intervention, inspection, cancellation, or controlled close require
   an explicit execution.
 - Keep stable shared prompt and output contracts in prompt config rather than scattering them across Python helpers.
+- Choose response consumption from actual consumer needs. When no caller uses
+  progressive output, await `async_get_data()` directly; do not drain an
+  `instant` generator into a no-op loop before reading the final result. Stream
+  only when items are published, recorded, applied to state/UI, or used for
+  explicitly cancelable/idempotent preparation.
+- For retrieval-backed natural-language answers, expose one trusted `ref_id` or
+  evidence `cite_as` per source and use application-level
+  `[[ref:<ref_id>]]` tokens. Host code validates and resolves tokens, builds
+  safe links, and emits application-approved source-card records for
+  hover/source cards. Avoid bare `${ref_id}` because `${...}` is already
+  Agently placeholder syntax.
 - Keep record identity joins in host code. Give the model one trusted selection
   key per candidate plus only task-relevant facts, require only that key in the
   model judgment, validate it against the offered set, and then reconstruct
