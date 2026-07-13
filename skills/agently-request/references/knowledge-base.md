@@ -139,7 +139,7 @@ async def answer_with_refs(
         }
 
     result = (
-        Agently.create_agent()
+        Agently.create_request("retrieval-reference-answer")
         .input({"question": question, "retrieval_results": model_refs})
         .instruct([
             "Answer from retrieval_results.",
