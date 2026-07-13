@@ -90,6 +90,13 @@ def main() -> None:
     check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 6-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
+    request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
+    request_model_response_text = (
+        SKILLS / "agently-request" / "references" / "model-response.md"
+    ).read_text(encoding="utf-8")
+    request_knowledge_base_text = (
+        SKILLS / "agently-request" / "references" / "knowledge-base.md"
+    ).read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_overview_text = (
         SKILLS / "agently-dynamic-task" / "references" / "overview.md"
@@ -115,6 +122,29 @@ def main() -> None:
         and "application-local projection" in playbook_text
         and "required string constrained to the offered key set" in playbook_text,
         "playbook keeps opaque identity and metadata joins host-owned",
+        failures,
+        passes,
+    )
+    check(
+        "request_final_getter_without_discarded_stream",
+        "directly await `async_get_data()`" in request_text
+        and re.search(
+            r"discard-only\s+`instant`\s+drain\s+loop",
+            request_text,
+        )
+        is not None
+        and "No progressive consumer" in request_model_response_text,
+        "request guidance chooses final data getters when no stream is consumed",
+        failures,
+        passes,
+    )
+    check(
+        "request_retrieval_ref_rendering_protocol",
+        "[[ref:<ref_id>]]" in request_text
+        and "[[ref:<ref_id>]]" in request_knowledge_base_text
+        and "cite_as" in request_knowledge_base_text
+        and "hover card" in request_knowledge_base_text,
+        "retrieval guidance defines a host-resolved reference rendering protocol",
         failures,
         passes,
     )

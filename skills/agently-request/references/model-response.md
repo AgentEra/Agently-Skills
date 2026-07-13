@@ -17,6 +17,10 @@ absent, dispatch and retry timing keep the legacy immediate behavior.
 
 - prefer `get_result()` when one request result must be consumed more than once
 - default to async-first response APIs in services, streaming paths, TriggerFlow steps, and any integration that may overlap work
+- No progressive consumer means no stream: directly await
+  `result.async_get_data()`. A discard-only `instant` drain loop adds queue,
+  event-iteration, and parser work without creating output value. Open a
+  generator only when its items are actually published, recorded, or applied
 - treat sync getters and generators as convenience wrappers for scripts, REPL use, or compatibility bridges
 - use `delta`, `instant`, `specific`, or `all` instead of custom stream splitting logic
 - for AgentExecution streams, `type="delta"` remains the public string stream;
@@ -64,9 +68,38 @@ absent, dispatch and retry timing keep the legacy immediate behavior.
   use a small state flag or buffer and flush later-path deltas only after the
   earlier path's completion event has been handled
 
+Final-only consumption:
+
+```python
+result = (
+    agent
+    .input("Classify this ticket.")
+    .output({"route": (str, "billing | technical | other", True)})
+    .get_result()
+)
+data = await result.async_get_data()
+```
+
+Discard-only streaming is an anti-pattern:
+
+```python
+async for _item in result.get_async_generator(type="instant"):
+    pass
+data = await result.async_get_data()
+```
+
+When a real consumer exists, publish the stream and reuse the same result:
+
+```python
+async for item in result.get_async_generator(type="instant"):
+    await publish_structured_patch(item)
+data = await result.async_get_data()
+```
+
 ## Anti-Patterns
 
 - do not re-issue the same request to obtain text, data, and metadata separately
+- do not open and discard a stream when a final getter is the only consumer
 - do not build ad hoc field-level stream parsers when `instant` or `streaming_parse` already fits
 - do not strip reasoning tags inside format-specific parsers
 
