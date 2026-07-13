@@ -71,6 +71,14 @@ Use this file as installation-time guidance after the skills are added into anot
   do not change public APIs, runtime behavior, examples, compatibility metadata,
   or spec contracts. If the scope expands beyond those boundaries, stop and
   apply the ordinary independent-branch rule before continuing.
+- After validation, documentation or behavior-guidance-only updates that do not
+  depend on an unreleased framework version may also be synchronized directly to
+  the online `dev` and `main` branches without waiting for a coordinated release.
+  This exception does not apply to documentation, examples, compatibility
+  metadata, or spec contracts that require unreleased APIs or runtime behavior.
+  Examples that only explain already-released behavior may follow the exception.
+  Before pushing, inspect the complete outgoing commit range and exclude unrelated
+  implementation or version-dependent changes.
 - The main repository release commit must update `pyproject.toml`, `agently/compatibility.py`, `compatibility/index.json`, and the matching `compatibility/releases/<version>.json`; keep `compatibility/in-development.json` aligned until the release line moves on.
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
