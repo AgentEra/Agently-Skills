@@ -462,6 +462,18 @@ public return. Route logs keep one semantic payload without nested `raw` or
 duplicate data/model_digest records. A standalone AgentTask releases its exact
 task scope at terminal; a routed task explicitly transfers that scope to its
 parent AgentExecution until terminal selection/promotion and release complete.
+On parent cancellation, timeout, or abnormal stream close, the routed stream
+owner cancels and joins the child before the parent releases that scope, which
+prevents post-terminal artifact creation and Workspace process writes.
+
+Built-in TriggerFlow and DAG ActionFlows apply the same Action-owned
+bounded/redacted observation projection before direct observation callbacks,
+official `action.*` events, and compatibility `tool.*` events. Plan observations
+carry one canonical `decision.action_calls` list instead of the duplicated
+legacy aliases; commands expose canonical `action_id` plus bounded/redacted
+`action_input`; record and repeated-failure convergence observations use bounded
+record carriers. Complete private Action values remain outside observation and
+log payloads.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the
