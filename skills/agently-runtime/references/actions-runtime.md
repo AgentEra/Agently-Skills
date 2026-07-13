@@ -451,8 +451,8 @@ digest/preview for audit, but do not call `read_action_artifact` for the deleted
 private value.
 Oversized complete Action records are compacted before direct return or
 TriggerFlow state storage, including records whose growth comes from
-kwargs/instructions rather than output. Finite internal ActionFlow and TaskDAG
-executions use `workspace=False`; TriggerFlowActionFlow binds a lazy Workspace
+kwargs/instructions rather than output. Finite internal ActionRuntime execution
+flows, ActionFlows, and TaskDAG executions use `workspace=False`; TriggerFlowActionFlow binds a lazy Workspace
 only when an approval pause needs save/resume recovery. At model and terminal
 boundaries, `artifact_refs` and `artifacts` are normalized together to the same
 selection-key-only list.

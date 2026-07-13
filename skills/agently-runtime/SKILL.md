@@ -69,8 +69,8 @@ here for Actions, ExecutionResource, service, or DevTools details.
   an explicitly selected domain; do not rely on separate explicit Workspaces to
   communicate; use
   `flow.create_execution(workspace=False)` only when an execution should have no
-  Workspace binding; finite internal ActionFlow and TaskDAG executions use this
-  no-Workspace path, while TriggerFlowActionFlow binds a lazy Workspace only
+  Workspace binding; finite internal ActionRuntime execution flows, ActionFlows,
+  and TaskDAG executions use this no-Workspace path, while TriggerFlowActionFlow binds a lazy Workspace only
   when an approval pause needs save/resume recovery
 - move information between separate Workspaces in application or TriggerFlow
   business logic by searching/reading the source Workspace, writing or
