@@ -89,8 +89,8 @@ Optional diagnostics such as `action_artifact_release` are additive payload
 fields and should remain fail-open for older DevTools consumers.
 Cancellation is a distinct `agent_execution.cancelled` terminal event. Treat it
 as an additive terminal type, keep the payload fail-open, and do not collapse it
-into `agent_execution.failed`; its bounded close snapshot and Workspace
-retention lifecycle both report cancellation.
+into `agent_execution.failed`; its bounded close snapshot reports cancellation,
+while Workspace terminal file cleanup remains an internal storage concern.
 
 AgentTask action observations may appear as `agent_task.action.started`,
 `agent_task.action.completed`, and `agent_task.action.failed`. DevTools should

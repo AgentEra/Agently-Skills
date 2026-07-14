@@ -43,24 +43,21 @@ here for Actions, ExecutionResource, service, or DevTools details.
   snapshot, child-execution, delta, or phase event resets the quiet timer.
   Heartbeats help consumers show liveness; they do not satisfy evidence,
   hide stalls, or replace request/no-progress/task deadline timeouts.
-- default Agents and TriggerFlow executions expose lazy Foundation Workspace
-  bindings backed by the current session/script physical Workspace; Agent,
-  execution, and task records are logical partitions, while file actions use
-  lineage-scoped roots under
-  `files/lineage/<root-kind>/<root-id>/.../<leaf-kind>/<leaf-id>/files`; use
-  `agent.use_workspace(...)` or `flow.create_execution(workspace=...)` when
-  the app needs an explicit root, read-only mode, direct backend, or registered
-  provider, and keep in mind that ordinary model requests do not persist
-  automatically
-- local Workspace materialization writes `AGENTLY_WORKSPACE.md` at the physical
-  root and scoped `files_root`; external coding agents and file Actions should
-  treat that guide as the boundary note for editable files versus Workspace
-  internals, and should not expect the guide to be named `README.md`. Standard
-  editable file areas are `downloads/` for materialized remote files,
-  `artifacts/` for supporting generated evidence or non-primary deliverables,
-  and `reports/` for user-facing readable deliverables. Use
-  `workspace.file_area_path(...)` instead of hand-building those roots when
-  application or framework code needs a contained path.
+- default Agents expose a lightweight Foundation Workspace whose direct file
+  root is the entry script directory, with current working directory fallback;
+  `agent.use_workspace(...)` or `flow.create_execution(workspace=...)` selects
+  another direct root. External files are readable and read-only by default;
+  an application may grant `mode="read_write"`, while approved file Actions may
+  obtain a scoped write grant. Binding, listing, reading, globbing, or grepping
+  ordinary files creates no private state
+- Workspace reserves `<root>/.agently/` for lazy private state. A new file that
+  cannot be written to the external root is placed under
+  `.agently/files/<execution-id>/<requested-path>` and remains addressable by
+  its logical requested path; an existing external file is never silently
+  shadowed. Database, records, vector, recovery, memory, and Skills state are
+  created only when used. There is no `files_root`, generated boundary guide,
+  or framework-owned downloads/artifacts/reports directory; applications and
+  models choose meaningful ordinary subdirectories for products
 - create application-owned shared Workspace instances with
   `Workspace(...)` or `Agently.create_workspace(...)` and bind each participant
   with `agent.use_workspace(shared_workspace)` or
@@ -70,8 +67,9 @@ here for Actions, ExecutionResource, service, or DevTools details.
   communicate; use
   `flow.create_execution(workspace=False)` only when an execution should have no
   Workspace binding; finite internal ActionRuntime execution flows, ActionFlows,
-  and TaskDAG executions use this no-Workspace path, while TriggerFlowActionFlow binds a lazy Workspace only
-  when an approval pause needs save/resume recovery
+  and TaskDAG executions use this no-Workspace path, while
+  TriggerFlowActionFlow binds Workspace recovery only when an approval pause
+  needs save/resume
 - move information between separate Workspaces in application or TriggerFlow
   business logic by searching/reading the source Workspace, writing or
   storing records in the destination Workspace, and linking refs as needed;
@@ -80,7 +78,7 @@ here for Actions, ExecutionResource, service, or DevTools details.
   explicitly configure it with `agent.use_workspace(...)`; for model-callable
   local file actions, use `agent.enable_workspace_file_actions(...)`, which
   exposes the current Workspace file working tree and inherits
-  `agent.workspace.files_root`; for coding-agent style file work, use
+  `agent.workspace.root`; for coding-agent style file work, use
   `agent.enable_coding_agent_actions(...)` so reads, glob/grep search,
   targeted edits, unified-diff patches, and full-file writes stay under
   Workspace path, readback, and stale-guard semantics
@@ -101,8 +99,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `workspace.link_evidence(...)`, keep large payloads behind
   `workspace.ref_envelope(...)`, recover state with
   `workspace.latest_checkpoint(...)`, bind durable execution ports by creating
-  the execution with `flow.create_execution(workspace=workspace)` or with
-  `runtime_resources={"snapshot_store": workspace, "runtime_event_store": workspace}`,
+  the execution with `flow.create_execution(workspace=workspace)` and select
+  `runtime_resources={"snapshot_store": workspace}` when recovery must use
+  that provider; bind `runtime_event_store` separately and explicitly only when
+  Workspace-backed RuntimeEvent replay or audit is required,
   and inspect backend wiring
   with `workspace.capabilities()`; when restoring, read the snapshot state
   through `workspace.latest_checkpoint(...)` / `workspace.get_data(...)` and
@@ -200,7 +200,7 @@ here for Actions, ExecutionResource, service, or DevTools details.
   browser access just because the task loop exists
 - when a running task-strategy AgentExecution needs additional optional context,
   use `execution.async_add_guidance(...)` / `execution.add_guidance(...)`.
-  This records guidance to the retained AgentTask Workspace and applies it at
+  This records guidance in the running AgentTask state and applies it at
   the next safe Flat or TaskBoard boundary. Do not use guidance as completion
   evidence, do not inject it into non-task route prompts, and use TriggerFlow
   `pause_for(...)` / `continue_with(...)` instead when an external answer is
@@ -397,17 +397,12 @@ here for Actions, ExecutionResource, service, or DevTools details.
   while `remaining_work`, blocked status, repair, or readback intent still do.
   Materializing an artifact creates readback/verification evidence and is not
   final task acceptance
-- AgentTask strategy persistence writes planning, observation, verification,
-  checkpoint, and evidence-link records through the bound Workspace provider;
-  checkpoints use the checkpoint-store port and task evidence relationships use
-  `workspace.link_evidence(...)`. TaskBoard checkpoint payloads may also carry
-  bounded acceptance-index and handoff projections for resume orientation; they
-  point back to TaskBoard revision, EvidenceEnvelope, artifact, and checkpoint
-  refs, and must not be treated as a second evidence ledger or completion
-  verdict. Acceptance-index projections may include dirty/cache state, verdict
-  fingerprints, scoped evidence refs, and progress counters so TaskBoard can
-  skip redundant verifier work for unchanged green criteria while still
-  verifying dirty items and required host guards
+- AgentTask planning, observation, verification, TaskBoard ticks, and ordinary
+  checkpoints remain in memory and observation logs by default. Enable
+  `options={"agent_task": {"workspace_recovery": True}}` only when restart
+  recovery is required; this writes a compact resumable snapshot, not a full
+  process or RuntimeEvent archive. Trusted final file products still use
+  Workspace write/readback and terminal selection
 - for AgentTask business-system examples, mocks may provide facts, source
   records, policies, missing data, or conflicting inputs, but must not provide
   hidden expected answers, pass/fail fields, or deterministic business-quality
@@ -647,41 +642,30 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `agent.create_execution(lineage=..., limits=..., options=...)`; lineage,
   diagnostics, stream correlation metadata, and shared model-request budget
   counting now describe the bounded step without a public mode name
-- keep AgentExecution memory explicit through its bound Workspace. Do not use a
-  fresh `async_record_workspace(..., purpose="process"|"recovery")` call as a
-  checkpoint shortcut: process/recovery writes require an already active
-  running execution, never start or wait for a fresh execution, and use the
-  canonical AgentExecution id. The API rejects non-active and terminal writes.
-  Post-terminal deliverable/audit
-  writes require their explicit purpose and immediate Workspace governance;
-  ordinary one-turn AgentExecution remains explicit, while AgentTask owns its
-  strategy-level persistence
+- keep AgentExecution process state in memory and logs by default. Use
+  `async_record_workspace(...)` only as an explicit application-selected record
+  write on an already active execution; it is not an implicit checkpoint or
+  audit path, and non-active or terminal process/recovery writes are rejected
 - treat AgentExecution terminal storage as one host-owned bounded projection:
   the result stream and terminal lifecycle event must carry the same projection,
   while the full result remains in the in-memory result API and durable bodies
   are reached through canonical retained refs
-- pass the execution's explicitly scoped Workspace into a routed AgentTask so
-  the physical scope is `AgentExecution -> AgentTask -> Action`; Task retention
-  keeps the inherited parent `execution_id`, narrows by exact `task_id`, and must
-  not clear a sibling Task or its owning execution scope
+- pass the execution's Workspace and canonical execution identity into a routed
+  AgentTask so its final file refs remain owned by the parent execution without
+  copying file bodies
 - treat Action artifact ownership the same way: a standalone AgentTask releases
   its exact task scope at terminal, while the routed construction seam explicitly
   transfers that scope to the parent AgentExecution for terminal
   selection/promotion and parent-owned release; cancellation, timeout, or
   abnormal stream close must cancel and join the routed child before that
-  release, so no late artifact or Workspace process write can cross terminal
-  cleanup
-- on AgentTask failure, discard ordinary process records/files/checkpoints but
-  anchor the compact `task_id::resume` snapshot from the last completed
-  iteration when one exists; task cleanup joins checkpoint rows through scoped
-  record identity across task and resume run ids, deletes their matching
-  `checkpoint.latest.*` manifests, and preserves the anchored resume row plus
-  manifest; successful and cancelled tasks do not retain that recovery point by
-  default
-- after an owner is terminal, reject new process/recovery records but allow
-  deliverable/audit records and apply retention immediately; active recovery or
-  lease state comes from `Workspace.get_retention_lifecycle(...)` and defers
-  destructive retention until the lifecycle is safe
+  release, so no late Action artifact or Workspace fallback file can cross
+  terminal cleanup
+- at terminal state, keep only selected final fallback products whose trusted
+  refs pass physical readback; remove other files below the current execution's
+  `.agently/files/<execution-id>` area. Recovery snapshots exist only when
+  explicitly enabled and are removed when a finite execution no longer needs
+  resume state. Audit retention belongs to configured logs, DevTools, or an
+  explicit RuntimeEvent/record store rather than a default Workspace lifecycle
 - inspect AgentExecution runtime facts through AgentExecutionResult or the
   execution facade: `result = execution.get_result()`, `result.get_text()`,
   `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,

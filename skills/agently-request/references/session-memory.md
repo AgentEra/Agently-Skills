@@ -37,7 +37,7 @@ problem.
 ## Usage Shape
 
 ```python
-workspace = Agently.create_workspace("./.agently/support-memory")
+workspace = Agently.create_workspace("./support-memory")
 
 session = Session()
 session.use_memory(mode="AgentlyMemory", workspace=workspace)
@@ -45,15 +45,32 @@ session.use_memory(mode="AgentlyMemory", workspace=workspace)
 
 ```python
 agent = Agently.create_agent()
-agent.use_workspace("./.agently/support-memory")
+agent.use_workspace("./support-memory")
 agent.activate_session(session_id="support-demo")
 agent.activated_session.use_memory(mode="AgentlyMemory")
 ```
+
+The configured path is the ordinary Workspace root; never bind `.agently`
+itself as the Workspace. Creating or activating a Session without
+`use_memory(...)` creates no private Workspace state. Record-only memory lazily
+creates `.agently/workspace.db` on its first real write or query and does not
+materialize embedding or vector providers.
+
+Enable vector indexing only for memory flows that perform real vector work:
+
+```python
+agent.set_settings("session.memory.AgentlyMemory.vector_index.enabled", True)
+```
+
+Provider configuration and capability inspection alone must remain side-effect
+free; the actual vector write or query owns provider materialization.
 
 ## Anti-Patterns
 
 - do not use session as a substitute for workflow orchestration state
 - do not keep restart-sensitive memory only in transient globals
+- do not use `.agently` as the application-visible Workspace root
+- do not enable vector indexing for record-only memory flows
 - do not add a second memory extension concept when `SessionMemory` already names
   the extension protocol
 - do not put Workspace retrieval strategy inside a Session memory plugin; use
