@@ -8,23 +8,18 @@ Use this skill when the problem is agent-side extension rather than prompt shape
 - keep extension choice explicit: Action Runtime, ExecutionResource, built-in capability Actions, Agent Components, tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools`
 - treat `Agently.execution_resource` as an advanced framework/plugin surface, not the default app-development API
 - for application developers, prefer built-in Actions and `agent.enable_*` component helpers before exposing core manager/provider concepts
-- default Agents and TriggerFlow executions expose lazy Foundation Workspace
-  bindings backed by the current session/script physical Workspace; Agent,
-  execution, and task records are logical partitions, while file actions use
-  lineage-scoped roots under
-  `files/lineage/<root-kind>/<root-id>/.../<leaf-kind>/<leaf-id>/files`; call
-  `agent.use_workspace(...)` or `flow.create_execution(workspace=...)` when a
-  stable explicit root, read-only mode, direct backend, or registered provider
-  is required
-- local Workspace materialization writes `AGENTLY_WORKSPACE.md` at the physical
-  root and scoped `files_root`; external coding agents and file Actions should
-  treat that guide as the boundary note for editable files versus Workspace
-  internals, and should not expect the guide to be named `README.md`. Standard
-  editable file areas are `downloads/` for materialized remote files,
-  `artifacts/` for supporting generated evidence or non-primary deliverables,
-  and `reports/` for user-facing readable deliverables. Use
-  `workspace.file_area_path(...)` when code needs a contained path in one of
-  those areas.
+- default Agents expose a lightweight Foundation Workspace whose direct file
+  root is the entry script directory, with current working directory fallback;
+  `agent.use_workspace(...)` or `flow.create_execution(workspace=...)` selects
+  a stable explicit root. External files are readable and read-only by default;
+  applications may grant `mode="read_write"`, and approved file Actions may
+  receive a scoped write grant
+- Workspace creates no private state for binding or ordinary file reads. It
+  reserves `<root>/.agently/` for lazy database, records, vector, recovery,
+  memory, Skills, and fallback file state. New files without external write
+  permission use `.agently/files/<execution-id>/<requested-path>`; existing
+  external files are never shadowed. There is no `files_root`, generated guide,
+  or framework-owned downloads/artifacts/reports layout
 - create shared task information scopes with `Workspace(...)` or
   `Agently.create_workspace(...)` and bind Agents, TriggerFlow executions, or
   service workers to that same instance when they must collaborate over an
@@ -33,9 +28,9 @@ Use this skill when the problem is agent-side extension rather than prompt shape
 - move facts across separate Workspaces in application or TriggerFlow business
   logic with explicit search/read plus write/link operations; Workspace
   is not a cross-space messaging or replication protocol
-- use `agent.workspace` for durable multi-turn task records, artifacts, search,
-  links, checkpoints, stable ref envelopes, bounded reads, RuntimeEvent records,
-  evidence links, and retention anchors
+- use `agent.workspace` for direct contained file operations and for records,
+  recovery, vector, memory, or RuntimeEvent state only when the application
+  explicitly needs that durable capability
 - use `workspace.build_context(...)` to package those records for later model
   calls; ordinary application code should not hand-write retrieval filters when
   a ContextPackage through ContextPlanner, WorkspaceContextRetriever, and
@@ -45,10 +40,10 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   requested checkpoints through the Workspace checkpoint-store port and records
   an evidence link between the AgentExecution record and checkpoint while
   leaving strategy decisions owned by AgentExecution
-- AgentTask is the current strategy-level persistence owner: it writes task
-  decisions, observations, verification records, checkpoints, and evidence links
-  through the bound Workspace provider without making Workspace choose task
-  continuation
+- AgentTask keeps planning, observations, verification, TaskBoard ticks, and
+  ordinary checkpoints in memory and observation logs by default. Enable
+  `options={"agent_task": {"workspace_recovery": True}}` only for compact
+  restart state; final trusted files still use Workspace readback
 - custom Workspace backends may be passed to `agent.use_workspace(backend)` or
   registered with `Agently.workspace.register_backend_provider(name, factory)`
   and selected through `agent.use_workspace(root, provider=name,
@@ -61,9 +56,9 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   `workspace.ref_envelope(...)`, `workspace.read_bounded(...)`, and
   `workspace.stream_read(...)` over storing large or structured loop state
   directly in TriggerFlow state; configure execution durability with
-  `flow.create_execution(workspace=workspace)` or
-  `runtime_resources={"snapshot_store": workspace, "runtime_event_store": workspace}` when the loop needs
-  restart diagnostics; read snapshot state back through
+  `flow.create_execution(workspace=workspace)` and bind `snapshot_store` when
+  the loop needs restart recovery. Bind `runtime_event_store` separately only
+  when durable RuntimeEvent replay/audit is explicitly required; read snapshot state back through
   `workspace.latest_checkpoint(...)` / `workspace.get_data(...)` and pass it
   to TriggerFlow `async_load(...)` for restart because TriggerFlow owns
   pause/resume, policy approval waits, and DAG join replay semantics; pass a
@@ -117,7 +112,7 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   coding-agent file work, Node.js, and SQLite access
 - when both are configured, filesystem-like helpers such as
   `agent.enable_workspace_file_actions(...)`, `agent.enable_shell(...)`, and
-  `agent.enable_nodejs(...)` inherit `agent.workspace.files_root` unless an
+  `agent.enable_nodejs(...)` inherit `agent.workspace.root` unless an
   explicit `root=` or `cwd=` is passed
 - Workspace file reads, writes, byte materialization, and exports go through
   registered `WorkspaceFileIOHandler` implementations or Workspace-owned
@@ -154,7 +149,9 @@ Use this skill when the problem is agent-side extension rather than prompt shape
 - `agent.enable_shell(...)` defaults to a small safe shell profile when
   `commands` is omitted. Treat shell as a test/build/git/read-only diagnostics
   capability; stdout/stderr are bounded by `max_output_chars`, and oversized
-  streams are written under `artifacts/shell/` when a Workspace root is bound.
+  streams are written under the current execution's
+  `.agently/files/<execution-id>/shell-output/` fallback when a Workspace is
+  bound.
 - Treat shell bypass grants such as `allow_unsafe` as host-only direct-call
   inputs. Do not expose them in model-visible action schemas; declare any
   direct-call-only action parameters with `meta={"host_only_input_keys": [...]}`
@@ -316,7 +313,7 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   addition to `PATH`, but they use fixed framework-owned argv templates and are
   still Action calls, not shell exposure. If `root` is omitted,
   `agent.use_acp()` uses the Agent's bound
-  Workspace `files_root` as the coding-agent project root; explicit `root=...`
+  Workspace `root` as the coding-agent project root; explicit `root=...`
   is an advanced host authorization override. ACP session reuse is internal
   AgentExecution resource policy, and CLI adapters report
   `acp_session.persistence="stateless_cli"` unless a real protocol session is
@@ -364,8 +361,9 @@ Use this skill when the problem is agent-side extension rather than prompt shape
   previews are not complete evidence, so full raw payloads should be read
   explicitly from the Action artifact store or Workspace when needed;
   use `workspace.append_runtime_event(...)` / `workspace.query_runtime_events(...)`
-  only for durable execution facts, not as a replacement for TriggerFlow
-  pause/resume or approval/exchange policy
+  only for explicitly configured durable execution facts, not ordinary
+  observation and not as a replacement for TriggerFlow pause/resume or
+  approval/exchange policy
 - keep the permission profile explicit: search-only, local-files-only, network-read, install-capable shell, or trusted broad executor
 - use Python sandbox for pure computation or small data shaping; do not use it for imports, filesystem mutation, network access, or dependency installation
 - use Bash sandbox or a custom executor when the task needs shell access, package install, or broader command control
@@ -420,6 +418,11 @@ readback_call = {
 Do not teach host code to read that selection key after a standalone ActionFlow
 returns; the scope is released and the candidate reports `available=false`.
 Use a durably promoted Workspace ref for post-run application readback.
+The public reader accepts only `selection_key` and resolves it against the
+currently bound AgentExecution, AgentTask, or standalone ActionFlow scope.
+TaskBoard host code binds current task lineage so sibling cards can share one
+retained artifact. Missing scope, cross-task/cross-execution lookup, and
+artifact-id/action-call-id fallback fail closed.
 
 The private Action artifact store retains the exact transferred value. Its
 digest and observation preview are bounded/redacted projections only, not the
@@ -443,6 +446,41 @@ After a standalone scope closes, returned refs are historical projections with
 `available=false` and `full_value_available=false`; keep their bounded
 digest/preview for audit, but do not call `read_action_artifact` for the deleted
 private value.
+Oversized complete Action records are compacted before direct return or
+TriggerFlow state storage, including records whose growth comes from
+kwargs/instructions rather than output. Finite internal ActionRuntime execution
+flows, ActionFlows, and TaskDAG executions use `workspace=False`;
+TriggerFlowActionFlow binds Workspace recovery only when an approval pause
+needs save/resume. At model and terminal
+boundaries, `artifact_refs` and `artifacts` are normalized together to the same
+selection-key-only list.
+Custom execution-handler records use this same bounded carrier before
+AgentExecution context, RuntimeEvents, TriggerFlow state, logs, metadata, and
+public return. Route logs keep one semantic payload without nested `raw` or
+duplicate data/model_digest records. A standalone AgentTask releases its exact
+task scope at terminal; a routed task explicitly transfers that scope to its
+parent AgentExecution until terminal selection/promotion and release complete.
+On parent cancellation, timeout, or abnormal stream close, the routed stream
+owner cancels and joins the child before the parent releases that scope, which
+prevents post-terminal artifact creation and Workspace fallback file writes.
+
+Built-in TriggerFlow and DAG ActionFlows apply the same Action-owned
+bounded/redacted observation projection before direct observation callbacks,
+official `action.*` events, and compatibility `tool.*` events. Plan observations
+carry one canonical `decision.action_calls` list instead of the duplicated
+legacy aliases; commands expose canonical `action_id` plus bounded/redacted
+`action_input`; record and repeated-failure convergence observations use bounded
+record carriers. `payload` and `error` share the complete observation budget. A
+raw exception is projected once to a bounded/redacted ErrorInfo-compatible
+mapping before direct callbacks; official `action.*` and compatibility `tool.*`
+events reuse that mapping and do not rebuild the original message or traceback.
+Opaque string or bytes exception arguments never retain a raw prefix: they
+project to a fixed redacted summary plus original UTF-8 byte length and SHA-256
+digest. Explicitly structured arguments may retain bounded facts after
+sensitive-key redaction. Projected tracebacks contain structural frame facts
+only and exclude the formatted exception/source line, notes, locals, cause, and
+context.
+Complete private Action values remain outside observation and log payloads.
 
 When host code explicitly calls `agent.get_action_result(prompt=...)`, the
 prompt is marked as having consumed the ActionRuntime loop even when the

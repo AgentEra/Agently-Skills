@@ -8,7 +8,7 @@ Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/do
 ## Compatibility
 
 The default public catalog is the current Agently-Skills generation `v2`,
-aligned with the Agently 4.1.4.1 runtime line and the compact 6-skill structure.
+aligned with the Agently 4.1.4.2 development line and the compact 6-skill structure.
 
 Machine-readable compatibility support lives in `compatibility/support.json`.
 The default branch keeps only the current public catalog so coding-agent skill

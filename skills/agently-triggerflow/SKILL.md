@@ -86,8 +86,10 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   `execution.result.get_state("status")` unless a chunk explicitly owns and
   updates that status contract
 - rely on chunk-internal `data.emit(...)`, `data.async_emit(...)`, `data.emit_nowait(...)`, and `data.async_emit_nowait(...)` to inherit the current TriggerFlow runtime scope; do not assume unrelated external emits can be paired by `when(..., mode="and")` unless the host routes them through one scoped flow stage or carries explicit correlation in the payload
-- use execution runtime state through `data.get_state(...)` / `data.set_state(...)`, async variants, and `execution.result.get_state(...)` as the per-execution data store and chunk-to-chunk handoff contract. Do not create parallel per-execution stores, storage helpers, translation helpers, or shadow dictionaries to shuttle workflow runtime data between chunks
+- use execution runtime state through `data.get_state(...)` / `data.set_state(...)`, async variants, and `execution.result.get_state(...)` as the per-execution data store and chunk-to-chunk handoff contract. `set_state(...)` replaces the complete value, including an empty list or mapping; use `append_state(...)` only for intentional list accumulation, and construct then set the complete next mapping for mapping transitions. Do not create parallel per-execution stores, storage helpers, translation helpers, or shadow dictionaries to shuttle workflow runtime data between chunks
 - use Workspace, provider, or host storage only when data must outlive one execution, be shared across runs, or be externalized as a large artifact; keep compact refs, status, and audit facts in TriggerFlow execution state so runtime graphs and recovery snapshots stay coherent
+- keep Workspace RuntimeEvent persistence explicit: ordinary observation belongs in logging/DevTools, while `runtime_event_store` is bound only for durable replay/audit. A Workspace binding may supply direct files/records without becoming an event store; save/pause/load may activate its recovery port when restart state is required. Finite internal ActionRuntime execution flows, ActionFlows, and TaskDAG executions use `workspace=False` unless recovery or file access is needed. A child ActionFlow releases only a standalone `action_run` artifact scope; a standalone AgentTask releases its exact task scope at terminal, while a routed task explicitly transfers that scope to its parent AgentExecution through selection/promotion and parent-owned release, canceling and joining the child before release on cancellation/timeout. Custom ActionFlow handler records must use the bounded Action carrier before context, RuntimeEvent, state, log, metadata, or return boundaries; built-in TriggerFlow/DAG ActionFlows also apply the Action-owned bounded/redacted projection before direct observation callbacks and official/compatibility events, including one complete-carrier budget for payload plus an ErrorInfo-compatible projected error. Opaque string/bytes exception arguments expose no raw prefix, only a fixed summary, original UTF-8 byte length, and SHA-256 digest; traceback projection remains structural-frame-only
+- read the complete TriggerFlow terminal value from `close()` / `async_close()`, not from `triggerflow.execution_completed`: terminal RuntimeEvents inline only bounded results, project selected file refs for large file-backed results, and otherwise carry an omission marker without creating a Workspace record solely for event transport
 - treat shared flow data / `flow_data` as a risky cross-execution surface and avoid it unless the task explicitly needs shared state; do not use it as a substitute for execution state
 - document its compatibility persistence exactly: the `execution.save()`
   snapshot includes a serialized copy of `flow_data`, and `load()` replaces the
@@ -197,7 +199,7 @@ agent = Agent()
 factory_agent = Agently.create_agent()
 flow = TriggerFlow(name="workflow-name")
 factory_flow = Agently.create_trigger_flow("factory-workflow")
-shared_workspace = Workspace("./.agently/workflows/shared")
+shared_workspace = Workspace("./project")
 ```
 
 `Agent()` / `Agently.create_agent()` and `TriggerFlow()` /
@@ -216,10 +218,9 @@ showing the API equivalence.
   `execution = flow.create_execution(auto_close=False)`,
   `await execution.async_start(input_value)` using a positional start value, and
   `snapshot = await execution.async_close()`
-- `flow.create_execution()` binds the current session/script default Workspace
-  by default and assigns the execution a scoped file root under
-  `files/lineage/<root-kind>/<root-id>/.../execution/<execution-id>/files`;
-  pass `workspace=False` to opt out, or
+- `flow.create_execution()` binds the current lightweight direct-root Workspace
+  without creating private state or enabling RuntimeEvent persistence; pass
+  `workspace=False` to opt out, or
   `flow.create_execution(workspace=shared_workspace)` when an application-owned
   Workspace should be selected explicitly for Agents, service workers, or other
   executions
