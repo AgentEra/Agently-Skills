@@ -71,6 +71,14 @@ Use this file as installation-time guidance after the skills are added into anot
   do not change public APIs, runtime behavior, examples, compatibility metadata,
   or spec contracts. If the scope expands beyond those boundaries, stop and
   apply the ordinary independent-branch rule before continuing.
+- After validation, documentation or behavior-guidance-only updates that do not
+  depend on an unreleased framework version may also be synchronized directly to
+  the online `dev` and `main` branches without waiting for a coordinated release.
+  This exception does not apply to documentation, examples, compatibility
+  metadata, or spec contracts that require unreleased APIs or runtime behavior.
+  Examples that only explain already-released behavior may follow the exception.
+  Before pushing, inspect the complete outgoing commit range and exclude unrelated
+  implementation or version-dependent changes.
 - The main repository release commit must update `pyproject.toml`, `agently/compatibility.py`, `compatibility/index.json`, and the matching `compatibility/releases/<version>.json`; keep `compatibility/in-development.json` aligned until the release line moves on.
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
@@ -93,6 +101,19 @@ Use this file as installation-time guidance after the skills are added into anot
   can be adjusted. Do not fake success with framework-level business mappings,
   canned outputs, overfitted prompts, deterministic substitutes for
   model-owned behavior, or test-only branches hidden in production code.
+- When problem discovery or strategy tuning would otherwise require repeated
+  real-model calls, start with development-agent self-simulation. Define the
+  acceptance criteria first; have the development agent simulate realistic
+  request/response and behavior chains; and refine prompt, schema, topology,
+  instrumentation, and failure paths without external calls until the preflight
+  meets those criteria. Label every simulated artifact `simulated`. It is
+  hypothesis and protocol-design material, not an observed fact or real-model
+  evidence, and it does not satisfy any real-model example or validation gate.
+  Then run the smallest representative, bounded real-model comparison and base
+  final conclusions on its real traces. Default to authorized project- or
+  developer-owned test credentials with explicit call, concurrency, and budget
+  limits. Never consume customer API credentials or quota without explicit
+  customer authorization and a disclosed maximum call count or spend.
 - User-visible feature work must add or update examples for the scenario the
   feature enables before the task is considered complete. The example should be
   runnable in its declared environment, use the current recommended API shape,

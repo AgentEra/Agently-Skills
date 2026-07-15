@@ -55,6 +55,15 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   classification, output quality checks, grading, and review decisions should
   be model-owned unless the check is only a deterministic smoke gate for
   structure or required-field presence.
+- when multi-round model experiments are needed for problem discovery or
+  strategy iteration, begin with development-agent self-simulation and written
+  acceptance criteria. Treat the simulated request/response and behavior chain
+  only as a low-cost preflight, label it `simulated`, and do not count it as an
+  observed fact or real-model evidence. Once it stabilizes, run the smallest
+  bounded real-model comparison and let the real trace own the final conclusion.
+  Default to authorized project/developer test credentials with explicit call,
+  concurrency, and budget limits; never consume customer API credentials or
+  quota without explicit customer authorization and a disclosed cap.
 - when model output must strictly satisfy a documented API request, module
   interface, or function call, build one explicit integration contract: put
   runtime facts in `.input(...)`, authoritative API/schema documentation,

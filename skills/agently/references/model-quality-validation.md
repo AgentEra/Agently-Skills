@@ -22,6 +22,33 @@ Use deterministic checks only for smoke-level facts:
 For meaning, quality, relevance, intent, scenario match, grading, or business
 classification, call a model and make the result structured.
 
+## Simulation-First Experiment Gate
+
+When problem discovery or strategy tuning is expected to require several model
+rounds, separate cheap design iteration from real-model evidence:
+
+1. Write the cases and acceptance criteria before tuning.
+2. Ask the development agent to self-simulate realistic target requests,
+   responses, decisions, and behavior traces without calling an external model.
+   Mark every generated artifact `simulated`.
+3. Iterate prompt wording, output schema, request topology, instrumentation, and
+   failure handling until the simulated preflight meets the written criteria.
+4. Freeze the hypothesis and run the smallest representative, bounded
+   real-model comparison that can confirm or reject it.
+5. Inspect the real traces and base the final experiment conclusion on them. If
+   simulation and reality differ, the real trace wins and the design returns to
+   analysis and revision.
+
+Self-simulation can expose unclear instructions, missing fields, impossible
+handoffs, unlogged branches, and weak acceptance criteria. It cannot establish
+model capability, semantic quality, provider behavior, latency, cost,
+robustness, or stability; those claims require real-model evidence.
+
+Use authorized project- or developer-owned test credentials by default. Put
+explicit limits on calls, concurrency, retries, and budget. Do not consume
+customer API credentials or quota unless the customer explicitly authorizes the
+experiment after seeing the maximum call count or spend.
+
 ## Development Script: Intent And Scenario Routing
 
 Use this pattern when a script or service module must decide which model-app
