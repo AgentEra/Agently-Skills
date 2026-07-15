@@ -56,14 +56,19 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   be model-owned unless the check is only a deterministic smoke gate for
   structure or required-field presence.
 - when multi-round model experiments are needed for problem discovery or
-  strategy iteration, begin with development-agent self-simulation and written
-  acceptance criteria. Treat the simulated request/response and behavior chain
-  only as a low-cost preflight, label it `simulated`, and do not count it as an
-  observed fact or real-model evidence. Once it stabilizes, run the smallest
-  bounded real-model comparison and let the real trace own the final conclusion.
-  Default to authorized project/developer test credentials with explicit call,
-  concurrency, and budget limits; never consume customer API credentials or
-  quota without explicit customer authorization and a disclosed cap.
+  strategy iteration, follow `references/model-quality-validation.md`: define
+  criteria, use same-context self-simulation only as a labeled warm preflight,
+  and never treat simulated usage or provider metadata as observed telemetry.
+  Once stable, choose at most one feasible isolated cold-review carrier—a
+  fresh-context native subagent, handshake-verified ACP coding agent, or fresh
+  isolated task/session. ACP is optional; same-context generation is not cold
+  review. Give the carrier only the task-local request contract, enforce host
+  boundaries, and label it `agent_simulation` unless a single underlying model
+  request is proven. If none is available, record `cold_preflight=skipped` and
+  continue to the smallest bounded real-model comparison. Real traces own the
+  final conclusion. Use authorized project/developer credentials with explicit
+  call, concurrency, retry, and budget caps; never consume customer credentials
+  or quota without explicit authorization and a disclosed cap.
 - when model output must strictly satisfy a documented API request, module
   interface, or function call, build one explicit integration contract: put
   runtime facts in `.input(...)`, authoritative API/schema documentation,
