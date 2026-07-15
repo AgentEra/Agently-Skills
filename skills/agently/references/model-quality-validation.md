@@ -28,26 +28,84 @@ When problem discovery or strategy tuning is expected to require several model
 rounds, separate cheap design iteration from real-model evidence:
 
 1. Write the cases and acceptance criteria before tuning.
-2. Ask the development agent to self-simulate realistic target requests,
-   responses, decisions, and behavior traces without calling an external model.
-   Mark every generated artifact `simulated`.
+2. Ask the development agent in the current task to self-simulate realistic
+   target requests, responses, decisions, and behavior traces without calling
+   the target model API. Mark every artifact `simulated` and `warm_preflight`.
 3. Iterate prompt wording, output schema, request topology, instrumentation, and
-   failure handling until the simulated preflight meets the written criteria.
-4. Freeze the hypothesis and run the smallest representative, bounded
-   real-model comparison that can confirm or reject it.
-5. Inspect the real traces and base the final experiment conclusion on them. If
+   failure handling until this warm preflight meets the written criteria.
+4. Freeze the request contract and, if an isolated executor is available,
+   choose at most one carrier for a cold preflight. Do not run all carriers.
+5. If no carrier is available, record `cold_preflight=skipped` with the reason;
+   do not block validation or relabel the warm preflight as cold.
+6. Run the smallest representative, bounded target-model comparison that can
+   confirm or reject the hypothesis.
+7. Inspect the real traces and base the final experiment conclusion on them. If
    simulation and reality differ, the real trace wins and the design returns to
    analysis and revision.
 
-Self-simulation can expose unclear instructions, missing fields, impossible
-handoffs, unlogged branches, and weak acceptance criteria. It cannot establish
-model capability, semantic quality, provider behavior, latency, cost,
-robustness, or stability; those claims require real-model evidence.
+### Choose One Cold-Preflight Carrier
+
+Use the first feasible option that provides genuine context isolation:
+
+1. a native coding-agent subagent started with fresh or no inherited context;
+2. a handshake-verified ACP coding agent; or
+3. a fresh isolated task or session of the development agent.
+
+ACP is not mandatory, and a native subagent is not automatically better: the
+required property is isolation from the warm-preflight answer and reasoning.
+Direct generation by the agent in its existing context remains
+`warm_preflight`, even if it is prompted to "act fresh."
+
+Give the cold carrier only:
+
+- task-relevant runtime input;
+- authoritative API/schema/docs/docstrings as `info`;
+- call, transformation, and behavior rules as `instruct`;
+- the exact output type and field-level contract;
+- written acceptance criteria that do not encode the intended answer.
+
+Do not pass prior conclusions, expected answers, the full conversation,
+customer secrets, unrelated metadata, or unrelated filesystem context. The
+host must enforce authorized credentials/resources, tool and network policy,
+file scope, timeout, and call limits. A prompt instruction alone is not an
+isolation or cost-control boundary.
+
+Label a cold result `simulated` and `cold_preflight`. ACP and coding-agent
+subagents may plan, use tools, or issue several internal model requests. Unless
+the carrier can prove exactly one underlying model request and expose its
+accounting, label the result `agent_simulation`, not
+`single_model_request_simulation`.
+
+### Evidence And Telemetry Labels
+
+Self-simulation and cold preflight can expose unclear instructions, missing
+fields, impossible handoffs, unlogged branches, weak acceptance criteria, and
+the expected shape of usage metadata. They cannot establish model capability,
+semantic quality, provider behavior, latency, cost, robustness, or stability.
+
+Use these labels without mixing categories:
+
+| Label | Meaning |
+|---|---|
+| `simulated` | Generated for preflight; not an observed target-model fact |
+| `synthetic` | Invented value used to exercise a field or branch |
+| `estimated` | Calculated approximation with its method stated |
+| `replayed` | Value copied from a named recorded trace, not a current run |
+| `unavailable` | Required telemetry was not exposed; do not infer it |
+| `observed` | Emitted by the target provider or host instrumentation in the current real run |
+
+In particular, a simulator cannot accurately recreate provider-generated
+request IDs, token accounting, cache or billing fields, latency, finish
+behavior, or opaque metadata. A tokenizer estimate is still `estimated`; ACP or
+subagent accounting describes that carrier, not the simulated target provider.
+Never add simulated values to real experiment totals. If exact usage or
+provider metadata matters to the conclusion, obtain it from the bounded real
+comparison or report it `unavailable`.
 
 Use authorized project- or developer-owned test credentials by default. Put
-explicit limits on calls, concurrency, retries, and budget. Do not consume
-customer API credentials or quota unless the customer explicitly authorizes the
-experiment after seeing the maximum call count or spend.
+explicit limits on calls, concurrency, retries, time, and budget. Do not consume
+customer API credentials or quota unless the customer explicitly authorizes
+the experiment after seeing the maximum call count or spend.
 
 ## Development Script: Intent And Scenario Routing
 

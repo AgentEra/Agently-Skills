@@ -102,18 +102,30 @@ Use this file as installation-time guidance after the skills are added into anot
   canned outputs, overfitted prompts, deterministic substitutes for
   model-owned behavior, or test-only branches hidden in production code.
 - When problem discovery or strategy tuning would otherwise require repeated
-  real-model calls, start with development-agent self-simulation. Define the
-  acceptance criteria first; have the development agent simulate realistic
-  request/response and behavior chains; and refine prompt, schema, topology,
-  instrumentation, and failure paths without external calls until the preflight
-  meets those criteria. Label every simulated artifact `simulated`. It is
-  hypothesis and protocol-design material, not an observed fact or real-model
-  evidence, and it does not satisfy any real-model example or validation gate.
-  Then run the smallest representative, bounded real-model comparison and base
-  final conclusions on its real traces. Default to authorized project- or
-  developer-owned test credentials with explicit call, concurrency, and budget
-  limits. Never consume customer API credentials or quota without explicit
-  customer authorization and a disclosed maximum call count or spend.
+  target-model calls, start with a same-context development-agent warm preflight.
+  Define acceptance criteria first, simulate realistic request/response and
+  behavior chains, and refine prompt, schema, topology, instrumentation, and
+  failure paths until the preflight meets them. Label it `simulated` and
+  `warm_preflight`; it does not satisfy a real-model validation gate.
+- Simulated provider usage and metadata are never observed telemetry. Label
+  invented values `synthetic`, estimates `estimated`, unavailable fields
+  `unavailable`, and recorded-trace playback `replayed`; only current values
+  returned by the target provider may be labeled `observed` or included in real
+  experiment totals.
+- After warm preflight, choose at most one feasible cold carrier: a native
+  fresh-context subagent, handshake-verified ACP coding agent, or fresh isolated
+  task/session. ACP is optional. Supply only task-local input, authoritative
+  `info`, `instruct`, exact `output` contract, and criteria; withhold intended
+  answers, prior conclusions, unrelated context, and customer secrets. Enforce
+  host tool/network/file/time/call boundaries. Label the result `simulated`,
+  `cold_preflight`, and—unless exactly one underlying request is proven—
+  `agent_simulation`, not `single_model_request_simulation`.
+- Same-context simulation never counts as cold review. If no isolated carrier
+  exists, record `cold_preflight=skipped` with the reason and continue to the
+  smallest representative, bounded real-model comparison. Final conclusions
+  come from real traces. Default to authorized project/developer credentials
+  with call, concurrency, retry, and budget caps; never consume customer API
+  credentials or quota without explicit authorization and a disclosed cap.
 - User-visible feature work must add or update examples for the scenario the
   feature enables before the task is considered complete. The example should be
   runnable in its declared environment, use the current recommended API shape,
