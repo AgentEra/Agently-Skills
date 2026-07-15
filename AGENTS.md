@@ -101,6 +101,19 @@ Use this file as installation-time guidance after the skills are added into anot
   can be adjusted. Do not fake success with framework-level business mappings,
   canned outputs, overfitted prompts, deterministic substitutes for
   model-owned behavior, or test-only branches hidden in production code.
+- When problem discovery or strategy tuning would otherwise require repeated
+  real-model calls, start with development-agent self-simulation. Define the
+  acceptance criteria first; have the development agent simulate realistic
+  request/response and behavior chains; and refine prompt, schema, topology,
+  instrumentation, and failure paths without external calls until the preflight
+  meets those criteria. Label every simulated artifact `simulated`. It is
+  hypothesis and protocol-design material, not an observed fact or real-model
+  evidence, and it does not satisfy any real-model example or validation gate.
+  Then run the smallest representative, bounded real-model comparison and base
+  final conclusions on its real traces. Default to authorized project- or
+  developer-owned test credentials with explicit call, concurrency, and budget
+  limits. Never consume customer API credentials or quota without explicit
+  customer authorization and a disclosed maximum call count or spend.
 - User-visible feature work must add or update examples for the scenario the
   feature enables before the task is considered complete. The example should be
   runnable in its declared environment, use the current recommended API shape,
