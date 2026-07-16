@@ -49,6 +49,14 @@ The user does not need to say TriggerFlow or Agently. Scenario language such as 
   constraints. Use `batch(...)`, `for_each(...)`, or `when(...)` plus managed
   emits for bounded concurrent work and graph-visible joins. Choosing an
   all-serial topology without this analysis is a prohibited anti-pattern
+- when auditing a complex flow, reconstruct the topology from each block's
+  declared input/output schema, ModelRequest prompt/output contract, state
+  reads/writes, emitted/consumed signals, RuntimeEvents, refs/readbacks, and
+  lifecycle. Graph adjacency proves activation, not value transfer. Label exact
+  value carriers and exact signal/event payloads through fan-out, join,
+  subflow, Action, Workspace, wait/resume, repair, and terminal boundaries.
+  Apply the shared standard in
+  `skills/agently/references/execution-topology-validation.md`.
 - prefer explicit execution lifecycle control with `close()` / `async_close()` for completion and cleanup
 - use `flow.start(...)` / `flow.async_start(...)` and flow-level runtime-stream
   helpers only for a finite, self-closing run when the caller does not need an
@@ -279,3 +287,4 @@ the developer owns in code.
 - `references/runtime-intervention.md`
 - `references/stream-bridge.md`
 - `references/devtools-graph.md`
+- `skills/agently/references/execution-topology-validation.md`

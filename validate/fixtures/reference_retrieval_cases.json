@@ -257,6 +257,43 @@
       ]
     },
     {
+      "id": "execution-topology-validation-zh",
+      "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
+      "matched_skills": [
+        "agently",
+        "agently-triggerflow"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently/references/execution-topology-validation.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "schema_complete_request_block",
+          "description": "Every ModelRequest block records prompt input/info/instruct, output schema, parsed output, and lifecycle events."
+        },
+        {
+          "id": "value_edge_lineage",
+          "description": "Every value edge names its source field, host transform or validation, and downstream input or state field."
+        },
+        {
+          "id": "signal_event_edge_lineage",
+          "description": "Every signal or RuntimeEvent edge names the emitted event, payload fields, trigger condition, and consuming block."
+        },
+        {
+          "id": "triggerflow_business_block_topology",
+          "description": "TriggerFlow audits include business blocks, subflows, fan-out/join, state, Actions, Workspace refs, and external waits."
+        }
+      ],
+      "required_concepts": [
+        "schema_complete_request_block",
+        "value_edge_lineage",
+        "signal_event_edge_lineage",
+        "triggerflow_business_block_topology"
+      ]
+    },
+    {
       "id": "taskdag-foundation-dynamic-task-facade-en",
       "query": "After routing to a DAG-shaped execution, which reference explains why TaskDAG is the foundation capability, how Dynamic Task is only the facade, and how TriggerFlow is the execution substrate?",
       "matched_skills": [

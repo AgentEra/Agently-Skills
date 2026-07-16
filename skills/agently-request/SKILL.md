@@ -124,8 +124,10 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
   are published, recorded, applied to UI/state, or used for explicitly
   cancelable/idempotent preparation, then read final data from the same result
 - for retrieval-backed natural-language answers, give the model one short
-  trusted `ref_id` or existing evidence `cite_as` per selected source and require
-  application-level `[[ref:<ref_id>]]` tokens such as `[[ref:r1]]`. Host code
+  trusted stable `ref_id` per selected source and require application-level
+  `[[ref:<ref_id>]]` tokens such as `[[ref:ref_2]]`. An evidence `cite_as` such
+  as `e1` is a request-local display alias only; normalize it through the exact
+  offered map before persisting a response. Host code
   must validate tokens against the offered ref map, render safe links, and emit
   application-approved source-card records separately for hover cards, source
   lists, or attached result cards. Avoid bare `${ref_id}` because `${...}` already belongs to
