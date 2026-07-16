@@ -53,8 +53,11 @@ capability surface.
 For a natural-language answer that cites retrieval results, keep complete source
 records in host code. Project only one short trusted `ref_id` plus relevant
 title/snippet facts into the model request. Require inline
-`[[ref:<ref_id>]]` tokens such as `[[ref:r1]]`; AgentTask callers can reuse an
-evidence-ledger `cite_as` such as `e1` as the token id.
+`[[ref:<ref_id>]]` tokens such as `[[ref:ref_2]]`. For durable AgentTask output,
+use its task-owned stable `ref_*` identity. An evidence-ledger `cite_as` such as
+`e1` is only a request-local display alias; normalize it through that exact
+offered ledger map before the response leaves the request. Never persist or
+later guess an `(eN)` position.
 
 Do not use bare `${ref_id}` because `${...}` already belongs to Agently prompt
 and TaskDAG placeholder families. `[[ref:...]]` is an application rendering

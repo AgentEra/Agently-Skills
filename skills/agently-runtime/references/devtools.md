@@ -67,6 +67,12 @@ verifier judgment, quality scoring, planner context, or prompts.
 with `retry=True` means partial stream output was replaced; `cancelled` is
 distinct from a provider failure. DevTools may display these facts but must not
 drive retry or execution control flow.
+Each attempt outcome should contribute at most one `model.status`; a terminal
+provider error should contribute one `model.requester.error`. Event publication
+must not rethrow into AttemptRunner or create a duplicate outcome. Provider
+status/detail stays in the error message, while structured
+`model.requester.error.payload.request_data` remains protected cold evidence
+that may contain sensitive prompt data.
 
 Plain `delta` consumers receive a standalone `"<$retry>{reason}</$retry>"`
 chunk at the same replay boundary. DevTools observes the structured

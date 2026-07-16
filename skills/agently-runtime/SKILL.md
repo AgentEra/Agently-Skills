@@ -58,6 +58,16 @@ here for Actions, ExecutionResource, service, or DevTools details.
   created only when used. There is no `files_root`, generated boundary guide,
   or framework-owned downloads/artifacts/reports directory; applications and
   models choose meaningful ordinary subdirectories for products
+- keep Workspace identity layers distinct: locator identity is normalized
+  path/URL provenance, immutable content-version identity is one digest and size
+  at that locator, and task/application reference identity is the stable
+  selection key. Changed content gets a new version even when the locator is
+  unchanged. Short type-prefixed Base62 ids expand as needed and are never
+  reused in their Workspace/task scope. Ordinary external reads remain
+  zero-state; explicit promotion or retention may write filesystem-first private
+  identity metadata under `.agently` without mutating read-only external files
+  or requiring SQLite solely for identity allocation. Reference-closure cleanup
+  removes unreachable old versions while retaining allocator high water
 - create application-owned shared Workspace instances with
   `Workspace(...)` or `Agently.create_workspace(...)` and bind each participant
   with `agent.use_workspace(shared_workspace)` or
@@ -155,8 +165,14 @@ here for Actions, ExecutionResource, service, or DevTools details.
   payload for provider/model, attempt, run lineage, duration, raw usage,
   normalized/estimated `usage_summary`, request URL, side-channel, and error
   facts; terminal `model.status` may carry estimated input/output character
-  lengths without exposing raw request payload. It is not an input to route,
-  retry, verifier, quality, planner, or prompt logic
+  lengths without exposing raw request payload. Each attempt outcome should
+  publish at most one `model.status`; a terminal provider error should publish
+  one `model.requester.error`, and observation publication must not re-enter
+  attempt control flow. Built-in error messages retain provider status/detail
+  without appending serialized requests; structured
+  `model.requester.error.payload.request_data` remains protected cold evidence.
+  Telemetry is not an input to route, retry, verifier, quality, planner, or
+  prompt logic
 - for webhook, approval, or external callback resume flows, pass a stable
   `resume_request_id` and actor to `execution.async_continue_with(...)`; the
   TriggerFlow resume ledger records accepted, dispatched, and completed or
@@ -253,7 +269,67 @@ here for Actions, ExecutionResource, service, or DevTools details.
   envelope. When semantic content quality
   matters, combine deterministic smoke checks with current docs/spec/source
   references or an Agently model-judge request, and do not use counts, keyword
-  hits, or task verifier acceptance alone as the primary acceptance signal
+  hits, or task verifier acceptance alone as the primary acceptance signal.
+  Repeated terminal issues retain the exact
+  `(gate_kind, issue_code, contract_subject)` key for both diagnostics and the
+  repair allowance. A changed issue code on the same gate/subject is an
+  independent issue; it does not reset the earlier issue's count. The same
+  exact issue schedules at most two repairs; occurrence three returns
+  `status="blocked"`, `accepted=False`, a useful
+  `artifact_status="partial"` candidate when present, missing criteria, and no
+  fourth repair. Unchanged relevant state skips a redundant verifier call. A
+  required TaskBoard card's non-satisfying structured result (`setback`,
+  `failed`, or `blocked`) counts only when that card ran in the current tick;
+  occurrence three stops before a fourth execution of the same stable contract
+  subject. A material-claim repair for a trusted file-backed carrier uses a
+  bounded control/host replace patch in both Flat and TaskBoard when no exact
+  Action requirement exists. Use a dedicated structured ModelRequest inside
+  the existing work-unit/control path and do not open general
+  AgentExecution/ActionRuntime for that repair. The carrier path may come from
+  current artifact/readback evidence without an explicit required-deliverable
+  option. Other
+  semantic repairs may use `auto`; host code must not infer an Action id from
+  verifier prose.
+  Material-claim patch output reuses the Workspace edit contract's `old_string`
+  and `new_string` fields with exactly one operation per host-issued
+  `claim_key`. Rejoin its exact host-issued `carrier_id`, require the current
+  `content_version_id`, and create a new content version after successful
+  readback. Ignore paired Markdown emphasis only for plain-text claim scope
+  comparison; exact Workspace `old_string` matching still owns patch
+  application.
+  The unique leaf delivery card owns the terminal file projection. Without a
+  stronger caller-owned structured required-deliverable contract, its structured
+  `artifact_manifest.path` is the execution-local terminal target and must join
+  trusted readback by exact normalized full path. A same-basename file elsewhere
+  is not equivalent, and a model-declared framework `working/` path remains
+  intermediate unless the caller explicitly required that full path. Keep
+  intermediate files cold, and bind failed claims to host-validated exact
+  `artifact_quote` spans plus current carrier ids before patching.
+  Preserve TaskBoard artifact/file producer `role` and `source` through
+  evidence projection. A generated Workspace artifact copy remains transport
+  even at another path or content version and cannot ground the candidate.
+  Host-applied patch/readback refs under `agent_task.workspace_artifact.*` are
+  also transport, not independent source evidence; independent
+  Action/source/readback evidence remains eligible.
+  Keep control-card `remaining_work` local to its objective/done_when; do not
+  repeat synthesis merely because a downstream delivery card has not run. A
+  completed and sufficient leaf with `next_board_action="finalize"` and a
+  complete artifact body may materialize and read back its structured path
+  before handing residual delivery work to terminal verification; other
+  remaining-work/repair/readback/blocked results still do not authorize
+  delivery.
+  `next_board_action=continue` advances the board without overriding the
+  current card's explicit `status`.
+  `next_board_action=stop` stops board progression while preserving a completed
+  sufficient card as completed; use `next_board_action=block` for an explicit
+  blocked control result.
+- for a required Workspace deliverable, treat the current physical
+  locator/content-version readback as the terminal source of truth. Historical
+  content versions remain cold audit identities and must not replace the
+  current file merely because an older card candidate is longer. File-backed
+  terminal output should carry a concise Workspace pointer; the terminal
+  carrier inventory reads the current promoted content version through its
+  trusted file ref and the single semantic verifier audits that current carrier.
 - when an AgentTask bounded step or TaskBoard card returns a short
   `artifact_markdown` body or a sectioned `artifact_manifest`, the framework
   writes the deliverable through the bound Workspace and reads it back for
@@ -286,9 +362,15 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `workspace_artifact.targeted_readback` ledger items from declared
   output-contract sections and generic source/risk/reference/coverage anchors;
   treat those as scoped evidence snippets, not completion judgments;
+  terminal verifier hot input carries one bounded body-bearing cumulative
+  `evidence_ledger`; execution summaries, acceptance locators, trusted artifact
+  indexes, and overflow refs stay body-light, while raw evidence stays cold for
+  scoped Workspace readback and audit;
   TaskBoard finalization keeps file-backed deliverable bodies in Workspace and
   returns only a concise summary or path/ref pointer as `final_result`, not a
-  second copy of the file body;
+  second copy of the file body. Preserve a unique completed terminal leaf's
+  explicit non-empty compact `final_result` alongside trusted artifact refs;
+  use the Workspace path/ref pointer only when that leaf has no explicit answer;
   host file-producing Actions should return typed `file_refs` or
   `artifact_refs` when later AgentTask, TaskBoard, verifier, or UI consumers
   need the produced file. A path-only payload such as `{filename, path, size}`
@@ -296,6 +378,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   a trusted Workspace file unless the path is Workspace-contained and real
   `Workspace.read_file(...)` succeeds, or the host returns explicit framework
   refs;
+  for a declared AgentTask deliverable path, a successful file Action is the
+  sole write owner. Materialization adopts its current Workspace readback and
+  must not overwrite it with a model-returned body. A later change requires a
+  new file Action, while claimed success with an unreadable target fails closed;
   model-declared `file_refs` remain diagnostics until readback exists; if write
   succeeds but readback fails or lacks trusted fields, expect
   `agent_task.workspace_artifact.readback_failed` or
@@ -348,12 +434,14 @@ here for Actions, ExecutionResource, service, or DevTools details.
   default, so nearby facts can be inspected without reading the whole file.
   `EvidenceEnvelope.evidence_items` records search success, empty result,
   failure, locator, snippet, and readback facts with stable ids, `status`,
-  `body_state`, and model-hot `cite_as` handles. Failed/empty items support
+  `body_state`, and model-hot request-local `cite_as` handles. Failed/empty items support
   unavailable or missing-data claims only; `ref_only` items support only
   discovery until readback exists; snippet facts expose whether bounded context
   was `truncated`. Structured outputs may include `evidence_use` claim bindings
-  to `cite_as` or canonical ids; path/URL/record/artifact/action aliases are
-  canonicalized only when unambiguous.
+  to host-offered ids; path/URL/record/artifact/action aliases are canonicalized
+  only when unambiguous. Normalize request-local `cite_as` through the exact
+  offered map; durable output uses validated task-owned `[[ref:ref_*]]` tokens,
+  never a persisted or guessed `(eN)` position.
   Ordinary intermediate Flat work units use non-empty `remaining_work` to make
   the next Flat iteration consume the new evidence by default instead of
   triggering an immediate independent verifier. They may also return
@@ -364,12 +452,85 @@ here for Actions, ExecutionResource, service, or DevTools details.
   decide whether evidence is enough. Independent verifier requests are for
   terminal acceptance, fan-in/control acceptance, evidence/artifact boundary
   audit, contradictions, or high-risk review.
+  Give each TaskBoard Action card one card-local objective/done-when work unit
+  plus dependency evidence; keep the global task as response-synthesis
+  orientation, not sibling-work authorization. Evaluate authored required
+  capability evidence before the semantic terminal verifier. Missing required
+  `action_succeeded` evidence may create an Action-shaped repair only from the
+  authored capability id/kind and only when the exact Action is mounted. Do not
+  parse verifier prose or let Workspace readback satisfy the Action requirement.
+  If the exact required Action is unavailable or policy-blocked, fail closed
+  immediately instead of substituting a readback or different operation.
+  When terminal verification requests repair without an exact
+  `action_succeeded` requirement, use a control-shaped bounded Workspace patch
+  for a trusted file-backed carrier with a structured
+  `material_claim_repair_contract` in both Flat and TaskBoard. The dedicated
+  patch request must not expose a general AgentExecution/ActionRuntime route.
+  Retain the ordinary `auto` shape for other repairs so the model can use
+  mounted capabilities for fresh evidence. Do not narrow either route by
+  parsing verifier prose.
+  Carry the exact requirement through the card contract, `WorkUnitIntent`, Blocks
+  capability resolution, and the child execution's Action allow/required scope;
+  a prompt hint alone is not dispatch. Evidence binding may remove structurally
+  incompatible auxiliary ids only when a compatible retained binding passes the
+  same host guard; otherwise remain fail closed.
   When terminal verification fails, compact `repair_context` is carried into
   the next Flat work unit and Workspace artifact draft request when present, so
   the consumer that actually rewrites or reads the artifact receives the latest
   `acceptance_delta`, repair constraints, next-step requirements, and exact
   evidence anchors without reintroducing cold integrity provenance into hot
   prompts.
+  The lifecycle has one semantic terminal verifier. It receives the current
+  terminal-carrier projection plus the bounded host-issued evidence ledger and
+  returns both `criterion_checks` and `material_claim_checks` in one structured
+  response. The host assigns each exact current text span one request-local
+  `claim_key`; the request exposes `reference_id` only in `evidence_ledger` and
+  `claim_key` only in `material_claim_candidates`. Execution/cumulative
+  summaries, locator views, and trusted artifact indexes remain inspection-only
+  and expose no evidence selection ids. It must return each offered
+  criterion id exactly once and, for each material claim, one offered
+  `claim_key`, a claim kind, a support state, and only offered evidence
+  `reference_id` values. `supported` covers direct external
+  facts; `reasonable_derived` covers proportionate analysis or recommendations
+  whose explicit premises are visible. `unsupported`, `contradicted`, and
+  `unverifiable` fail closed. Empty material-claim checks are valid only when
+  the same response confirms complete coverage and the carriers make no
+  material external factual or derived claim. Host code validates criterion,
+  claim-key, and evidence identities, reconstructs the canonical carrier id,
+  exact quote, path, and content version from the offered claim map, and
+  owns the final boolean gate without tokenization, keyword tables, or regex
+  semantic rules. Candidate, delivery, acceptance, artifact readback, and
+  verifier readback cannot self-ground the output; a broad model completion
+  cannot override this host gate.
+  Apply structured material-claim repairs only to implicated claims. Required
+  Workspace files use bounded host-applied replace patches; reject full writes,
+  replace-all, unauthorized paths, and old text outside the contract instead of
+  reproducing a complete body.
+  Keep literal claim quotes unchanged. If only paired Markdown `**` / `__`
+  emphasis interrupts a quote, join one unique emphasis-insensitive match back
+  to the original exact candidate span; reject ambiguous or non-formatting
+  differences and keep Workspace `old_string` matching exact.
+  Preserve the full task reference catalog as cold audit state. Build one
+  bounded model-hot evidence projection with one host-offered `reference_id`
+  per record, validate every returned id, and rejoin canonical records after
+  the verifier response. Ref-only sources and invalid, duplicate, or unknown
+  evidence ids do not support a claim; collapsing repeated diagnostic bodies in
+  the hot view must not delete ids.
+  For TaskBoard evidence binding, expose one stable `reference_id` plus bounded
+  Action input/result or locator facts in card, control, finalizer, terminal-
+  verifier, and binding-repair prompt ledgers. Keep canonical ids, request-local
+  `cite_as`, call ids,
+  and aliases host-side. Project already-loaded Skill guidance readbacks into
+  the same card-local content ledger. Prioritize current card-execution evidence before
+  historical evidence inside fixed budgets. Rejoin compact and raw projections
+  of one canonical evidence object to one stable ref, allocate a new ref for a
+  changed snapshot/content version/hash, and derive section readback locators
+  from actual parsed artifact headings. Repair only the binding, and never
+  repeat an already successful business Action solely because its copied id
+  was invalid. Persist finalizer-normalized bindings into any repair card,
+  rejoin pinned short ids through the stable ledger, and keep dependency,
+  revision, evidence, and artifact-draft dependency prompt projections
+  independently bounded.
   Workspace `retrieve(...)` plus `grep_files`/`search_files`, and Blocks
   `workspace_operation.search/read_bounded`, return factual `locator_ref` and
   `evidence_snippet` records; selected structured record snippets may be
@@ -393,10 +554,12 @@ here for Actions, ExecutionResource, service, or DevTools details.
   work, while Workspace/content paths and retained-note refs become bounded
   Workspace readback cards. Prose-only gaps are diagnostics, not executable targets
 - completed and sufficient TaskBoard control outputs may still disclose
-  non-fatal `gaps`; those gaps do not block Workspace artifact materialization,
-  while `remaining_work`, blocked status, repair, or readback intent still do.
-  Materializing an artifact creates readback/verification evidence and is not
-  final task acceptance
+  non-fatal `gaps`; those gaps do not block Workspace artifact materialization.
+  A completed and sufficient leaf with `next_board_action="finalize"` and a
+  complete body may also materialize before its `remaining_work` is handed to
+  terminal verification; for other outputs, `remaining_work`, blocked status,
+  repair, or readback intent still prevents delivery. Materializing an artifact
+  creates readback/verification evidence and is not final task acceptance
 - AgentTask planning, observation, verification, TaskBoard ticks, and ordinary
   checkpoints remain in memory and observation logs by default. Enable
   `options={"agent_task": {"workspace_recovery": True}}` only when restart
@@ -410,6 +573,11 @@ here for Actions, ExecutionResource, service, or DevTools details.
   Agently model-judge request
 - for app developers, prefer `agent.enable_python(...)`, `agent.enable_shell(...)`, `agent.enable_workspace_file_actions(...)`, `agent.enable_coding_agent_actions(...)`, `agent.enable_nodejs(...)`, `agent.enable_code_runtime(...)`, and `agent.enable_sqlite(...)` before direct manager/provider APIs; Python, shell, Node.js, and common-language code runtime helpers use Docker-backed runtime profiles and fail closed when Docker preflight fails. Strict profiles report missing images, while developer/CI profiles may pull missing images and prepare standard dependencies as host-owned provisioning. Use `sandbox="trusted_local"` only for trusted compatibility paths. Shell is for tests, builds, git inspection, and read-only diagnostics, while Workspace file actions own file read/search/edit/write semantics
 - for instruction-heavy or large Actions, expect later model rounds to see compact execution digests, bounded previews, artifact refs, and file refs; oversized complete records are bounded before direct return or TriggerFlow state storage, including large kwargs/instructions, and may replace duplicate data/model_digest fields with same_as=result pointers. Custom execution-handler records cross that same bound before AgentExecution context, RuntimeEvents, TriggerFlow state, route logs, metadata, or public return; route logs keep one semantic payload without nested `raw` or duplicated data/model_digest records. Built-in TriggerFlow/DAG ActionFlows apply the Action-owned bounded/redacted observation projection before direct callbacks and official/compatibility events: plan observations keep one canonical `action_calls` list, command inputs are bounded/redacted, failure convergence carries bounded records, and `payload` plus `error` share one complete-carrier budget. A raw exception becomes one bounded/redacted ErrorInfo-compatible mapping before the direct callback; official `action.*` and compatibility `tool.*` events reuse it without reconstructing the original message or traceback. Opaque string/bytes arguments retain no raw prefix and expose only a fixed summary, original UTF-8 byte length, and SHA-256 digest; structured arguments may retain bounded facts after sensitive-key redaction, and traceback projection is structural-frame-only. Previews are not complete evidence, so use `agent.action.read_action_artifact(selection_key=...)` only inside the currently bound AgentExecution, AgentTask, or standalone ActionFlow scope when full raw code, command output, SQL results, page content, or logs are needed. TaskBoard host code binds current task lineage for sibling-card readback; artifact id/action-call id fallback and cross-task/cross-execution readback fail closed; model/terminal `artifact_refs` and `artifacts` aliases must resolve to the same selection-key-only list
+- when a structured task output asks the model to bind Action evidence, expose
+  the host-issued `action_call_id` on each offered Action result. Validate that
+  exact offered key and resolve the canonical EvidenceLedger identity in host
+  code; do not trust model-copied canonical ids or reuse `action_call_id` as an
+  artifact readback selector
 - treat model-planned Action inputs as untrusted: ActionDispatcher filters
   `structured_plan` and `native_tool_calls` kwargs to registered
   `ActionSpec.kwargs`, records stripped keys in `ActionResult.diagnostics`, and
@@ -421,6 +589,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   the prompt is marked as having consumed the action loop even when no records
   were produced, so later response materialization should not re-enter
   ActionRuntime for that prompt
+- treat streamed structured planning fields as provisional. A
+  `next_action="response"` field stops further Action dispatch but does not
+  cancel or close the provider stream; await final parsed data so normal
+  request/model terminal events, metadata, and usage can settle
 - `agent.get_action_result(..., timeout=N)` bounds the full ActionFlow
   lifecycle, including planning/model-owned tool selection; catch
   `RuntimeStageStallError(stage="action_loop_close")` instead of relying on a
@@ -465,6 +637,12 @@ here for Actions, ExecutionResource, service, or DevTools details.
   capability needs/candidates; AgentExecution owns run-local mounting,
   execution, and cleanup. Keep `install_skills_pack(...)` for prewarming, offline mirrors,
   deterministic CI fixtures, and explicit registry maintenance
+- treat `mode="required"` on an AgentTask route as an availability contract:
+  resolve and materialize remote source selectors before business planning,
+  continue with the canonical installed Skill id only after discovery,
+  installation, and inspection succeed, and fail closed as blocked before
+  model-owned business work when they do not. Do not let a task produce an
+  answer that can never satisfy its required-Skill gate
 - Skills installs default to the user-global registry `~/.agently/skills`;
   override `skills.registry.root` only for isolation, and use
   `skills.registry.proxy` or `runtime.network.proxy` when remote pack fetches
@@ -598,7 +776,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `.access_control_policy({"auto_allow": True})`, or selector-level
   `auto_allow=True` for a matching Skill. Do not introduce
   `configure_access_control_policy(...)`; if a wrapper is ever added, it must
-  delegate to settings and own no independent state
+  delegate to settings and own no independent state. `auto_allow` authorizes
+  matching requested capabilities only; it does not prove that a Skill was
+  discovered, installed, or readable and must not waive required-Skill
+  availability failures
 - production services should choose a PolicyApproval handler that matches the
   service wrapping the TriggerFlow execution: database pending record, HTTP
   callback, webhook resume, SSE/WebSocket pending stream, save-and-return
@@ -707,8 +888,15 @@ here for Actions, ExecutionResource, service, or DevTools details.
   `AnthropicCompatible.stream_idle_timeout`, plus
   `response.materialization_idle_timeout`; use `None` for unlimited budgets and
   avoid permanent debug-only timeout wrappers in examples; provider first-event
-  and stream-idle waits should surface as `RuntimeStageStallError` with
-  `stage="response_first_event"` or `stage="response_stream"`; transient
+  and stream-idle waits should advance only on provider items with meaningful
+  response data, not empty SSE keep-alives, and the deadline should surface
+  without waiting for delayed transport-cancellation cleanup; failures surface
+  as `RuntimeStageStallError` with
+  `stage="response_first_event"` or `stage="response_stream"`; keep that stall
+  inside the ModelRequest attempt lifecycle so it consumes
+  `<Requester>.request_retry.max_attempts` and each failed `model.status` keeps
+  attempt/retry fields plus the typed `error_diagnostic` rather than waiting for
+  an outer AgentExecution deadline; transient
   disconnects use same-request `<Requester>.request_retry`; OpenAICompatible
   replays after partial output by default, which requires streaming consumers
   to process `$status` or clear plain-delta text on the

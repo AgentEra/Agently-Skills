@@ -102,6 +102,14 @@ def main() -> None:
         SKILLS / "agently-dynamic-task" / "references" / "overview.md"
     ).read_text(encoding="utf-8")
     triggerflow_text = (SKILLS / "agently-triggerflow" / "SKILL.md").read_text(encoding="utf-8")
+    execution_topology_path = (
+        SKILLS / "agently" / "references" / "execution-topology-validation.md"
+    )
+    execution_topology_text = (
+        execution_topology_path.read_text(encoding="utf-8")
+        if execution_topology_path.exists()
+        else ""
+    )
     check(
         "playbook_framework_name_optional",
         "does not need to mention Agently explicitly" in playbook_text
@@ -145,6 +153,29 @@ def main() -> None:
         and "cite_as" in request_knowledge_base_text
         and "hover card" in request_knowledge_base_text,
         "retrieval guidance defines a host-resolved reference rendering protocol",
+        failures,
+        passes,
+    )
+    check(
+        "execution_topology_validation_reference",
+        execution_topology_path.exists()
+        and "prompt.input" in execution_topology_text
+        and "prompt.info" in execution_topology_text
+        and "prompt.instruct" in execution_topology_text
+        and "output schema" in execution_topology_text
+        and "value edge" in execution_topology_text
+        and "signal/event edge" in execution_topology_text
+        and "TriggerFlow" in execution_topology_text
+        and "RuntimeEvent" in execution_topology_text,
+        "cross-layer evaluation guidance defines schema-complete value and signal/event topology audits",
+        failures,
+        passes,
+    )
+    check(
+        "execution_topology_validation_routing",
+        "execution-topology-validation.md" in playbook_text
+        and "execution-topology-validation.md" in triggerflow_text,
+        "agently and TriggerFlow guidance route complex request/block handoff audits to one standard",
         failures,
         passes,
     )
@@ -482,6 +513,13 @@ def main() -> None:
         "reference_fixture_covers_model_quality_validation",
         any(case.get("id") == "model-quality-validation-routing-zh" for case in reference_cases),
         "reference retrieval fixtures cover model-request-based quality and routing guidance",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_execution_topology_validation",
+        any(case.get("id") == "execution-topology-validation-zh" for case in reference_cases),
+        "reference retrieval fixtures cover schema/event topology audits",
         failures,
         passes,
     )

@@ -48,6 +48,15 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   signals/joins for
   application-owned coordination. An all-serial design chosen without this
   analysis is an anti-pattern
+- when diagnosing or evaluating a multi-request, AgentTask, or TriggerFlow run,
+  build a schema/event execution topology before reading business prose for a
+  root cause. Every ModelRequest block must expose the material
+  `prompt.input`/`prompt.info`/`prompt.instruct` contract, complete output
+  schema, actual parsed-field presence, and lifecycle. Every workflow/business
+  block must expose input/state, owned calls, outputs/state writes, emitted
+  signals, and continuation/terminal behavior. Trace value edges to exact
+  downstream fields and signal/event edges to exact consumers; use
+  `references/execution-topology-validation.md` as the evaluation standard.
 - when the request is a project-shape refactor, separate settings, prompts, services, domain contracts, workflow, and tests before discussing low-level implementation details
 - when a development script, service module, or test needs semantic judgment
   over model-owned behavior, use Agently model requests with explicit output
@@ -191,9 +200,24 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   with declared output-contract sections and generic anchors only as fallback;
   treat locators as readback pointers and targeted readbacks as scoped evidence
   snippets, not completion judgments.
-  TaskBoard finalization should keep file-backed deliverable bodies in
-  Workspace and return only a concise summary or path/ref pointer as
-  `final_result`, not a second copy of the file body. AgentTask terminal
+  AgentTask finalization should keep file-backed deliverable bodies in
+  Workspace and treat the artifact body, compact inline result, and trusted refs
+  as separate carriers. Explicit `candidate_final_result` / `final_result`
+  values do not become file bodies. An explicit artifact payload or a successful
+  Action write bound to the manifest path owns the file; promote its physical
+  readback as trusted even under `inline_final`. Do not let a later
+  `candidate_final_result` / `final_result` body overwrite the same
+  Action-owned path during materialization; changing that path requires another
+  explicit file Action. If the successful Action target cannot be read back,
+  fail closed instead of substituting the model-returned body. Preserve
+  cumulative trusted artifact evidence for later iterations, but build terminal verification from
+  one current carrier inventory and its current physical path/content version
+  instead of switching to an inline summary or historical version. Return a
+  concise summary or path/ref pointer as `final_result`, not a second copy of
+  the file body. When execution already
+  provides an explicit non-empty compact result, preserve it alongside trusted
+  artifact refs. Fall back to a Workspace path/ref pointer only when no explicit
+  answer exists. AgentTask terminal
   results should carry a user-facing `final_response` for accepted, degraded,
   partial, and blocked outcomes: Flat terminal verification may return it in the
   existing verifier request, TaskBoard finalization may return it in the
@@ -260,8 +284,25 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   cards can immediately unlock ready successors, while fan-in cards still wait
   for all declared dependencies. Use `taskboard_scheduler="batch"` only for
   historical tick-batch diagnostics or regression comparison.
-  AgentTask grounding uses the canonical `EvidenceEnvelope.evidence_items`
-  ledger. Prefer visible `cite_as` handles or canonical ids in `evidence_use`;
+  AgentTask's retained outer runtime is one versioned TriggerFlow lifecycle:
+  `lifecycle.start -> context.prepare -> work.plan -> work.execute ->
+  outputs.materialize -> evidence.ingest -> terminal.verify ->
+  transition.decide`. Stage signals carry only `task_id`, `state_version`,
+  `frame_id`, `iteration`, and the applicable `plan_id`, `work_result_id`, or
+  `evidence_ref`; prompt bodies, artifacts, and complete evidence objects stay
+  in their owning request, Workspace, or host frame. Consumers reject stale or
+  cross-task signals. A terminal stage emits directly to `transition.decide`
+  without replaying unexecuted phases. TaskBoard remains the nested work
+  producer inside `work.execute`; it returns one structured work result and the
+  outer graph then owns `outputs.materialize`, `evidence.ingest`,
+  `terminal.verify`, and `transition.decide`, exactly as it does for Flat.
+  TaskBoard must not finalize, verify, or run a hidden repair loop inside the
+  work node.
+  AgentTask evidence collection uses the canonical
+  `EvidenceEnvelope.evidence_items` ledger. Treat visible `cite_as` handles as
+  request-local display aliases only; durable artifacts use task-owned stable
+  `[[ref:ref_*]]` references after host normalization through the exact offered
+  map. Prefer the stable reference or canonical id in persisted `evidence_use`;
   path, URL, record, artifact, and action/ref aliases are producer-declared
   structural compatibility affordances that host guards canonicalize only when
   unambiguous. Guards must not rely on business-specific action-name rules.
@@ -274,6 +315,158 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   criterion, expected heading or exact anchor, and supporting evidence ids so
   the framework can build locator evidence after Workspace readback; do not
   invent line numbers or byte offsets.
+  Before final acceptance, construct one versioned inventory containing only
+  the current file, inline-result, and required-ref carriers. Replacing content
+  creates a new carrier/content identity; historical carriers stay in cold
+  audit evidence and do not enter the current verifier projection. When the
+  caller or the unique terminal leaf declares a required Workspace path, that
+  path's current physical readback is the only Workspace carrier in the
+  terminal inventory; other trusted working files stay cold. One
+  structured semantic terminal-verifier response owns both success-criterion
+  and material-claim judgment through `criterion_checks`,
+  `material_claim_coverage_complete`, and `material_claim_checks`. Before the
+  request, structurally divide current carrier text into exact spans and assign
+  each span one request-local `claim_key`. Expose those spans only through
+  `material_claim_candidates`; each claim check returns one offered
+  `claim_key`, a `claim_kind`, `state`, offered `evidence_ids`, and a reason.
+  Direct external facts require `supported`; conservative analysis or
+  recommendations may use `reasonable_derived` when visible premises justify
+  the conclusion.
+  `unsupported`, `contradicted`, and `unverifiable` fail closed.
+  Host code validates criterion ids, claim keys, and offered evidence ids,
+  then rejoins current carrier ids, exact quotes, paths, and content versions
+  from the immutable offered claim map. It does not tokenize verifier prose or
+  run a separate claim-inventory, source-selection, per-claim support-judgment,
+  or empty-inventory-review request loop. Candidate, delivery, acceptance,
+  verifier-readback, generated patch, and copied-output records remain
+  descendant transport evidence and cannot support their own carrier.
+  Keep one model-visible selection domain per returned field:
+  `evidence_ledger.items` is the only place that exposes `reference_id`, and
+  `material_claim_candidates` is the only place that exposes `claim_key`.
+  Candidate/delivery/readback locators, execution/cumulative evidence summaries,
+  and trusted artifact indexes are inspection-only body-light projections with
+  no evidence selection ids. Preserve non-selectable correlation facts such as
+  Action call ids only when needed to distinguish inspection records. Include the
+  bounded current source ledger on the first terminal request even when no
+  prior work result has pinned `evidence_use`. Excluded carrier refs must not
+  inflate the grounding projection's `omitted_count`.
+  A failed material check produces a structured
+  `material_claim_repair_contract`; Flat and TaskBoard consume it without prose
+  parsing. For a trusted file carrier, use one bounded structured patch request
+  plus host-validated exact replacements, with one operation per host-issued
+  `claim_key`. Rejoin the current carrier and `content_version_id`, reject full
+  writes, replace-all, unauthorized paths, stale versions, and out-of-scope
+  edits, then promote successful physical readback as a new content version.
+  Do not open a general AgentExecution/ActionRuntime round for this patch.
+  Let the unique leaf delivery card own terminal file projection; keep
+  intermediate working artifacts as cold evidence. Without a stronger
+  caller-owned structured required-deliverable contract, use that unique
+  completed leaf's structured `artifact_manifest.path` as the execution-local
+  terminal target and join trusted Workspace readback by exact normalized full
+  path. Do not substitute a same-basename sibling/upstream file, and do not
+  accept a model-declared framework `working/` path unless the caller explicitly
+  required that full path. Preserve that leaf's explicit compact `final_result`
+  with the trusted refs; use the pointer as the terminal answer only when the
+  leaf did not provide one. Bind each failed material
+  claim to a host-validated exact `artifact_quote` and current carrier id so
+  repair does not guess `old_string` from paraphrased claim prose. Preserve a
+  literal quote directly; when only paired Markdown `**` / `__` emphasis
+  interrupts it, join one unique emphasis-insensitive match back to the
+  original exact span. Reject ambiguous or non-formatting differences, and keep
+  Workspace `old_string` matching exact.
+  Validate the complete terminal-verifier response before applying its verdict.
+  Unknown or duplicate claim keys, unknown evidence ids, duplicate or missing
+  criterion joins, and stale host reconstruction state fail closed into a
+  structured repair/blocked transition; do not reinterpret prose or replace an
+  invalid check set with an empty projection.
+  Preserve producer `role` and `source` when TaskBoard artifact/file refs enter
+  evidence. Generated Workspace artifact copies remain transport records even
+  at another path or content version and cannot ground the candidate itself.
+  This includes host-applied patch/readback refs whose source is under
+  `agent_task.workspace_artifact.*`; they are candidate derivatives, not new
+  independent sources. Independent Action/source/readback evidence retains
+  normal eligibility.
+  Keep `remaining_work` card-local; downstream delivery work must not keep a
+  completed synthesis card open or trigger complete-body regeneration. Only a
+  completed, sufficient leaf with `next_board_action=finalize` and a structurally
+  complete artifact body may materialize/read back its declared path and hand
+  residual delivery work to terminal verification. Other remaining-work,
+  repair, readback, blocked, or insufficient results do not authorize delivery.
+  Treat `next_board_action=continue` as board progression after preserving the
+  current card's explicit status, not as an implicit setback.
+  Treat `next_board_action=stop` the same way: it stops further board
+  progression but preserves a completed sufficient card as completed.
+  `next_board_action=block` is the explicit blocking control value.
+  Keep the task reference catalog complete as cold audit evidence. The terminal
+  verifier's model-hot projection excludes ref-only entries from positive
+  support and collapses exact repeated TaskBoard diagnostic bodies without
+  deleting or reusing their stable ids. Claim checks return only host-offered
+  evidence ids; host validation rejoins canonical records and rejects unknown,
+  duplicate, omitted, or role-ineligible bindings.
+  Repair `evidence_use` at its owning TaskBoard boundary. A malformed
+  model-authored binding stays untrusted but must not reverse a canonical
+  successful Action lifecycle fact or completed card into a business-execution
+  failure; terminal semantic acceptance is a separate owner. Card, control,
+  finalizer, terminal-verifier, and binding-repair prompt ledgers project one
+  stable `reference_id` per candidate with bounded Action input/result or
+  locator facts; canonical ids, request-local `cite_as`, raw call ids, and
+  aliases stay host-side. Put already-loaded Skill guidance readbacks into the
+  same card-local content ledger so Skill-use claims do not degrade into ref-
+  only binding retries. Rejoin
+  raw and compact representations of the same canonical evidence object back
+  onto the same task reference while allocating a new reference for a changed
+  snapshot/content version/hash. Derive bounded readback locators from actual
+  parsed artifact section headings so middle/tail verification does not need a
+  model repair that only restates a heading. Put current card-execution
+  evidence before historical evidence inside fixed
+  candidate budgets, then validate/rejoin the selected id. A binding-only failure must not rerun an already successful
+  Action card; attempt one bounded binding repair and otherwise remain
+  blocked. Apply finalizer binding repair before terminal verification and
+  carry normalized bindings into any generated repair card. Rejoin pinned short
+  references through the stable ledger when the raw board view carries only
+  canonical ids. Keep dependency, board, revision, evidence-ledger, and
+  artifact-draft dependency prompt projections independently bounded so cold
+  execution state is not recursively embedded into the next ActionRuntime or
+  artifact-body request.
+  Repeated terminal outcomes are counted by the exact
+  `(gate_kind, issue_code, contract_subject)` key. Different issue codes do not
+  share or advance a convergence counter. Relevant unchanged state skips a
+  duplicate verifier request; the same exact issue schedules at most two
+  repairs, and occurrence three returns a useful partial blocked result with no
+  fourth repair. A required TaskBoard card's
+  non-satisfying structured result (`setback`, `failed`, or `blocked`) counts
+  only when that card executes in the current tick; occurrence three blocks
+  before a fourth execution of the same stable contract subject. A generated
+  material-claim repair for a trusted file-backed carrier uses the control/host-
+  patch path in both Flat and TaskBoard when no exact Action requirement exists;
+  the dedicated patch request must not expose the general Action route. Other
+  semantic repairs may retain `auto`; exact Action requirements remain
+  capability-directed without inferring ids from verifier prose.
+  Treat malformed terminal-verifier output as an output-contract retry owned
+  by the verifier boundary. Normalize criterion- and material-check join errors
+  to `(output_contract, terminal_verifier_output_invalid,
+  verification:response)`, merge every failing response section into one
+  structured repair contract, retain the exact invalid field/id, and send that
+  contract back with the current offered criterion/claim/evidence-key sets. Keep
+  finalizer `evidence_use` host-side for canonical pinning instead of copying it
+  into the verifier as a second selection-id domain. Re-enter only
+  `terminal.verify -> transition.decide`, reuse an already prepared final
+  candidate, and prove that neither TaskBoard finalization nor business work was
+  repeated.
+  Protocol correction is the exception to unchanged-state verifier
+  suppression because a new response is the repair; it must not rerun work,
+  rebuild evidence, rewrite the artifact, or create a TaskBoard business-repair
+  card. Block on the third identical protocol failure.
+  Unavailable required Actions,
+  denied/blocked policy, structured blocked lifecycle facts, and invalid
+  immutable candidate contracts fail closed immediately.
+- A required Workspace deliverable uses the current physical
+  locator/content-version readback as its terminal source of truth. Historical
+  content versions remain cold audit identities; an older, longer card
+  candidate cannot replace the current file in terminal verification. The
+  caller's structured contract is authoritative; otherwise the unique completed
+  TaskBoard leaf's structured artifact path is enforced with the same exact-path
+  readback rule.
 - AgentTask work units receive an internal task context contract with
   intermediate-resource ref/readback policy and prompt-safe runtime metadata.
   Runtime records may keep compact `current_time` diagnostics, but default
@@ -308,6 +501,10 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   do not treat the hint as completion evidence. Use `execution="flat"` /
   `.strategy("flat")` to force the linear loop and `execution="taskboard"` /
   `.strategy("taskboard")` only when the host explicitly wants TaskBoard.
+  Pass AgentTask-specific options through
+  `agent.goal(...).strategy("auto", options=options)`; passing the same mapping
+  to `create_execution(options=...)` configures AgentExecution and is not the
+  task-option path.
   Nested AgentExecution instances inherit the parent strategy context unless
   the child explicitly overrides it.
 - treat Blocks as the internal lowering bridge from AgentTask
@@ -375,6 +572,23 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   prior action evidence in Workspace context packs before bulky execution
   metadata so later Skills or Action steps can use the actual evidence, not only
   a summary saying evidence was collected.
+  Missing required `action_succeeded` evidence may create a TaskBoard
+  Action-shaped repair only from the authored capability id/kind when that exact
+  Action is mounted; verifier prose and Workspace readback do not own or satisfy
+  Action dispatch. Evaluate this deterministic evidence requirement before the
+  semantic terminal verifier so the missing Action schedules repair without a
+  verifier request. If the exact required Action is unavailable, fail closed
+  immediately rather than substitute another operation. Model-visible Action
+  results may offer the host-issued
+  `action_call_id`, which host code validates and resolves to canonical evidence.
+  Preserve the exact requirement through the TaskBoard card, `WorkUnitIntent`,
+  Blocks capability resolution, and the child execution's Action allow/required
+  scope. Evidence binding may prune structurally incompatible auxiliary ids only
+  when retained compatible evidence passes the same deterministic guard; never
+  fabricate a replacement when none remains.
+  Give each TaskBoard Action card one card-local work unit plus dependency
+  evidence, and keep terminal verifier input to one bounded body-bearing ledger
+  plus body-light locator/ref indexes while raw evidence remains cold.
 - when a checkpointed AgentTask must resume after a crash, use
   `agent.resume(task_id)` or `await agent.async_resume(task_id)` and consume the
   returned task-strategy `AgentExecution` through `.start()`/`.async_start()`,
@@ -460,3 +674,4 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
 - `references/capability-map.md`
 - `references/project-framework.md`
 - `references/model-quality-validation.md`
+- `references/execution-topology-validation.md`
