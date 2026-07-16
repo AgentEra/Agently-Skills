@@ -598,7 +598,12 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   those Actions before adopting the artifact, and preserve their records through
   the same execution-summary carrier used by ordinary Action cards. Do not defer
   this contract to a terminal repair loop or ask a narrow Action-command request
-  to synthesize from body-free success summaries.
+  to synthesize from body-free success summaries. Validate every model-authored
+  `action_input` against the mounted Action's declared keys before dispatch; an
+  invalid initial command may fall back once to the narrow authoritative command
+  request, while an invalid narrow result fails closed. Preserve any real
+  successful Action call as `action_succeeded` evidence even when a separate
+  call of the same Action failed; keep that failure visible to risk handling.
   Give each TaskBoard Action card one card-local work unit plus dependency
   evidence, and keep terminal verifier input to one bounded body-bearing ledger
   plus body-light locator/ref indexes while raw evidence remains cold.
