@@ -135,6 +135,10 @@ For that manifest path, the successful file Action is also the only write
 owner. The materialization block must adopt its readback, never copy a
 conflicting model-returned body onto the same path. A revision needs a new file
 Action event and content version; unreadable Action-owned output fails closed.
+A later TaskBoard leaf that only verifies or references the same path must join
+to the canonical dependency `TaskBoardCardResult` artifact ref and adopt the
+current physical readback. A model-repeated manifest or file-ref projection is
+not a new write edge and must never trigger another artifact-body draft.
 
 Record the repair target as one current host-issued carrier identity: carrier
 id plus normalized locator and content/snapshot version for a file, or carrier
