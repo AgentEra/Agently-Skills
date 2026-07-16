@@ -595,9 +595,10 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   Action-shaped final card only when it already carries a complete validated
   Workspace write command. If Workspace write/read `action_succeeded` evidence
   is explicitly required, materialize and read back the synthesized body through
-  those Actions before adopting the artifact. Do not defer this contract to a
-  terminal repair loop or ask a narrow Action-command request to synthesize from
-  body-free success summaries.
+  those Actions before adopting the artifact, and preserve their records through
+  the same execution-summary carrier used by ordinary Action cards. Do not defer
+  this contract to a terminal repair loop or ask a narrow Action-command request
+  to synthesize from body-free success summaries.
   Give each TaskBoard Action card one card-local work unit plus dependency
   evidence, and keep terminal verifier input to one bounded body-bearing ledger
   plus body-light locator/ref indexes while raw evidence remains cold.
