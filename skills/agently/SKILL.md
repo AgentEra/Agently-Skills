@@ -568,6 +568,14 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   completion as model verification plus conservative host evidence guards, read task refs
   through the execution result/meta, and use a second model judge for
   model-owned semantic content instead of accepting structural counters alone
+- for AgentTask public text delta, keep direct ModelRequest and Skill work as
+  one high-level Flat step and expand only framework-normalized concrete Action
+  batches; parallel, ordered, or neutral labels must come from Action-owned
+  dispatch facts. Keep the first TaskBoard table and later change-only updates.
+  Text delta may show bounded result summaries and readback-verified local file
+  links, but must omit Action inputs, credentials, raw command JSON, and long
+  result bodies. Emoji are redundant display labels; verifier and host facts
+  still own completion
 - when an application needs to add optional operator context while a
   task-strategy AgentExecution is already running, use
   `await execution.async_add_guidance(...)` or `execution.add_guidance(...)`.

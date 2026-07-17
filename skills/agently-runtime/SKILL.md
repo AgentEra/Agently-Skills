@@ -866,7 +866,12 @@ here for Actions, ExecutionResource, service, or DevTools details.
 	  `type="all"` remains the raw audit stream and must not include synthetic
 	  `$delta` items. Rich task UIs should consume `instant` for structured state
 	  and render public/synthetic `$delta` only as visible process text; public
-	  `delta` is a printable compatibility stream, not the UI state owner
+	  `delta` is a printable compatibility stream, not the UI state owner.
+  In Flat, keep direct ModelRequest and Skill work as one high-level step and
+  expand only framework-normalized concrete Action batches. Keep TaskBoard's
+  first table and later change-only updates. Text delta omits Action inputs,
+  credentials, raw command JSON, and long result bodies; only host-readback-
+  verified local file refs become links
 - when AgentExecution planning selects direct `model_request`, treat
   Action and Observation as skipped business stages and consume the model result
   as passthrough. If Action or Skill candidates are available but the selected
@@ -918,7 +923,13 @@ here for Actions, ExecutionResource, service, or DevTools details.
 - for temporary development debugging, attach an EventCenter observation hook,
   call `.set_settings("debug", True)` for request/result and AgentTask process
   summaries, or call `.set_settings("debug", "detail")` for full observation
-  detail including model delta output;
+  detail including model delta output. Debug is the diagnostic RuntimeEvent
+  view, not the user-facing business stream: also consume
+  `execution.get_async_generator(type="delta")` or call
+  `await execution.async_streaming_print()` to see the readable Flat/TaskBoard
+  process and final result. Use `debug="detail"` plus delta consumption for the
+  complete development view; do not expect debug to print a duplicate final
+  answer;
   remove debug hooks/settings from examples and production snippets after the
   issue is diagnosed
 
