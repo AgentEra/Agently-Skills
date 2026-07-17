@@ -121,7 +121,7 @@ TaskGraph and ExecutionGraph.
 
 When Dynamic Task needs streaming, consume the owning TriggerFlow runtime stream
 from the compiled DynamicTask or TaskDAGExecutor execution. If a later
-AgentExecution must consume the DAG result, pass the snapshot or Workspace
+AgentExecution must consume the DAG result, pass the snapshot or RecordStore
 record as evidence; its stream and budget belong to that later AgentExecution
 only.
 

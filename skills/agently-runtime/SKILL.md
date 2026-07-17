@@ -1,960 +1,170 @@
 ---
 name: agently-runtime
-description: "Use when the user wants Agently runtime extension capabilities: Action Runtime, built-in action packages, legacy tool compatibility, MCP access, ExecutionResource lifecycle, FastAPIHelper or streaming API exposure, auto-function helpers, KeyWaiter, or optional agently-devtools observation, evaluation, and playground integration."
+description: "Use when the user wants Agently runtime extension capabilities: Action Runtime, built-in Action packages, MCP access, ExecutionResource lifecycle, TaskWorkspace file Actions, RecordStore durability, FastAPIHelper or streaming API exposure, or optional agently-devtools observation and evaluation."
 ---
 
 # Agently Runtime
 
-Use this skill when the app needs model-callable capabilities, managed execution
-dependencies, service exposure, or development/runtime tooling around an
-existing request or workflow design.
+Use this Skill after the request/workflow owner is known. Start with `agently`
+when the layer is still undecided, and use `agently-triggerflow` for visible
+branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 
-If the owner layer is still undecided, start with `agently`. If the
-problem is multi-step orchestration, use `agently-triggerflow` first and return
-here for Actions, ExecutionResource, service, or DevTools details.
+## Read Only What the Task Needs
 
-## Route Inside This Skill
+- Actions, Search/Browse, MCP, approval, Action artifacts, or AgentTask evidence:
+  read `references/actions-runtime.md`.
+- Action versus ExecutionResource, managed runtimes, sandbox/process/browser/
+  SQLite resources: read `references/actions-execution-resource.md`.
+- RuntimeEvent, logs, traces, evaluation, playground, or DevTools: read
+  `references/devtools.md`.
+- TaskContext, ContextReader, TaskWorkspace, RecordStore, SkillLibrary, or the
+  SkillsExecutor compatibility facade: read
+  `../agently/references/context-and-skills.md`.
 
-- Action Runtime, `@agent.action_func`, `agent.use_actions(...)`, built-in Search/Browse, sandbox actions, or legacy tools -> `references/actions-runtime.md`
-- Action vs ExecutionResource boundaries, `agent.enable_*` helpers, provider lifecycle, managed MCP/sandbox/process/browser/SQLite resources -> `references/actions-execution-resource.md`
-- observation, evaluation, playground, local logs, or `agently-devtools` -> `references/devtools.md`
+## Owner Boundaries
 
-## Native-First Rules
+| Owner | Responsibility |
+|---|---|
+| `ActionRuntime` | Model-callable operations, schema validation, dispatch, policy, and Action results. |
+| `ExecutionResource` | Lifecycle of live clients, sandboxes, processes, browsers, database connections, and MCP sessions. |
+| `TaskWorkspace` | One task's existing files, generated artifacts, path containment, bounded readback, and file identity. |
+| `RecordStore` | Records, links, retrieval, RuntimeEvent persistence, checkpoints, snapshots, leases, and durable artifact refs. |
+| `TaskContext` | Revisioned task-scoped bindings and direct information entries. |
+| `ContextReader` | Intent-driven, budgeted progressive disclosure for one consumer and phase. |
+| `SkillLibrary` | Installed immutable real-world Skill revisions and resource reads. |
+| `AgentExecution` | Task-scoped Skill binding, TaskContext preparation, route selection, execution, and result/stream APIs. |
 
-- prefer `@agent.action_func` and `agent.use_actions(...)`; `tool_func`, `use_tool`, `use_tools`, and `agently.builtins.tools` are compatibility surfaces
-- use built-in web packages through `from agently.builtins.actions import Search, Browse` and mount with `agent.use_actions(Search(...))` / `agent.use_actions(Browse(...))`
-- do not invent `enable_search(...)`; Search/Browse proxy, timeout, backend,
-  and transient retry configuration belongs to the package/executor, not
-  ExecutionResource. Registered Browse actions fail closed with structured
-  diagnostics when all backends fail; direct `Browse.browse(...)` remains a
-  text-returning compatibility helper. Browse defaults to Jina Reader ->
-  Playwright -> BS4 -> restricted curl, where curl is an internal normalized-URL
-  fallback and not model-visible shell execution. Jina Reader is an external
-  URL-to-Markdown first pass and Browse automatically tries the official
-  alternate endpoint `https://r.jinaai.cn/` when the primary Reader endpoint has
-  a transport or service failure; disable it with
-  `Browse(enable_jina_reader=False, fallback_order=("playwright", "bs4", "curl"))`
-  when that external service boundary is not acceptable. Browse should
-  try same-host protocol and canonical candidates before giving up, and remote
-  PDF/Office/image/download bytes should be materialized into the bound Workspace
-  with file refs rather than copied into the model hot path.
-- treat `agent_task.heartbeat` as observation only: AgentTask may emit it after
-  a quiet interval with no other stream items, but any normal progress,
-  snapshot, child-execution, delta, or phase event resets the quiet timer.
-  Heartbeats help consumers show liveness; they do not satisfy evidence,
-  hide stalls, or replace request/no-progress/task deadline timeouts.
-- default Agents expose a lightweight Foundation Workspace whose direct file
-  root is the entry script directory, with current working directory fallback;
-  `agent.use_workspace(...)` or `flow.create_execution(workspace=...)` selects
-  another direct root. External files are readable and read-only by default;
-  an application may grant `mode="read_write"`, while approved file Actions may
-  obtain a scoped write grant. Binding, listing, reading, globbing, or grepping
-  ordinary files creates no private state
-- Workspace reserves `<root>/.agently/` for lazy private state. A new file that
-  cannot be written to the external root is placed under
-  `.agently/files/<execution-id>/<requested-path>` and remains addressable by
-  its logical requested path; an existing external file is never silently
-  shadowed. Database, records, vector, recovery, memory, and Skills state are
-  created only when used. There is no `files_root`, generated boundary guide,
-  or framework-owned downloads/artifacts/reports directory; applications and
-  models choose meaningful ordinary subdirectories for products
-- keep Workspace identity layers distinct: locator identity is normalized
-  path/URL provenance, immutable content-version identity is one digest and size
-  at that locator, and task/application reference identity is the stable
-  selection key. Changed content gets a new version even when the locator is
-  unchanged. Short type-prefixed Base62 ids expand as needed and are never
-  reused in their Workspace/task scope. Ordinary external reads remain
-  zero-state; explicit promotion or retention may write filesystem-first private
-  identity metadata under `.agently` without mutating read-only external files
-  or requiring SQLite solely for identity allocation. Reference-closure cleanup
-  removes unreachable old versions while retaining allocator high water
-- create application-owned shared Workspace instances with
-  `Workspace(...)` or `Agently.create_workspace(...)` and bind each participant
-  with `agent.use_workspace(shared_workspace)` or
-  `flow.create_execution(workspace=shared_workspace)` when Agents,
-  TriggerFlow executions, or service workers must share task information across
-  an explicitly selected domain; do not rely on separate explicit Workspaces to
-  communicate; use
-  `flow.create_execution(workspace=False)` only when an execution should have no
-  Workspace binding; finite internal ActionRuntime execution flows, ActionFlows,
-  and TaskDAG executions use this no-Workspace path, while
-  TriggerFlowActionFlow binds Workspace recovery only when an approval pause
-  needs save/resume
-- move information between separate Workspaces in application or TriggerFlow
-  business logic by searching/reading the source Workspace, writing or
-  storing records in the destination Workspace, and linking refs as needed;
-  Workspace itself is not a cross-space messaging or replication protocol
-- for durable multi-turn task records, write through `agent.workspace` or
-  explicitly configure it with `agent.use_workspace(...)`; for model-callable
-  local file actions, use `agent.enable_workspace_file_actions(...)`, which
-  exposes the current Workspace file working tree and inherits
-  `agent.workspace.root`; for coding-agent style file work, use
-  `agent.enable_coding_agent_actions(...)` so reads, glob/grep search,
-  targeted edits, unified-diff patches, and full-file writes stay under
-  Workspace path, readback, and stale-guard semantics
-- Workspace file IO is handler-backed: `workspace.read_file(...)`,
-  `workspace.write_file(...)`, `workspace.materialize_file(...)`, and
-  `workspace.export_file(...)` use registered `WorkspaceFileIOHandler`
-  implementations or Workspace-owned byte materialization. Workspace owns path
-  containment, file info, digests, refs, and diagnostics; handlers own format
-  parsing, optional dependencies, image preparation, and export rendering. Use
-  `agent.enable_workspace_file_actions(write=True, export=True)` only when the
-  model should receive an `export_file` Action.
-- use `workspace.build_context(...)` for Workspace-backed context building;
-  advanced model-assisted planners, vector retrieval, rerankers, and
-  compressors should plug into ContextPlanner, WorkspaceContextRetriever, or
-  ContextPackager instead of becoming WorkLoop or Action shortcuts
-- for explicit TriggerFlow loops, store structured observations and decisions
-  in Workspace, link decisions to evidence with `workspace.link(...)` or
-  `workspace.link_evidence(...)`, keep large payloads behind
-  `workspace.ref_envelope(...)`, recover state with
-  `workspace.latest_checkpoint(...)`, bind durable execution ports by creating
-  the execution with `flow.create_execution(workspace=workspace)` and select
-  `runtime_resources={"snapshot_store": workspace}` when recovery must use
-  that provider; bind `runtime_event_store` separately and explicitly only when
-  Workspace-backed RuntimeEvent replay or audit is required,
-  and inspect backend wiring
-  with `workspace.capabilities()`; when restoring, read the snapshot state
-  through `workspace.latest_checkpoint(...)` / `workspace.get_data(...)` and
-  pass it back to TriggerFlow `async_load(...)` so pause/resume and DAG
-  join semantics stay owned by TriggerFlow; use
-  `flow.declare_resource_requirement(..., resolver=..., provider_kind=...,
-  config_ref=..., secret_ref=..., fail_policy=...)` for importable resource
-  resolver descriptors when workers can reconstruct live clients from shared
-  host/plugin modules, relying on TriggerFlow load diagnostics for
-  missing resolver, unhealthy resource, policy-forbidden resource, fail-open,
-  and fail-closed cases; use `pause_for(..., channel_id=..., provider_id=...,
-  wait_mode=..., hot_wait_timeout=..., cold_persistence_policy=...,
-  request_payload_schema=..., response_payload_schema=..., audit_metadata=...)`
-  to persist ExternalWait provider/channel/schema/audit metadata, and put a
-  stable `exchange_id` in `audit_metadata` when Workspace RuntimeEvent records
-  should be queryable by exchange; when the host owns an approval router, queue,
-  or exchange transport, bind it with runtime resource key
-  `execution_exchange_provider`, and implement provider `publish_request(...)`
-  to return `exchange_id`, `audit_metadata`, or `provider_metadata` without
-  taking over TriggerFlow resume lifecycle; reusable host transports may also be
-  registered with `agently.base.execution_exchange.register_provider(...)`, and
-  hosts should render normalized views from
-  `project_pending_exchanges(execution)` / `project_execution_exchanges(execution)`
-  instead of raw interrupts; connected ActionFlow/PolicyApproval endpoints may
-  resolve live exchanges with `execution_exchange.async_respond(exchange_id,
-  payload, actor=...)`, which still funnels through TriggerFlow
-  `continue_with(...)`; use
-  `execution.set_compaction_policy(...)` for long-running
-  TriggerFlow executions that externalize large payloads behind Workspace or
-  provider artifact refs while keeping only compaction facts and retained
-  lineage anchors in the execution snapshot; use
-  `workspace.put_snapshot(..., expected_state_version=...)` for CAS guarded
-  snapshot writes, `workspace.claim_lease(...)` /
-  `workspace.heartbeat_lease(...)` / `workspace.release_lease(...)` for
-  provider-owned lease projection, and `workspace.put_artifact_ref(...)` for
-  large durable payload refs
-- for restart diagnostics in explicit workflows, persist compact RuntimeEvent
-  facts through a configured TriggerFlow runtime event store or explicit
-  `workspace.append_runtime_event(...)` calls, then query bounded ranges with
-  `workspace.query_runtime_events(...)`; Workspace stores durable facts and refs,
-  while TriggerFlow still owns pause/resume, replay, DAG readiness, and
-  approval/exchange lifecycle semantics; durable RuntimeEvent records now carry
-  parent signal, aggregation scope, operator id, interrupt id, resume request
-  id, actor id, lease owner id, snapshot refs, and artifact refs. This storage
-  is opt-in, so ordinary observation stays in logging/DevTools
-  unless the host explicitly binds `runtime_event_store` or appends Workspace
-  RuntimeEvents
-- for ModelRequest observability, read `payload.model_request_telemetry` from
-  existing `model.*` RuntimeEvents when present; it is a compact diagnostic
-  payload for provider/model, attempt, run lineage, duration, raw usage,
-  normalized/estimated `usage_summary`, request URL, side-channel, and error
-  facts; terminal `model.status` may carry estimated input/output character
-  lengths without exposing raw request payload. Each attempt outcome should
-  publish at most one `model.status`; a terminal provider error should publish
-  one `model.requester.error`, and observation publication must not re-enter
-  attempt control flow. Built-in error messages retain provider status/detail
-  without appending serialized requests; structured
-  `model.requester.error.payload.request_data` remains protected cold evidence.
-  Telemetry is not an input to route, retry, verifier, quality, planner, or
-  prompt logic
-- for webhook, approval, or external callback resume flows, pass a stable
-  `resume_request_id` and actor to `execution.async_continue_with(...)`; the
-  TriggerFlow resume ledger records accepted, dispatched, and completed or
-  dispatch-failed phases; callbacks delivered to expired execution-local leases
-  fail fast before acceptance without writing resume ledger entries, while the interrupt carries an ExternalWait
-  request envelope for projection and restart diagnostics
-- AgentExecution-owned ActionFlow approval waits are projected as stream items
-  with path `exchange.pending` / `exchange.resolved`,
-  `meta.stream_kind=="exchange"`, and value
-  `{"action": "...", "exchanges": [ExecutionExchangeView, ...]}`; frontend or
-  service consumers should treat these normalized views as the render contract
-  instead of inspecting policy-gate implementation details
-- for distributed TriggerFlow recovery, pass
-  `require_distributed_provider=True` when persisting snapshots; this must fail
-  closed unless the selected providers report CAS, lease, range-read,
-  retention, and RuntimeEvent sequence capabilities and expose matching
-  snapshot, lease, and artifact-ref methods; use `inspect_load(...)`
-  to surface expired lease warnings and active lease owner conflicts before
-  dispatch; the local Workspace backend
-  satisfies this seam for single-node development/restart recovery, but do not
-  describe it as a production cross-worker Redis/Postgres/object-storage
-  backend
-- third-party Workspace backends can replace the local backend through
-  `agent.use_workspace(backend)` or named provider registration with
-  `Agently.workspace.register_backend_provider(name, factory)` plus
-  `agent.use_workspace(root, provider=name, provider_options={...})` when they
-  implement the Workspace backend protocol; current framework tests include a
-  protocol-level remote audit provider proof plus Workspace-backed snapshot
-  load tests for pause/continue, policy approval waits, and
-  `when(..., mode="and")` join progress, but public guidance must not imply
-  production Redis, Postgres, or object-storage support until real adapters and
-  operational guarantees exist
-- for AgentTask applications, enable only the bounded capabilities the task
-  may use, such as `agent.enable_shell(...)`,
-  `agent.enable_workspace_file_actions(...)`,
-  `agent.enable_coding_agent_actions(...)`, `agent.use_actions(...)`, or
-  `agent.use_skills(...)`, then create the
-  task-strategy AgentExecution draft with `agent.create_task(...)` or the more
-  explicit `agent.create_task_loop(...)`; both return AgentExecution drafts, not
-  public AgentTask handles. Do not expose broad shell, filesystem, MCP, or
-  browser access just because the task loop exists
-- when a running task-strategy AgentExecution needs additional optional context,
-  use `execution.async_add_guidance(...)` / `execution.add_guidance(...)`.
-  This records guidance in the running AgentTask state and applies it at
-  the next safe Flat or TaskBoard boundary. Do not use guidance as completion
-  evidence, do not inject it into non-task route prompts, and use TriggerFlow
-  `pause_for(...)` / `continue_with(...)` instead when an external answer is
-  required before execution may continue.
-- when an AgentTask Skills step must perform side effects, grant the
-  relevant ActionRuntime tools/actions explicitly through route or effort
-  configuration, declare required side-effect actions when a Skills React loop
-  should stop after they succeed, and pair the task with structured
-  `action_succeeded` evidence requirements for those host Actions. A Skills
-  response that says it wrote or read an artifact is not execution evidence by
-  itself.
-- for AgentTask business examples, print or persist AgentExecution
-  stream/result/meta items: use `meta.stream_kind=="snapshot"` for intermediate
-  state captures such as context readiness, plan, execution evidence summary,
-  and verification gaps;
-  enable `options={"agent_task": {"stream_progress": True}}` only when
-  natural-language progress is needed; omit `progress_model_key` for template
-  progress with no model requests, or set `progress_model_key` to run a
-  separate background model that summarizes only existing snapshots/task
-  metadata without adding main-loop fields or latency; model-generated progress
-  streams `progress_delta` items before the final `progress` item; set
-  `agent.language(...)` when final output, process text, progress text, and
-  Action package locale defaults should share a language policy; Search derives
-  provider-specific region codes inside the Search package, while Browse may use
-  `Accept-Language`; use
-  `progress_language` per execution or `agent_task.progress.language` globally
-  only as progress-text compatibility controls when operator updates must be
-  Chinese, English, or another fixed language;
-  progress model failures are side-channel diagnostics/warnings, not main task
-  `model.request_failed` errors; progress model inputs should be operator-safe
-  and omit low-level Workspace/SQLite fallback diagnostics that remain
-  available in task meta; requirements, planner, and verifier model requests can
-  stream `model_delta` observation items with
-  `validation_role=="observation_only"` only when `stream_model_stage_deltas` or
-  a stage-specific override is explicitly enabled; use them for UI/log
-  visibility only, not for acceptance or verifier evidence; frontend consumers
-  should buffer/bucket high-frequency deltas or use smooth incremental rendering
-  to avoid render pressure and visible screen jitter
-- for AgentTask terminal results, treat `completed` as accepted output
-  (`accepted=True`, `artifact_status="accepted"`); explicitly configured
-  `max_iterations` can still leave useful Workspace files, but those are partial artifacts
-  (`accepted=False`, `artifact_status="partial"`); accepted degraded results use
-  `artifact_status="degraded"` and should include a user-facing
-  `final_response` that explains the disclosed unavailable/partial evidence
-  boundary; useful but unaccepted artifacts and blocked outcomes should also
-  include `final_response` so callers can show what was produced, where work
-  stopped, and which requirements remain unmet. Prefer `final_response` for
-  task-strategy `get_text()` display; use `get_data()` for the business
-  `final_result` view and `get_full_data()` for the complete route/task
-  envelope. When semantic content quality
-  matters, combine deterministic smoke checks with current docs/spec/source
-  references or an Agently model-judge request, and do not use counts, keyword
-  hits, or task verifier acceptance alone as the primary acceptance signal.
-  Repeated terminal issues retain the exact
-  `(gate_kind, issue_code, contract_subject)` key for both diagnostics and the
-  repair allowance. A changed issue code on the same gate/subject is an
-  independent issue; it does not reset the earlier issue's count. The same
-  exact issue schedules at most two repairs; occurrence three returns
-  `status="blocked"`, `accepted=False`, a useful
-  `artifact_status="partial"` candidate when present, missing criteria, and no
-  fourth repair. Unchanged relevant state skips a redundant verifier call. A
-  required TaskBoard card's non-satisfying structured result (`setback`,
-  `failed`, or `blocked`) counts only when that card ran in the current tick;
-  occurrence three stops before a fourth execution of the same stable contract
-  subject. A material-claim repair for a trusted file-backed carrier uses a
-  bounded control/host replace patch in both Flat and TaskBoard when no exact
-  Action requirement exists. Use a dedicated structured ModelRequest inside
-  the existing work-unit/control path and do not open general
-  AgentExecution/ActionRuntime for that repair. The carrier path may come from
-  current artifact/readback evidence without an explicit required-deliverable
-  option. Other
-  semantic repairs may use `auto`; host code must not infer an Action id from
-  verifier prose.
-  Material-claim patch output reuses the Workspace edit contract's `old_string`
-  and `new_string` fields with exactly one operation per host-issued
-  `claim_key`. Rejoin its exact host-issued `carrier_id`, require the current
-  `content_version_id`, and create a new content version after successful
-  readback. Ignore paired Markdown emphasis only for plain-text claim scope
-  comparison; exact Workspace `old_string` matching still owns patch
-  application.
-  The unique leaf delivery card owns the terminal file projection. Without a
-  stronger caller-owned structured required-deliverable contract, its structured
-  `artifact_manifest.path` is the execution-local terminal target and must join
-  trusted readback by exact normalized full path. A same-basename file elsewhere
-  is not equivalent, and a model-declared framework `working/` path remains
-  intermediate unless the caller explicitly required that full path. Keep
-  intermediate files cold, and bind failed claims to host-validated exact
-  `artifact_quote` spans plus current carrier ids before patching.
-  Preserve TaskBoard artifact/file producer `role` and `source` through
-  evidence projection. A generated Workspace artifact copy remains transport
-  even at another path or content version and cannot ground the candidate.
-  Host-applied patch/readback refs under `agent_task.workspace_artifact.*` are
-  also transport, not independent source evidence; independent
-  Action/source/readback evidence remains eligible.
-  Keep control-card `remaining_work` local to its objective/done_when; do not
-  repeat synthesis merely because a downstream delivery card has not run. A
-  completed and sufficient leaf with `next_board_action="finalize"` and a
-  complete artifact body may materialize and read back its structured path
-  before handing residual delivery work to terminal verification; other
-  remaining-work/repair/readback/blocked results still do not authorize
-  delivery.
-  `next_board_action=continue` advances the board without overriding the
-  current card's explicit `status`.
-  `next_board_action=stop` stops board progression while preserving a completed
-  sufficient card as completed; use `next_board_action=block` for an explicit
-  blocked control result.
-- for a required Workspace deliverable, treat the current physical
-  locator/content-version readback as the terminal source of truth. Historical
-  content versions remain cold audit identities and must not replace the
-  current file merely because an older card candidate is longer. File-backed
-  terminal output should carry a concise Workspace pointer; the terminal
-  carrier inventory reads the current promoted content version through its
-  trusted file ref and the single semantic verifier audits that current carrier.
-- when an AgentTask bounded step or TaskBoard card returns a short
-  `artifact_markdown` body or a sectioned `artifact_manifest`, the framework
-  writes the deliverable through the bound Workspace and reads it back for
-  `path`, `bytes`, `sha256`, preview, and trusted `file_refs` as cold
-  evidence; model-hot verifier input uses path/ref handles, bounded content or
-  preview, truncation status, and readback path handles rather than
-  SHA/byte/MIME integrity metadata; for long,
-  sectioned, or prose-heavy deliverables, choose the content carrier
-  deliberately: draft a single freeform document as natural Markdown/plain text
-  without `.output()`, or use Agently `.output(..., format=...)` with
-  `xml_field`, `hybrid`, or `yaml_literal` when separately addressable fields
-  are required instead of forcing the body into compact JSON fields; keep
-  status, evidence, and verification in separate compact judgment/readback
-  contracts; do not add `.output()` solely to trigger instant fields for the
-  body stream; use `artifact_manifest.sections` plus Workspace readback when
-  AgentTask must deliver a trusted file artifact;
-  AgentTask artifact writers consume AgentExecution stream facts: natural body
-  text comes from raw delta items, and retry boundaries come from `$status` when
-  the provider reports it. If the public `type="delta"`
-  `"<$retry>...</$retry>"` replay marker reaches the artifact consumer, treat
-  that exact marker as a retry control event; never write, clean into, or
-  transport it as artifact content;
-  if a complete Markdown artifact body appears inside structured `evidence`,
-  treat it as a deliverable body only when the evidence item is explicitly labeled
-  as artifact/body/deliverable/Markdown or tied to the manifest path; ordinary
-  source content and source excerpts remain evidence snippets. After trusted Workspace write/readback
-  succeeds, let terminal verification judge any stale artifact-write
-  `remaining_work` instead of planning another write-only step;
-  verifier-visible long Workspace artifacts may include bounded
-  `workspace_artifact.targeted_readback` ledger items from declared
-  output-contract sections and generic source/risk/reference/coverage anchors;
-  treat those as scoped evidence snippets, not completion judgments;
-  terminal verifier hot input carries one bounded body-bearing cumulative
-  `evidence_ledger`; execution summaries, acceptance locators, trusted artifact
-  indexes, and overflow refs stay body-light, while raw evidence stays cold for
-  scoped Workspace readback and audit;
-  TaskBoard finalization keeps file-backed deliverable bodies in Workspace and
-  returns only a concise summary or path/ref pointer as `final_result`, not a
-  second copy of the file body. Preserve a unique completed terminal leaf's
-  explicit non-empty compact `final_result` alongside trusted artifact refs;
-  use the Workspace path/ref pointer only when that leaf has no explicit answer;
-  host file-producing Actions should return typed `file_refs` or
-  `artifact_refs` when later AgentTask, TaskBoard, verifier, or UI consumers
-  need the produced file. A path-only payload such as `{filename, path, size}`
-  remains bounded Action result evidence and an external ref pointer; it is not
-  a trusted Workspace file unless the path is Workspace-contained and real
-  `Workspace.read_file(...)` succeeds, or the host returns explicit framework
-  refs;
-  for a declared AgentTask deliverable path, a successful file Action is the
-  sole write owner. Materialization adopts its current Workspace readback and
-  must not overwrite it with a model-returned body. A later change requires a
-  new file Action, while claimed success with an unreadable target fails closed;
-  model-declared `file_refs` remain diagnostics until readback exists; if write
-  succeeds but readback fails or lacks trusted fields, expect
-  `agent_task.workspace_artifact.readback_failed` or
-  `agent_task.workspace_artifact.readback_insufficient` diagnostics rather than
-  a generic budget or iteration failure
-- intermediate downloads, webpage snapshots, generated code, search notes, and
-  large extracted text may be persisted as Workspace/Action artifact refs and
-  opened later through bounded cold readback; hot prompts should carry compact
-  refs/previews, and these refs are execution evidence rather than final
-  deliverable proof. If Action artifact readback exposes Workspace `file_refs`
-  for a materialized download, TaskBoard readback promotes those nested refs to
-  card-level `file_refs` for later Workspace readback. If a non-final TaskBoard
-  card proposes a required final path such as `final.md`, AgentTask relocates it
-  to a working evidence path and reserves the final path for final synthesis
-- for large Workspace, repository, or file-backed evidence, AgentTask may
-  carry scoped retrieval query groups before broad reads. Flat uses
-  `scoped_retrieval.query_groups`; the Flat BlockCarrier lowers those groups to
-  pre-step Blocks `workspace_operation.search` facts. The operation name is
-  compatibility-stable, while execution uses Workspace `retrieve(...)` for
-  record/file candidates, optional vector/hybrid mode, structure-gated rerank
-  over a bounded candidate-summary window, refill, and budget packaging before
-  injecting a body-light model-hot `evidence_ledger` index plus
-  compatibility `scoped_retrieval_results` view into the bounded `agent_step`;
-  selected structured records may appear as compact projections with
-  `projection`/`original_ref` metadata so later readback can recover the raw
-  Workspace record;
-  reconstructable provenance such as SHA, byte counts, backend/search-engine
-  details, execution block ids, and full file refs stays in raw
-  Workspace/Blocks evidence for programmatic audit and readback. TaskBoard
-  exposes the same work-unit carrier contract and can inject ledger-backed retrieval facts
-  into card execution. TaskBoard Workspace-operation prompt views and
-  available readback handles, readback work-unit hot payloads, Action artifact readback previews, and
-  intermediate Workspace readback previews use the same hot/cold split:
-  content/path, range, truncation, and compact handles stay hot, while SHA,
-  bytes, handler/media, backend/search-engine facts, execution block ids, and
-  full refs stay in cold evidence, final artifact audit metadata, DevTools, or
-  runner logs. SHA is integrity metadata, not source evidence. Query groups may
-  set `search_surface` to `workspace_index`, `workspace_files`, or
-  `workspace_index_and_files`; record collections belong in
-  `filters.collection`, exact record kinds may use `filters.kind`, and file
-  scopes use top-level `path`/`pattern`; that file `path` is not applied as a
-  record filter. Singleton record filter lists are normalized to
-  scalar values before execution so retained Workspace records and files can
-  stay out of hot context until bounded search/readback needs them.
-  For `workspace_files`, `query` is content text, `path` is the directory/file
-  scope, and `pattern` is a file glob such as `*.md`, `*`, or `**` for recursive
-  file search, not another content keyword. Local Workspace file search uses
-  `rg` as a grep-style search engine when available and falls back to bounded
-  file scanning. Blocks return a small bounded context around file matches by
-  default, so nearby facts can be inspected without reading the whole file.
-  `EvidenceEnvelope.evidence_items` records search success, empty result,
-  failure, locator, snippet, and readback facts with stable ids, `status`,
-  `body_state`, and model-hot request-local `cite_as` handles. Failed/empty items support
-  unavailable or missing-data claims only; `ref_only` items support only
-  discovery until readback exists; snippet facts expose whether bounded context
-  was `truncated`. Structured outputs may include `evidence_use` claim bindings
-  to host-offered ids; path/URL/record/artifact/action aliases are canonicalized
-  only when unambiguous. Normalize request-local `cite_as` through the exact
-  offered map; durable output uses validated task-owned `[[ref:ref_*]]` tokens,
-  never a persisted or guessed `(eN)` position.
-  Ordinary intermediate Flat work units use non-empty `remaining_work` to make
-  the next Flat iteration consume the new evidence by default instead of
-  triggering an immediate independent verifier. They may also return
-  `ready_for_final_verification=false` to make that intent explicit, while
-  explicit `ready_for_final_verification=true` is reserved for terminal,
-  blocking, or risk verification now.
-  Ordinary intermediate TaskBoard cards should let downstream consumer cards
-  decide whether evidence is enough. Independent verifier requests are for
-  terminal acceptance, fan-in/control acceptance, evidence/artifact boundary
-  audit, contradictions, or high-risk review.
-  Give each TaskBoard Action card one card-local objective/done-when work unit
-  plus dependency evidence; keep the global task as response-synthesis
-  orientation, not sibling-work authorization. Evaluate authored required
-  capability evidence before the semantic terminal verifier. Missing required
-  `action_succeeded` evidence may create an Action-shaped repair only from the
-  authored capability id/kind and only when the exact Action is mounted. Do not
-  parse verifier prose or let Workspace readback satisfy the Action requirement.
-  If the exact required Action is unavailable or policy-blocked, fail closed
-  immediately instead of substituting a readback or different operation.
-  When terminal verification requests repair without an exact
-  `action_succeeded` requirement, use a control-shaped bounded Workspace patch
-  for a trusted file-backed carrier with a structured
-  `material_claim_repair_contract` in both Flat and TaskBoard. The dedicated
-  patch request must not expose a general AgentExecution/ActionRuntime route.
-  Retain the ordinary `auto` shape for other repairs so the model can use
-  mounted capabilities for fresh evidence. Do not narrow either route by
-  parsing verifier prose.
-  Carry the exact requirement through the card contract, `WorkUnitIntent`, Blocks
-  capability resolution, and the child execution's Action allow/required scope;
-  a prompt hint alone is not dispatch. Evidence binding may remove structurally
-  incompatible auxiliary ids only when a compatible retained binding passes the
-  same host guard; otherwise remain fail closed.
-  When terminal verification fails, compact `repair_context` is carried into
-  the next Flat work unit and Workspace artifact draft request when present, so
-  the consumer that actually rewrites or reads the artifact receives the latest
-  `acceptance_delta`, repair constraints, next-step requirements, and exact
-  evidence anchors without reintroducing cold integrity provenance into hot
-  prompts.
-  The lifecycle has one semantic terminal verifier. It receives the current
-  terminal-carrier projection plus the bounded host-issued evidence ledger and
-  returns both `criterion_checks` and `material_claim_checks` in one structured
-  response. The host assigns each exact current text span one request-local
-  `claim_key`; the request exposes `reference_id` only in `evidence_ledger` and
-  `claim_key` only in `material_claim_candidates`. Execution/cumulative
-  summaries, locator views, and trusted artifact indexes remain inspection-only
-  and expose no evidence selection ids. It must return each offered
-  criterion id exactly once and, for each material claim, one offered
-  `claim_key`, a claim kind, a support state, and only offered evidence
-  `reference_id` values. `supported` covers direct external
-  facts; `reasonable_derived` covers proportionate analysis or recommendations
-  whose explicit premises are visible. `unsupported`, `contradicted`, and
-  `unverifiable` fail closed. Empty material-claim checks are valid only when
-  the same response confirms complete coverage and the carriers make no
-  material external factual or derived claim. Host code validates criterion,
-  claim-key, and evidence identities, reconstructs the canonical carrier id,
-  exact quote, path, and content version from the offered claim map, and
-  owns the final boolean gate without tokenization, keyword tables, or regex
-  semantic rules. Candidate, delivery, acceptance, artifact readback, and
-  verifier readback cannot self-ground the output; a broad model completion
-  cannot override this host gate.
-  Apply structured material-claim repairs only to implicated claims. Required
-  Workspace files use bounded host-applied replace patches; reject full writes,
-  replace-all, unauthorized paths, and old text outside the contract instead of
-  reproducing a complete body.
-  Keep literal claim quotes unchanged. If only paired Markdown `**` / `__`
-  emphasis interrupts a quote, join one unique emphasis-insensitive match back
-  to the original exact candidate span; reject ambiguous or non-formatting
-  differences and keep Workspace `old_string` matching exact.
-  Preserve the full task reference catalog as cold audit state. Build one
-  bounded model-hot evidence projection with one host-offered `reference_id`
-  per record, validate every returned id, and rejoin canonical records after
-  the verifier response. Ref-only sources and invalid, duplicate, or unknown
-  evidence ids do not support a claim; collapsing repeated diagnostic bodies in
-  the hot view must not delete ids.
-  For TaskBoard evidence binding, expose one stable `reference_id` plus bounded
-  Action input/result or locator facts in card, control, finalizer, terminal-
-  verifier, and binding-repair prompt ledgers. Keep canonical ids, request-local
-  `cite_as`, call ids,
-  and aliases host-side. Project already-loaded Skill guidance readbacks into
-  the same card-local content ledger. Prioritize current card-execution evidence before
-  historical evidence inside fixed budgets. Rejoin compact and raw projections
-  of one canonical evidence object to one stable ref, allocate a new ref for a
-  changed snapshot/content version/hash, and derive section readback locators
-  from actual parsed artifact headings. Repair only the binding, and never
-  repeat an already successful business Action solely because its copied id
-  was invalid. Persist finalizer-normalized bindings into any repair card,
-  rejoin pinned short ids through the stable ledger, and keep dependency,
-  revision, evidence, and artifact-draft dependency prompt projections
-  independently bounded.
-  Workspace `retrieve(...)` plus `grep_files`/`search_files`, and Blocks
-  `workspace_operation.search/read_bounded`, return factual `locator_ref` and
-  `evidence_snippet` records; selected structured record snippets may be
-  compact projections that preserve `projection`/`original_ref` metadata for
-  raw Workspace readback; model-owned
-  planning/verification decides whether snippets are useful. If a TaskBoard
-  scoped-retrieval card reports blocked/insufficient output without an explicit
-  next action, AgentTask synthesizes an expanded evidence card plus a
-  continuation card so the downstream consumer can decide whether the new
-  evidence is enough. Do not turn local grep/SQLite hits into semantic
-  relevance gates, quality checks, or completion evidence
-- TaskBoard readback cards may inspect both Action artifact refs and trusted
-  Workspace file/content refs through bounded cold readbacks. Framework-generated
-  readback cards scope evidence to direct dependencies plus upstream evidence
-  cards, so a control-card readback can still inspect Action refs produced by
-  earlier evidence-gathering cards; generated continuation cards should not
-  recursively request another identical readback chain when the same evidence
-  remains insufficient. When the missing evidence is a new concrete URL, path,
-  or ref, the control card should return structured `target_refs` with
-  `next_board_action=readback`; external HTTP/HTTPS refs become Action evidence
-  work, while Workspace/content paths and retained-note refs become bounded
-  Workspace readback cards. Prose-only gaps are diagnostics, not executable targets
-- completed and sufficient TaskBoard control outputs may still disclose
-  non-fatal `gaps`; those gaps do not block Workspace artifact materialization.
-  A completed and sufficient leaf with `next_board_action="finalize"` and a
-  complete body may also materialize before its `remaining_work` is handed to
-  terminal verification; for other outputs, `remaining_work`, blocked status,
-  repair, or readback intent still prevents delivery. Materializing an artifact
-  creates readback/verification evidence and is not final task acceptance
-- AgentTask planning, observation, verification, TaskBoard ticks, and ordinary
-  checkpoints remain in memory and observation logs by default. Enable
-  `options={"agent_task": {"workspace_recovery": True}}` only when restart
-  recovery is required; this writes a compact resumable snapshot, not a full
-  process or RuntimeEvent archive. Trusted final file products still use
-  Workspace write/readback and terminal selection
-- for AgentTask business-system examples, mocks may provide facts, source
-  records, policies, missing data, or conflicting inputs, but must not provide
-  hidden expected answers, pass/fail fields, or deterministic business-quality
-  verdicts; judgment belongs to the AgentTask verifier or an independent
-  Agently model-judge request
-- for app developers, prefer `agent.enable_python(...)`, `agent.enable_shell(...)`, `agent.enable_workspace_file_actions(...)`, `agent.enable_coding_agent_actions(...)`, `agent.enable_nodejs(...)`, `agent.enable_code_runtime(...)`, and `agent.enable_sqlite(...)` before direct manager/provider APIs; Python, shell, Node.js, and common-language code runtime helpers use Docker-backed runtime profiles and fail closed when Docker preflight fails. Strict profiles report missing images, while developer/CI profiles may pull missing images and prepare standard dependencies as host-owned provisioning. Use `sandbox="trusted_local"` only for trusted compatibility paths. Shell is for tests, builds, git inspection, and read-only diagnostics, while Workspace file actions own file read/search/edit/write semantics
-- for instruction-heavy or large Actions, expect later model rounds to see compact execution digests, bounded previews, artifact refs, and file refs; oversized complete records are bounded before direct return or TriggerFlow state storage, including large kwargs/instructions, and may replace duplicate data/model_digest fields with same_as=result pointers. Custom execution-handler records cross that same bound before AgentExecution context, RuntimeEvents, TriggerFlow state, route logs, metadata, or public return; route logs keep one semantic payload without nested `raw` or duplicated data/model_digest records. Built-in TriggerFlow/DAG ActionFlows apply the Action-owned bounded/redacted observation projection before direct callbacks and official/compatibility events: plan observations keep one canonical `action_calls` list, command inputs are bounded/redacted, failure convergence carries bounded records, and `payload` plus `error` share one complete-carrier budget. A raw exception becomes one bounded/redacted ErrorInfo-compatible mapping before the direct callback; official `action.*` and compatibility `tool.*` events reuse it without reconstructing the original message or traceback. Opaque string/bytes arguments retain no raw prefix and expose only a fixed summary, original UTF-8 byte length, and SHA-256 digest; structured arguments may retain bounded facts after sensitive-key redaction, and traceback projection is structural-frame-only. Previews are not complete evidence, so use `agent.action.read_action_artifact(selection_key=...)` only inside the currently bound AgentExecution, AgentTask, or standalone ActionFlow scope when full raw code, command output, SQL results, page content, or logs are needed. TaskBoard host code binds current task lineage for sibling-card readback; artifact id/action-call id fallback and cross-task/cross-execution readback fail closed; model/terminal `artifact_refs` and `artifacts` aliases must resolve to the same selection-key-only list
-- when a structured task output asks the model to bind Action evidence, expose
-  the host-issued `action_call_id` on each offered Action result. Validate that
-  exact offered key and resolve the canonical EvidenceLedger identity in host
-  code; do not trust model-copied canonical ids or reuse `action_call_id` as an
-  artifact readback selector
-- treat model-planned Action inputs as untrusted: ActionDispatcher filters
-  `structured_plan` and `native_tool_calls` kwargs to registered
-  `ActionSpec.kwargs`, records stripped keys in `ActionResult.diagnostics`, and
-  leaves direct host calls compatible
-- `agent.action.get_action_info()` and `get_action_list()` return visible
-  metadata with execution environment `env` values redacted; raw env values are
-  only for the execution provider path
-- after explicit `agent.get_action_result(prompt=..., store_for_reply=True)`,
-  the prompt is marked as having consumed the action loop even when no records
-  were produced, so later response materialization should not re-enter
-  ActionRuntime for that prompt
-- treat streamed structured planning fields as provisional. A
-  `next_action="response"` field stops further Action dispatch but does not
-  cancel or close the provider stream; await final parsed data so normal
-  request/model terminal events, metadata, and usage can settle
-- `agent.get_action_result(..., timeout=N)` bounds the full ActionFlow
-  lifecycle, including planning/model-owned tool selection; catch
-  `RuntimeStageStallError(stage="action_loop_close")` instead of relying on a
-  host-side kill as the primary timeout signal
-- for native tool-call planning, a zero-tool-call result can surface as a
-  skipped diagnostic record with code `action_runtime.native_tool_calls.empty`;
-  treat it as planning evidence, not executed work
-- use `agent.action.summarize_records(records, validation_command_markers=...)`
-  when a host needs authoritative action evidence such as failed actions,
-  commands attempted/run, and latest validation result
-- treat `Agently.execution_resource` as an advanced framework/plugin surface for lifecycle, policy, approval, health, and release
-- Action executors should declare or consume managed resources instead of secretly owning long-lived MCP clients, sandboxes, browsers, SQLite connections, or process runners
-- keep permission profiles explicit: search-only, local-files-only, network-read, install-capable shell, or trusted executor
-- treat `agently-devtools` as optional PyPI-installed tooling; wire observation through public bridge APIs, not source-repo paths
-- for framework internals, preserve Agently's core module style: class-owned
-  runtime behavior, typed data contracts, protocol/handler seams for
-  replacement, and high-level packages outside `agently/core` when they compose
-  several core systems
-- official Agently RuntimeEvent records are core-owned: built-in plugins should
-  return typed observations, errors, decisions, or route stream facts to core
-  rather than importing core RuntimeEvent emitters; plugin-owned custom Event
-  Center messages must use plugin-owned namespaces and are not guaranteed as
-  framework consumption contracts
-- keep runtime naming aligned with DevTools: `agent_execution` is the canonical
-  run lineage kind for one bounded Agent execution. The old turn-named runtime
-  namespace is removed from the current development-line contract.
-  `attempt_index` is model-request retry metadata and must not be treated as an
-  AgentExecution counter. AgentExecution process streams are observed as
-  `agent_execution.stream` RuntimeEvents for flat and TaskBoard execution
-  progress; DevTools may display those facts but must not own task strategy
-  selection.
-- for framework-side Skills work, treat `SkillsManager` as an internal
-  capability-adapter owner, not a new public recommended facade. Internal code
-  should depend on SkillsManager; user-facing examples should prefer
-  `agent.use_skills(...)` and AgentExecution Skills selection. Use legacy
-  `Agently.skills_executor` only when a compatibility registry/resolver hook is
-  required. Context-pack calls are advanced custom-planner/TaskDAG integration
-  surfaces, not the ordinary user path.
-- for Agently 4.1.3 Skills runtime work, prefer Action-like management:
-  declare installed ids or remote source selectors on `agent.use_skills(...)`
-  and let Skills Manager lazily discover, install, and expose selected
-  capability needs/candidates; AgentExecution owns run-local mounting,
-  execution, and cleanup. Keep `install_skills_pack(...)` for prewarming, offline mirrors,
-  deterministic CI fixtures, and explicit registry maintenance
-- treat `mode="required"` on an AgentTask route as an availability contract:
-  resolve and materialize remote source selectors before business planning,
-  continue with the canonical installed Skill id only after discovery,
-  installation, and inspection succeed, and fail closed as blocked before
-  model-owned business work when they do not. Do not let a task produce an
-  answer that can never satisfy its required-Skill gate
-- Skills installs default to the user-global registry `~/.agently/skills`;
-  override `skills.registry.root` only for isolation, and use
-  `skills.registry.proxy` or `runtime.network.proxy` when remote pack fetches
-  need a configured proxy
-- use `install_skills(...)` for one local Skill directory during
-  authoring/smoke tests; use AgentExecution with `execution.require_skills(...)`
-  for explicit required Skill activation; remote selectors may use git URLs,
-  GitHub shorthand such as
-  `anthropics/skills`, and `subpath=` when selecting one Skill from a pack
-- `Agently.skills_executor` and `agent.run_skills_task(...)` are pre-4.2
-  compatibility facades only. They still lower direct Skills execution through
-  the current Blocks runtime, but new examples and app guidance should use
-  Agent APIs and AgentExecution Skills selection instead.
-- when a custom planner, Dynamic Task, or TaskDAG node needs full Skill context
-  without forcing Skill activation execution, use
-  `agent.build_skills_context_pack(...)`,
-  `agent.async_build_skills_context_pack(...)`, or
-  the legacy `Agently.skills_executor.build_context_pack(...)` facade; the returned
-  `agently.skills.context_pack.v1` payload can include `SKILL.md` guidance,
-  task-relevant references/examples/assets, citations, diagnostics, optional
-  public lookup, and policy-gated script Action candidates
-- when a planner needs progressive Skill context before lowering a Task to a
-  `skill_activation` ExecutionBlock,
-  use the internal SkillsManager adapter or the legacy
-  `Agently.skills_executor.activate_skill(...)` compatibility facade. Treat the
-  returned SkillActivation as
-  skill-context evidence and capability need discovery only; it does not execute
-  bundled resources, grant Actions/MCP/shell/browser access, or prove side
-  effects
-- for DAG-shaped consumers of Skill context, pass
-  `Agently.skills_executor.task_dag_resolver()` to `TaskDAGExecutor` and use
-  `kind="skill"` nodes; do not build a separate scheduler or execute bundled
-  scripts while constructing context packs
-- for explicit required Skills, create an AgentExecution draft, set prompt and
-  output contracts on that draft, then call `execution.require_skills([...])`.
-  Required multiple Skills are preserved in caller order and lowered to ordered
-  TaskGraph Tasks plus ordered `skill_activation` ExecutionBlocks; later Skills
-  receive compact previous Skill results as evidence
-- when Skills are reached through Agent auto-orchestration, pass
-  execution-block-owned effort with
-  `agent.create_execution(options=ExecutionOptions(execution_blocks={
-  "skill_activation": SkillActivationOptions(effort="normal")}))` or the
-  equivalent dict;
-  this is an execution option, not a prompt slot
-- do not add application-specific Skills execution strategies through
-  framework-level strategy registration. Model requests, ActionRuntime/MCP,
-  ExecutionResource, TriggerFlow, Dynamic Task, and host policy should be
-  composed by AgentExecution planning/lowering instead of a parallel
-  Skills-owned dispatcher
-- Skill activation stream handlers receive Skills runtime item dictionaries and
-  can be annotated with
-  `SkillRuntimeStreamHandler`; model stream handlers passed to
-  `context.async_request_model(..., stream_handler=...)` receive `StreamingData`
-  and can be annotated with `ModelStreamingHandler`; the common aliases are
-  available from `agently`
-- for MCP, prefer Streamable HTTP URLs for service integrations
-  (`agent.use_mcp("https://host/mcp")`), use `headers=` for URL auth, and use
-  MCP config dictionaries for stdio/multi-server local integrations; treat SSE
-  as a legacy compatibility transport
-- treat chained Agent quick prompt methods as AgentExecution-local configuration
-  for one request/execution surface. Ordinary
-  `agent.input(...).output(...).start()` expressions create a fresh execution
-  for that expression, including inside loops. For multi-statement execution
-  setup, use `execution = agent.create_execution()` and mutate the execution
-  before it starts, not the shared Agent pending prompt. A completed explicit
-  `AgentExecution` is an immutable run record; prompt/config mutators should
-  fail fast on that object, and the next request should use a new execution.
-  `semantic_outputs=` is only a deprecated compatibility alias for direct
-  Skills execution, while Dynamic Task still uses `semantic_outputs` inside
-  TaskDAG specs
-- for framework-side Skills execution, keep standard `SKILL.md` as the only
-  capability definition; selected Skills default to a `single_shot`
-  compatibility label that lowers to handler-backed model-request execution,
-  while staged/react/custom labels lower to handler-backed execution segments and
-  should compose TriggerFlow and ActionFlow/ActionRuntime rather than adding a
-  Skills-local executor
-- for Skills `react` tool use, delegate model-owned action planning and
-  execution to the Agent ActionRuntime so action/MCP kwargs schemas, policy,
-  approvals, concurrency, and managed resources stay on the Action layer
-- when Skills `react` delegates to ActionRuntime, keep the selected SKILL.md
-  guidance/resource context in the ActionRuntime planning prompt. Delegation
-  with only task text and observation history bypasses the Skill guidance.
-- when Skills `react`, AgentTask, or another higher-level runtime delegates
-  action planning to ActionRuntime, set `action.planning_model_key` to the
-  intended `model_pool` business key so action planning uses the same model
-  routing as the surrounding task
-- Skills are public-standard `SKILL.md` guidance/resources, not Agently-private
-  capability manifests; do not author or recommend `allowed-actions`,
-  `allow-scripts`, `mcp`, `mcpServers`, `execution`, or `stages` frontmatter as
-  Agently capability declarations
-- SkillsManager discovers selected Skill capability needs from `SKILL.md`,
-  resource indexes, public `compatibility`, public `metadata`, and optional
-  model-assisted inference, then records structured `capability_needs`; selected
-  Skills may guide the model to use capabilities when available, but they do not
-  grant them
-- host applications control Skills capability loading with
-  `agent.configure_skill_capabilities(auto_load={...})`; `allow` can auto-load
-  built-in Search/Browse/HTTP/Workspace/Python/shell-script/MCP capabilities,
-  while `approval` and `off` fail closed with diagnostics instead of silently
-  mounting tools
-- with `capability_scope="execution"`, AgentExecution releases only capabilities
-  newly mounted for that execution; if the host Agent already owns the requested
-  action id, reuse that action and leave it registered after the Skills run
-- for search-oriented Skills, prefer the framework Search package backed by the
-  `ddgs` Python package; keep `ddgs` upgraded with
-  `python -m pip install --upgrade ddgs` before real search runs, and leave the
-  ddgs backend strategy configurable (`auto` by default) instead of hard-coding
-  a single backend; Search treats backend-level "no results" as an empty
-  successful action result and falls back through configured/default ddgs
-  backends when a selected backend returns no usable parsed result; if fallback
-  recovers after backend failures, Search reports `status="partial_success"`
-  with `success=True` and diagnostics rather than an `action.failed` terminal
-  condition
-- when observing ActionFlow records, treat `action.approval_required` and
-  `action.blocked` as policy/sandbox gate outcomes, not ordinary
-  `action.failed` execution failures
-- Workspace owns file-action roots and path boundaries; expose file access
-  through Workspace-scoped file actions, and treat ActionRuntime as the callable
-  surface rather than the owner of Workspace semantics, file type parsing, or
-  export rendering
-- Skills capability `approval` is resolved through Agently's global
-  PolicyApproval handler, not a SkillsManager-local handler:
-  `input_timeout_fail` by default, `auto_approve` for tests/trusted local
-  profiles, `fail_closed` when a host wants pending diagnostics or TriggerFlow
-  policy interrupts, `input` for local CLI interruption, or a host-provided
-  durable/network handler
-- trusted hosts may grant automatic approval through settings-backed
-  `access_control_policy.auto_allow`, using
-  `Agently.set_settings("access_control_policy.auto_allow", True)`,
-  `agent.set_settings("access_control_policy.auto_allow", True)`, execution
-  `.access_control_policy({"auto_allow": True})`, or selector-level
-  `auto_allow=True` for a matching Skill. Do not introduce
-  `configure_access_control_policy(...)`; if a wrapper is ever added, it must
-  delegate to settings and own no independent state. `auto_allow` authorizes
-  matching requested capabilities only; it does not prove that a Skill was
-  discovered, installed, or readable and must not waive required-Skill
-  availability failures
-- production services should choose a PolicyApproval handler that matches the
-  service wrapping the TriggerFlow execution: database pending record, HTTP
-  callback, webhook resume, SSE/WebSocket pending stream, save-and-return
-  interrupt id, or another host-owned approval channel; tests may use
-  `auto_approve`
-- script resources under `scripts/` can be wrapped as scoped shell actions only
-  when host policy allows `script_run` or a host-owned auto_allow grant applies;
-  selector-level auto_allow is scoped to matching Skill ids. The action root must
-  be the installed Skill directory and execution still goes through ActionRuntime
-  / ExecutionResource boundaries
-- public Agent Skills `allowed-tools` is experimental and, if supported, can
-  only restrict or pre-approve already-mounted host tools; it must not create
-  tools, synthesize backends, mount MCP, or choose Skills execution strategy by
-  itself
-- for Agently auto-orchestration work, treat
-  `agent.use_skills(...).input(...).get_result()` as capability-candidate
-  registration when the caller needs reusable data/text/meta/stream readers;
-  this is owned by the AgentExecution planner, not prompt-only Skills guidance
-  injection by default
-- for ambiguous optional capability candidates, keep submitted Dynamic Task and
-  required Skills deterministic, but let the model choose among optional auto
-  Dynamic Task, model-decision Skills, and ordinary Action-backed model request
-  Tasks
-- for framework-side Skills, treat standard `SKILL.md` as the only capability
-  definition; Agently install metadata and decision cards are descriptive
-  runtime aids, not authoring formats or availability gates
-- for Skills actions, use the global PolicyApproval contract plus
-  Action/ExecutionResource boundaries; when the request is
-  orchestrated, pending approvals must become TriggerFlow `policy_approval`
-  interrupts instead of Skills snapshots
-- keep Agent auto-orchestration behind the `AgentOrchestrator` plugin protocol:
-  core owns the public `agent.create_execution()` entrypoint, while the active
-  plugin owns Task planning, execution lowering, and stream bridging
-- for unified Agent execution/result work, prefer a response-style
-  `agent.create_execution()` object with data/text/meta/stream consumption; use
-  TriggerFlow runtime stream plus ModelRequest `instant` checkpoints for process
-  streaming, and expose model field deltas only through stable structured paths
-  such as `task_dag.tasks.<task_id>.fields.<field_path>` rather than raw provider
-  token events
-- for bounded developer-owned loops, use
-  `agent.create_execution(lineage=..., limits=..., options=...)`; lineage,
-  diagnostics, stream correlation metadata, and shared model-request budget
-  counting now describe the bounded step without a public mode name
-- keep AgentExecution process state in memory and logs by default. Use
-  `async_record_workspace(...)` only as an explicit application-selected record
-  write on an already active execution; it is not an implicit checkpoint or
-  audit path, and non-active or terminal process/recovery writes are rejected
-- treat AgentExecution terminal storage as one host-owned bounded projection:
-  the result stream and terminal lifecycle event must carry the same projection,
-  while the full result remains in the in-memory result API and durable bodies
-  are reached through canonical retained refs
-- pass the execution's Workspace and canonical execution identity into a routed
-  AgentTask so its final file refs remain owned by the parent execution without
-  copying file bodies
-- treat Action artifact ownership the same way: a standalone AgentTask releases
-  its exact task scope at terminal, while the routed construction seam explicitly
-  transfers that scope to the parent AgentExecution for terminal
-  selection/promotion and parent-owned release; cancellation, timeout, or
-  abnormal stream close must cancel and join the routed child before that
-  release, so no late Action artifact or Workspace fallback file can cross
-  terminal cleanup
-- at terminal state, keep only selected final fallback products whose trusted
-  refs pass physical readback; remove other files below the current execution's
-  `.agently/files/<execution-id>` area. Recovery snapshots exist only when
-  explicitly enabled and are removed when a finite execution no longer needs
-  resume state. Audit retention belongs to configured logs, DevTools, or an
-  explicit RuntimeEvent/record store rather than a default Workspace lifecycle
-- inspect AgentExecution runtime facts through AgentExecutionResult or the
-  execution facade: `result = execution.get_result()`, `result.get_text()`,
-  `result.get_data()`, `result.get_full_data()`, `result.get_meta()`,
-  `execution.get_prompt_text()`, `execution.get_data_object()`,
-  `execution.get_key_result(...)`, `execution.wait_keys(...)`,
-  `execution.get_async_generator()`, `execution.streaming_print()`, and
-  `await execution.async_get_meta()`.
-  `meta["task_frame"]`,
-  `meta["task_graph"]`, and `meta["execution_blocks"]` record the selected Task
-  structure and concrete execution lowering, while `meta["logs"]` exposes model
-  response ids, ActionRuntime action logs, task refs, and artifact refs when available; use those
-  framework-owned records for Workspace persistence instead of asking the model
-  to copy raw action stdout into final text. `type="delta"` remains the public
-	  string stream; `type="instant"` yields original structured items and appends
-	  synthetic `path="$delta"` `AgentExecutionStreamData` items only as a consumer
-	  text projection when a source item can be projected to natural language;
-	  `type="all"` remains the raw audit stream and must not include synthetic
-	  `$delta` items. Rich task UIs should consume `instant` for structured state
-	  and render public/synthetic `$delta` only as visible process text; public
-	  `delta` is a printable compatibility stream, not the UI state owner.
-  In Flat, keep direct ModelRequest and Skill work as one high-level step and
-  expand only framework-normalized concrete Action batches. Keep TaskBoard's
-  first table and later change-only updates. Text delta omits Action inputs,
-  credentials, raw command JSON, and long result bodies; only host-readback-
-  verified local file refs become links. AgentTask child/control model fields
-  stay in structured/debug streams, long terminal text is truncated, and
-  structured final objects remain available through the full result instead of
-  being serialized into public delta
-- when AgentExecution planning selects direct `model_request`, treat
-  Action and Observation as skipped business stages and consume the model result
-  as passthrough. If Action or Skill candidates are available but the selected
-  Task remains direct `model_request`, they are only available capabilities, not
-  a planned Action/Skill task. Only actual action/tool records become
-  side-effect evidence for verification, Workspace persistence, or replan.
-- set `limits={"max_seconds": ..., "max_no_progress_seconds": ...}` only when
-  the host explicitly needs hard wall-clock or no-progress controls while
-  diagnosing or building host-owned loops; framework defaults should not impose
-  model-request, iteration, TaskBoard tick, Action round, node-count, or
-  tool-call quotas, while no-progress and idle timeouts remain liveness guards;
-  catch `RuntimeStageStallError` from the root `agently.core` export or
-  `agently.core.application.AgentExecution` and inspect
-  `meta["diagnostics"]["last_progress"]`, `["timeouts"]`, and `["stalls"]`
-  instead of adding ad hoc polling around the whole app
-- for provider stream hangs, prefer framework settings such as
-  `OpenAICompatible.stream_idle_timeout`,
-  `OpenAIResponsesCompatible.stream_idle_timeout`, and
-  `AnthropicCompatible.stream_idle_timeout`, plus
-  `response.materialization_idle_timeout`; use `None` for unlimited budgets and
-  avoid permanent debug-only timeout wrappers in examples; provider first-event
-  and stream-idle waits should advance only on provider items with meaningful
-  response data, not empty SSE keep-alives, and the deadline should surface
-  without waiting for delayed transport-cancellation cleanup; failures surface
-  as `RuntimeStageStallError` with
-  `stage="response_first_event"` or `stage="response_stream"`; keep that stall
-  inside the ModelRequest attempt lifecycle so it consumes
-  `<Requester>.request_retry.max_attempts` and each failed `model.status` keeps
-  attempt/retry fields plus the typed `error_diagnostic` rather than waiting for
-  an outer AgentExecution deadline; transient
-  disconnects use same-request `<Requester>.request_retry`; OpenAICompatible
-  replays after partial output by default, which requires streaming consumers
-  to process `$status` or clear plain-delta text on the
-  `"<$retry>{reason}</$retry>"` marker before accepting replacement deltas;
-  the marker belongs to public delta replay and must not be treated as internal
-  artifact content;
-  explicit response stream errors should propagate from response getters with the
-  original provider or ActionFlow reason before materialization timeout is used
-  as a fallback
-- when high-frequency RuntimeEvent deltas would overload downstream consumers,
-  keep producers raw and ask the expensive EventCenter outlet to summarize with
-  hook/hooker `delivery_policy={"mode": "summary", "dispatch": "await",
-  "emit_interval": ..., "max_items": ...}`; use `dispatch="background"` only
-  for best-effort outlets that call `EventCenter.async_flush(...)` or expose an
-  owning bridge flush/close point; EventCenter also has an idle flush safety net
-  for long-lived loops, but CLI/script shutdown still needs explicit flush for
-  background outlets; rely on AgentExecution liveness diagnostics rather than
-  public delta frequency for stall detection
-- for temporary development debugging, attach an EventCenter observation hook,
-  call `.set_settings("debug", True)` for request/result and AgentTask process
-  summaries, or call `.set_settings("debug", "detail")` for full observation
-  detail including model delta output. Debug is the diagnostic RuntimeEvent
-  view, not the user-facing business stream: also consume
-  `execution.get_async_generator(type="delta")` or call
-  `await execution.async_streaming_print()` to see the readable Flat/TaskBoard
-  process and final result. Use `debug="detail"` plus delta consumption for the
-  complete development view; do not expect debug to print a duplicate final
-  answer;
-  remove debug hooks/settings from examples and production snippets after the
-  issue is diagnosed
+Do not merge these owners into a generic Workspace or runtime manager. File
+space is not record storage; record storage is not model-hot context; a Skill
+package is not an executor or permission grant.
 
-## Anti-Patterns
+## Native Action Rules
 
-- do not build a parallel action/tool dispatcher before checking Action Runtime
-- do not hand-roll tool schema prompts or kwargs planners in Skills when the
-  Agent ActionRuntime can plan against the registered action list
-- do not accept prompt-only or React Skills text as proof of file writes,
-  readbacks, shell execution, HTTP calls, or other side effects; require
-  ActionRuntime records and structured evidence
-- do not expose core ExecutionResource manager APIs as the default app-development mental model
-- do not route package installation or filesystem mutation through the Python sandbox
-- do not ask users to clone or editable-install DevTools when `pip install agently-devtools` fits
-- do not make DevTools the source of truth for workflow structure
-- do not present prompt-only Skills disclosure as the default execution meaning
-  of `agent.start()` once the 4.1.3 AgentExecution planner owns Skills candidates
-- do not put TaskGraph/ExecutionBlock-owned Skills, Dynamic Task, or stream-composition logic
-  directly in core when a plugin protocol can own the replaceable behavior
+- Prefer `@agent.action_func` and `agent.use_actions(...)`; `tool_func`,
+  `use_tool`, `use_tools`, and `agently.builtins.tools` are compatibility
+  surfaces.
+- Mount built-in Search/Browse with
+  `agent.use_actions(Search(...))` / `agent.use_actions(Browse(...))`; do not
+  invent `enable_search(...)`.
+- Treat multi-Action package registration as atomic. A partial Search or MCP
+  registration failure must remove batch-created Actions and restore any
+  same-id host registration.
+- Treat model-planned Action arguments as untrusted. Validate against the
+  registered schema, authorization, and policy before dispatch.
+- Treat Action output and Action artifacts as evidence only after the host has
+  recorded the actual call. Model prose claiming a side effect is not Action
+  evidence.
+- Keep permission profiles explicit and narrow. Do not expose shell,
+  filesystem, MCP, browser, install, or network capabilities merely because an
+  AgentTask exists.
 
-## Read Next
+## File and Storage Rules
 
-- `references/actions-runtime.md`
-- `references/actions-execution-resource.md`
-- `references/devtools.md`
+- Select a task file root with `agent.use_task_workspace(path, mode=...)`.
+  Enable model-callable file work with
+  `agent.enable_task_workspace_file_actions(...)` or
+  `agent.enable_coding_agent_actions(...)`.
+- `TaskWorkspace` is a file boundary only. Use its read/write/edit/glob/grep/
+  patch/export methods for task files and artifacts; do not store arbitrary
+  durable records inside it through a hidden database API.
+- Select durable records with `agent.use_record_store(...)` or pass a
+  `RecordStore` to an explicit TriggerFlow execution. Use it for `put`, `get`,
+  `retrieve`, links, RuntimeEvents, snapshots, checkpoints, leases, and durable
+  artifact refs.
+- Keep process state in memory/logs by default. Enable AgentTask
+  `record_store_recovery` only when restart-safe recovery is required.
+- Keep ordinary observation in logs/DevTools. Bind RuntimeEvent persistence
+  explicitly; a RecordStore does not become an event archive merely because it
+  is available.
+- Keep large bodies cold behind TaskWorkspace or RecordStore refs. Put only
+  compact handles, bounded previews, status, and lineage facts in execution
+  state and model-hot context.
+
+## Real-World Skills
+
+- Treat standard `SKILL.md` packages as guidance plus addressable resources.
+  They do not own execution strategy, routing, Action mounting, permissions, or
+  side-effect proof.
+- Install and inspect immutable revisions through `SkillLibrary` or the thin
+  `Agently.skills_executor` management facade.
+- Bind optional or required Skills on an `AgentExecution` with
+  `execution.use_skills(...)`, `execution.require_skills(...)`, or
+  `execution.use_skills_packs(...)`.
+- Let `AgentExecution` prepare the shared TaskContext and read it for the
+  actual consumer/phase with `async_prepare_task_context()` and
+  `async_read_task_context(...)`.
+- Provide Actions/MCP/ExecutionResources explicitly. Reading a Skill may inform
+  the model that an operation exists; it never creates or authorizes that
+  operation.
+- `Agently.skills_executor` is a compatibility facade for local install,
+  configure, inspect, list, resource read, context-pack projection, and the
+  TaskDAG Skill resolver. It is not a plugin route, planner, strategy registry,
+  React loop, capability manager, or execution owner.
+- `agent.run_skills_task(...)` remains a thin compatibility adapter to an
+  ordinary AgentExecution. New code should create/configure the execution
+  directly.
+- There is no `SkillsManager`, `skill_activation` Block, Skills route,
+  `single_shot`/`staged`/`react` Skills strategy family, or
+  `configure_skill_capabilities(...)` auto-mount path in the current
+  development-line contract.
+
+## AgentExecution and AgentTask
+
+- Use a fresh `agent.create_execution()` for multi-statement setup. A completed
+  execution is an immutable run record; create another execution for another
+  run.
+- Use `agent.create_task(...)` / `agent.create_task_loop(...)` only when the
+  model should own planning, bounded execution, evidence, verification, and
+  replan. They return AgentExecution drafts, not public AgentTask handles.
+- `strategy("direct")` selects an ordinary model request with the Action loop.
+  `strategy("auto")` may select AgentTask when structural task signals exist;
+  `flat` and `taskboard` explicitly select the corresponding AgentTask shape.
+- Use `AgentExecutionResult.get_data()` for the business value,
+  `get_full_data()` for the route/task envelope, `get_text()` for user-facing
+  text, and `get_meta()` for process facts.
+- Treat `instant` as provisional structured progress and `delta` as printable
+  text. Irreversible work must wait for the final parsed result and host
+  validation.
+- Add non-blocking operator context to a running task with
+  `execution.async_add_guidance(...)`. Use TriggerFlow pause/resume when an
+  answer is required before work can continue.
+- Require actual Action evidence for required side effects. TaskWorkspace
+  readback proves a file fact; it does not prove an unrelated Action call.
+
+## TriggerFlow and Recovery
+
+- Use TriggerFlow execution state for per-execution handoff. `flow_data` is
+  shared across executions and is not concurrency-safe task memory.
+- Bind `snapshot_store`, `runtime_event_store`, and other recovery ports to a
+  RecordStore only when the workflow needs those durable capabilities.
+- Persist live resource descriptors, never live clients or secrets. Reconstruct
+  ExecutionResources through host/plugin resolvers during load.
+- Use explicit execution handles for pause/resume, external emit, save/load,
+  intervention, inspection, cancellation, or host-controlled close.
+- A local RecordStore can prove local restart behavior. Do not describe it as a
+  production multi-worker Redis/Postgres/object-storage adapter without a real
+  provider and operational evidence.
+
+## Observation and Service Boundaries
+
+- RuntimeEvent and DevTools are observation surfaces. They do not own routing,
+  semantic relevance, authorization, verification, or acceptance.
+- Keep provider telemetry out of prompt, routing, retry-policy, and quality
+  decisions unless the application explicitly owns such a deterministic policy.
+- Use `FastAPIHelper` or another host transport to expose a known execution
+  contract; do not move workflow lifecycle into transport callbacks.
+- Treat high-frequency delta aggregation as an outlet/delivery policy. Flush
+  best-effort background outlets at an owning close point.
+- Keep `agently-devtools` optional and fail-open. Integrate through public
+  observation bridges, not source-repository paths.
+
+## Fail-Closed Checks
+
+- Reject unknown Skill revisions, resource refs, candidate keys, Action ids,
+  context block keys, recovery providers, and external-resume identities.
+- Keep identity reconstruction host-owned. Offer one short selection key to a
+  model, validate it, then rejoin canonical records in host code.
+- Do not use keyword/regex matching as the semantic owner for intent, Skill
+  relevance, route choice, evidence usefulness, or output quality.
+- Do not fake model-owned success with canned outputs, framework-level business
+  mappings, deterministic substitutes, or test-only production branches.

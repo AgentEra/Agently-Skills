@@ -33,10 +33,11 @@ expected to grow. Keep public imports stable through package `__init__.py`
 files and top-level re-exports. Use a single file only for genuinely small,
 single-responsibility capabilities where splitting would be over-design.
 
-Landed examples include `core/Action`, `core/TriggerFlow`,
-`core/TaskDAGExecutor`, `core/Workspace`,
-`builtins/plugins/ExecutionResourceProvider`, and
-`builtins/plugins/SkillsManager`.
+Landed examples include `core/application/AgentExecution`,
+`core/application/SkillLibrary`, `core/context`, `core/TaskWorkspace`,
+`core/storage`, `core/operation/Action`, `core/orchestration/TriggerFlow`,
+`core/orchestration/TaskDAG`, and
+`builtins/plugins/ExecutionResourceProvider`.
 
 ## Model Output Test Rules
 

@@ -1,7 +1,7 @@
 # Execution Topology Validation
 
 Use this reference to diagnose or evaluate a complex Agently run that contains
-multiple ModelRequests, TriggerFlow chunks, business blocks, Actions, Workspace
+multiple ModelRequests, TriggerFlow chunks, business blocks, Actions, TaskWorkspace
 readbacks, external waits, repairs, or terminal gates.
 
 ## Core Rule
@@ -48,14 +48,14 @@ following fields; do not replace them with a prose stage summary.
 - inbound signal name, payload schema, correlation key, and trigger condition,
   recorded separately from business input values;
 - state keys read and their versions before execution;
-- handler, ModelRequest, Action, Workspace, subflow, or external-exchange calls;
+- handler, ModelRequest, Action, TaskWorkspace, subflow, or external-exchange calls;
 - declared business output/result schema and exact downstream consumers;
 - state writes, emitted signal names and payload schemas, RuntimeEvents,
   interrupts, artifact/ref writes, and side effects, each recorded separately;
 - retry, replay, idempotency, fan-out concurrency, join mode, stop condition,
   and close/terminal behavior when applicable.
 
-Include Action, Workspace, subflow, and external-wait nodes when they own a real
+Include Action, TaskWorkspace, subflow, and external-wait nodes when they own a real
 contract boundary. Do not hide them inside a generic “execution” node.
 
 ## Required Edge Standard
@@ -84,7 +84,7 @@ two prompts is not lineage evidence.
 
 For host-issued identities, show the model-visible selection key, host
 validation, canonical lookup, and reconstructed record as separate steps. For
-Workspace files or other mutable resources, show locator id and content/snapshot
+TaskWorkspace files or other mutable resources, show locator id and content/snapshot
 version; path equality alone is not a current-value join.
 
 When one structured output carries both local result state and orchestration
@@ -113,7 +113,7 @@ explicitly. At minimum, trace this complete chain when it exists:
 planner.output.deliverable_mode
   -> host carrier normalization
   -> artifact-body / inline-result selector
-  -> Action or Workspace write + physical readback
+  -> Action or TaskWorkspace write + physical readback
   -> trusted-artifact promotion
   -> current terminal-carrier inventory/version
   -> host exact-span projection + request-local claim_key map
@@ -128,7 +128,7 @@ The artifact body, compact inline result, and trusted artifact ref are distinct
 values. Copying one into another is a separate value edge and requires an
 explicit declared owner; graph adjacency or a shared final-result label does
 not authorize the copy. A manifest-bound successful Action write may promote
-its physical Workspace readback as the trusted artifact. Action prose, a
+its physical TaskWorkspace readback as the trusted artifact. Action prose, a
 model-declared path, or an unverified ref cannot.
 
 For that manifest path, the successful file Action is also the only write
@@ -170,7 +170,7 @@ evidence is an invalid projection even when the offered item list is correct.
 Finalizer-authored `evidence_use` may be joined host-side to pin canonical
 ledger records, but it must not be copied into the terminal verifier's
 `execution_result` as another model-visible selection-id domain. When a
-required Workspace deliverable path exists, draw exactly one current Workspace
+required TaskWorkspace deliverable path exists, draw exactly one current TaskWorkspace
 carrier edge from that path's physical readback; intermediate working files
 remain cold evidence even when they are otherwise trusted.
 
@@ -196,7 +196,7 @@ Action results. A known Action id with unresolved upstream arguments owns one
 narrow request, not a post-Action planning loop. Show `requires_capability_ids`
 entering the exact execution scope; if it remains only preflight metadata, mark
 the value edge as lost. Unknown ids, omitted required ids, invalid inputs, or
-unavailable Actions must fail closed. Exact final Workspace artifact handoff
+unavailable Actions must fail closed. Exact final TaskWorkspace artifact handoff
 must show the source content-version edge plus direct write/readback Action
 events, not a model request that copies the file body.
 
@@ -245,7 +245,7 @@ For a complex TriggerFlow run, include all of these when present:
 - execution state reads/writes, distinguishing replacement from accumulation;
 - ModelRequest prompt/output contracts inside chunks;
 - Action inputs/results and success/failure RuntimeEvents;
-- Workspace writes, trusted refs, readbacks, and content versions;
+- TaskWorkspace writes, trusted refs, readbacks, and content versions;
 - subflow start/result/interrupt propagation;
 - external wait, ExecutionExchange, interrupt, resume request, and actor data;
 - retry/replay/repair back edges and their stable convergence subject;

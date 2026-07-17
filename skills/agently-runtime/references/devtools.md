@@ -96,7 +96,7 @@ fields and should remain fail-open for older DevTools consumers.
 Cancellation is a distinct `agent_execution.cancelled` terminal event. Treat it
 as an additive terminal type, keep the payload fail-open, and do not collapse it
 into `agent_execution.failed`; its bounded close snapshot reports cancellation,
-while Workspace terminal file cleanup remains an internal storage concern.
+while TaskWorkspace terminal file cleanup remains an internal file-owner concern.
 
 AgentTask action observations may appear as `agent_task.action.started`,
 `agent_task.action.completed`, and `agent_task.action.failed`. DevTools should
@@ -106,6 +106,18 @@ project as completed observations; failed observations are reserved for failed,
 blocked, timed-out, or unrecovered error records. They are not route decisions,
 verifier results, quality scores, semantic relevance judgments, budget gates,
 or completion acceptance.
+
+Required Skill lifecycle observations may appear as
+`skills.revisions.bound` and `skills.context.bound`. Treat them as distinct
+revision-availability and concrete ModelRequest-consumption facts.
+`skills.context.bound.request_id` is
+the actual ModelRequest response identity, not a synthetic phase or child
+execution id; overrides and non-model child routes emit no consumption record.
+They are additive observation records: DevTools may
+display and correlate their host-issued ids, phases, bounded allocation, and
+diagnostic refs, but must not infer authorization, Action
+success, planner capability, or task acceptance from them. Revision binding
+alone must not be rendered as context consumption.
 
 Agently also provides a LazyImport facade when the app wants to keep the
 `agently-devtools` import behind Agently:

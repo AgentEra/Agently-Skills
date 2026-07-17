@@ -1,202 +1,109 @@
-# ExecutionResource Overview
+# Action and ExecutionResource Boundaries
 
-This skill owns Agently-native extension surfaces: Action Runtime, ExecutionResource, built-in capability Actions, Agent Components, tools, MCP, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation/evaluation tooling.
+Use this reference when deciding whether a capability is a callable Action, a
+managed live dependency, a file boundary, or durable storage.
 
-Use it when:
+## Ownership
 
-- the user needs built-in actions or tools such as `Browse`, including `@agent.action_func`, `agent.use_actions(...)`, MCP, or sandbox-backed execution
-- the user wants MCP or FastAPIHelper without hand-rolled wrappers
-- the user needs managed MCP, Bash, Python, Node.js, Docker, Browser, or SQLite lifecycle through the ExecutionResource compatibility surface
-- the user is deciding whether a capability belongs in core, a plugin/provider, a built-in Action, or an Agent Component
-- the user wants local observation, evaluation, playground, or logs support through `agently-devtools`
-- the app owner layer is already known and the work is about attaching tooling around that app instead of redesigning the workflow itself
+| Owner | Responsibility |
+|---|---|
+| `ActionRuntime` | Callable schema, model/host dispatch, policy, approval, bounded result, and Action evidence. |
+| `ExecutionResource` | Lifecycle, scope, health, approval, and release for live clients, sandboxes, processes, browsers, databases, and MCP sessions. |
+| `TaskWorkspace` | Contained task files, generated artifacts, file readback, and file identity. |
+| `RecordStore` | Durable records, retrieval, RuntimeEvents, recovery snapshots/checkpoints, leases, and durable refs. |
+| TriggerFlow `runtime_resources` | Execution-local attachment point for already-created live resources. |
 
-For the public DevTools integration path, read `references/devtools.md`.
+Action executors must not secretly own long-lived MCP servers, browsers,
+processes, or broad sandboxes. Declare/consume an ExecutionResource instead.
+TriggerFlow can attach a live object but does not create, serialize, or release
+it.
 
-## ExecutionResource Boundary
+Search settings belong to the Search package/executor, not ExecutionResource.
+Browse follows the same rule unless it explicitly consumes a managed browser.
+Downloaded bytes may be materialized into TaskWorkspace; file handlers own
+format parsing/rendering.
 
-Use ExecutionResource when a capability needs a managed live dependency before
-an Action or TriggerFlow execution can run.
+Real-world Skill scripts are resources, not trusted runtime handlers. A host may
+map a script requirement to a controlled Action/ExecutionResource after policy
+approval; Skill reading itself never mounts or authorizes it.
 
-- ExecutionResource owns lifecycle, policy, approval, scope, health, and release for managed dependencies.
-- Action owns what is callable and how one call is normalized into an `ActionResult`.
-- TriggerFlow `runtime_resources` remains the execution-local live handle surface. Managed resources can be injected there, but TriggerFlow does not create or release them.
-- Built-in MCP, Bash, Python, Node.js, Docker, Browser, and SQLite actions should declare or consume ExecutionResource resources rather than owning lifecycle inside the executor.
-- Search does not belong in ExecutionResource. Its proxy, timeout, backend,
-  retry, and region settings belong to the Search package/executor
-  configuration. Browse follows the same package-owned proxy/timeout/retry
-  pattern unless it explicitly declares a managed browser resource. Browse may
-  consume the bound Workspace to materialize remote PDF/Office/image/download
-  bytes, but Workspace still owns the file boundary and file IO handlers own
-  parsing.
-- SkillsManager and artifact-producing workflows should repair missing local
-  libraries, binaries, browser runtimes, or MCP packages through controlled
-  install-capable Actions or ExecutionResource ensure steps. Do not silently
-  downgrade the business result just because a local dependency is absent; if
-  repair is blocked or fails, surface an explicit failed or approval-required
-  execution state with the dependency ActionResult attached.
-- Third-party Skill helper scripts are not trusted runtime handlers by default.
-  The executor should first resolve the capability to a controlled Action or
-  managed environment. Bash/shell-style requirements may be satisfied by a
-  policy-bound Bash sandbox; if no controlled replacement exists, return a
-  user-facing blocked explanation and remediation suggestions.
+## Application Surface
 
-Audience split:
+- Select task files with `agent.use_task_workspace(...)`.
+- Expose file work with `agent.enable_task_workspace_file_actions(...)` or
+  `agent.enable_coding_agent_actions(...)`.
+- Select durable record/recovery storage with `agent.use_record_store(...)`.
+- Attach model-callable runtimes with `agent.enable_python(...)`,
+  `agent.enable_shell(...)`, `agent.enable_nodejs(...)`,
+  `agent.enable_code_runtime(...)`, `agent.enable_sqlite(...)`, or explicit
+  `agent.use_actions(...)`.
+- Pass explicit `root=` / `cwd=` when a runtime must not inherit the bound
+  TaskWorkspace root.
+- Use `desc_mode="override"` only when intentionally replacing default usage
+  and safety guidance; ordinary `desc=` supplements it.
 
-- App developers should use `agent.use_workspace(...)` when the application
-  needs direct contained file access or explicitly selected durable records,
-  recovery, retrieval, or memory. Use built-in Actions and Agent Components such as
-  `agent.enable_python(...)`, `agent.enable_shell(...)`,
-  `agent.enable_workspace_file_actions(...)`,
-  `agent.enable_coding_agent_actions(...)`, `agent.enable_nodejs(...)`, and
-  `agent.enable_sqlite(...)` for model-callable execution capabilities.
-- When a Foundation Workspace is configured, filesystem-like helpers inherit
-  `agent.workspace.root`, the direct ordinary file root, by default.
-  Pass explicit `root=` / `cwd=` when an action must use an independent
-  directory.
-- For explicit long-running or looping workflows, keep TriggerFlow state compact
-  and enable Workspace/provider recovery only when execution state must survive
-  restart. RuntimeEvent persistence is a separate explicit audit/replay choice.
-- For coding-agent style local file work, expose Workspace file actions through
-  `agent.enable_coding_agent_actions(...)` instead of broad shell. Keep shell
-  scoped to tests, builds, git status/diff/log inspection, and read-only
-  diagnostics; command outputs are bounded and oversized streams should remain
-  behind Workspace file/artifact refs.
-- Action developers can use the ExecutionResource requirement surface when one action requires a managed dependency.
-- Plugin developers implement `ExecutionResourceProvider` for resource kinds such as Bash, Python, Node.js, Docker, SQLite, vector store, browser, or remote runner.
-- Framework maintainers decide whether a feature belongs to core, provider, built-in capability, or Agent Component.
-- `enable_*` helper `desc=` parameters supplement default capability descriptions by default. Use `desc_mode="override"` only when replacing baseline usage and safety guidance is intentional.
-- Public helper APIs should use explicit typing for IDE assistance. Prefer `Literal` for finite option sets, including `desc_mode`.
+For host approval/webhook/queue transports, ExecutionResource may own the live
+client, while TriggerFlow and ExecutionExchange own wait/resume. Attach the
+provider as an execution resource and project public exchange views; do not make
+the transport own workflow lifecycle.
 
-For human approval or external exchange transports, ExecutionResource may own a
-live client or queue handle, but the wait/resume protocol belongs to TriggerFlow
-and ExecutionExchange. Bind the live transport as
-`runtime_resources={"execution_exchange_provider": provider}` or register a
-reusable provider through `agently.base.execution_exchange.register_provider(...)`.
-Host UIs should render `ExecutionExchangeView` data from
-`project_pending_exchanges(execution)` / `project_execution_exchanges(execution)`;
-connected ActionFlow/PolicyApproval service endpoints may resolve the same live
-run with `execution_exchange.async_respond(...)`.
+## Permission Profiles
 
-Do not design custom ActionExecutors that secretly start long-lived MCP servers,
-processes, or broad sandboxes when the environment can be declared and managed
-through ExecutionResource.
-
-For runnable main-repo examples, check the current execution-resource examples.
-Start with the trusted-local `agent.enable_python(..., sandbox="trusted_local")`
-quickstart when no Docker service is available, then use the Docker-backed
-Ollama/DeepSeek and common-language code runtime examples. The TriggerFlow
-example is for workflow or framework developers who need managed
-execution-local resources.
-For built-in Search/Browse package examples, check `examples/builtin_actions/`.
-
-Do not turn Skills into a parallel executor. Skill scripts should map to built-in
-Actions and component helpers such as `agent.enable_python(...)`,
-`agent.enable_shell(...)`, `agent.enable_nodejs(...)`,
-`agent.enable_code_runtime(...)`, and `agent.enable_sqlite(...)`; Python,
-shell, Node.js, and common-language code runtime helpers use Docker-backed
-runtime profiles, while dependency installation remains host/provider resource
-preparation rather than model-visible package-manager commands. MCP assets
-should map to
-MCP-backed Actions plus ExecutionResource requirements; workflow templates
-should map to TriggerFlow. Multi-step Skills strategies should reuse
-TriggerFlow for orchestration and ActionFlow/ActionRuntime for tool/action
-execution, including approval-required and blocked results.
-
-## Practical Permission Profiles
-
-Choose the smallest surface that still fits the task. The current codebase supports these patterns directly:
+Choose the smallest surface that fits.
 
 ### Search Only
 
-Use `Search` when the task is only to discover web results and you do not need page rendering or local shell access.
-
 ```python
-import asyncio
-
 from agently.builtins.actions import Search
 
 search = Search(timeout=15, backend="auto")
-
-async def main():
-    results = await search.search("agently action runtime sandbox")
-    return results
-
-results = asyncio.run(main())
+agent.use_actions(search)
 ```
 
-Keep the agent on `agent.use_actions(search)` when the model may choose any
-Search action, or call `search.search(...)` directly when no agent loop is
-needed. Do not add `Browse` or any sandbox executor if the job is just retrieval.
-When a configured search backend fails but a fallback backend returns usable
-results, the Action result is `status="partial_success"` with `success=True`
-and backend diagnostics; treat that as usable evidence plus degraded-provider
-observability.
+Do not add Browse or shell when web-result discovery is sufficient.
 
-### Local Files Only
-
-Use Bash sandbox actions with a tight command allowlist and a root-scoped workspace.
+### Network Read
 
 ```python
-agent.action.register_bash_sandbox_action(
-    action_id="repo_reader",
-    allowed_cmd_prefixes=["pwd", "ls", "rg", "cat", "head", "tail"],
-    allowed_workdir_roots=[repo_root],
-    default_policy={
-        "workspace_roots": [repo_root],
-        "allowed_cmd_prefixes": ["pwd", "ls", "rg", "cat", "head", "tail"],
-        "timeout_seconds": 10,
-    },
-)
-```
-
-This is the right profile for “read local files only” or “search the repo tree”.
-Keep shell bypass grants host-only; do not include `allow_unsafe` or equivalent
-escape hatches in model-visible schemas, and do not include `curl`, `wget`,
-`pip`, `uv`, or `poetry` in read-only profiles. If the host passes `env=...` to
-a managed action helper, those raw values are for the execution provider only;
-visible action metadata should redact env values while preserving key names.
-
-### Network Read Only
-
-Use `Search` plus `Browse` when the task needs internet access but should not mutate the machine.
-
-```python
-import os
-
 from agently.builtins.actions import Browse, Search
 
-search = Search(proxy=os.getenv("BROWSE_PROXY"), timeout=15, max_attempts=2)
-disable_jina_reader = os.getenv("BROWSE_DISABLE_JINA_READER", "0").lower() in {"1", "true", "yes"}
-jina_reader_endpoint = os.getenv("BROWSE_JINA_READER_ENDPOINT", "https://r.jina.ai/")
-fallback_order = (
-    ("playwright", "bs4", "curl") if disable_jina_reader else ("jina_reader", "playwright", "bs4", "curl")
-)
-browse = Browse(
-    proxy=os.getenv("BROWSE_PROXY"),
-    max_attempts=2,
-    enable_pyautogui=False,
-    enable_playwright=True,
-    enable_curl=True,
-    enable_jina_reader=not disable_jina_reader,
-    enable_bs4=True,
-    jina_reader_endpoint=jina_reader_endpoint,
-    fallback_order=fallback_order,
+agent.use_actions([
+    Search(timeout=15, max_attempts=2),
+    Browse(max_attempts=2, enable_playwright=True),
+])
+```
+
+Keep Jina Reader/external service use, proxy, timeout, fallback order, and
+backend policy explicit. Do not add a shell fallback merely for page reads.
+
+### Task Files
+
+```python
+agent.use_task_workspace(repo_root, mode="read_write")
+agent.enable_coding_agent_actions()
+```
+
+Use TaskWorkspace Actions for read/glob/grep/edit/patch/write. Use shell for
+tests, builds, git inspection, and bounded diagnostics. Keep command roots and
+allowlists narrow.
+
+### Read-Only Shell
+
+```python
+agent.enable_shell(
+    root=repo_root,
+    commands=["pwd", "ls", "rg", "cat", "head", "tail"],
 )
 ```
 
-Prefer this for “read web pages”, “summarize docs”, or “verify an online page”. Keep shell sandboxes out of the path unless the task truly needs command execution. Browse uses Jina Reader by default as an external URL-to-Markdown first pass and automatically knows the official alternate endpoint `https://r.jinaai.cn/`; set `BROWSE_DISABLE_JINA_READER=1` when delegating public URLs to that external service is not acceptable. Set `BROWSE_JINA_READER_ENDPOINT` only when you need to choose a different primary Reader endpoint.
-Attach them with `agent.use_actions([search, browse])` when you want the agent
-to call both packages.
+Do not include package managers, network commands, unsafe escape hatches, or
+secret-bearing environment values in model-visible schemas. Visible metadata
+may show env key names but must redact values.
 
-### Dependency Install Or Other Broad Shell Work
+### Code Runtime or Dependency Preparation
 
-If the user wants to install packages, run migrations, or do other shell-heavy
-work, do not route that through Python sandbox or model-visible package-manager
-commands.
-
-For code execution in common languages, prefer Docker-backed helpers with
-host-selected provisioning policy:
+Prefer managed Docker-backed language runtimes with a host-selected provisioning
+profile:
 
 ```python
 agent.enable_code_runtime(
@@ -205,35 +112,27 @@ agent.enable_code_runtime(
 )
 ```
 
-Use a bash sandbox action with a deliberate allowlist such as
-`["python", "pip", "uv", "poetry", "git"]` only for trusted maintenance flows
-where shell is the product behavior.
+Use install-capable shell only for explicitly trusted maintenance flows. There
+is no universal full-trust switch; broaden commands and network/file access at
+the owning provider while keeping isolation and roots explicit.
 
-```python
-agent.action.register_bash_sandbox_action(
-    action_id="package_runner",
-    allowed_cmd_prefixes=["python", "pip", "uv", "poetry", "git"],
-    allowed_workdir_roots=[repo_root],
-    default_policy={
-        "workspace_roots": [repo_root],
-        "allowed_cmd_prefixes": ["python", "pip", "uv", "poetry", "git"],
-        "timeout_seconds": 60,
-    },
-)
-```
+## Failure Behavior
 
-If you need internet-enabled dependency preparation for model-planned code,
-prefer `provisioning_profile="developer"` or `"ci"` with an explicit
-`dependency_policy` over relaxing the Python sandbox. The legacy trusted-local
-Python sandbox is for compatibility, not environment mutation.
+- Missing/unhealthy required resources fail closed or enter an explicit
+  approval/pending state according to policy.
+- Dependency repair must run through controlled host/provider steps, not silent
+  downgrade or model-visible package-manager improvisation.
+- Multi-Action package registration is atomic: remove batch-created Actions and
+  restore same-id host registrations on partial failure.
+- Action results are bounded/redacted before they cross context, event, state,
+  log, metadata, or public-return boundaries.
+- Oversized bodies stay behind Action artifact, TaskWorkspace, or RecordStore
+  refs and are read back under explicit scope.
 
-### When You Really Want Big Permission
+## Anti-Patterns
 
-The current codebase does not have a single “full trust” switch for Python sandbox. The safe way to widen scope is to:
-
-- use Bash sandbox or a custom executor, not Python sandbox
-- broaden `allowed_cmd_prefixes` only for trusted flows
-- keep `allowed_workdir_roots` narrow even when commands are broad
-- use `allow_unsafe=True` only in explicitly trusted and reviewable host-owned execution paths
-
-For the most permissive boundary, use a dedicated Docker-based executor with controlled network and filesystem settings, and keep that executor isolated from the default app path.
+- Treating SkillsExecutor/SkillLibrary as a capability or environment manager.
+- Using TaskWorkspace for durable records or RecordStore for file editing.
+- Passing live resources or secrets through save snapshots.
+- Exposing broad shell because a narrower Action/managed runtime exists.
+- Presenting provider/worker/thread counts as one universal TriggerFlow setting.
