@@ -574,7 +574,10 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   dispatch facts. Keep the first TaskBoard table and later change-only updates.
   Text delta may show bounded result summaries and readback-verified local file
   links, but must omit Action inputs, credentials, raw command JSON, and long
-  result bodies. Emoji are redundant display labels; verifier and host facts
+  result bodies. Keep internal AgentTask child/control model fields in
+  structured/debug streams; do not concatenate them into public delta. Truncate
+  long terminal text, and leave structured final objects in the full result
+  stream instead of serializing them as raw JSON. Emoji are redundant display labels; verifier and host facts
   still own completion
 - when an application needs to add optional operator context while a
   task-strategy AgentExecution is already running, use

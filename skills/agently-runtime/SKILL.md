@@ -871,7 +871,10 @@ here for Actions, ExecutionResource, service, or DevTools details.
   expand only framework-normalized concrete Action batches. Keep TaskBoard's
   first table and later change-only updates. Text delta omits Action inputs,
   credentials, raw command JSON, and long result bodies; only host-readback-
-  verified local file refs become links
+  verified local file refs become links. AgentTask child/control model fields
+  stay in structured/debug streams, long terminal text is truncated, and
+  structured final objects remain available through the full result instead of
+  being serialized into public delta
 - when AgentExecution planning selects direct `model_request`, treat
   Action and Observation as skipped business stages and consume the model result
   as passthrough. If Action or Skill candidates are available but the selected
