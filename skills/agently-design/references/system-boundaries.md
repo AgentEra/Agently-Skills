@@ -37,21 +37,16 @@ TriggerFlow definitions and does not own submitted TaskDAG data.
 
 ## Project and Layer Layout
 
-A maintainable application commonly separates:
+Plan the owner/invariant, node, edge, and production-necessity ledgers before
+choosing files. A logical node is not automatically a module, and an
+architecture layer is not automatically a directory. Keep a small program
+small; add a boundary only when it owns a current consumer, invariant,
+lifecycle, policy, representation translation, or stable external contract.
 
-```text
-settings/       provider configuration and environment placeholders
-prompts/        reusable input/info/instruct/output contracts
-domain/         business schemas, invariants, and decisions
-services/       application use cases and host admission
-workflow/       trusted TriggerFlow definitions and state transitions
-tools/          Action and external-system adapters
-tests/          structure checks, model judges, and integration probes
-outputs/ logs/  application-owned artifacts and bounded observations
-```
-
-This is an ownership map, not a required folder template. Keep a small program
-small when the boundaries are already clear.
+The canonical conditional project shapes, wrapper acceptance test, runnable
+asset, and FastAPI/FastMCP delivery boundaries live in
+[`../../agently/references/project-framework.md`](../../agently/references/project-framework.md).
+Do not maintain a second directory tree here.
 
 ## Stable Flow or Submitted DAG
 

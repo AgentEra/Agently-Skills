@@ -152,7 +152,26 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- Prefer separating `settings/`, `prompts/`, `services/`, `domain/` or `schemas/`, `workflow/`, `tools/`, and `tests/` when the project is more than a tiny demo.
+- Plan owner/invariant, node, edge, and production-necessity ledgers before
+  choosing files for every non-trivial model application. Planning nodes do not
+  map one-to-one to modules. Start a one-request project from the composition
+  entry, settings, Prompt contract, and tests; add `workflows/`, `services/`,
+  Actions, local Skills, utilities, resources, or trace modules only when a real
+  owner and current consumer require them.
+- All public Skill examples, code fences, project assets, and generated project
+  trees must be structurally concise. Reject stateless pass-through Services,
+  Managers, factories, and request wrappers; renaming-only functions; duplicate
+  facades; empty packages; unconsumed fields/nodes; and test-only production
+  branches. Retain a wrapper only when it demonstrably owns authorization,
+  validation, policy, state/lifecycle/cleanup/retry/concurrency/transactions, a
+  non-trivial representation translation, a stable external contract, or a
+  released compatibility boundary. Do not impose a universal line-count cap.
+- Use direct FastAPI for an ordinary typed HTTP API and FastMCP for MCP-server
+  exposure. Keep both as inbound adapters over the same owned async application
+  entry and approved result projection. `FastAPIHelper` remains available when
+  its packaged task/stream transport is the desired contract; do not call it
+  deprecated or make it the default template. MCP client consumption belongs to
+  Agently Action management; do not add an application-local forwarding wrapper.
 - Route model-generated or application-submitted DAG data through TaskDAG /
   DynamicTask validation and resolution; do not compile unvalidated runtime DAG
   data directly into new TriggerFlow definitions. Stable topology owned in
@@ -202,9 +221,13 @@ Use this file as installation-time guidance after the skills are added into anot
 ## Skill Routing Reminders
 
 - `agently`: unresolved owner layer, project shape, or broad product request
+- `agently-design`: cross-owner architecture, ModelRequest/value/event topology,
+  evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
 - `agently-runtime`: Action Runtime, tools, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
 - `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
+- `agently-dynamic-task`: submitted or model-generated TaskDAG planning,
+  validation, resolver binding, and execution through the TriggerFlow substrate
 - `agently-migration`: migration from LangChain, LangGraph, LlamaIndex, CrewAI, or similar systems into Agently-native layers
 
 ## Anti-Patterns

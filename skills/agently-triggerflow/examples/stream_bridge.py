@@ -56,29 +56,6 @@ def item_is_complete(item):
     return isinstance(item, dict) and {"name", "score", "comment"}.issubset(item.keys())
 
 
-def _build_judge_response(draft: str):
-    agent = Agently.create_agent()
-    agent.role(
-        "Return JSON only. judge_items must contain exactly two items: item 0 is clarity with score 8 and comment Clear and direct. item 1 is evidence with score 7 and comment Backed by examples.",
-        always=True,
-    )
-    return (
-        agent.input(f"Score this draft and explain strengths: {draft}")
-        .output(
-            {
-                "judge_items": [
-                    {
-                        "name": (str, None, True),
-                        "score": (int, None, True),
-                        "comment": (str, None, True),
-                    }
-                ]
-            }
-        )
-        .get_result()
-    )
-
-
 def _extract_item_path(path: str):
     match = PATH_PATTERN.match(path)
     if match:
@@ -92,7 +69,26 @@ def _extract_item_path(path: str):
 
 @flow.chunk("judge")
 async def judge(data):
-    result = _build_judge_response(data.input)
+    agent = Agently.create_agent()
+    agent.role(
+        "Return JSON only. judge_items must contain exactly two items: item 0 is clarity with score 8 and comment Clear and direct. item 1 is evidence with score 7 and comment Backed by examples.",
+        always=True,
+    )
+    result = (
+        agent.input(f"Score this draft and explain strengths: {data.input}")
+        .output(
+            {
+                "judge_items": [
+                    {
+                        "name": (str, None, True),
+                        "score": (int, None, True),
+                        "comment": (str, None, True),
+                    }
+                ]
+            }
+        )
+        .get_result()
+    )
 
     partial = {"judge_items": []}
     emitted = set()

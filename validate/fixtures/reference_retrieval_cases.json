@@ -3,7 +3,7 @@
   "cases": [
     {
       "id": "project-framework-daily-news-zh",
-      "query": "如果我要按 Daily News Collector 那种方式初始化或重构项目，确认模型配置、Prompt 和 TriggerFlow 的分层，同时把 Configure Prompt 的动态变量注入和 `${ENV.xxx}` + `.env` 的模型设置约束都找出来，我应该先看哪些配套文档？",
+      "query": "如果我要初始化或重构项目，先按拓扑判断最小目录、确认模型配置、Prompt 和 TriggerFlow 的分层，同时找到可以按需复制的可运行模板，以及 `${ENV.xxx}` + `.env` 的模型设置约束，我应该先看哪份配套文档？",
       "matched_skills": [
         "agently"
       ],
@@ -15,7 +15,7 @@
       "concepts": [
         {
           "id": "project_layer_split",
-          "description": "Standard project split uses settings, prompts, workflow, tools, and runtime artifact folders."
+          "description": "Project structure starts from topology and adds only directories with a real owner and current consumer."
         },
         {
           "id": "prompt_placeholder_mappings",
@@ -28,13 +28,18 @@
         {
           "id": "playbook_owns_initialization",
           "description": "Project initialization stays inside agently rather than becoming a separate public skill."
+        },
+        {
+          "id": "runnable_template_asset",
+          "description": "The project-framework reference links a runnable template that should be copied selectively rather than treated as a universal scaffold."
         }
       ],
       "required_concepts": [
         "project_layer_split",
         "prompt_placeholder_mappings",
         "settings_auto_load_env",
-        "playbook_owns_initialization"
+        "playbook_owns_initialization",
+        "runnable_template_asset"
       ]
     },
     {

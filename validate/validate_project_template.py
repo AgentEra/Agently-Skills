@@ -167,6 +167,18 @@ def main() -> None:
         passes,
     )
 
+    project_reference_path = (
+        ROOT / "skills" / "agently" / "references" / "project-framework.md"
+    )
+    project_reference = project_reference_path.read_text(encoding="utf-8")
+    check(
+        "project_reference_links_asset",
+        "../assets/project-template/" in project_reference,
+        "project-framework.md links the runnable asset as a conditional template",
+        failures,
+        passes,
+    )
+
     print("Agently public project template validation")
     print(f"passes: {len(passes)}")
     for item in passes:

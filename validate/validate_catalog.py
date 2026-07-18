@@ -482,8 +482,12 @@ def main() -> None:
     )
     check(
         "reference_fixture_covers_project_framework",
-        any(case.get("id") == "project-framework-daily-news-zh" for case in reference_cases),
-        "reference retrieval fixtures cover project framework guidance",
+        any(
+            case.get("id") == "project-framework-daily-news-zh"
+            and "runnable_template_asset" in case.get("required_concepts", [])
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover topology-first project guidance and the runnable asset",
         failures,
         passes,
     )

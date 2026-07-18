@@ -186,6 +186,13 @@ Keep business/execution policy independent from storage, UI, transport,
 providers, DevTools, and framework glue. Prefer deep modules with small stable
 interfaces and inward-pointing dependencies.
 
+Start a one-request application with only its composition entry, settings,
+Prompt contract, and tests. Add `workflows/` plus `TOPOLOGY.md` only for a real
+stable multi-stage graph; add `services/` only for an actual inbound transport;
+add Actions, local Skills, utilities, or resources only when the application has
+that owner and a current consumer. Planning nodes do not map one-to-one to
+files. See `references/project-framework.md` and its runnable project asset.
+
 Before adding a facade, manager, executor, adapter, alias, or protocol, identify
 the current owner and prove the missing boundary. Do not add shallow pass-through
 layers. If a cleaner owner becomes visible mid-implementation, stop and correct
@@ -223,3 +230,5 @@ replayed/unavailable/observed values precisely.
 - Duplicating full source, Skill, record, or artifact bodies into every prompt.
 - Treating Workspace, SkillsExecutor, Blocks, DevTools, or transport as a broad
   application policy owner.
+- Copying a full scaffold into a one-request project, retaining empty packages,
+  or creating one file per planned topology node.

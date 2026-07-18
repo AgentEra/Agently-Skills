@@ -49,21 +49,17 @@ configure_model()
 flow = TriggerFlow(name="status-and-actions")
 
 
-def _build_plan_response(prompt: str):
+async def plan_step(data):
     agent = Agently.create_agent()
     agent.role(
         "Return JSON only. status must be exactly ready. actions must be exactly the three strings draft, review, ship.",
         always=True,
     )
-    return (
-        agent.input(prompt)
+    result = (
+        agent.input(f"Plan next actions for: {data.input}")
         .output({"status": (str, None, True), "actions": [(str, None, True)]})
         .get_result()
     )
-
-
-async def plan_step(data):
-    result = _build_plan_response(f"Plan next actions for: {data.input}")
     return {
         "status_text": await result.async_get_text(),
         "plan": await result.async_get_data(max_retries=1),
