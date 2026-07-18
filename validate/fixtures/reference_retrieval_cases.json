@@ -323,6 +323,73 @@
         "triggerflow_substrate",
         "executor_independent"
       ]
+    },
+    {
+      "id": "design-system-boundaries-zh",
+      "query": "跨层设计已经路由到 agently-design。我需要先确认请求、运行时、稳定工作流和提交 DAG 的 owner 分界，并决定执行状态与持久存储各自放在哪里。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/system-boundaries.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "owner_layers",
+          "description": "The design assigns each concern to the smallest existing owner layer before implementation."
+        },
+        {
+          "id": "stable_flow_vs_submitted_dag",
+          "description": "Developer-owned stable topology belongs to TriggerFlow while submitted or model-generated DAG data belongs to TaskDAG or Dynamic Task."
+        },
+        {
+          "id": "state_storage_boundary",
+          "description": "Per-execution state, durable storage, shared flow data, and external resources have distinct owners."
+        }
+      ],
+      "required_concepts": [
+        "owner_layers",
+        "stable_flow_vs_submitted_dag",
+        "state_storage_boundary"
+      ]
+    },
+    {
+      "id": "design-model-request-topology-en",
+      "query": "After routing to agently-design, which focused reference should I use to define each ModelRequest prompt and output contract, map schema-field fan-out and join edges, govern provisional instant updates, and compare the planned request topology with runtime observations?",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "prompt_output_node_contract",
+          "description": "Each logical ModelRequest has an explicit prompt-slot and output-schema contract."
+        },
+        {
+          "id": "schema_edges",
+          "description": "Downstream consumers define field-level point-to-point, fan-out, and join edges."
+        },
+        {
+          "id": "instant_invalidation",
+          "description": "Instant updates are provisional and must be correlated with and invalidated by their final attempt."
+        },
+        {
+          "id": "planned_actual_diff",
+          "description": "Audits reconstruct observed logical requests and compare them with the planned topology."
+        }
+      ],
+      "required_concepts": [
+        "prompt_output_node_contract",
+        "schema_edges",
+        "instant_invalidation",
+        "planned_actual_diff"
+      ]
     }
   ]
 }

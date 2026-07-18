@@ -12,6 +12,7 @@ ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 REFERENCE_FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 EXPECTED_SKILLS = {
     "agently",
+    "agently-design",
     "agently-request",
     "agently-runtime",
     "agently-dynamic-task",
@@ -87,9 +88,10 @@ def main() -> None:
         passes,
     )
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
-    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 6-skill set", failures, passes)
+    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 7-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
+    design_text = (SKILLS / "agently-design" / "SKILL.md").read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
     request_model_response_text = (
         SKILLS / "agently-request" / "references" / "model-response.md"
@@ -130,6 +132,17 @@ def main() -> None:
         and "application-local projection" in playbook_text
         and "required string constrained to the offered key set" in playbook_text,
         "playbook keeps opaque identity and metadata joins host-owned",
+        failures,
+        passes,
+    )
+    check(
+        "design_cross_owner_boundary",
+        "agently-request" in design_text
+        and "agently-runtime" in design_text
+        and "agently-triggerflow" in design_text
+        and "agently-dynamic-task" in design_text
+        and "model-request-topology.md" in design_text,
+        "agently-design owns cross-layer design while routing executable details to leaf owners",
         failures,
         passes,
     )
@@ -454,6 +467,13 @@ def main() -> None:
         passes,
     )
     check(
+        "route_fixture_covers_agently_design",
+        any(case.get("scenario_id") == "agently-system-design" for case in fixture_cases),
+        "route fixtures cover unresolved and explicit cross-layer design requests",
+        failures,
+        passes,
+    )
+    check(
         "reference_fixture_present",
         bool(reference_cases),
         "reference retrieval fixtures exist",
@@ -520,6 +540,14 @@ def main() -> None:
         "reference_fixture_covers_execution_topology_validation",
         any(case.get("id") == "execution-topology-validation-zh" for case in reference_cases),
         "reference retrieval fixtures cover schema/event topology audits",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_agently_design",
+        any(case.get("id") == "design-system-boundaries-zh" for case in reference_cases)
+        and any(case.get("id") == "design-model-request-topology-en" for case in reference_cases),
+        "reference retrieval fixtures cover system boundaries and ModelRequest topology design",
         failures,
         passes,
     )

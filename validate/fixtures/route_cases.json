@@ -757,6 +757,47 @@
           "agently-dynamic-task"
         ]
       ]
+    },
+    {
+      "id": "complex-system-design-unresolved-zh",
+      "scenario_id": "agently-system-design",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "请先帮我设计一个包含多个模型请求、检索、工具调用和结果校验的复杂应用，但我还没有确定每一段应该归属请求层、运行时还是工作流层。",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-dynamic-task",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently",
+          "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "cross-layer-system-design-explicit-en",
+      "scenario_id": "agently-system-design",
+      "locale": "en",
+      "intent_style": "cross-layer-design-explicit",
+      "query": "Review the cross-layer architecture of this Agently service and assign clear owner boundaries across ModelRequest contracts, runtime capabilities, executable flows, evidence storage, lifecycle, and pressure control before implementation.",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-dynamic-task",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ]
+      ]
     }
   ]
 }
