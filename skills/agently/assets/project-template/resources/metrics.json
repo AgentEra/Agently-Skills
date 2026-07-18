@@ -1,0 +1,13 @@
+{
+  "snapshot_id": "template-metrics-2026-07-18",
+  "metrics": {
+    "net_revenue": {
+      "2024": 120.0,
+      "2025": 150.0
+    },
+    "gross_margin_rate": {
+      "2024": 0.32,
+      "2025": 0.35
+    }
+  }
+}
