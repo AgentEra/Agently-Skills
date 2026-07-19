@@ -86,7 +86,10 @@ package is not an executor or permission grant.
   They do not own execution strategy, routing, Action mounting, permissions, or
   side-effect proof.
 - Install and inspect immutable revisions through `SkillLibrary` or the thin
-  `Agently.skills_executor` management facade.
+  `Agently.skills_executor` management facade. Use registered
+  `SkillSourceProvider` implementations for authorized local or Git sources;
+  pin a Git `ref` and optional `subpath` rather than inventing a host checkout
+  helper.
 - Bind optional or required Skills on an `AgentExecution` with
   `execution.use_skills(...)`, `execution.require_skills(...)`, or
   `execution.use_skills_packs(...)`.
@@ -96,10 +99,19 @@ package is not an executor or permission grant.
 - Provide Actions/MCP/ExecutionResources explicitly. Reading a Skill may inform
   the model that an operation exists; it never creates or authorizes that
   operation.
-- `Agently.skills_executor` is a compatibility facade for local install,
-  configure, inspect, list, resource read, context-pack projection, and the
-  TaskDAG Skill resolver. It is not a plugin route, planner, strategy registry,
-  React loop, capability manager, or execution owner.
+- When a trusted, exactly bound Skill revision contains an executable script,
+  call `agent.bind_skill_script_action(...)` only after
+  `execution.async_prepare_task_context()`. Pass the host-issued `binding_id`,
+  exact resource path, and `SkillScriptAuthorization`; the binding registers an
+  ordinary Action and never makes every script automatically callable. For a
+  host-directed run, dispatch `bound_action.action_id` through
+  `agent.action.async_execute_action(...)`, then read its published artifact
+  path through the same execution's TaskWorkspace.
+- `Agently.skills_executor` is a compatibility facade for source-backed or
+  local install, configure, inspect, list, resource read, context-pack
+  projection, and the TaskDAG Skill resolver. It is not a plugin route,
+  planner, strategy registry, React loop, capability manager, or execution
+  owner.
 - `agent.run_skills_task(...)` remains a thin compatibility adapter to an
   ordinary AgentExecution. New code should create/configure the execution
   directly.

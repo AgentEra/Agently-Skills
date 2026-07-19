@@ -90,6 +90,15 @@ TaskDAG scopes release their private artifacts when the run closes; historical
 refs then report unavailable. Promote selected long-lived output to
 TaskWorkspace/RecordStore before scope close when post-run readback is required.
 
+Use `max_bytes` for progressive readback. One successful read is already a
+bounded hot content page and keeps its typed `owner`, `locator`,
+`content_version`, and byte range. It must not be artifactized again or turned
+into a new selection-key chain. Treat Action success/ref availability as a
+pointer fact only until the page body is consumed. If a TaskBoard verifier still
+lacks the required snippet, reacquire a narrower or subsequent page; do not
+weaken the original criterion. Three consecutive identical typed pages are an
+ActionLoop no-information-progress exit back to TaskBoard, not acceptance.
+
 Action evidence binding and artifact readback are separate. A host-issued
 `action_call_id` may identify an offered Action result for evidence binding; it
 is not an artifact selection key.

@@ -23,9 +23,12 @@ Browse follows the same rule unless it explicitly consumes a managed browser.
 Downloaded bytes may be materialized into TaskWorkspace; file handlers own
 format parsing/rendering.
 
-Real-world Skill scripts are resources, not trusted runtime handlers. A host may
-map a script requirement to a controlled Action/ExecutionResource after policy
-approval; Skill reading itself never mounts or authorizes it.
+Real-world Skill scripts are resources, not trusted runtime handlers. After the
+host binds an exact trusted revision into an `AgentExecution`, it may call
+`agent.bind_skill_script_action(...)` with an explicit
+`SkillScriptAuthorization`. That creates an ordinary Action which still uses
+Action policy, a TaskWorkspace grant, and an ExecutionResource. Skill reading
+itself never mounts or authorizes a script.
 
 ## Application Surface
 
@@ -37,8 +40,9 @@ approval; Skill reading itself never mounts or authorizes it.
   `agent.enable_shell(...)`, `agent.enable_nodejs(...)`,
   `agent.enable_code_runtime(...)`, `agent.enable_sqlite(...)`, or explicit
   `agent.use_actions(...)`.
-- Pass explicit `root=` / `cwd=` when a runtime must not inherit the bound
-  TaskWorkspace root.
+- Pass explicit `root=` / `cwd=` only on file or shell surfaces that own those
+  inputs. CodeExecution receives a TaskWorkspace grant instead of a provider
+  cwd from model input.
 - Use `desc_mode="override"` only when intentionally replacing default usage
   and safety guidance; ordinary `desc=` supplements it.
 
@@ -102,19 +106,80 @@ may show env key names but must redact values.
 
 ### Code Runtime or Dependency Preparation
 
-Prefer managed Docker-backed language runtimes with a host-selected provisioning
-profile:
+Use the provider-neutral code execution Action with an ordered provider list and
+a host-selected provisioning profile:
 
 ```python
 agent.enable_code_runtime(
     language="go",
+    providers=["docker"],
+    isolation="required",
     provisioning_profile="developer",
 )
 ```
 
+The fixed execution chain is:
+
+```text
+TaskWorkspace
+  -> issue scoped access grant
+  -> bind selected code_execution provider
+  -> materialize immutable code bundle
+  -> execute trusted argv plan
+  -> collect declared outputs into TaskWorkspace
+  -> release provider and revoke grant
+```
+
+`TaskWorkspace` owns file containment and artifacts; it does not supply a
+runtime or toolchain. `ExecutionResource` selects and manages the provider; it
+is not renamed to Sandbox. Docker is the built-in isolated provider. An
+explicit `trusted_local` fallback is unsafe and may only be enabled by the host
+with `unsafe_fallback=True` and non-required isolation. Never describe it as a
+sandbox.
+
+The public `isolation=` value is selection policy. Provider capability evidence
+is a mapping of concrete boolean isolation axes: process containment,
+host-filesystem restriction, privilege-escalation blocking, and syscall
+restriction. Do not accept provider names or legacy strings such as
+`"required"` as safety evidence. Preferred isolation searches all ordered
+candidates for a full match before recording an explicit eligible fallback.
+
+`agent.bind_skill_script_action(...)` registers its own narrow
+`code_execution` requirement using the ordered
+`code_execution.providers` setting. Do not call `enable_code_runtime(...)`
+solely to execute that bound Skill script: doing so would expose an additional
+general-purpose code Action. Use `enable_code_runtime(...)` only when the
+application independently needs that broader capability.
+
+Python 3.10+, Node.js 18+, Go 1.25+, and C++20 are the built-in adapter
+contracts. Adapters build immutable files and trusted argv steps; providers
+execute that plan without taking over language semantics. The model-visible
+Action schema is `source_code`, optional `files`/`entrypoint`, bounded `args`,
+and declared `expected_outputs`; it never accepts raw compiler, package-manager,
+mount, sandbox-policy, or provider commands. Provider probes report observed
+toolchain versions and safety/isolation facts, and those facts remain attached
+to the Action result metadata for audit.
+
+Expected outputs are bounded, normalized paths under `output/`; a missing
+declared output fails the Action. Providers bound retained stdout/stderr, stop
+their owned process or container on timeout/cancellation, and surface cleanup
+failure instead of allowing false success.
+
 Use install-capable shell only for explicitly trusted maintenance flows. There
 is no universal full-trust switch; broaden commands and network/file access at
 the owning provider while keeping isolation and roots explicit.
+
+External sandbox contributions must implement the provider-neutral
+`code_execution` contract and pass its conformance fixtures. A container-runtime
+variant should subclass or compose `DockerExecutionResourceProvider` and
+override `create_resource(...)`; this reuses the base provider's grant binding,
+image, health, cleanup, and Workspace lifecycle while
+`ExecutionResourceManager` retains ordered selection and ensure-time re-probe.
+The contribution owns its mechanism-specific probe and command construction. A
+host-policy sandbox implements an independent provider against the same grant,
+bundle, and result contracts. Keep community PR ownership intact: guide
+contributor branches to rebase and adapt; do not copy their provider
+implementations into the framework base branch.
 
 ## Failure Behavior
 
@@ -122,6 +187,9 @@ the owning provider while keeping isolation and roots explicit.
   approval/pending state according to policy.
 - Dependency repair must run through controlled host/provider steps, not silent
   downgrade or model-visible package-manager improvisation.
+- Provider selection follows the configured order and capability probes. A
+  required-isolation request fails closed when no eligible provider is
+  available; it never silently falls through to unsafe local execution.
 - Multi-Action package registration is atomic: remove batch-created Actions and
   restore same-id host registrations on partial failure.
 - Action results are bounded/redacted before they cross context, event, state,

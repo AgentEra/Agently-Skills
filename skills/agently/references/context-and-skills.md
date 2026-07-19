@@ -60,7 +60,9 @@ Important behavior:
 
 - A reader is bound to a TaskContext snapshot. Refresh or create a new reader
   after the aggregate changes; do not silently read a newer revision through a
-  stale reader.
+  stale reader. If candidate listing itself advances only a source revision,
+  ContextReader may optimistically re-pin and recollect once; repeated mutation
+  still fails closed.
 - Required blocks are read before optional relevance selection. Optional
   prose relevance requires a semantic selector; if none is available, fail
   closed instead of falling back to keyword routing.
@@ -70,6 +72,17 @@ Important behavior:
   the canonical task state.
 - Keep full raw/meta records cold. Put bounded bodies and compact refs in the
   package, and let a later read request scoped detail when needed.
+
+Required content remains fail-closed when it cannot fit. If the Skill or caller
+explicitly accepts a lossy disclosure, pass a `ContextReadIntent` with
+`metadata={"required_overflow": "lossy_digest"}`. An oversized Skill then
+returns a bounded `completeness="lossy"` digest containing its immutable full
+ref and ordered section refs, while the section candidates remain available for
+semantic selection. The digest records original and omitted sizes; it never
+pretends to be the complete Skill. For AgentTask, carry the same explicit policy
+through `context_budget={"chars": 12_000, "required_overflow":
+"lossy_digest"}`. Without that opt-in, use a larger/focused consumer or fail
+before business work.
 
 ## TaskWorkspace
 
@@ -114,6 +127,19 @@ audit, checkpoints/snapshots, leases, and durable artifact refs. Do not make a
 TaskWorkspace database implicit, and do not make every available RecordStore an
 automatic execution archive.
 
+## AgentTask Evidence Continuity
+
+TaskBoard dependency readbacks enter one host-canonical live evidence ledger
+before a card prompt is built. The prompt projection, binding guard, acceptance
+index, and persisted card result reuse that identity domain; do not construct a
+second ordered ledger after the model has selected a reference. A control card
+that explicitly reports `sufficient=false` is a setback even if it also returns
+`status=completed` and `next_board_action=finalize`.
+
+Across evidence-reacquisition rounds, `claim_N` is only a response-local model
+selection key. The host tracks an exact material-claim subject separately, so
+artifact reordering cannot bind new evidence to a different claim.
+
 ## SkillLibrary
 
 A real-world Skill is a public `SKILL.md` package plus optional references,
@@ -131,6 +157,70 @@ resource = library.read_resource(same_revision, "references/policy.md")
 `skill_id` is a canonical package identity; `revision_ref` pins exact content.
 Reinstalling changed content creates another revision. Existing executions keep
 their bound revision rather than silently changing beneath a task.
+
+For an authorized Git source, use the source-provider contract instead of a
+custom checkout wrapper:
+
+```python
+from agently.types.data import SkillSourceRequest
+
+agent.set_settings("code_execution.providers", ["docker"])
+agent.use_task_workspace("./task-workspace", mode="read_only")
+revision = await agent.skill_library.async_install_source(
+    SkillSourceRequest(
+        source="https://github.com/example/skills.git",
+        source_type="git",
+        ref="4a1d2f0",  # pin a reviewed revision in production
+        subpath="skills/refund-review",
+    ),
+    trust="trusted",
+)
+```
+
+`SkillSourceProvider` owns source materialization and provenance. The
+`SkillLibrary` still parses and stores an immutable installed revision; source
+access does not grant script execution permission. For the compatibility
+facade, `Agently.skills_executor.install_skills_pack(..., fetch=True, ref=...,
+subpath=..., source_type="git")` uses the same boundary.
+
+Remote compatibility installs default to `untrusted`; explicitly promote only
+a reviewed immutable revision. Local installs retain the local trust default.
+Selected Git/local subpaths reject symlink components that escape the
+materialized source root.
+
+A complete Git pack compatibility call is:
+
+```python
+pack = Agently.skills_executor.install_skills_pack(
+    "https://github.com/example/skills.git",
+    fetch=True,
+    ref="4a1d2f0",
+    subpath="catalog/runtime-pack",
+    source_type="git",
+    trust_level="trusted",
+)
+execution = agent.create_execution().use_skills_packs(
+    [pack["skill_pack_id"]],
+    mode="required",
+)
+target_revision_ref = next(
+    ref
+    for ref in pack["revision_refs"]
+    if Agently.skill_library.resolve(ref).skill_id == "target-skill-id"
+)
+```
+
+`Agently.skills_executor`, `Agently.skill_library`, and agents created by that
+same `Agently` application share one canonical `SkillLibrary` instance. The
+facade reconfigures that instance in place; it does not own a separate pack
+registry. Resolve facade-installed pack members through
+`Agently.skill_library`, then bind the selected exact revision through the
+agent execution.
+
+`ref` accepts a Git ref; production authorization should pin the reviewed
+immutable commit rather than a moving branch or tag. Repository allowlists,
+credentials, and network access remain host/source-provider policy, not Skill
+trust or script authorization.
 
 ## AgentExecution Skill Binding
 
@@ -176,14 +266,77 @@ Skill reading and side effects are separate:
 - A script inside a Skill is an addressable resource, not an automatically
   callable Action.
 
+When the host intentionally authorizes one exact trusted script, bind it after
+TaskContext preparation:
+
+```python
+from agently.types.data import SkillScriptAuthorization
+
+await execution.async_prepare_task_context()
+binding = next(
+    item
+    for item in execution.skill_bindings
+    if item.revision_ref == revision.revision_ref  # use target_revision_ref for a pack
+)
+bound_action = agent.bind_skill_script_action(
+    execution,
+    binding_id=binding.binding_id,
+    resource_path="scripts/check.py",
+    authorization=SkillScriptAuthorization(
+        auto_allow=True,
+        expected_outputs=("output/report.json",),
+    ),
+)
+
+action_result = await agent.action.async_execute_action(
+    bound_action.action_id,
+    {"args": []},
+)
+if action_result["status"] != "success":
+    raise RuntimeError(action_result.get("error") or "Skill script failed")
+
+artifact = next(
+    item
+    for item in action_result["artifacts"]
+    if item["path"].endswith("output/report.json")
+)
+readback = await execution.task_workspace.read_file(
+    artifact["path"],
+    max_bytes=64_000,
+)
+if readback.truncated:
+    raise RuntimeError("Declared Skill output exceeded the readback budget")
+report_json = readback.content
+```
+
+This verifies the exact revision, resource descriptor, and digest, then
+registers an ordinary code-execution Action. At call time the script bytes are
+copied into a scoped TaskWorkspace execution area before the selected provider
+runs them. The installed Skill directory is never executed in place. Trust is
+package provenance policy, not blanket permission; the explicit authorization
+and ordinary Action evidence remain required.
+
+`BoundSkillAction.action_id` is the exact Action dispatch key. The bound script
+Action accepts only bounded `args`; stdin, environment, arbitrary source files,
+runtime commands, and package-manager commands are not model inputs. The
+binder supplies its own provider requirement from the ordered
+`code_execution.providers` setting, so `enable_code_runtime(...)` is not a
+prerequisite. Its successful Action result publishes declared artifacts as
+TaskWorkspace-relative private paths such as
+`.agently/files/<execution>/code_execution/<call>/output/report.json`; physical
+readback through
+`execution.task_workspace.read_file(...)` proves the bytes that were actually
+collected.
+
 ## SkillsExecutor Compatibility Facade
 
 `Agently.skills_executor` remains a thin application facade for released setup
 and integration calls:
 
 - configure the local SkillLibrary root/trust boundary;
-- install, list, inspect, and read local Skill revisions;
-- discover/install/list/inspect local Skill packs;
+- install, list, inspect, and read local or source-provider-backed Skill
+  revisions;
+- discover/install/list/inspect local or source-provider-backed Skill packs;
 - build a compatibility context-pack projection through generic TaskContext and
   ContextReader behavior;
 - expose the TaskDAG `kind="skill"` resolver.
