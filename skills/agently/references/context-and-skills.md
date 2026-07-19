@@ -96,13 +96,17 @@ Important behavior:
   package, and let a later read request scoped detail when needed.
 - Admit only text or source-parsed document text to model-hot package content.
   The built-in TaskWorkspace source parses supported PDF/DOCX/XLSX/PPTX files;
-  missing parsers leave the file ref-only. Keep binary and unknown formats
-  ref-only, and never infer their contents from filenames or summaries.
+  missing parsers leave the file ref-only. PDF/Office descriptors and exact
+  reads must both preserve `context_representation=parsed_text` and return text.
+  Known non-text MIME/extension facts override a conflicting `content_kind=text`
+  claim. Keep binary and unknown formats ref-only, strip summaries/OCR guesses,
+  and never infer their contents from filenames.
 - Keep images ref-only unless the exact `ContextConsumer` explicitly declares
   `capabilities={"attachments": {"image": True}}`. A generic attachment flag
   or model-name guess is insufficient. For a capable consumer, validate the
   image attachment envelope and bind it through ModelRequest attachments, not
-  the text context pack. Image interpretation remains model-owned.
+  the text context pack. Otherwise disclose only the filename/ref, not generated
+  summaries or OCR substitutes. Image interpretation remains model-owned.
 
 Required content remains fail-closed when it cannot fit. If the Skill or caller
 explicitly accepts a lossy disclosure, pass a `ContextReadIntent` with
