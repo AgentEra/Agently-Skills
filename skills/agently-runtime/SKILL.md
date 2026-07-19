@@ -29,8 +29,8 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 | `ExecutionResource` | Lifecycle of live clients, sandboxes, processes, browsers, database connections, and MCP sessions. |
 | `TaskWorkspace` | One task's existing files, generated artifacts, path containment, bounded readback, and file identity. |
 | `RecordStore` | Records, links, retrieval, RuntimeEvent persistence, checkpoints, snapshots, leases, and durable artifact refs. |
-| `TaskContext` | Revisioned task-scoped bindings and direct information entries. |
-| `ContextReader` | Intent-driven, budgeted progressive disclosure for one consumer and phase. |
+| `TaskContext` | Sole task-information aggregate; revisioned bindings/direct entries and read-handle lifecycle. |
+| `ContextReader` | TaskContext-created intent-driven, budgeted progressive-disclosure handle for one consumer and phase. |
 | `SkillLibrary` | Installed immutable real-world Skill revisions and resource reads. |
 | `AgentExecution` | Task-scoped Skill binding, TaskContext preparation, route selection, execution, and result/stream APIs. |
 

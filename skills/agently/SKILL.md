@@ -109,9 +109,12 @@ keep raw URLs and metadata out of model transcription.
 
 ## Context, Files, Records, and Skills
 
-- `TaskContext` owns revisioned task-scoped source bindings and direct entries.
-- `ContextReader` binds to a consumer and phase, accepts a read intent, applies
-  budgeted progressive disclosure, and returns one `ContextPackage`.
+- `TaskContext` is the sole task-information aggregate. It owns revisioned
+  source bindings/direct entries and creates or restores its read handles.
+- `ContextReader` is a public consumer/phase-bound handle, not an independent
+  owner. It accepts a read intent, advances private source windows only after
+  successful reads, and returns an immutable `ContextPackage` with bounded
+  source coverage but no cursor.
 - `TaskWorkspace` owns task files and artifacts only.
 - `RecordStore` owns durable records, retrieval, links, RuntimeEvents,
   checkpoints, snapshots, leases, and durable refs.

@@ -56,6 +56,13 @@ package = await reader.async_read(
 )
 ```
 
+TaskContext is the sole public aggregate and lifecycle owner. Create readers
+with `task_context.reader(...)`; restore their exported state with
+`task_context.restore_reader(...)`. `ContextReader` remains a public handle for
+typing and use, like an execution handle owned by its aggregate, but it cannot
+be constructed or restored independently. `ContextPackage` is the immutable
+cross-boundary delivery value, not another owner.
+
 Important behavior:
 
 - A reader is bound to a TaskContext snapshot. Refresh or create a new reader
@@ -70,6 +77,11 @@ Important behavior:
   validates them and rejoins canonical source ids and metadata.
 - `ContextPackage` is a read result for a specific intent/consumer/phase, not
   the canonical task state.
+- Sources return bounded candidate windows. A successful read of the same
+  intent advances each source independently; selector/read failure does not.
+  `source_coverage` reports scope, candidate count, exhaustiveness, and whether
+  continuation is available. Opaque cursors stay private to the source/reader
+  protocol and never enter model-visible context.
 - Keep full raw/meta records cold. Put bounded bodies and compact refs in the
   package, and let a later read request scoped detail when needed.
 
