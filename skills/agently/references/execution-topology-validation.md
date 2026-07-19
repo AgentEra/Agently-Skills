@@ -113,28 +113,37 @@ explicitly. At minimum, trace this complete chain when it exists:
 planner.output.deliverable_mode
   -> host carrier normalization
   -> artifact-body / inline-result selector
-  -> Action or TaskWorkspace write + physical readback
-  -> trusted-artifact promotion
+  -> ActionRuntime-dispatched or host-owned TaskWorkspace candidate write
+  -> complete candidate readback + verifier-eligible candidate registration
   -> current terminal-carrier inventory/version
   -> host exact-span projection + request-local claim_key map
   -> one semantic terminal verifier
        (criterion_checks + material_claim_checks)
   -> host claim/evidence-key validation + canonical carrier/quote reconstruction
   -> structured material-claim repair contract
-     OR accepted terminal result/ref projection
+     OR accepted terminal decision
+          -> digest-pinned TaskWorkspace target promotion when source != target
+          -> complete target readback
+          -> accepted terminal result/ref projection
 ```
 
 The artifact body, compact inline result, and trusted artifact ref are distinct
 values. Copying one into another is a separate value edge and requires an
 explicit declared owner; graph adjacency or a shared final-result label does
-not authorize the copy. A manifest-bound successful Action write may promote
-its physical TaskWorkspace readback as the trusted artifact. Action prose, a
-model-declared path, or an unverified ref cannot.
+not authorize the copy. A manifest-bound successful Action write plus complete
+physical TaskWorkspace readback may register the bytes as a verifier-eligible
+candidate. Action prose, a model-declared path, or an unverified ref cannot.
 
-For that manifest path, the successful file Action is also the only write
-owner. The materialization block must adopt its readback, never copy a
-conflicting model-returned body onto the same path. A revision needs a new file
-Action event and content version; unreadable Action-owned output fails closed.
+For that manifest path, ActionRuntime owns model-callable write dispatch and
+call evidence while TaskWorkspace owns physical file truth. The materialization
+block must adopt the Action readback, never copy a conflicting model-returned
+body onto the same path. A model-requested revision needs a new file Action
+event and content version; unreadable Action-owned output fails closed.
+A verifier-accepted staged candidate may then enter the distinct host-owned
+terminal target transition through digest-pinned
+`TaskWorkspace.atomic_promote_file(...)`; this copies the accepted bytes rather
+than drafting or revising content, and complete post-promotion readback is
+required before acceptance.
 A later TaskBoard leaf that only verifies or references the same path must join
 to the canonical dependency `TaskBoardCardResult` artifact ref and adopt the
 current physical readback. A model-repeated manifest or file-ref projection is
@@ -197,8 +206,9 @@ narrow request, not a post-Action planning loop. Show `requires_capability_ids`
 entering the exact execution scope; if it remains only preflight metadata, mark
 the value edge as lost. Unknown ids, omitted required ids, invalid inputs, or
 unavailable Actions must fail closed. Exact final TaskWorkspace artifact handoff
-must show the source content-version edge plus direct write/readback Action
-events, not a model request that copies the file body.
+must show the source content-version edge, candidate write evidence, complete
+candidate readback, verifier acceptance, any target-promotion transition, and
+complete target readback—not a model request that copies the file body.
 
 Apply the same value/event audit to Flat AgentTask action steps:
 
@@ -245,7 +255,8 @@ For a complex TriggerFlow run, include all of these when present:
 - execution state reads/writes, distinguishing replacement from accumulation;
 - ModelRequest prompt/output contracts inside chunks;
 - Action inputs/results and success/failure RuntimeEvents;
-- TaskWorkspace writes, trusted refs, readbacks, and content versions;
+- TaskWorkspace candidate writes, verifier-eligible refs, terminal target
+  promotions, readbacks, and content versions;
 - subflow start/result/interrupt propagation;
 - external wait, ExecutionExchange, interrupt, resume request, and actor data;
 - retry/replay/repair back edges and their stable convergence subject;
@@ -316,10 +327,11 @@ style is presentation only; the edge label and ledger remain authoritative.
 5. For TriggerFlow/business blocks, reconcile the outer signal topology with
    every internal request/Action value topology and prove both directions of
    each block boundary.
-6. Trace carrier selection, artifact promotion, current inventory replacement,
-   the single terminal-verifier request, host validation, repair identity, and
-   terminal projection without allowing implicit carrier switching or
-   cross-carrier copying.
+6. Trace carrier selection, verifier-eligible candidate registration, current
+   inventory replacement, the single terminal-verifier request, host
+   validation, repair identity, accepted target promotion, post-promotion
+   readback, and terminal projection without allowing implicit carrier
+   switching or cross-carrier copying.
 7. Compare the observed topology with the declared dependency and output
    contracts. Mark unknown edges explicitly; do not guess them from prose.
 8. Inspect bounded business content only on failed or ambiguous value edges.

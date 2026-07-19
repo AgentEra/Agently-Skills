@@ -112,12 +112,22 @@ size, digest, and structural-frame-only traceback facts.
 
 For a declared deliverable path:
 
-- a successful file Action is the write owner;
+- ActionRuntime owns model-callable file-write dispatch, validation, and call
+  evidence; TaskWorkspace owns the contained physical write/promotion mechanism
+  and file truth;
 - TaskWorkspace physical readback is the current source of truth;
 - model-declared `file_refs` remain diagnostics until host readback succeeds;
-- a later change requires another file Action;
+- a model-requested content change requires another file Action;
 - final acceptance requires the exact expected path/content version, not a
   same-basename sibling or older candidate.
+
+For a required TaskBoard terminal deliverable, the file Action may write a
+working or staged candidate. AgentTask owns the deterministic terminal
+lifecycle decision: complete candidate readback, verifier acceptance, then a
+digest-pinned `TaskWorkspace.atomic_promote_file(...)` transition and complete
+target readback. Promotion copies the already accepted bytes; it is not a
+second model-callable write or permission bypass. Rejection preserves the old
+target, and promotion/readback failure blocks delivery.
 
 AgentTask may materialize a short `artifact_markdown` or sectioned
 `artifact_manifest`, then read back path/bytes/hash/preview/file refs. Keep

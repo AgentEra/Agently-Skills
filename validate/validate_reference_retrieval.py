@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Literal
 
@@ -13,13 +14,13 @@ from dotenv import find_dotenv, load_dotenv
 from agently import Agently, TriggerFlow
 
 
-load_dotenv(find_dotenv())
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 SKILLS = ROOT / "skills"
 
 
 def configure_deepseek() -> bool:
+    load_dotenv(find_dotenv())
     base_url = os.environ.get("DEEPSEEK_BASE_URL")
     model = os.environ.get("DEEPSEEK_DEFAULT_MODEL")
     api_key = os.environ.get("DEEPSEEK_API_KEY")
@@ -104,7 +105,7 @@ def normalize_string_list(values: list[str]) -> list[str]:
     return normalized
 
 
-async def judge_case(case: dict) -> dict:
+async def judge_case(case: dict, *, max_retries: int) -> dict:
     candidate_docs = build_candidate_docs(case)
     candidate_paths = [path for path, _ in candidate_docs]
     docs_block = "\n\n".join(
@@ -155,17 +156,25 @@ async def judge_case(case: dict) -> dict:
         )
         .get_result()
     )
-    data = await result.async_get_data(max_retries=1)
+    data = await result.async_get_data(max_retries=max_retries)
     data["decision"] = str(data["decision"]).strip().lower()
     data["selected_paths"] = normalize_string_list(data["selected_paths"])
     data["covered_concepts"] = normalize_string_list(data["covered_concepts"])
     return data
 
 
-async def validate_live_case(case: dict, *, timeout_seconds: int) -> dict:
+async def validate_live_case(
+    case: dict,
+    *,
+    timeout_seconds: int,
+    max_retries: int,
+) -> dict:
     case_name = f"reference_{case['id']}"
     try:
-        judged = await asyncio.wait_for(judge_case(case), timeout=timeout_seconds)
+        judged = await asyncio.wait_for(
+            judge_case(case, max_retries=max_retries),
+            timeout=timeout_seconds,
+        )
     except TimeoutError:
         return {"name": case_name, "ok": False, "details": f"timed out after {timeout_seconds}s"}
     except Exception as exc:
@@ -202,11 +211,16 @@ async def run_live_validation(
     *,
     timeout_seconds: int,
     concurrency: int,
+    max_retries: int,
 ) -> None:
     flow = TriggerFlow(name="v2-reference-retrieval-validation")
 
     async def validate_in_flow(data):
-        return await validate_live_case(data.value, timeout_seconds=timeout_seconds)
+        return await validate_live_case(
+            data.value,
+            timeout_seconds=timeout_seconds,
+            max_retries=max_retries,
+        )
 
     @flow.chunk("store_results")
     async def store_results(data):
@@ -285,9 +299,30 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
         )
 
 
-async def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run V2 post-route reference retrieval validation.")
-    parser.add_argument("--require-model", action="store_true", help="Fail if DeepSeek settings are missing.")
+    parser.add_argument(
+        "--allow-model-calls",
+        action="store_true",
+        help=(
+            "Explicitly authorize model-backed cases. Without this flag the "
+            "validator runs static checks only."
+        ),
+    )
+    parser.add_argument(
+        "--max-model-requests",
+        type=int,
+        help=(
+            "Required with --allow-model-calls. Must cover the declared "
+            "worst-case request budget before any model configuration is loaded."
+        ),
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=1,
+        help="Maximum retries per model-backed case (default: 1).",
+    )
     parser.add_argument(
         "--timeout-seconds",
         type=int,
@@ -300,25 +335,60 @@ async def main() -> None:
         default=4,
         help="Concurrent TriggerFlow workers for reference retrieval validation.",
     )
-    args = parser.parse_args()
+    return parser
+
+
+def model_validation_authorized(args: argparse.Namespace) -> bool:
+    return bool(
+        args.allow_model_calls
+        and args.max_model_requests is not None
+        and args.max_model_requests > 0
+    )
+
+
+async def main(argv: list[str] | None = None) -> None:
+    parser = build_parser()
+    args = parser.parse_args(argv)
 
     passes: list[str] = []
     failures: list[str] = []
     run_static_checks(failures, passes)
 
-    if configure_deepseek():
-        await run_live_validation(
-            failures,
-            passes,
-            timeout_seconds=args.timeout_seconds,
-            concurrency=args.concurrency,
-        )
-    else:
-        missing = ["DEEPSEEK_BASE_URL", "DEEPSEEK_DEFAULT_MODEL", "DEEPSEEK_API_KEY"]
-        if args.require_model:
-            failures.append(f"deepseek_env: missing one or more required vars {missing}")
+    if args.allow_model_calls:
+        if not model_validation_authorized(args):
+            failures.append(
+                "model_authorization: --allow-model-calls requires a positive "
+                "--max-model-requests budget"
+            )
+        elif args.max_retries < 0:
+            failures.append("model_authorization: --max-retries must be non-negative")
         else:
-            passes.append(f"deepseek_env: skipped model-backed retrieval because vars are not fully set {missing}")
+            worst_case_requests = len(load_cases()) * (1 + args.max_retries)
+            if worst_case_requests > args.max_model_requests:
+                failures.append(
+                    "model_authorization: declared budget "
+                    f"{args.max_model_requests} is below worst-case request count "
+                    f"{worst_case_requests}"
+                )
+            elif configure_deepseek():
+                await run_live_validation(
+                    failures,
+                    passes,
+                    timeout_seconds=args.timeout_seconds,
+                    concurrency=args.concurrency,
+                    max_retries=args.max_retries,
+                )
+            else:
+                failures.append(
+                    "deepseek_env: model calls were authorized but one or more "
+                    "required vars are missing: DEEPSEEK_BASE_URL, "
+                    "DEEPSEEK_DEFAULT_MODEL, DEEPSEEK_API_KEY"
+                )
+    else:
+        passes.append(
+            "model_authorization: skipped model-backed retrieval; explicit "
+            "--allow-model-calls and --max-model-requests are required"
+        )
 
     print("V2 reference retrieval validation")
     print(f"passes: {len(passes)}")
@@ -331,5 +401,9 @@ async def main() -> None:
         raise SystemExit(1)
 
 
+def run(argv: list[str] | None = None) -> None:
+    asyncio.run(main(sys.argv[1:] if argv is None else argv))
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    run()

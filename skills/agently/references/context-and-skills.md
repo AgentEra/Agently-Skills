@@ -8,8 +8,9 @@ records, or consume installed real-world Skills.
 
 | Concept | Owns | Does not own |
 |---|---|---|
-| `TaskContext` | One task's revisioned source bindings and direct entries | Retrieval backends, files, execution, or persistence policy |
-| `ContextSource` | Candidate enumeration and bounded block read for one source type | Cross-source selection or model routing |
+| `TaskContext` | One task's revisioned source bindings/direct entries and its internal derived `ContextIndex` lifecycle | Source truth, files, execution, or persistence policy |
+| `ContextIndex` | Internal structural, lexical, or optional hybrid partitions derived from attached sources | Public aggregate identity, source truth, exact body reads, or semantic model routing |
+| `ContextSource` | Descriptor enumeration and exact bounded read for one source type | Cross-source selection or model routing |
 | `ContextReader` | Consumer/phase/intent-specific selection, budgeting, read, diagnostics, and `ContextPackage` output | Source truth or storage |
 | `TaskWorkspace` | Existing task files, generated artifacts, path policy, file identity, and bounded file reads | Records, semantic retrieval over records, model-hot packaging, or task lifecycle |
 | `RecordStore` | Records, links, retrieval, RuntimeEvents, checkpoints, snapshots, leases, and durable refs | Task file editing, semantic task intent, or model execution |
@@ -22,7 +23,7 @@ The data flow is:
 ```text
 TaskWorkspace / RecordStore / SkillLibrary / direct caller facts / custom sources
                                 ↓ ContextSource bindings
-                            TaskContext snapshot
+                 TaskContext snapshot + internal ContextIndex
                                 ↓ ContextReader(intent, consumer, phase, budget)
                              ContextPackage(s)
                                 ↓
@@ -56,7 +57,11 @@ package = await reader.async_read(
 )
 ```
 
-TaskContext is the sole public aggregate and lifecycle owner. Create readers
+TaskContext is the sole public aggregate and lifecycle owner. It owns one
+internal `ContextIndex` that builds, invalidates, and reuses source-derived
+structural, lexical, or optional hybrid partitions. The index is not a public
+manager, does not replace source truth, and never supplies exact bytes by
+itself. Create readers
 with `task_context.reader(...)`; restore their exported state with
 `task_context.restore_reader(...)`. `ContextReader` remains a public handle for
 typing and use, like an execution handle owned by its aggregate, but it cannot
@@ -67,9 +72,14 @@ Important behavior:
 
 - A reader is bound to a TaskContext snapshot. Refresh or create a new reader
   after the aggregate changes; do not silently read a newer revision through a
-  stale reader. If candidate listing itself advances only a source revision,
-  ContextReader may optimistically re-pin and recollect once; repeated mutation
-  still fails closed.
+  stale reader. ContextIndex partitions are keyed by source revision, index
+  profile, and provider identity; a changed source invalidates the affected
+  derived partition rather than changing the reader's pinned task snapshot.
+- A `ContextSource` implements `async_enumerate_descriptors(...)` for compact,
+  indexable facts and `async_read_exact(...)` for the bounded canonical body of
+  a selected source ref. Source kinds are an open adapter vocabulary. A filter
+  may select only kinds attached to the current TaskContext; unknown kinds fail
+  instead of silently disappearing.
 - Required blocks are read before optional relevance selection. Optional
   prose relevance requires a semantic selector; if none is available, fail
   closed instead of falling back to keyword routing.
@@ -77,11 +87,11 @@ Important behavior:
   validates them and rejoins canonical source ids and metadata.
 - `ContextPackage` is a read result for a specific intent/consumer/phase, not
   the canonical task state.
-- Sources return bounded candidate windows. A successful read of the same
-  intent advances each source independently; selector/read failure does not.
-  `source_coverage` reports scope, candidate count, exhaustiveness, and whether
-  continuation is available. Opaque cursors stay private to the source/reader
-  protocol and never enter model-visible context.
+- ContextIndex narrows reusable descriptor candidates. ContextReader owns
+  consumer-local offsets, optional ModelRequest selection, budgeting, exact
+  source reads, delivery diagnostics, and the immutable ContextPackage. A cache
+  hit avoids rebuilding a derived partition; it does not prove that an LLM
+  request used fewer prompt tokens.
 - Keep full raw/meta records cold. Put bounded bodies and compact refs in the
   package, and let a later read request scoped detail when needed.
 
@@ -110,6 +120,13 @@ Use `agent.enable_coding_agent_actions(...)` for repository-style read, grep,
 edit, patch, and guarded write work. TaskWorkspace owns containment, stale/read
 guards, file refs, and readback facts. It does not expose `put`, `retrieve`,
 checkpoints, RuntimeEvent persistence, or context-building APIs.
+
+For a required AgentTask terminal deliverable, write candidate bytes to a
+staged candidate and completely read them back for verifier inspection. Only
+after verifier acceptance may TaskWorkspace perform digest-pinned atomic
+promotion to the declared target, followed by a complete post-promotion
+readback. Rejection leaves the previous target untouched; promotion or final
+readback failure blocks delivery instead of reporting success.
 
 The default Agent TaskWorkspace is isolated under
 `<parent>/.agently/task_workspaces/<agent.id>`. Select the existing project or
