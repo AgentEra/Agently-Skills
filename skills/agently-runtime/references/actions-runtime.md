@@ -15,6 +15,10 @@ AgentTask Action evidence.
 - Treat model-planned Action inputs as untrusted. Filter/validate them against
   registered `ActionSpec.kwargs`, strip host-only keys, apply policy, then
   dispatch.
+- Preserve `ActionSpec.required_input_keys`. Derive them from function
+  parameters without defaults, or declare them explicitly for executor/MCP
+  registrations. Emit them in native tool JSON Schema and reject missing keys
+  before dispatching a model-authored command.
 - Treat multi-Action package registration as atomic. Search/MCP batch failure
   removes batch-created Actions and restores same-id host registrations.
 
@@ -66,6 +70,11 @@ Keep TaskBoard scheduling/dependencies in TaskBoard/Blocks and Action execution
 in ActionRuntime. A card receives one local objective/done-when plus dependency
 evidence; the global task is orientation, not permission to execute sibling
 work.
+
+Keep `scoped_retrieval` in TaskContext/ContextReader. A retrieval-only TaskBoard
+card or repair-support card uses the ordinary/auto carrier and must not be
+relabeled as an Action card. Use `actions` only when a mounted Action or real
+TaskWorkspace side effect is required.
 
 ## Artifact and Evidence Boundaries
 

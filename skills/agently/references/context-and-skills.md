@@ -94,6 +94,15 @@ Important behavior:
   request used fewer prompt tokens.
 - Keep full raw/meta records cold. Put bounded bodies and compact refs in the
   package, and let a later read request scoped detail when needed.
+- Admit only text or source-parsed document text to model-hot package content.
+  The built-in TaskWorkspace source parses supported PDF/DOCX/XLSX/PPTX files;
+  missing parsers leave the file ref-only. Keep binary and unknown formats
+  ref-only, and never infer their contents from filenames or summaries.
+- Keep images ref-only unless the exact `ContextConsumer` explicitly declares
+  `capabilities={"attachments": {"image": True}}`. A generic attachment flag
+  or model-name guess is insufficient. For a capable consumer, validate the
+  image attachment envelope and bind it through ModelRequest attachments, not
+  the text context pack. Image interpretation remains model-owned.
 
 Required content remains fail-closed when it cannot fit. If the Skill or caller
 explicitly accepts a lossy disclosure, pass a `ContextReadIntent` with
@@ -105,6 +114,11 @@ pretends to be the complete Skill. For AgentTask, carry the same explicit policy
 through `context_budget={"chars": 12_000, "required_overflow":
 "lossy_digest"}`. Without that opt-in, use a larger/focused consumer or fail
 before business work.
+
+AgentTask receives the same explicit image capability through
+`execution.strategy(..., context_consumer_capabilities={"attachments":
+{"image": True}})`. If model/provider capability is not explicitly known, use
+the conservative ref-only path.
 
 ## TaskWorkspace
 
