@@ -116,6 +116,7 @@ planner.output.deliverable_mode
   -> ActionRuntime-dispatched or host-owned TaskWorkspace candidate write
   -> complete candidate readback + verifier-eligible candidate registration
   -> current terminal-carrier inventory/version
+  -> host-validated pre-promotion candidate-to-required-target contract
   -> host exact-span projection + request-local claim_key map
   -> one semantic terminal verifier
        (criterion_checks + material_claim_checks)
@@ -144,6 +145,13 @@ terminal target transition through digest-pinned
 `TaskWorkspace.atomic_promote_file(...)`; this copies the accepted bytes rather
 than drafting or revising content, and complete post-promotion readback is
 required before acceptance.
+At the semantic-verification phase, the required target is intentionally not
+materialized yet. The host must project the completely read staged path and its
+required target as one pre-promotion delivery contract. The verifier judges the
+candidate as the provisional target carrier and must not treat pre-acceptance
+target absence as a semantic gap. Target promotion, complete readback, and
+digest/byte-count equality remain deterministic host gates after semantic
+acceptance.
 A later TaskBoard leaf that only verifies or references the same path must join
 to the canonical dependency `TaskBoardCardResult` artifact ref and adopt the
 current physical readback. A model-repeated manifest or file-ref projection is
