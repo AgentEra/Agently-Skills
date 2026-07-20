@@ -68,6 +68,30 @@ typing and use, like an execution handle owned by its aggregate, but it cannot
 be constructed or restored independently. `ContextPackage` is the immutable
 cross-boundary delivery value, not another owner.
 
+Configure the internal index through its aggregate owner when a bounded
+embedding provider is available:
+
+```python
+task_context.configure_index(
+    strategy="hybrid",
+    embedding_provider=embedding_provider,
+)
+```
+
+Hybrid ranking is a mechanism-level shortlist, not semantic acceptance. It
+bounds the optional candidates offered to the ContextReader selector by that
+reader's `max_blocks`; the selector still returns an ordered subset or none.
+If structural filters already leave one canonical candidate, no query
+embedding is needed because there is no candidate order to improve.
+
+For TaskBoard work, keep `scoped_retrieval` attached to its declared Context
+source kind. If a model-produced plan reserves more than 64 results, the host
+splits an otherwise valid plan into bounded ContextReader batches and a
+dependent continuation; it does not turn a Skill, pinned repository, Memory,
+or other Context source into TaskWorkspace Actions. A later evidence-repair
+card completes only when its `evidence_use` names the exact new body-bearing
+EvidenceLedger refs produced by those reads.
+
 Important behavior:
 
 - A reader is bound to a TaskContext snapshot. Refresh or create a new reader
