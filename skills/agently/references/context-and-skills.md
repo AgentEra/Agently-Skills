@@ -80,6 +80,10 @@ Important behavior:
   a selected source ref. Source kinds are an open adapter vocabulary. A filter
   may select only kinds attached to the current TaskContext; unknown kinds fail
   instead of silently disappearing.
+- After one canonical ref is selected, a source may implement
+  `ContextSourceScopedRead` for deterministic bounded location inside that ref.
+  It is an optional source mechanism, not a second ContextReader/ContextIndex or
+  a semantic relevance owner; exact read remains the fallback.
 - Required blocks are read before optional relevance selection. Optional
   prose relevance requires a semantic selector; if none is available, fail
   closed instead of falling back to keyword routing.
@@ -94,6 +98,15 @@ Important behavior:
   request used fewer prompt tokens.
 - Keep full raw/meta records cold. Put bounded bodies and compact refs in the
   package, and let a later read request scoped detail when needed.
+- Keep full ContextPackage omissions for audit, but bound repetitive optional
+  omission details in model-hot projections and include aggregate reason counts.
+  Give each scoped snippet one host-issued reference key and do not repeat the
+  same body in a ledger preview. Join every body one-to-one to its full
+  execution-block/ContextBlock/source-revision/binding/ref identity host-side;
+  exclude missing or ambiguous joins, and do not expose the opaque identity
+  fields to the model. One scoped plan may reserve at most 64 model-visible
+  results across `query_groups[].max_results`; reject larger plans before graph
+  compilation and continue in consumer-owned batches.
 - Admit only text or source-parsed document text to model-hot package content.
   The built-in TaskWorkspace source parses supported PDF/DOCX/XLSX/PPTX files;
   missing parsers leave the file ref-only. PDF/Office descriptors and exact

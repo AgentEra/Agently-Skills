@@ -86,12 +86,19 @@ observed results to the next semantic step.
   structural, lexical, or optional hybrid candidate partitions.
 - A `ContextSource` exposes compact descriptors through
   `async_enumerate_descriptors(...)` and bounded canonical bodies through
-  `async_read_exact(...)`; the internal ContextIndex is never source truth.
+  `async_read_exact(...)`; after one canonical ref is selected it may optionally
+  expose deterministic bounded in-ref location through
+  `ContextSourceScopedRead`. The optional mechanism is not a semantic relevance
+  owner, and the internal ContextIndex is never source truth.
 - `ContextReader` binds to a consumer and phase, accepts a read intent and
   budget, then returns one or more bounded information blocks in a
   `ContextPackage`.
 - Keep raw records cold. Project host-issued keys, bounded summaries/previews,
   and scoped readback refs into model-hot context.
+- Keep complete ContextPackage omissions cold/auditable; model-hot projections
+  should carry bounded details plus counts instead of one record per unselected
+  source. Bind each disclosed scoped snippet to one host-issued reference key
+  without duplicating its body in a second ledger field.
 - Attach a RecordStore or knowledge source through a ContextSource when its
   information must participate in cross-source progressive disclosure.
 - Keep retrieval explicit when its output feeds another request or workflow
