@@ -108,6 +108,11 @@ Important behavior:
   `ContextSourceScopedRead` for deterministic bounded location inside that ref.
   It is an optional source mechanism, not a second ContextReader/ContextIndex or
   a semantic relevance owner; exact read remains the fallback.
+- In a scoped query group, `path` selects the file or directory scope and
+  `pattern` is only a file-name glob such as `*.py` or `**`. Keep semantic
+  intent in `query`. Put exact code symbols or text locators in
+  `filters.content_contains`; each locator is normalized into its own bounded
+  query group. Never use `pattern` as a content-search expression.
 - Required blocks are read before optional relevance selection. Optional
   prose relevance requires a semantic selector; if none is available, fail
   closed instead of falling back to keyword routing.
