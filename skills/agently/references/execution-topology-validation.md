@@ -167,11 +167,20 @@ passes.
 
 Show validation of the terminal-verifier response and any structured patch as
 host-owned nodes. Trace exact offered criterion ids, request-local claim keys,
-and evidence reference ids into validation, then trace deterministic lookup of
+`required_for_criterion_ids`, and evidence reference ids into validation, then
+trace deterministic lookup of
 the canonical carrier id, exact quote, path, and content version. Unknown or
 duplicate keys, missing/duplicate joins, stale versions, or incomplete patch
 coverage fail closed; do not discard invalid checks, reinterpret prose, or
 continue with an empty projection.
+
+For an unsupported material claim, trace whether it is optional or required by
+an exact offered criterion. Only an optional claim may reach `delete_only`.
+A required claim must reach evidence reacquisition; an exhausted or
+digest-identical retrieval frontier must terminate blocked/clarification rather
+than replaying the same card. A claim-scoped file patch request must contain
+only its authorized carrier and dirty claim contract, not accumulated
+dependency results or full board/evidence projections.
 
 Show one model-visible selection domain per returned field. The exact
 `evidence_ledger.items[].reference_id` snapshot visible to the model must be
