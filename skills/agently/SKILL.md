@@ -49,6 +49,11 @@ Requests that also mention a UI, a web page, a desktop shell, or a local model s
   application-owned coordination. An all-serial design chosen without this
   analysis is an anti-pattern
 - when the request is a project-shape refactor, separate settings, prompts, services, domain contracts, workflow, and tests before discussing low-level implementation details
+- let real ownership decide the physical split. Co-locate information that
+  changes together and serves the same consumer, and minimize cross-file lookup
+  count and nesting depth. Do not introduce files, classes, constants, factories,
+  or wrappers merely to make the structure look formally layered; split
+  unrelated responsibilities and extract only a boundary with real ownership
 - when a development script, service module, or test needs semantic judgment
   over model-owned behavior, use Agently model requests with explicit output
   schemas. Development-time intent recognition, scenario matching, business

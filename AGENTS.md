@@ -153,6 +153,16 @@ Use this file as installation-time guidance after the skills are added into anot
 ## Project Defaults
 
 - Prefer separating `settings/`, `prompts/`, `services/`, `domain/` or `schemas/`, `workflow/`, `tools/`, and `tests/` when the project is more than a tiny demo.
+- Co-locate information that changes together and serves the same consumer;
+  minimize review-time lookup count, information-retrieval hops, and nesting
+  depth for people and coding agents. A one-off model request should normally
+  show its `input`, `info`, `instruct`, `output`, and result consumption in one
+  readable execution block, or use one Prompt Configure file plus explicit
+  `mappings`. Do not extract one-use schemas, constants, helpers, or wrappers
+  merely for visual layering. Extraction requires real reuse, an independent
+  owner/version/review boundary, policy/lifecycle, non-trivial translation, or
+  dynamic composition; this rule does not justify combining unrelated
+  responsibilities into a god module.
 - Route model-generated or application-submitted DAG data through TaskDAG /
   DynamicTask validation and resolution; do not compile unvalidated runtime DAG
   data directly into new TriggerFlow definitions. Stable topology owned in
