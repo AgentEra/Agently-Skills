@@ -193,11 +193,10 @@ add Actions, local Skills, utilities, or resources only when the application has
 that owner and a current consumer. Planning nodes do not map one-to-one to
 files. See `references/project-framework.md` and its runnable project asset.
 
-Co-locate information that changes together and serves the same consumer. A
-reviewer should not need several cross-file lookups to reconstruct one request
-or invariant. Split unrelated responsibilities, but do not introduce files,
-classes, constants, or wrappers merely to make the structure look formally
-layered.
+Minimize the cross-file lookup count and nesting depth needed by people and
+coding agents. Do not split one-use information into extra files, constants,
+helpers, classes, or wrappers unless the boundary has actual reuse value or an
+independently owned contract.
 
 Before adding a facade, manager, executor, adapter, alias, or protocol, identify
 the current owner and prove the missing boundary. Do not add shallow pass-through

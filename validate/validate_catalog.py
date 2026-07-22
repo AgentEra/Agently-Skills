@@ -128,6 +128,17 @@ def main() -> None:
         passes,
     )
     check(
+        "project_information_locality",
+        "cross-file lookup count and nesting depth" in playbook_text
+        and "actual reuse value" in project_framework_text
+        and "Formal separation without either benefit is over-design"
+        in project_framework_text
+        and "Across code examples and project layouts" in catalog_guidance_text,
+        "general project guidance avoids splitting information without reuse or ownership value",
+        failures,
+        passes,
+    )
+    check(
         "playbook_trusted_identifier_join_boundary",
         "one host-issued trusted selection key" in playbook_text
         and re.search(
@@ -168,15 +179,12 @@ def main() -> None:
     )
     check(
         "request_contract_information_locality",
-        "one-off request contract together at the call site" in request_text
-        and "same change reason and consumer" in request_prompt_management_text
-        and "review-time lookup count and depth" in request_prompt_management_text
-        and "independent owner" in request_prompt_management_text
-        and "unrelated responsibilities" in project_framework_text
-        and "information-retrieval hops" in project_framework_text
-        and "one Prompt Configure file plus explicit" in catalog_guidance_text
-        and "god module" in catalog_guidance_text,
-        "request and project guidance co-locate related information without creating god modules",
+        "one-off Agently fluent request readable as one chain" in request_text
+        and "terminal `.get_result()`" in request_prompt_management_text
+        and "merely to shorten the chain" in request_prompt_management_text
+        and "In Agently fluent request examples" in catalog_guidance_text
+        and "One Prompt Configure file plus explicit" in catalog_guidance_text,
+        "Agently fluent request guidance keeps one-off request chains locally readable",
         failures,
         passes,
     )
