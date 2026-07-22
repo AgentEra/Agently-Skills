@@ -188,6 +188,13 @@ promotion to the declared target, followed by a complete post-promotion
 readback. Rejection leaves the previous target untouched; promotion or final
 readback failure blocks delivery instead of reporting success.
 
+For a TaskWorkspace-bound shell Action, keep `workdir` inside the injected
+root. Relative `.` and child paths are valid. The logical
+`.agently/files/<execution-id>` locator shown in Action evidence may also be
+passed back as the current root (or with a child suffix); the runtime consumes
+that logical root once rather than duplicating it. Parent traversal and any
+other path outside the root fail closed.
+
 The default Agent TaskWorkspace is isolated under
 `<parent>/.agently/task_workspaces/<agent.id>`. Select the existing project or
 business directory explicitly when the task is supposed to edit it.
@@ -224,6 +231,14 @@ index, and persisted card result reuse that identity domain; do not construct a
 second ordered ledger after the model has selected a reference. A control card
 that explicitly reports `sufficient=false` is a setback even if it also returns
 `status=completed` and `next_board_action=finalize`.
+
+A sufficient completed control card may return a draftable artifact manifest
+without a body. In that case, framework-owned materialization enters the
+dedicated artifact-draft stage and is not semantic `remaining_work`. Pass the
+same bounded canonical Action/readback evidence ledger into that draft; the
+draft must not reconstruct evidence identity or lose the Action outputs that
+supported the control decision. The produced candidate still requires terminal
+verification, digest-pinned promotion, and complete post-promotion readback.
 
 Across evidence-reacquisition rounds, `claim_N` is only a response-local model
 selection key. The host tracks an exact material-claim subject separately, so

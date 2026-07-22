@@ -72,6 +72,10 @@ package is not an executor or permission grant.
   atomic promotion to the target and a complete post-promotion readback.
   Rejection preserves the previous target, and promotion/readback failure
   blocks delivery.
+- For TaskWorkspace-bound shell execution, resolve relative `workdir` values
+  inside the injected root. Accept `.`/child paths and consume an already
+  root-prefixed logical `.agently/files/<execution-id>` locator exactly once;
+  reject paths outside the root.
 - Select durable records with `agent.use_record_store(...)` or pass a
   `RecordStore` to an explicit TriggerFlow execution. Use it for `put`, `get`,
   `retrieve`, links, RuntimeEvents, snapshots, checkpoints, leases, and durable
@@ -149,6 +153,11 @@ package is not an executor or permission grant.
   answer is required before work can continue.
 - Require actual Action evidence for required side effects. TaskWorkspace
   readback proves a file fact; it does not prove an unrelated Action call.
+- When a sufficient completed TaskBoard control result provides a draftable
+  artifact manifest without a body, let the dedicated artifact-draft stage
+  materialize it with the same bounded canonical Action/readback evidence
+  ledger. Framework-owned materialization is not semantic `remaining_work`;
+  the resulting candidate still requires terminal verification and promotion.
 
 ## TriggerFlow and Recovery
 
