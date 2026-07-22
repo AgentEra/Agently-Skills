@@ -47,6 +47,21 @@ Treat `pause_for(...)` as a durable graph interrupt. New approval or webhook exa
 
 When a sub-flow may pause, external systems should resume only the root execution. Child interrupts are projected into root pending interrupts; callers store the root execution id and root interrupt id, then call `root_execution.continue_with(...)`. Re-inject required `runtime_resources` when restoring a saved root execution.
 
+For an active non-paused sub-flow, the explicit parent execution owns the
+control surface. Read `execution.get_sub_flow_frames()`, then call
+`async_emit_to_sub_flow(frame_id, ...)` for best-effort signaling or
+`async_cancel_sub_flow(frame_id, reason=...)` for cooperative cancellation and
+the parent write-back/continuation fence. Do not build an application-owned
+live-child registry. Signal forwarding still obeys child concurrency and does
+not replace provider abort, idempotency, or an external side-effect fence. If
+cancellation wins while a signal is in flight, the forwarding call raises
+`RuntimeError` and its child signal handler is cooperatively cancelled.
+
+Live child executions and tasks are not serialized. A snapshot containing a
+`running` or `cancel_requested` sub-flow frame is audit metadata, not a
+restartable coroutine; load fails closed. Existing `waiting` frames remain
+restartable through root interrupt projection.
+
 Use execution state (`get_state(...)`, `set_state(...)`, and async variants) for per-execution data and chunk-to-chunk handoff. State setters replace the complete value, including empty collections; use `append_state(...)` only for intentional list accumulation and construct the complete next mapping before setting mapping state. Do not replace execution state with a custom store, translation helper, closure dict, or flow-data mirror for normal runtime state. Use TaskWorkspace for task files and RecordStore or another explicit provider when data must survive beyond one execution, be shared across runs, or be stored behind a durable ref; keep the compact ref/status in execution state. Flow data / `flow_data` is shared across executions and should be treated as a risky internal/shared-state surface rather than normal workflow memory.
 
 For service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface and `create_execution(...)` / `start_execution(...)` as the boundary into one run. Prefer module-level named chunks and conditions. Put stable live dependencies such as `agent_factory`, clients, prompt paths, or loggers into flow-level `runtime_resources`; put request- or tenant-specific values into execution-level `runtime_resources`. Chunks should read required live dependencies with `data.require_resource(...)` and write per-request business values to execution state. Closures are acceptable for compact scripts, but they are not the recommended service shape because they reduce handler reuse, testing, and config/blueprint round-trip clarity.

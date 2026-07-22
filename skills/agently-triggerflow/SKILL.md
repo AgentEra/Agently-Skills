@@ -60,6 +60,13 @@ Graph adjacency proves activation, not value transfer.
   nowait tasks and returns the close snapshot.
 - Pending interrupts make close fail by default. Choose cancellation deliberately
   when abandoning waits.
+- Active non-paused children created by `to_sub_flow(...)` are visible through
+  `execution.get_sub_flow_frames()`. Use
+  `async_emit_to_sub_flow(frame_id, ...)` for best-effort child signaling and
+  `async_cancel_sub_flow(frame_id, reason=...)` to cancel/fence one child while
+  keeping the parent execution open. A cancelled child does not write back or
+  continue downstream. See `examples/active_sub_flow_control.py` for the
+  explicit execution shape.
 
 Do not make code after `await data.async_pause_for(...)` the restart contract.
 Put post-resume behavior in a downstream chunk, `data.is_resume` branch, or
@@ -136,6 +143,12 @@ that need neither persistence nor record access.
 state, interrupt/resume ledgers, declared resource requirements, and eligible
 metadata. It does not serialize live clients, callbacks, semaphores, tasks,
 coroutine frames, secrets, or stateful external sessions.
+
+Running sub-flow frame metadata may appear in a snapshot for audit, but the
+live child execution is not restart-resumable. Loading a snapshot with a
+`running` or `cancel_requested` frame fails closed. Settle or cancel active
+children before taking a restart-resumable snapshot; projected `waiting` child
+frames keep their normal root-interrupt resume contract.
 
 Declare resource requirements and restore live ExecutionResources through
 host/plugin resolvers. A stateful external system must persist its own ref,
