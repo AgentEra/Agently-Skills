@@ -30,6 +30,9 @@ AgentTask Action evidence.
   edit/patch/guarded-write repository work.
 - TaskWorkspace owns containment, write policy, stale/read guards, file refs,
   content versions, and bounded readback.
+- Register custom `TaskWorkspaceFileIOHandler` implementations directly with
+  `task_workspace.register_file_io_handler(...)`; do not introduce a second
+  Workspace manager or file-registry owner.
 - RecordStore owns records, retrieval, links, RuntimeEvents, snapshots,
   checkpoints, leases, and durable artifact refs.
 - TaskContext/ContextReader package selected file/record/Skill information for a
