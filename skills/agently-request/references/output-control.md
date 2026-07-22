@@ -10,6 +10,12 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
 - prefer prompt-config-owned output contracts such as `.execution.output` when
   the schema is stable and shared across a request family
 - prefer `.output(...)` for machine-readable results when the schema is dynamic, exploratory, or easier to keep close to code
+- for Agently `4.1.4.3+`, a Pydantic v2 `BaseModel` class may be passed
+  directly to `.output(ModelClass, format="json")`, including models with
+  nested `BaseModel` fields and lists. Agently projects the model recursively
+  into the prompt schema and preserves the original class for
+  `get_data_object()` / `async_get_data_object()`; successful object reads
+  return an instance of that class
 - when parsed output feeds an API, SDK, module interface, or function, mirror
   the consumed request/argument structure instead of returning an opaque dict.
   Describe every consumed field with its contract meaning, exact type,
