@@ -29,7 +29,16 @@ async def main():
 
     try:
         await child_entered.wait()
-        frame_id, running_frame = next(iter(execution.get_sub_flow_frames().items()))
+
+        async def wait_for_running_frame():
+            while not execution.get_sub_flow_frames():
+                await asyncio.sleep(0)
+            return next(iter(execution.get_sub_flow_frames().items()))
+
+        frame_id, running_frame = await asyncio.wait_for(
+            wait_for_running_frame(),
+            timeout=1,
+        )
         assert running_frame["status"] == "running"
 
         won = await execution.async_cancel_sub_flow(
