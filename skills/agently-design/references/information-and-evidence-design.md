@@ -3,17 +3,20 @@
 Keep model context task-scoped. Give the model one host-issued trusted selection
 key plus relevant facts; host code validates that key and reconstructs canonical
 ids, UUIDs, metadata, and records. Keep compact evidence hot and full metadata
-or raw records cold behind Workspace/spec refs. Unknown keys, refs, snapshots,
-or unauthorized evidence joins fail closed before downstream use.
+or raw records cold behind TaskWorkspace file refs, RecordStore durable refs,
+or local spec refs. Unknown keys, refs, snapshots, or unauthorized evidence
+joins fail closed before downstream use.
 
 ## Hot Context and Cold Evidence
 
 - hot model context contains only facts needed for the current decision,
   bounded evidence summaries, stable refs, and explicit constraints;
-- cold Workspace/spec evidence retains full records, raw traces, artifacts,
-  metadata, and audit history for scoped readback;
+- cold TaskWorkspace evidence retains task files and artifacts; RecordStore
+  retains durable records, metadata, lineage, and audit facts; local spec
+  evidence retains authorized experiment traces and design records;
 - a ContextPackage is a bounded carrier, not permission to copy an entire
-  Workspace or conversation into every prompt;
+  TaskWorkspace tree, RecordStore collection, or conversation into every
+  prompt;
 - progressive readback should request the smallest authorized snippet that can
   resolve the current uncertainty.
 
@@ -121,4 +124,5 @@ an Action claim lacks execution evidence. Return a structured diagnostic naming
 the missing owner fact; do not substitute a plausible model guess.
 
 Use `agently-request` for exact retrieval and citation-token mechanics and
-`agently-runtime` for Workspace, Action, EvidenceEnvelope, and resource APIs.
+`agently-runtime` for TaskWorkspace, RecordStore, Action, EvidenceEnvelope, and
+resource APIs.

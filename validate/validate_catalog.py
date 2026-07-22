@@ -93,6 +93,15 @@ def main() -> None:
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
     catalog_guidance_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     design_text = (SKILLS / "agently-design" / "SKILL.md").read_text(encoding="utf-8")
+    design_system_boundaries_text = (
+        SKILLS / "agently-design" / "references" / "system-boundaries.md"
+    ).read_text(encoding="utf-8")
+    design_information_text = (
+        SKILLS
+        / "agently-design"
+        / "references"
+        / "information-and-evidence-design.md"
+    ).read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
     request_prompt_management_text = (
         SKILLS / "agently-request" / "references" / "prompt-management.md"
@@ -105,6 +114,18 @@ def main() -> None:
     ).read_text(encoding="utf-8")
     request_knowledge_base_text = (
         SKILLS / "agently-request" / "references" / "knowledge-base.md"
+    ).read_text(encoding="utf-8")
+    request_session_memory_text = (
+        SKILLS / "agently-request" / "references" / "session-memory.md"
+    ).read_text(encoding="utf-8")
+    context_skills_text = (
+        SKILLS / "agently" / "references" / "context-and-skills.md"
+    ).read_text(encoding="utf-8")
+    runtime_text = (SKILLS / "agently-runtime" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    runtime_actions_text = (
+        SKILLS / "agently-runtime" / "references" / "actions-runtime.md"
     ).read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_overview_text = (
@@ -195,6 +216,84 @@ def main() -> None:
         and "cite_as" in request_knowledge_base_text
         and "hover card" in request_knowledge_base_text,
         "retrieval guidance defines a host-resolved reference rendering protocol",
+        failures,
+        passes,
+    )
+    check(
+        "task_context_internal_context_index_contract",
+        "internal `ContextIndex`" in context_skills_text
+        and "async_enumerate_descriptors" in context_skills_text
+        and "async_read_exact" in context_skills_text
+        and "never supplies exact bytes" in context_skills_text,
+        "TaskContext owns derived indexing while sources retain exact source truth",
+        failures,
+        passes,
+    )
+    check(
+        "session_memory_task_context_recall_contract",
+        "AgentlyMemoryContextSource" in request_text
+        and "AgentlyMemoryContextSource" in request_session_memory_text
+        and "parallel SessionMemory retrieval-to-prompt pipeline"
+        in request_session_memory_text,
+        "SessionMemory writes stay separate from TaskContext-owned task recall",
+        failures,
+        passes,
+    )
+    check(
+        "task_workspace_terminal_promotion_contract",
+        "staged candidate" in context_skills_text
+        and "post-promotion" in context_skills_text
+        and "staged candidate" in runtime_text
+        and "post-promotion" in runtime_text,
+        "required terminal artifacts are verified before atomic promotion",
+        failures,
+        passes,
+    )
+    check(
+        "workspace_owner_terms_do_not_overlap",
+        "| Workspace | durable records, files" not in design_system_boundaries_text
+        and "| TaskWorkspace |" in design_system_boundaries_text
+        and "| RecordStore |" in design_system_boundaries_text
+        and "| TaskContext |" in design_system_boundaries_text
+        and "Workspace/spec" not in design_information_text
+        and "entire Workspace" not in design_information_text,
+        "design guidance separates task files, durable records, and task context",
+        failures,
+        passes,
+    )
+    check(
+        "action_and_terminal_promotion_owner_contract",
+        "ActionRuntime owns model-callable file-write dispatch"
+        in runtime_actions_text
+        and "TaskWorkspace.atomic_promote_file" in runtime_actions_text
+        and "Promotion copies the already accepted bytes" in runtime_actions_text,
+        "Action evidence and host-controlled terminal file promotion have distinct owners",
+        failures,
+        passes,
+    )
+    check(
+        "terminal_topology_orders_verification_before_target_promotion",
+        "complete candidate readback + verifier-eligible candidate registration"
+        in execution_topology_text
+        and execution_topology_text.index("one semantic terminal verifier")
+        < execution_topology_text.index(
+            "digest-pinned TaskWorkspace target promotion"
+        )
+        and "complete target readback" in execution_topology_text
+        and "trusted-artifact promotion" not in execution_topology_text
+        and "only write owner" not in execution_topology_text,
+        "topology guidance distinguishes candidate evidence from accepted target promotion",
+        failures,
+        passes,
+    )
+    check(
+        "retrieval_token_evidence_contract",
+        "input tokens separately from LLM prompt tokens"
+        in request_knowledge_base_text
+        and "provider-observed prompt-token usage" in request_knowledge_base_text
+        and "Never derive billed tokens from character counts"
+        in request_knowledge_base_text,
+        "retrieval guidance separates embedding cost from observed LLM token effects",
         failures,
         passes,
     )

@@ -5,12 +5,16 @@ retrieval-backed answers are the main capability surface.
 
 ## Ownership
 
-- `RecordStore` owns record DB, indexes, embedding/vector providers,
-  deterministic filters, retrieval packages, links, and durable refs.
+- `RecordStore` owns its record DB, direct retrieval indexes,
+  embedding/vector providers, deterministic filters, retrieval packages,
+  links, and durable refs.
 - `TaskWorkspace` owns files and file grep/readback. It is not a record/vector
   store.
-- `RecordStoreContextSource` and other ContextSource adapters expose source
-  candidates to a TaskContext.
+- `RecordStoreContextSource` and other ContextSource adapters expose compact
+  descriptors and exact bounded reads to a TaskContext.
+- `TaskContext` owns one internal derived `ContextIndex` for reusable
+  cross-source structural, lexical, or optional hybrid candidate partitions.
+  It does not replace RecordStore's direct retrieval API or indexes.
 - `ContextReader` owns cross-source intent/consumer/phase-specific progressive
   disclosure and budgeting.
 - The model owns prose relevance, rerank judgment, citation choice, and answer
@@ -88,6 +92,29 @@ context_package = await reader.async_read(
 Each ContextReader pins a TaskContext/source revision. Create/refresh a reader
 after the source aggregate changes. Optional prose relevance requires a semantic
 selector; never fall back to keyword routing as the semantic owner.
+
+The internal ContextIndex may reuse descriptor partitions keyed by source
+revision, index profile, and provider identity. Exact bodies still come from
+the selected ContextSource through `async_read_exact(...)`, or through its
+optional `ContextSourceScopedRead` mechanism after one canonical ref is already
+selected. Scoped location is deterministic mechanism work, not semantic
+relevance or evidence acceptance. Report embedding
+input tokens separately from LLM prompt tokens. Cache reuse or a smaller
+ContextPackage is explanatory evidence only; a model input-token reduction
+requires complete provider-observed prompt-token usage from comparable real
+requests. Never derive billed tokens from character counts.
+
+Keep complete ContextPackage omission/diagnostic facts in cold audit state.
+Model-hot projections should bound repetitive optional omission details, add
+reason counts, and carry each scoped snippet once with its host-issued reference
+key instead of repeating the body in both a snippet and a ledger preview.
+Before disclosure, require a one-to-one host join across execution block,
+ContextBlock, source revision, binding, and canonical ref. Exclude a body when
+that join is missing or ambiguous. Keep those opaque identities host-side; give
+the model only the trusted reference key and task-relevant source labels.
+Reserve at most 64 model-visible results across one scoped plan's
+`query_groups[].max_results`; reject overflow before graph compilation and use
+consumer-owned continuation batches instead of silent truncation.
 
 ## Retrieval Reference Rendering
 

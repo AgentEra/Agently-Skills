@@ -3,8 +3,9 @@
 Use this reference before selecting APIs. Assign each decision, state, effect,
 and dependency to the smallest existing owner. Developer-owned stable execution
 topology belongs to TriggerFlow; model-generated or application-submitted DAG
-data belongs to TaskDAG / Dynamic Task. Per-execution state, durable Workspace
-storage, external resources, and shared `flow_data` are different boundaries.
+data belongs to TaskDAG / Dynamic Task. Per-execution state, task information,
+task files, durable records, external resources, and shared `flow_data` are
+different boundaries.
 
 ## Owner Matrix
 
@@ -14,7 +15,9 @@ storage, external resources, and shared `flow_data` are different boundaries.
 | AgentExecution / AgentTask | one Agent-owned execution or bounded task strategy | application-wide orchestration |
 | Action | a model-callable capability and its evidence | resource lifetime or workflow policy |
 | ExecutionResource | managed live dependency lifecycle | business decisions or state transitions |
-| Workspace | durable records, files, refs, snapshots, and bounded readback | TriggerFlow readiness, joins, or resume policy |
+| TaskContext | one task's bound information and internal derived ContextIndex | source truth, files, persistence, or execution |
+| TaskWorkspace | one task's files, file refs, containment, exact readback, and atomic file promotion | records, semantic retrieval, or task policy |
+| RecordStore | durable records, direct retrieval indexes, links, checkpoints, snapshots, leases, and durable refs | task file editing, model-hot context, or execution policy |
 | TriggerFlow | trusted, developer-owned executable signals, dependencies, state transitions, waits, and close | unvalidated runtime plan data |
 | TaskDAG / Dynamic Task | submitted or model-generated acyclic DAG data, validation, resolution, and execution | a second stable workflow framework |
 | host code | admission, authorization, canonical identity joins, UI/transport, and external integration | model-owned semantic judgment |
@@ -62,8 +65,10 @@ truth and must not introduce a second graph protocol.
 
 - execution state owns data private to one TriggerFlow execution and its
   chunk-to-chunk handoff;
-- Workspace owns durable records, artifacts, references, checkpoints, and
-  bounded evidence readback;
+- TaskContext owns task-information aggregation and its internal derived index;
+- TaskWorkspace owns contained files, file refs, and physical readback;
+- RecordStore owns durable records, links, checkpoints, snapshots, leases, and
+  durable refs;
 - ExecutionResource owns live clients and managed resource lifetime;
 - host storage owns domain persistence and cross-service contracts;
 - `flow_data` is shared on the flow object. `execution.save()` serializes a copy
@@ -71,7 +76,8 @@ truth and must not introduce a second graph protocol.
   execution-local or concurrency-safe.
 
 Do not create a translation helper or second state store when the existing
-execution state, Workspace, or host persistence boundary already fits.
+execution state, TaskContext, TaskWorkspace, RecordStore, or host persistence
+boundary already fits.
 
 ## Terminology and Occam Gate
 
@@ -94,8 +100,8 @@ when it carries the behavior. If a new term is unavoidable, document:
 - Does every decision, state, effect, and wait have one primary owner?
 - Are policy layers independent from provider, storage, transport, and UI?
 - Is stable source topology separated from submitted DAG data?
-- Are execution state, Workspace, `flow_data`, resources, and domain storage
-  used according to their real lifecycles?
+- Are execution state, TaskContext, TaskWorkspace, RecordStore, `flow_data`,
+  resources, and domain storage used according to their real lifecycles?
 - Was terminology overlap checked before adding a concept?
 - Can the design become smaller by removing a wrapper, manager, or duplicate
   execution path?

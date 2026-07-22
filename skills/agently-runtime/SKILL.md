@@ -27,10 +27,10 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 |---|---|
 | `ActionRuntime` | Model-callable operations, schema validation, dispatch, policy, and Action results. |
 | `ExecutionResource` | Lifecycle of live clients, sandboxes, processes, browsers, database connections, and MCP sessions. |
-| `TaskWorkspace` | One task's existing files, generated artifacts, path containment, bounded readback, and file identity. |
+| `TaskWorkspace` | One task's existing files, generated artifacts, path containment, bounded readback, file identity, and verified terminal promotion. |
 | `RecordStore` | Records, links, retrieval, RuntimeEvent persistence, checkpoints, snapshots, leases, and durable artifact refs. |
-| `TaskContext` | Revisioned task-scoped bindings and direct information entries. |
-| `ContextReader` | Intent-driven, budgeted progressive disclosure for one consumer and phase. |
+| `TaskContext` | Sole task-information aggregate; revisioned bindings/direct entries, internal derived `ContextIndex`, and read-handle lifecycle. |
+| `ContextReader` | TaskContext-created intent-driven, budgeted progressive-disclosure handle for one consumer and phase. |
 | `SkillLibrary` | Installed immutable real-world Skill revisions and resource reads. |
 | `AgentExecution` | Task-scoped Skill binding, TaskContext preparation, route selection, execution, and result/stream APIs. |
 
@@ -67,6 +67,11 @@ package is not an executor or permission grant.
 - `TaskWorkspace` is a file boundary only. Use its read/write/edit/glob/grep/
   patch/export methods for task files and artifacts; do not store arbitrary
   durable records inside it through a hidden database API.
+- A required AgentTask terminal deliverable starts as a staged candidate. The
+  verifier receives a complete readback; only acceptance permits digest-pinned
+  atomic promotion to the target and a complete post-promotion readback.
+  Rejection preserves the previous target, and promotion/readback failure
+  blocks delivery.
 - Select durable records with `agent.use_record_store(...)` or pass a
   `RecordStore` to an explicit TriggerFlow execution. Use it for `put`, `get`,
   `retrieve`, links, RuntimeEvents, snapshots, checkpoints, leases, and durable
@@ -76,9 +81,11 @@ package is not an executor or permission grant.
 - Keep ordinary observation in logs/DevTools. Bind RuntimeEvent persistence
   explicitly; a RecordStore does not become an event archive merely because it
   is available.
-- Keep large bodies cold behind TaskWorkspace or RecordStore refs. Put only
-  compact handles, bounded previews, status, and lineage facts in execution
-  state and model-hot context.
+- Keep large bodies cold behind TaskWorkspace, RecordStore, SkillLibrary, or
+  another attached ContextSource. Put only compact handles, descriptors,
+  bounded previews, status, and lineage facts in execution state and model-hot
+  context. TaskContext's internal ContextIndex narrows reusable candidates;
+  ContextReader obtains exact bodies from the source before delivery.
 
 ## Real-World Skills
 
@@ -86,7 +93,10 @@ package is not an executor or permission grant.
   They do not own execution strategy, routing, Action mounting, permissions, or
   side-effect proof.
 - Install and inspect immutable revisions through `SkillLibrary` or the thin
-  `Agently.skills_executor` management facade.
+  `Agently.skills_executor` management facade. Use registered
+  `SkillSourceProvider` implementations for authorized local or Git sources;
+  pin a Git `ref` and optional `subpath` rather than inventing a host checkout
+  helper.
 - Bind optional or required Skills on an `AgentExecution` with
   `execution.use_skills(...)`, `execution.require_skills(...)`, or
   `execution.use_skills_packs(...)`.
@@ -96,10 +106,19 @@ package is not an executor or permission grant.
 - Provide Actions/MCP/ExecutionResources explicitly. Reading a Skill may inform
   the model that an operation exists; it never creates or authorizes that
   operation.
-- `Agently.skills_executor` is a compatibility facade for local install,
-  configure, inspect, list, resource read, context-pack projection, and the
-  TaskDAG Skill resolver. It is not a plugin route, planner, strategy registry,
-  React loop, capability manager, or execution owner.
+- When a trusted, exactly bound Skill revision contains an executable script,
+  call `agent.bind_skill_script_action(...)` only after
+  `execution.async_prepare_task_context()`. Pass the host-issued `binding_id`,
+  exact resource path, and `SkillScriptAuthorization`; the binding registers an
+  ordinary Action and never makes every script automatically callable. For a
+  host-directed run, dispatch `bound_action.action_id` through
+  `agent.action.async_execute_action(...)`, then read its published artifact
+  path through the same execution's TaskWorkspace.
+- `Agently.skills_executor` is a compatibility facade for source-backed or
+  local install, configure, inspect, list, resource read, context-pack
+  projection, and the TaskDAG Skill resolver. It is not a plugin route,
+  planner, strategy registry, React loop, capability manager, or execution
+  owner.
 - `agent.run_skills_task(...)` remains a thin compatibility adapter to an
   ordinary AgentExecution. New code should create/configure the execution
   directly.

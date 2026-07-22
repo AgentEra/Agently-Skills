@@ -84,6 +84,11 @@ Use this file as installation-time guidance after the skills are added into anot
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
 - Before creating or updating the main repository PR, run `pyright` and `python -m pytest` in the main repository, using the same Python environment that will validate the release.
 - Before considering this Skills repository aligned, run `python validate/validate_compatibility.py`, `python validate/validate_catalog.py`, `python validate/validate_bundle_manifest.py`, `python validate/validate_trigger_paths.py`, `python validate/validate_native_usage.py`, `python validate/validate_reference_retrieval.py`, and `python validate/validate_project_template.py`.
+- `validate_reference_retrieval.py` is static-only by default. Its model-backed
+  cases require separate explicit authorization through
+  `--allow-model-calls`, a positive `--max-model-requests` budget that covers
+  the worst-case case-and-retry count, and an approved retry limit. Do not use
+  the live path as part of an ordinary companion sync.
 - Before considering `../Agently-Devtools` aligned, run `pyright --pythonpath "$(command -v python)"` and `python -m pytest packages/python/tests`; after push, confirm the GitHub Actions CI and publish workflow results.
 - DevTools CI must work with the checkout layout used by `.github/workflows/ci.yml`; tests must not assume only a sibling `../Agently` checkout when the workflow checks Agently out as `agently-src`.
 - Check whether companion repository heads are already merged into `origin/main`; if they are, treat them as no-op rather than creating unnecessary merge commits.

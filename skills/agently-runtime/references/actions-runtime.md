@@ -15,6 +15,10 @@ AgentTask Action evidence.
 - Treat model-planned Action inputs as untrusted. Filter/validate them against
   registered `ActionSpec.kwargs`, strip host-only keys, apply policy, then
   dispatch.
+- Preserve `ActionSpec.required_input_keys`. Derive them from function
+  parameters without defaults, or declare them explicitly for executor/MCP
+  registrations. Emit them in native tool JSON Schema and reject missing keys
+  before dispatching a model-authored command.
 - Treat multi-Action package registration as atomic. Search/MCP batch failure
   removes batch-created Actions and restores same-id host registrations.
 
@@ -26,6 +30,9 @@ AgentTask Action evidence.
   edit/patch/guarded-write repository work.
 - TaskWorkspace owns containment, write policy, stale/read guards, file refs,
   content versions, and bounded readback.
+- Register custom `TaskWorkspaceFileIOHandler` implementations directly with
+  `task_workspace.register_file_io_handler(...)`; do not introduce a second
+  Workspace manager or file-registry owner.
 - RecordStore owns records, retrieval, links, RuntimeEvents, snapshots,
   checkpoints, leases, and durable artifact refs.
 - TaskContext/ContextReader package selected file/record/Skill information for a
@@ -67,6 +74,11 @@ in ActionRuntime. A card receives one local objective/done-when plus dependency
 evidence; the global task is orientation, not permission to execute sibling
 work.
 
+Keep `scoped_retrieval` in TaskContext/ContextReader. A retrieval-only TaskBoard
+card or repair-support card uses the ordinary/auto carrier and must not be
+relabeled as an Action card. Use `actions` only when a mounted Action or real
+TaskWorkspace side effect is required.
+
 ## Artifact and Evidence Boundaries
 
 Instruction-heavy or large Action values cross hot boundaries as bounded
@@ -90,6 +102,15 @@ TaskDAG scopes release their private artifacts when the run closes; historical
 refs then report unavailable. Promote selected long-lived output to
 TaskWorkspace/RecordStore before scope close when post-run readback is required.
 
+Use `max_bytes` for progressive readback. One successful read is already a
+bounded hot content page and keeps its typed `owner`, `locator`,
+`content_version`, and byte range. It must not be artifactized again or turned
+into a new selection-key chain. Treat Action success/ref availability as a
+pointer fact only until the page body is consumed. If a TaskBoard verifier still
+lacks the required snippet, reacquire a narrower or subsequent page; do not
+weaken the original criterion. Three consecutive identical typed pages are an
+ActionLoop no-information-progress exit back to TaskBoard, not acceptance.
+
 Action evidence binding and artifact readback are separate. A host-issued
 `action_call_id` may identify an offered Action result for evidence binding; it
 is not an artifact selection key.
@@ -103,12 +124,22 @@ size, digest, and structural-frame-only traceback facts.
 
 For a declared deliverable path:
 
-- a successful file Action is the write owner;
+- ActionRuntime owns model-callable file-write dispatch, validation, and call
+  evidence; TaskWorkspace owns the contained physical write/promotion mechanism
+  and file truth;
 - TaskWorkspace physical readback is the current source of truth;
 - model-declared `file_refs` remain diagnostics until host readback succeeds;
-- a later change requires another file Action;
+- a model-requested content change requires another file Action;
 - final acceptance requires the exact expected path/content version, not a
   same-basename sibling or older candidate.
+
+For a required TaskBoard terminal deliverable, the file Action may write a
+working or staged candidate. AgentTask owns the deterministic terminal
+lifecycle decision: complete candidate readback, verifier acceptance, then a
+digest-pinned `TaskWorkspace.atomic_promote_file(...)` transition and complete
+target readback. Promotion copies the already accepted bytes; it is not a
+second model-callable write or permission bypass. Rejection preserves the old
+target, and promotion/readback failure blocks delivery.
 
 AgentTask may materialize a short `artifact_markdown` or sectioned
 `artifact_manifest`, then read back path/bytes/hash/preview/file refs. Keep

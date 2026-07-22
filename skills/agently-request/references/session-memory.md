@@ -7,11 +7,14 @@ is the main design problem.
 
 - `Session` owns chat history, active context-window projection, memo,
   memory-plugin attachment, and import/export.
-- `SessionMemory` owns extraction/recall behavior for a session.
+- `SessionMemory` owns extraction/compression policy and accepted memory writes
+  for a session.
 - `RecordStore` owns durable memory records, scopes, retrieval indexes, and
   storage providers.
-- `TaskContext`/`ContextReader` own broader per-task information assembly from
-  memory, Skills, files, records, and direct entries.
+- `AgentlyMemoryContextSource` exposes accepted memory as source kind
+  `session_memory`; TaskContext's internal `ContextIndex` and ContextReader own
+  task-level candidate reuse, exact reads, and delivery alongside Skills,
+  files, records, and direct entries.
 - TriggerFlow execution state owns workflow progression; Session memory is not a
   substitute for it.
 
@@ -53,10 +56,13 @@ Enable vector indexing only when real vector writes/queries are required:
 agent.set_settings("record_store.vector_index.enabled", True)
 ```
 
-Memory extraction, summarization, query planning, prose relevance, and rerank
-are model-owned semantic work. Host code validates shape, applies scopes,
-persists records, enforces budgets, and records diagnostics. Do not replace
-semantic recall with keyword routing.
+Memory extraction, summarization, prose relevance, and rerank are model-owned
+semantic work. Host code validates shape, applies scopes, persists accepted
+records, enforces budgets, and records diagnostics. In an AgentTask,
+`AgentlyMemoryContextSource` joins the same TaskContext as other sources;
+ContextIndex may reuse structural/vector candidates and ContextReader owns the
+consumer-bound exact read. Do not replace semantic recall with keyword routing
+or run a parallel SessionMemory retrieval-to-prompt pipeline.
 
 ## Anti-Patterns
 

@@ -84,15 +84,27 @@ observed results to the next semantic step.
 
 ## Context and Retrieval
 
-- `RecordStore` owns durable records, deterministic filters, intelligent
-  retrieval, links, checkpoints, snapshots, and durable refs.
-- `TaskContext` owns the current task's bound information sources and direct
-  entries.
+- `RecordStore` owns durable records, its direct retrieval/index provider
+  seams, deterministic filters, links, checkpoints, snapshots, and durable
+  refs.
+- `TaskContext` owns the current task's bound information sources, direct
+  entries, and one internal derived `ContextIndex` for reusable cross-source
+  structural, lexical, or optional hybrid candidate partitions.
+- A `ContextSource` exposes compact descriptors through
+  `async_enumerate_descriptors(...)` and bounded canonical bodies through
+  `async_read_exact(...)`; after one canonical ref is selected it may optionally
+  expose deterministic bounded in-ref location through
+  `ContextSourceScopedRead`. The optional mechanism is not a semantic relevance
+  owner, and the internal ContextIndex is never source truth.
 - `ContextReader` binds to a consumer and phase, accepts a read intent and
   budget, then returns one or more bounded information blocks in a
   `ContextPackage`.
 - Keep raw records cold. Project host-issued keys, bounded summaries/previews,
   and scoped readback refs into model-hot context.
+- Keep complete ContextPackage omissions cold/auditable; model-hot projections
+  should carry bounded details plus counts instead of one record per unselected
+  source. Bind each disclosed scoped snippet to one host-issued reference key
+  without duplicating its body in a second ledger field.
 - Attach a RecordStore or knowledge source through a ContextSource when its
   information must participate in cross-source progressive disclosure.
 - Keep retrieval explicit when its output feeds another request or workflow
@@ -106,10 +118,13 @@ reproduce URLs or full retrieval metadata.
 
 ## Session Memory
 
-Session memory is not TriggerFlow execution state or TaskContext. Use a
-SessionMemory plugin for conversation continuity and a RecordStore when memory
-must survive process restart. Retrieval strategy stays in RecordStore/
-ContextReader, not inside the memory plugin.
+Session memory is not TriggerFlow execution state. Use a SessionMemory plugin
+for extraction/compression and accepted memory writes, and a RecordStore when
+memory must survive process restart. For AgentTask recall,
+`AgentlyMemoryContextSource` exposes accepted memory to the TaskContext-owned
+ContextIndex; ContextReader performs the consumer-bound exact read and
+ContextPackage delivery. Do not build a second memory-to-prompt retrieval path
+inside the plugin.
 
 ## Anti-Patterns
 
