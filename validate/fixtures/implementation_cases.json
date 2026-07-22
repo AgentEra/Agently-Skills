@@ -89,6 +89,54 @@
         "custom_scheduler"
       ],
       "live_smoke_profile": "local"
+    },
+    {
+      "id": "project-template-triggerflow-native",
+      "reference_example": "skills/agently/assets/project-template/workflows/main_flow.py",
+      "required_primitives": [
+        "TriggerFlow",
+        ".for_each(concurrency=4)",
+        "create_execution(",
+        "async_close"
+      ],
+      "forbidden_antipatterns": [
+        "while True",
+        "asyncio.create_task(",
+        "custom_scheduler"
+      ],
+      "live_smoke_profile": "local"
+    },
+    {
+      "id": "project-template-fastapi-native",
+      "reference_example": "skills/agently/assets/project-template/services/api.py",
+      "required_primitives": [
+        "FastAPI",
+        "@app.post(",
+        "run_analysis(",
+        "project_analysis_run("
+      ],
+      "forbidden_antipatterns": [
+        "FastAPIHelper",
+        "AnalysisService",
+        "attach_mcp"
+      ],
+      "live_smoke_profile": "local"
+    },
+    {
+      "id": "project-template-fastmcp-native",
+      "reference_example": "skills/agently/assets/project-template/services/mcp_server.py",
+      "required_primitives": [
+        "FastMCP",
+        "@mcp.tool",
+        "run_analysis(",
+        "project_analysis_run("
+      ],
+      "forbidden_antipatterns": [
+        "async_use_mcp",
+        "AnalysisService",
+        "attach_mcp"
+      ],
+      "live_smoke_profile": "local"
     }
   ]
 }

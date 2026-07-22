@@ -55,6 +55,9 @@ Use this skill for provider wiring and transport setup before request logic is d
   Official runtime events such as `model.requester.error`
   must be produced by core-owned coordinators such as ModelRequestRunner and
   AttemptRunner, not by plugin-level imports of core emitter helpers.
+  Built-in HTTP error messages retain provider status/detail without appending
+  the serialized model request; protected cold RuntimeEvent
+  `payload.request_data` remains the full structured diagnostic carrier.
   Plugin-owned EventCenter messages are private diagnostics only and should not
   reuse official Agently event types.
 

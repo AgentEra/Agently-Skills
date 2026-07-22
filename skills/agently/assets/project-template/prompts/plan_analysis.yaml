@@ -1,0 +1,31 @@
+.execution:
+  input:
+    question: ${question}
+  info:
+    metric_catalog: ${metric_catalog}
+  instruct:
+    - 把经营问题拆成可以独立读取指标事实的分析任务，不要提前回答。
+    - metric 只能使用 metric_catalog 中的名称，periods 只能使用该指标存在的期间。
+    - 每个 analysis_id 使用简短、稳定的英文短横线标识。
+  output:
+    $format: json
+    normalized_question:
+      $type: str
+      $desc: 保留原问题全部目标的规范化问题
+      $ensure: not_null
+    analysis_tasks:
+      $type:
+        - analysis_id:
+            $type: str
+            $desc: 稳定的分析任务标识
+            $ensure: not_null
+          metric:
+            $type: str
+            $desc: metric_catalog 中的指标名称
+            $ensure: not_null
+          periods:
+            $type:
+              - $type: str
+            $desc: 需要比较的期间
+            $ensure: not_null
+      $ensure: not_null

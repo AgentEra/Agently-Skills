@@ -7,8 +7,8 @@
 
 ## 兼容性
 
-默认公开 catalog 是当前 Agently-Skills generation `v2`，已按 Agently 4.1.4.1
-runtime 能力线和新的 6-skill 结构对齐。
+默认公开 catalog 是当前 Agently-Skills generation `v2`，已与 Agently 4.1.4.3
+发布线的 runtime 能力和新的 7-skill 结构对齐。
 
 机器可读兼容声明位于 `compatibility/support.json`。默认分支只保留当前公开
 catalog，避免 coding-agent 的 Skill 检索命中已退役的历史 Skills。
@@ -27,13 +27,13 @@ TriggerFlow 编排、Dynamic Task DAG 执行等原生能力面。
 
 Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
 
-它和 Agently 框架运行时里的 **Skills Manager** 以及 AgentExecution Skill
-activation 路径不是一回事：
+它和 Agently 框架运行时里的 `SkillLibrary`、`TaskContext` 以及
+AgentExecution Skill 路径不是一回事：
 
 - `Agently-Skills` - 给 Codex、Claude Code 等 coding agent 用的指导型 skill 包
-- Agently `Skills Manager` - Agently app / agent 安装、索引、检查和渐进披露标准
-  `SKILL.md` 包的框架 runtime 能力；规划和具体 Skill activation 由
-  AgentExecution 拥有
+- Agently `SkillLibrary` - 不可变 Skill revision 的安装与存储边界；
+  `TaskContext` 与 `ContextReader` 提供任务级上下文，AgentExecution 负责
+  Skill 绑定、路由选择与执行生命周期
 
 单个 skill 目录是标准 `SKILL.md` 包，可按需带 references、examples、outputs 和
 scripts。详细 API 指导应放在这些 skill 包和一层 reference 文件里，不应堆在仓库
@@ -41,10 +41,12 @@ README 中。
 
 ## 当前 Catalog
 
-默认 catalog 一共 6 个公开 skills：
+默认 catalog 一共 7 个公开 skills：
 
 - `agently` - 未定层级的模型应用、助手、内部工具、自动化、评估器、工作流、
   项目结构重构请求的统一入口。
+- `agently-design` - 跨请求、runtime、工作流与证据边界的系统设计、评审、优化和
+  请求链审计，覆盖 ModelRequest 契约、身份与证据、生命周期、压力和可观测性。
 - `agently-request` - 请求侧模型接入、provider settings、Prompt 管理、结构化
   输出、响应复用、streaming 消费、session memory、embeddings、knowledge-base
   索引、检索与 retrieval-backed answers。
@@ -80,6 +82,7 @@ export AGENT=codex
 ```bash
 for skill in \
   agently \
+  agently-design \
   agently-request \
   agently-runtime \
   agently-dynamic-task \
@@ -109,4 +112,4 @@ npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill agently -y
 npx skills add . --list
 ```
 
-默认列表和常规安装路径只暴露当前 6-skill catalog。
+默认列表和常规安装路径只暴露当前 7-skill catalog。

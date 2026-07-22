@@ -83,7 +83,12 @@ Use this file as installation-time guidance after the skills are added into anot
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
 - Before creating or updating the main repository PR, run `pyright` and `python -m pytest` in the main repository, using the same Python environment that will validate the release.
-- Before considering this Skills repository aligned, run `python validate/validate_compatibility.py`, `python validate/validate_catalog.py`, `python validate/validate_bundle_manifest.py`, `python validate/validate_trigger_paths.py`, and `python validate/validate_native_usage.py`.
+- Before considering this Skills repository aligned, run `python validate/validate_compatibility.py`, `python validate/validate_catalog.py`, `python validate/validate_bundle_manifest.py`, `python validate/validate_trigger_paths.py`, `python validate/validate_native_usage.py`, `python validate/validate_reference_retrieval.py`, and `python validate/validate_project_template.py`.
+- `validate_reference_retrieval.py` is static-only by default. Its model-backed
+  cases require separate explicit authorization through
+  `--allow-model-calls`, a positive `--max-model-requests` budget that covers
+  the worst-case case-and-retry count, and an approved retry limit. Do not use
+  the live path as part of an ordinary companion sync.
 - Before considering `../Agently-Devtools` aligned, run `pyright --pythonpath "$(command -v python)"` and `python -m pytest packages/python/tests`; after push, confirm the GitHub Actions CI and publish workflow results.
 - DevTools CI must work with the checkout layout used by `.github/workflows/ci.yml`; tests must not assume only a sibling `../Agently` checkout when the workflow checks Agently out as `agently-src`.
 - Check whether companion repository heads are already merged into `origin/main`; if they are, treat them as no-op rather than creating unnecessary merge commits.
@@ -152,7 +157,20 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- Prefer separating `settings/`, `prompts/`, `services/`, `domain/` or `schemas/`, `workflow/`, `tools/`, and `tests/` when the project is more than a tiny demo.
+- Plan owner/invariant, node, edge, and production-necessity ledgers before
+  choosing files for every non-trivial model application. Planning nodes do not
+  map one-to-one to modules. Start a one-request project from the composition
+  entry, settings, Prompt contract, and tests; add `workflows/`, `services/`,
+  Actions, local Skills, utilities, resources, or trace modules only when a real
+  owner and current consumer require them.
+- All public Skill examples, code fences, project assets, and generated project
+  trees must be structurally concise. Reject stateless pass-through Services,
+  Managers, factories, and request wrappers; renaming-only functions; duplicate
+  facades; empty packages; unconsumed fields/nodes; and test-only production
+  branches. Retain a wrapper only when it demonstrably owns authorization,
+  validation, policy, state/lifecycle/cleanup/retry/concurrency/transactions, a
+  non-trivial representation translation, a stable external contract, or a
+  released compatibility boundary. Do not impose a universal line-count cap.
 - Across code examples and project layouts, minimize the cross-file lookup
   count and nesting depth required by people and coding agents. Do not split
   one-use information into extra files, constants, helpers, classes, or wrappers
@@ -164,6 +182,12 @@ Use this file as installation-time guidance after the skills are added into anot
   declarative equivalent. Split the chain only for actual reuse, independently
   owned/versioned configuration, or genuinely dynamic composition; do not move
   a one-use schema or prompt step elsewhere merely to make the chain shorter.
+- Use direct FastAPI for an ordinary typed HTTP API and FastMCP for MCP-server
+  exposure. Keep both as inbound adapters over the same owned async application
+  entry and approved result projection. `FastAPIHelper` remains available when
+  its packaged task/stream transport is the desired contract; do not call it
+  deprecated or make it the default template. MCP client consumption belongs to
+  Agently Action management; do not add an application-local forwarding wrapper.
 - Route model-generated or application-submitted DAG data through TaskDAG /
   DynamicTask validation and resolution; do not compile unvalidated runtime DAG
   data directly into new TriggerFlow definitions. Stable topology owned in
@@ -213,9 +237,13 @@ Use this file as installation-time guidance after the skills are added into anot
 ## Skill Routing Reminders
 
 - `agently`: unresolved owner layer, project shape, or broad product request
+- `agently-design`: cross-owner architecture, ModelRequest/value/event topology,
+  evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
 - `agently-runtime`: Action Runtime, tools, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
 - `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
+- `agently-dynamic-task`: submitted or model-generated TaskDAG planning,
+  validation, resolver binding, and execution through the TriggerFlow substrate
 - `agently-migration`: migration from LangChain, LangGraph, LlamaIndex, CrewAI, or similar systems into Agently-native layers
 
 ## Anti-Patterns

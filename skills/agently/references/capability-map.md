@@ -13,10 +13,10 @@ Examples that should still start here:
 - "scaffold a new Agently project and decide how settings, prompts, and workflow should be split"
 
 - unresolved business, product, or refactor request -> stay here first
-- unclear execution-layer choice between ModelRequest, AgentExecution, TaskDAG, TriggerFlow, or Workspace -> stay here first and map the problem by scenario complexity
+- unclear owner choice between ModelRequest, AgentExecution, TaskDAG, TriggerFlow, TaskContext, TaskWorkspace, or RecordStore -> stay here first and map the problem by scenario complexity
 - project initialization, repo skeleton, or first-pass standard structure for a model app -> stay here first
 - model setup, prompt management, output control, response reuse, session memory, embeddings, KB, or retrieval-to-answer -> `agently-request`
-- Action Runtime, built-in actions, tools compatibility, MCP, ExecutionResource, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools` observation/evaluation/playground integration -> `agently-runtime`
+- Action Runtime, built-in actions, tools compatibility, MCP, ExecutionResource, TaskWorkspace, RecordStore, FastAPIHelper, `auto_func`, `KeyWaiter`, or `agently-devtools` observation/evaluation/playground integration -> `agently-runtime`
 - model-generated or app-submitted DAG planning, TaskDAG validation, resolver handlers, executor customization, or DynamicTask facade execution -> `agently-dynamic-task`
 - branching, concurrency, waiting/resume, mixed sync/async orchestration, event-driven fan-out, process-clarity refactors, graph-friendly workflow definitions, or multi-stage quality loops -> `agently-triggerflow`
 - unresolved migration ownership -> `agently-migration`

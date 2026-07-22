@@ -3,7 +3,7 @@
   "cases": [
     {
       "id": "project-framework-daily-news-zh",
-      "query": "如果我要按 Daily News Collector 那种方式初始化或重构项目，确认模型配置、Prompt 和 TriggerFlow 的分层，同时把 Configure Prompt 的动态变量注入和 `${ENV.xxx}` + `.env` 的模型设置约束都找出来，我应该先看哪些配套文档？",
+      "query": "如果我要初始化或重构项目，先按拓扑判断最小目录、确认模型配置、Prompt 和 TriggerFlow 的分层，同时找到可以按需复制的可运行模板，以及 `${ENV.xxx}` + `.env` 的模型设置约束，我应该先看哪份配套文档？",
       "matched_skills": [
         "agently"
       ],
@@ -15,7 +15,7 @@
       "concepts": [
         {
           "id": "project_layer_split",
-          "description": "Standard project split uses settings, prompts, workflow, tools, and runtime artifact folders."
+          "description": "Project structure starts from topology and adds only directories with a real owner and current consumer."
         },
         {
           "id": "prompt_placeholder_mappings",
@@ -28,13 +28,18 @@
         {
           "id": "playbook_owns_initialization",
           "description": "Project initialization stays inside agently rather than becoming a separate public skill."
+        },
+        {
+          "id": "runnable_template_asset",
+          "description": "The project-framework reference links a runnable template that should be copied selectively rather than treated as a universal scaffold."
         }
       ],
       "required_concepts": [
         "project_layer_split",
         "prompt_placeholder_mappings",
         "settings_auto_load_env",
-        "playbook_owns_initialization"
+        "playbook_owns_initialization",
+        "runnable_template_asset"
       ]
     },
     {
@@ -257,6 +262,43 @@
       ]
     },
     {
+      "id": "execution-topology-validation-zh",
+      "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
+      "matched_skills": [
+        "agently",
+        "agently-triggerflow"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently/references/execution-topology-validation.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "schema_complete_request_block",
+          "description": "Every ModelRequest block records prompt input/info/instruct, output schema, parsed output, and lifecycle events."
+        },
+        {
+          "id": "value_edge_lineage",
+          "description": "Every value edge names its source field, host transform or validation, and downstream input or state field."
+        },
+        {
+          "id": "signal_event_edge_lineage",
+          "description": "Every signal or RuntimeEvent edge names the emitted event, payload fields, trigger condition, and consuming block."
+        },
+        {
+          "id": "triggerflow_business_block_topology",
+          "description": "TriggerFlow audits include business blocks, subflows, fan-out/join, state, Actions, Workspace refs, and external waits."
+        }
+      ],
+      "required_concepts": [
+        "schema_complete_request_block",
+        "value_edge_lineage",
+        "signal_event_edge_lineage",
+        "triggerflow_business_block_topology"
+      ]
+    },
+    {
       "id": "taskdag-foundation-dynamic-task-facade-en",
       "query": "After routing to a DAG-shaped execution, which reference explains why TaskDAG is the foundation capability, how Dynamic Task is only the facade, and how TriggerFlow is the execution substrate?",
       "matched_skills": [
@@ -285,6 +327,73 @@
         "taskdag_foundation",
         "triggerflow_substrate",
         "executor_independent"
+      ]
+    },
+    {
+      "id": "design-system-boundaries-zh",
+      "query": "跨层设计已经路由到 agently-design。我需要先确认请求、运行时、稳定工作流和提交 DAG 的 owner 分界，并决定执行状态与持久存储各自放在哪里。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/system-boundaries.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "owner_layers",
+          "description": "The design assigns each concern to the smallest existing owner layer before implementation."
+        },
+        {
+          "id": "stable_flow_vs_submitted_dag",
+          "description": "Developer-owned stable topology belongs to TriggerFlow while submitted or model-generated DAG data belongs to TaskDAG or Dynamic Task."
+        },
+        {
+          "id": "state_storage_boundary",
+          "description": "Per-execution state, durable storage, shared flow data, and external resources have distinct owners."
+        }
+      ],
+      "required_concepts": [
+        "owner_layers",
+        "stable_flow_vs_submitted_dag",
+        "state_storage_boundary"
+      ]
+    },
+    {
+      "id": "design-model-request-topology-en",
+      "query": "After routing to agently-design, which focused reference should I use to define each ModelRequest prompt and output contract, map schema-field fan-out and join edges, govern provisional instant updates, and compare the planned request topology with runtime observations?",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "prompt_output_node_contract",
+          "description": "Each logical ModelRequest has an explicit prompt-slot and output-schema contract."
+        },
+        {
+          "id": "schema_edges",
+          "description": "Downstream consumers define field-level point-to-point, fan-out, and join edges."
+        },
+        {
+          "id": "instant_invalidation",
+          "description": "Instant updates are provisional and must be correlated with and invalidated by their final attempt."
+        },
+        {
+          "id": "planned_actual_diff",
+          "description": "Audits reconstruct observed logical requests and compare them with the planned topology."
+        }
+      ],
+      "required_concepts": [
+        "prompt_output_node_contract",
+        "schema_edges",
+        "instant_invalidation",
+        "planned_actual_diff"
       ]
     }
   ]

@@ -67,6 +67,12 @@ verifier judgment, quality scoring, planner context, or prompts.
 with `retry=True` means partial stream output was replaced; `cancelled` is
 distinct from a provider failure. DevTools may display these facts but must not
 drive retry or execution control flow.
+Each attempt outcome should contribute at most one `model.status`; a terminal
+provider error should contribute one `model.requester.error`. Event publication
+must not rethrow into AttemptRunner or create a duplicate outcome. Provider
+status/detail stays in the error message, while structured
+`model.requester.error.payload.request_data` remains protected cold evidence
+that may contain sensitive prompt data.
 
 Plain `delta` consumers receive a standalone `"<$retry>{reason}</$retry>"`
 chunk at the same replay boundary. DevTools observes the structured
@@ -82,6 +88,15 @@ remain AgentExecution-owned execution facts; DevTools should ingest, store,
 query, and display them through run lineage and payload fields such as
 `execution_id`, `path`, `task_id`, `execution_strategy`, and
 `effective_execution_strategy`, without becoming the task strategy owner.
+The terminal result stream item and terminal lifecycle event carry the same
+bounded projection. DevTools must not reconstruct the full business result from
+those events; resolve `terminal_retained_refs` when durable content is needed.
+Optional diagnostics such as `action_artifact_release` are additive payload
+fields and should remain fail-open for older DevTools consumers.
+Cancellation is a distinct `agent_execution.cancelled` terminal event. Treat it
+as an additive terminal type, keep the payload fail-open, and do not collapse it
+into `agent_execution.failed`; its bounded close snapshot reports cancellation,
+while TaskWorkspace terminal file cleanup remains an internal file-owner concern.
 
 AgentTask action observations may appear as `agent_task.action.started`,
 `agent_task.action.completed`, and `agent_task.action.failed`. DevTools should
@@ -91,6 +106,18 @@ project as completed observations; failed observations are reserved for failed,
 blocked, timed-out, or unrecovered error records. They are not route decisions,
 verifier results, quality scores, semantic relevance judgments, budget gates,
 or completion acceptance.
+
+Required Skill lifecycle observations may appear as
+`skills.revisions.bound` and `skills.context.bound`. Treat them as distinct
+revision-availability and concrete ModelRequest-consumption facts.
+`skills.context.bound.request_id` is
+the actual ModelRequest response identity, not a synthetic phase or child
+execution id; overrides and non-model child routes emit no consumption record.
+They are additive observation records: DevTools may
+display and correlate their host-issued ids, phases, bounded allocation, and
+diagnostic refs, but must not infer authorization, Action
+success, planner capability, or task acceptance from them. Revision binding
+alone must not be rendered as context consumption.
 
 Agently also provides a LazyImport facade when the app wants to keep the
 `agently-devtools` import behind Agently:

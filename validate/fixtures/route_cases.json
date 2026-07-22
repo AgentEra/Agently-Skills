@@ -371,12 +371,14 @@
       "query": "我想重构一个模型应用项目，把 Prompt 管理、模型配置和业务流程拆开，但还没决定只是做配置层整理，还是要一起升级成工作流结构。",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently"
+          "agently",
+          "agently-design"
         ]
       ]
     },
@@ -388,12 +390,14 @@
       "query": "帮我初始化一个 Agently 项目骨架，但我还没决定是先做 request side，还是一开始就拆成 TriggerFlow 工作流；我只知道模型配置、Prompt 和流程后面都要能独立演进。",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently"
+          "agently",
+          "agently-design"
         ]
       ]
     },
@@ -405,15 +409,16 @@
       "query": "Scaffold a new Agently project with a settings layer, prompt files, and a TriggerFlow workflow skeleton so model setup, prompt evolution, and flow logic stay separate from day one.",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently"
+          "agently-design"
         ],
         [
-          "agently",
+          "agently-design",
           "agently-triggerflow",
           "agently-request"
         ]
@@ -427,18 +432,20 @@
       "query": "按 Daily News Collector 那种目录结构重构项目：把模型配置放 SETTINGS 或 env 占位，把 Prompt 独立成配置文件，把业务流程独立成 TriggerFlow 工作流，避免把三者硬写在一起。",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
+          "agently-design",
           "agently-triggerflow",
           "agently-request"
         ],
         [
-          "agently",
-          "agently-triggerflow",
-          "agently-request"
+          "agently-design",
+          "agently-request",
+          "agently-triggerflow"
         ]
       ]
     },
@@ -450,18 +457,20 @@
       "query": "Split a model app into a settings layer for provider configuration, a prompt-config layer, and a TriggerFlow workflow layer so transport, prompt evolution, and business flow can change independently.",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
+          "agently-design",
           "agently-triggerflow",
           "agently-request"
         ],
         [
-          "agently",
-          "agently-triggerflow",
-          "agently-request"
+          "agently-design",
+          "agently-request",
+          "agently-triggerflow"
         ]
       ]
     },
@@ -473,22 +482,20 @@
       "query": "前端经常改筛选项和文案，我想让前端通过配置文件驱动 Prompt 和流程参数，作为桥梁减少前端变化对后端整体结构的冲击。",
       "installed_skills": [
         "agently",
+        "agently-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
+          "agently-design",
           "agently-request",
           "agently-triggerflow"
         ],
         [
+          "agently-design",
           "agently-triggerflow",
           "agently-request"
-        ],
-        [
-          "agently",
-          "agently-request",
-          "agently-triggerflow"
         ]
       ]
     },
@@ -755,6 +762,47 @@
         [
           "agently",
           "agently-dynamic-task"
+        ]
+      ]
+    },
+    {
+      "id": "complex-system-design-unresolved-zh",
+      "scenario_id": "agently-system-design",
+      "locale": "zh",
+      "intent_style": "owner-unresolved",
+      "query": "请先帮我设计一个包含多个模型请求、检索、工具调用和结果校验的复杂应用，但我还没有确定每一段应该归属请求层、运行时还是工作流层。",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-dynamic-task",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently",
+          "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "cross-layer-system-design-explicit-en",
+      "scenario_id": "agently-system-design",
+      "locale": "en",
+      "intent_style": "cross-layer-design-explicit",
+      "query": "Review the cross-layer architecture of this Agently service and assign clear owner boundaries across ModelRequest contracts, runtime capabilities, executable flows, evidence storage, lifecycle, and pressure control before implementation.",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-dynamic-task",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
         ]
       ]
     }

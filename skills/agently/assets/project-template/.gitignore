@@ -1,0 +1,9 @@
+.env
+.agently/
+outputs/
+.pytest_cache/
+.mypy_cache/
+.pyright/
+__pycache__/
+*.py[cod]
+.DS_Store

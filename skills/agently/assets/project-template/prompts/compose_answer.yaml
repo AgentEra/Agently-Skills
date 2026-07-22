@@ -1,0 +1,21 @@
+.execution:
+  input:
+    question: ${question}
+    evidence: ${evidence}
+  info:
+    evidence_ids: ${evidence_ids}
+  instruct:
+    - 只使用 evidence 中的结构化事实回答，不补造指标或期间。
+    - evidence_ids 只能引用 info.evidence_ids 中提供的标识。
+    - 数据不足时直接说明缺少什么，不要把推测写成事实。
+  output:
+    $format: json
+    answer:
+      $type: str
+      $desc: 面向业务使用者的简洁回答
+      $ensure: not_null
+    evidence_ids:
+      $type:
+        - $type: str
+      $desc: 回答实际使用的证据标识
+      $ensure: not_null

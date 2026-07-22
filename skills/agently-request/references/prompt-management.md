@@ -36,8 +36,9 @@ Use this skill when the core problem is how prompt state should be structured be
   in Python. Removed turn/request prompt config keys should be migrated to
   `.execution`
 - use `agent.define(...)` for reusable Agent definition state such as model
-  defaults, stable persona, fixed prompt, mounted Actions or Skills, Workspace,
-  ContextBuilder, and policy defaults. Ordinary quick prompt calls are execution-local
+  defaults, stable persona, fixed prompt, mounted Actions or Skills,
+  TaskWorkspace/RecordStore bindings, and policy defaults. TaskContext and
+  ContextReader remain execution/task scoped. Ordinary quick prompt calls are execution-local
   drafts, not shared Agent definition writes
 - Agent quick prompt chains create AgentExecution-local ModelRequest drafts. Expression-local
   chaining can configure and run one execution directly, for example

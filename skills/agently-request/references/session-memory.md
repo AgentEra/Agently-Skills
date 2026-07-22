@@ -1,66 +1,79 @@
 # Agently Session Memory
 
-Use this reference when the request path already exists but continuity,
-Workspace-backed long-term memory, or restore behavior is the main design
-problem.
+Use this reference when request/session continuity or durable long-term memory
+is the main design problem.
 
-## Native-First Rules
+## Ownership
 
-- prefer Session-backed continuity before inventing a custom memory layer
-- for durable long-term memory, attach the public `SessionMemory` protocol
-  through `session.use_memory(mode="AgentlyMemory", workspace=workspace)`
-- for Agent-created sessions, activate the session and then call
-  `agent.activated_session.use_memory(mode="AgentlyMemory")`; the session binds
-  `agent.workspace` automatically when possible
-- store memory through Workspace records, not process globals:
-  `collection="memory"`, `kind="global_memory"` for `GLOBAL_MEMORY`, and
-  `kind="session_memory"` for `SESSION_MEMORY`
-- treat `GLOBAL_MEMORY` as Workspace-global and isolated across Workspaces;
-  treat `SESSION_MEMORY` as additionally scoped by `runtime.session_id`
-- configure body shape and model prompts under
-  `session.memory.AgentlyMemory.*`; prompt overrides use
-  Configure-Prompt-shaped `.execution` blocks
-- let model requests own extraction, compression, retrieval-query planning, and
-  rerank judgment; deterministic code should only validate shape, apply scope,
-  store records, enforce budgets, and record diagnostics
-- keep single-candidate or otherwise tiny scoped memory recall cheap:
-  `AgentlyMemory` skips rerank below
-  `session.memory.AgentlyMemory.retrieve.rerank_min_candidates` and records
-  `memory_rerank_skipped`
-- keep the built-in `AgentlyMemory` empty-rerank safeguard enabled by default:
-  if rerank drops every candidate in a memory scope, it reinjects deterministic
-  candidates and records `memory_rerank_empty_fallback`; disable only when the
-  application explicitly prefers empty recall over conservative memory recall
-- keep request-side chat history and memo boundaries explicit
-- separate request memory from workflow runtime state
+- `Session` owns chat history, active context-window projection, memo,
+  memory-plugin attachment, and import/export.
+- `SessionMemory` owns extraction/compression policy and accepted memory writes
+  for a session.
+- `RecordStore` owns durable memory records, scopes, retrieval indexes, and
+  storage providers.
+- `AgentlyMemoryContextSource` exposes accepted memory as source kind
+  `session_memory`; TaskContext's internal `ContextIndex` and ContextReader own
+  task-level candidate reuse, exact reads, and delivery alongside Skills,
+  files, records, and direct entries.
+- TriggerFlow execution state owns workflow progression; Session memory is not a
+  substitute for it.
 
-## Usage Shape
+## Usage
 
 ```python
-workspace = Agently.create_workspace("./.agently/support-memory")
+agent = Agently.create_agent("support").use_record_store(
+    "./support-memory",
+    mode="read_write",
+)
+agent.activate_session(session_id="customer-42")
+session = agent.activated_session
+assert session is not None
+session.use_memory(mode="AgentlyMemory")
+```
 
+For a standalone Session, pass the storage owner explicitly:
+
+```python
+from agently.core import RecordStore, Session
+
+record_store = RecordStore("./support-memory", mode="read_write")
 session = Session()
-session.use_memory(mode="AgentlyMemory", workspace=workspace)
+session.use_memory(mode="AgentlyMemory", memory_store=record_store)
 ```
 
+The local RecordStore materializes lazily at
+`./support-memory/.agently/records/records.db`. No TaskWorkspace is created or
+required for record-only memory.
+
+`GLOBAL_MEMORY` shares the configured RecordStore scope. `SESSION_MEMORY` also
+uses the active session id. Applications that need user, tenant, or project
+isolation must set and enforce those scopes at the RecordStore boundary.
+
+Configure extraction and retrieval under `session.memory.AgentlyMemory.*`.
+Enable vector indexing only when real vector writes/queries are required:
+
 ```python
-agent = Agently.create_agent()
-agent.use_workspace("./.agently/support-memory")
-agent.activate_session(session_id="support-demo")
-agent.activated_session.use_memory(mode="AgentlyMemory")
+agent.set_settings("record_store.vector_index.enabled", True)
 ```
+
+Memory extraction, summarization, prose relevance, and rerank are model-owned
+semantic work. Host code validates shape, applies scopes, persists accepted
+records, enforces budgets, and records diagnostics. In an AgentTask,
+`AgentlyMemoryContextSource` joins the same TaskContext as other sources;
+ContextIndex may reuse structural/vector candidates and ContextReader owns the
+consumer-bound exact read. Do not replace semantic recall with keyword routing
+or run a parallel SessionMemory retrieval-to-prompt pipeline.
 
 ## Anti-Patterns
 
-- do not use session as a substitute for workflow orchestration state
-- do not keep restart-sensitive memory only in transient globals
-- do not add a second memory extension concept when `SessionMemory` already names
-  the extension protocol
-- do not put Workspace retrieval strategy inside a Session memory plugin; use
-  `workspace.retrieve(...)` so text/file/memory retrieval share the same
-  substrate
+- Keeping restart-sensitive memory only in process globals.
+- Using Session as workflow orchestration state.
+- Creating a TaskWorkspace solely to store memory records.
+- Putting general RecordStore retrieval or ContextReader policy inside the
+  SessionMemory plugin.
+- Enabling vector infrastructure for record-only memory flows.
 
 ## Read Next
 
-- `references/knowledge-base.md`
-- `references/prompt-management.md`
+- `knowledge-base.md`
+- `prompt-management.md`

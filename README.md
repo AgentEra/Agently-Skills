@@ -8,7 +8,7 @@ Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/do
 ## Compatibility
 
 The default public catalog is the current Agently-Skills generation `v2`,
-aligned with the Agently 4.1.4.1 runtime line and the compact 6-skill structure.
+aligned with the Agently 4.1.4.3 release line and the compact 7-skill structure.
 
 Machine-readable compatibility support lives in `compatibility/support.json`.
 The default branch keeps only the current public catalog so coding-agent skill
@@ -30,13 +30,13 @@ TriggerFlow orchestration, and Dynamic Task DAG execution.
 Agently-Skills is the official skills package for coding agents that need to
 build with Agently.
 
-It is not the same thing as the framework-side **Skills Manager** and
-AgentExecution Skill activation path inside the Agently runtime:
+It is not the same thing as the framework-side `SkillLibrary`, `TaskContext`,
+and AgentExecution Skill path inside the Agently runtime:
 
 - `Agently-Skills` - guidance bundles for coding agents such as Codex and Claude Code
-- Agently `Skills Manager` - framework runtime capability for apps and agents
-  to install, index, inspect, and progressively disclose standard `SKILL.md`
-  packages; AgentExecution owns planning and concrete Skill activation
+- Agently `SkillLibrary` - immutable installed Skill revision storage;
+  `TaskContext` and `ContextReader` expose task-scoped context, while
+  AgentExecution owns Skill binding, route selection, and execution lifecycle
 
 Individual skill directories are standard `SKILL.md` packages with optional
 references, examples, outputs, and scripts. Detailed API guidance belongs in
@@ -45,11 +45,14 @@ README.
 
 ## Current Catalog
 
-The default catalog contains 6 public skills:
+The default catalog contains 7 public skills:
 
 - `agently` - top-level router for unresolved model-powered product,
   assistant, internal-tool, automation, evaluator, workflow, or project-structure
   refactor requests.
+- `agently-design` - cross-layer system design, review, optimization, and
+  request-chain audit across ModelRequest contracts, evidence and identity
+  boundaries, lifecycle, pressure, and observability.
 - `agently-request` - request-side model setup, provider settings, prompt
   management, structured output, response reuse, streaming consumption, session
   memory, embeddings, knowledge-base indexing, retrieval, and retrieval-backed
@@ -90,6 +93,7 @@ Default bundle for building new Agently applications:
 ```bash
 for skill in \
   agently \
+  agently-design \
   agently-request \
   agently-runtime \
   agently-dynamic-task \
@@ -120,5 +124,5 @@ Inspect the default public catalog:
 npx skills add . --list
 ```
 
-The default listing and standard install path expose only the current 6-skill
+The default listing and standard install path expose only the current 7-skill
 catalog.

@@ -1,0 +1,132 @@
+---
+name: agently-design
+description: "Use when the user is designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including execution-layer selection, ModelRequest prompt/output schema handoffs, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
+---
+
+# Agently Design
+
+Use this skill to design or audit a non-trivial Agently system before choosing
+mechanism APIs. It owns cross-layer reasoning and request-chain audit methods;
+it does not own executable TriggerFlow definitions and does not own submitted
+TaskDAG data.
+
+Treat this page as routing and workflow guidance. When the request needs an
+owner matrix, project-layer separation, or the stable-versus-submitted topology
+boundary, read `references/system-boundaries.md` rather than answering from this
+summary alone.
+
+## Core Workflow
+
+1. Reduce the system into business decisions and completion invariants.
+2. Classify each decision as model-owned semantic work, host-owned deterministic
+   work, or a hybrid decision before deciding ModelRequest node boundaries.
+3. Assign every decision, state, and effect to an existing owner layer.
+4. Draw planned request and execution dependencies before choosing APIs.
+5. Create a separate ModelRequest only when its decision, input/context boundary,
+   output contract, consumer, lifecycle, retry, or parallelism needs independence.
+6. Design each ModelRequest prompt/output contract from declared consumer needs.
+7. Map output fields to same-response, next-pass, external, user-process,
+   point-to-point, fan-out, join, stream, and terminal edges.
+8. Design information, evidence, and identity boundaries with fail-closed behavior.
+9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
+10. Design observability and validation before implementation.
+11. Route concrete implementation to the owning leaf Skills.
+12. For audits, reconstruct actual topology and diff it against the plan.
+
+Keep these two views distinct:
+
+- analysis topology describes logical ModelRequests, information contracts, and
+  consumers;
+- execution topology describes trusted runtime mechanisms after ownership is
+  resolved.
+
+The design view may recommend an owner and produce implementation contracts. It
+must not become a second scheduler, flow definition, TaskDAG, retry engine, or
+runtime event protocol.
+
+## Route Inside This Skill
+
+- owner layers, project boundaries, stable flow versus submitted DAG, state,
+  storage, terminology, or architecture review ->
+  `references/system-boundaries.md`
+- ModelRequest nodes, prompt/output contracts, schema edges, `instant` fan-out,
+  joins, request ledgers, or planned-versus-observed topology ->
+  `references/model-request-topology.md`
+- ContextPackage, Workspace evidence, trusted selection keys, identity joins,
+  refs, citations, snapshots, or evidence fail-closed rules ->
+  `references/information-and-evidence-design.md`
+- serial/parallel dependencies, concurrency limits, retries, repair, replan,
+  approvals, pause/resume, cancellation, close, or terminal status ->
+  `references/lifecycle-and-pressure-design.md`
+- lineage, RuntimeEvents, request telemetry, topology reconstruction, model
+  judges, experiment comparison, or request-chain audit ->
+  `references/observability-and-validation.md`
+
+After design ownership is clear, route exact mechanisms as follows:
+
+- single-request provider, prompt, output, response, Session, or retrieval APIs
+  -> `agently-request`;
+- Action, MCP, ExecutionResource, Workspace, service, or telemetry mechanics ->
+  `agently-runtime`;
+- model-generated or application-submitted DAG validation and execution ->
+  `agently-dynamic-task`;
+- developer-owned executable stable workflow topology ->
+  `agently-triggerflow`;
+- source-framework mapping and migration sequencing -> `agently-migration`.
+
+## Required Design Artifacts
+
+Every non-trivial linear, branching, concurrent, or looped system requires one
+planning-topology contract containing all four ledgers:
+
+- owner/invariant ledger;
+- planned node ledger;
+- planned edge ledger;
+- production-necessity ledger.
+
+Add only the other artifacts needed for the task, usually a subset of:
+
+- an owner matrix for decisions, state, effects, and mechanisms;
+- planned logical-request and execution-dependency diagrams;
+- one node contract card per logical ModelRequest;
+- a schema-to-consumer edge matrix;
+- information, evidence, identity, lifecycle, and pressure policies;
+- observability fields and validation gates;
+- an audit ledger with the first divergence and verified root cause;
+- an implementation handoff naming the leaf Skill for each mechanism.
+
+Use types and field-level constraints wherever a downstream system consumes
+model output. Treat `instant` values as provisional until the final parsed
+result and configured validation accept the originating attempt.
+
+## Anti-Patterns
+
+- Do not turn this Skill into a broad `best-practices` dumping ground.
+- Do not create a parallel executable topology beside TriggerFlow or TaskDAG.
+- Do not review an output schema in isolation when its fields feed downstream
+  requests, Actions, joins, UI streams, or terminal gates.
+- Do not replace model-owned semantic understanding, intent recognition,
+  routing, response generation, judgment, planning, or ambiguity resolution
+  with tokenization, keyword tables, substring rules, or regular expressions.
+- Do not equate model participation with a separate ModelRequest; first test
+  whether an existing ordered contract or an existing loop node owns the work.
+- Do not request hidden chain-of-thought. Use bounded, task-specific
+  deliberation artifacts only when their semantic role and consumption contract
+  are explicit. A generic `reasoning`, `analysis`, or `thinking` field without
+  those annotations is not a design justification or quality result.
+- Do not trigger irreversible actions from provisional `instant` updates.
+- Do not ask the model to copy canonical ids, UUIDs, or full metadata for joins.
+- Do not diagnose from aggregate request counts without classifying logical
+  requests, provider attempts, stages, and consumers.
+- Do not claim root cause from final output alone; verify the earliest divergent
+  node or edge against direct runtime, source, and artifact evidence.
+
+## Completion Gate
+
+Before implementation, confirm that every business invariant has an owner,
+every ModelRequest node has an ownership and boundary reason, and every
+model-produced field has an authorized same-response, next-pass, external, or
+user-process consumer with a declared consumption contract. Confirm that every
+provisional path has invalidation behavior, every loop has progress and terminal
+rules, and every important edge is observable. Then hand concrete work to the
+mechanism-owning Skills without copying their API instructions here.

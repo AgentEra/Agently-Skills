@@ -12,6 +12,7 @@ ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 REFERENCE_FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 EXPECTED_SKILLS = {
     "agently",
+    "agently-design",
     "agently-request",
     "agently-runtime",
     "agently-dynamic-task",
@@ -87,10 +88,20 @@ def main() -> None:
         passes,
     )
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
-    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 6-skill set", failures, passes)
+    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 7-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
     catalog_guidance_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    design_text = (SKILLS / "agently-design" / "SKILL.md").read_text(encoding="utf-8")
+    design_system_boundaries_text = (
+        SKILLS / "agently-design" / "references" / "system-boundaries.md"
+    ).read_text(encoding="utf-8")
+    design_information_text = (
+        SKILLS
+        / "agently-design"
+        / "references"
+        / "information-and-evidence-design.md"
+    ).read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
     request_prompt_management_text = (
         SKILLS / "agently-request" / "references" / "prompt-management.md"
@@ -104,16 +115,47 @@ def main() -> None:
     request_knowledge_base_text = (
         SKILLS / "agently-request" / "references" / "knowledge-base.md"
     ).read_text(encoding="utf-8")
+    request_session_memory_text = (
+        SKILLS / "agently-request" / "references" / "session-memory.md"
+    ).read_text(encoding="utf-8")
+    context_skills_text = (
+        SKILLS / "agently" / "references" / "context-and-skills.md"
+    ).read_text(encoding="utf-8")
+    runtime_text = (SKILLS / "agently-runtime" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    runtime_actions_text = (
+        SKILLS / "agently-runtime" / "references" / "actions-runtime.md"
+    ).read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_overview_text = (
         SKILLS / "agently-dynamic-task" / "references" / "overview.md"
     ).read_text(encoding="utf-8")
     triggerflow_text = (SKILLS / "agently-triggerflow" / "SKILL.md").read_text(encoding="utf-8")
+    execution_topology_path = (
+        SKILLS / "agently" / "references" / "execution-topology-validation.md"
+    )
+    execution_topology_text = (
+        execution_topology_path.read_text(encoding="utf-8")
+        if execution_topology_path.exists()
+        else ""
+    )
     check(
         "playbook_framework_name_optional",
         "does not need to mention Agently explicitly" in playbook_text
         and "Generic asks" in playbook_text,
         "playbook explicitly allows scenario-led discovery without framework-name requirements",
+        failures,
+        passes,
+    )
+    check(
+        "project_information_locality",
+        "cross-file lookup count and nesting depth" in playbook_text
+        and "actual reuse value" in project_framework_text
+        and "Formal separation without either benefit is over-design"
+        in project_framework_text
+        and "Across code examples and project layouts" in catalog_guidance_text,
+        "general project guidance avoids splitting information without reuse or ownership value",
         failures,
         passes,
     )
@@ -133,6 +175,17 @@ def main() -> None:
         passes,
     )
     check(
+        "design_cross_owner_boundary",
+        "agently-request" in design_text
+        and "agently-runtime" in design_text
+        and "agently-triggerflow" in design_text
+        and "agently-dynamic-task" in design_text
+        and "model-request-topology.md" in design_text,
+        "agently-design owns cross-layer design while routing executable details to leaf owners",
+        failures,
+        passes,
+    )
+    check(
         "request_final_getter_without_discarded_stream",
         "directly await `async_get_data()`" in request_text
         and re.search(
@@ -142,17 +195,6 @@ def main() -> None:
         is not None
         and "No progressive consumer" in request_model_response_text,
         "request guidance chooses final data getters when no stream is consumed",
-        failures,
-        passes,
-    )
-    check(
-        "project_information_locality",
-        "cross-file lookup count and nesting depth" in playbook_text
-        and "actual reuse value" in project_framework_text
-        and "Formal separation without either benefit is over-design"
-        in project_framework_text
-        and "Across code examples and project layouts" in catalog_guidance_text,
-        "general project guidance avoids splitting information without reuse or ownership value",
         failures,
         passes,
     )
@@ -178,9 +220,129 @@ def main() -> None:
         passes,
     )
     check(
+        "task_context_internal_context_index_contract",
+        "internal `ContextIndex`" in context_skills_text
+        and "async_enumerate_descriptors" in context_skills_text
+        and "async_read_exact" in context_skills_text
+        and "never supplies exact bytes" in context_skills_text,
+        "TaskContext owns derived indexing while sources retain exact source truth",
+        failures,
+        passes,
+    )
+    check(
+        "session_memory_task_context_recall_contract",
+        "AgentlyMemoryContextSource" in request_text
+        and "AgentlyMemoryContextSource" in request_session_memory_text
+        and "parallel SessionMemory retrieval-to-prompt pipeline"
+        in request_session_memory_text,
+        "SessionMemory writes stay separate from TaskContext-owned task recall",
+        failures,
+        passes,
+    )
+    check(
+        "task_workspace_terminal_promotion_contract",
+        "staged candidate" in context_skills_text
+        and "post-promotion" in context_skills_text
+        and "staged candidate" in runtime_text
+        and "post-promotion" in runtime_text,
+        "required terminal artifacts are verified before atomic promotion",
+        failures,
+        passes,
+    )
+    check(
+        "workspace_owner_terms_do_not_overlap",
+        "| Workspace | durable records, files" not in design_system_boundaries_text
+        and "| TaskWorkspace |" in design_system_boundaries_text
+        and "| RecordStore |" in design_system_boundaries_text
+        and "| TaskContext |" in design_system_boundaries_text
+        and "Workspace/spec" not in design_information_text
+        and "entire Workspace" not in design_information_text,
+        "design guidance separates task files, durable records, and task context",
+        failures,
+        passes,
+    )
+    check(
+        "action_and_terminal_promotion_owner_contract",
+        "ActionRuntime owns model-callable file-write dispatch"
+        in runtime_actions_text
+        and "TaskWorkspace.atomic_promote_file" in runtime_actions_text
+        and "Promotion copies the already accepted bytes" in runtime_actions_text,
+        "Action evidence and host-controlled terminal file promotion have distinct owners",
+        failures,
+        passes,
+    )
+    check(
+        "terminal_topology_orders_verification_before_target_promotion",
+        "complete candidate readback + verifier-eligible candidate registration"
+        in execution_topology_text
+        and execution_topology_text.index("one semantic terminal verifier")
+        < execution_topology_text.index(
+            "digest-pinned TaskWorkspace target promotion"
+        )
+        and "complete target readback" in execution_topology_text
+        and "trusted-artifact promotion" not in execution_topology_text
+        and "only write owner" not in execution_topology_text,
+        "topology guidance distinguishes candidate evidence from accepted target promotion",
+        failures,
+        passes,
+    )
+    check(
+        "retrieval_token_evidence_contract",
+        "input tokens separately from LLM prompt tokens"
+        in request_knowledge_base_text
+        and "provider-observed prompt-token usage" in request_knowledge_base_text
+        and "Never derive billed tokens from character counts"
+        in request_knowledge_base_text,
+        "retrieval guidance separates embedding cost from observed LLM token effects",
+        failures,
+        passes,
+    )
+    check(
+        "execution_topology_validation_reference",
+        execution_topology_path.exists()
+        and "prompt.input" in execution_topology_text
+        and "prompt.info" in execution_topology_text
+        and "prompt.instruct" in execution_topology_text
+        and "output schema" in execution_topology_text
+        and "value edge" in execution_topology_text
+        and "signal/event edge" in execution_topology_text
+        and "TriggerFlow" in execution_topology_text
+        and "RuntimeEvent" in execution_topology_text,
+        "cross-layer evaluation guidance defines schema-complete value and signal/event topology audits",
+        failures,
+        passes,
+    )
+    check(
+        "execution_topology_validation_routing",
+        "execution-topology-validation.md" in playbook_text
+        and "execution-topology-validation.md" in triggerflow_text,
+        "agently and TriggerFlow guidance route complex request/block handoff audits to one standard",
+        failures,
+        passes,
+    )
+    check(
         "triggerflow_framework_name_optional",
         "does not need to say TriggerFlow or Agently" in triggerflow_text,
         "triggerflow explicitly allows scenario-led discovery without framework-name requirements",
+        failures,
+        passes,
+    )
+    check(
+        "triggerflow_loop_back_edge_guidance",
+        "graph-visible back edge" in triggerflow_text
+        and "`while True`" in triggerflow_text
+        and "chunk handler" in triggerflow_text,
+        "triggerflow documents graph-visible loop edges and chunk-level while True as an anti-pattern",
+        failures,
+        passes,
+    )
+    check(
+        "triggerflow_execution_state_owner_guidance",
+        "per-execution data store and chunk-to-chunk handoff contract" in triggerflow_text
+        and "translation helper" in triggerflow_text
+        and "durable cross-run data" in triggerflow_text
+        and "flow_data" in triggerflow_text,
+        "triggerflow documents execution state as runtime data owner and custom state helpers as anti-patterns",
         failures,
         passes,
     )
@@ -433,6 +595,13 @@ def main() -> None:
         passes,
     )
     check(
+        "route_fixture_covers_agently_design",
+        any(case.get("scenario_id") == "agently-system-design" for case in fixture_cases),
+        "route fixtures cover unresolved and explicit cross-layer design requests",
+        failures,
+        passes,
+    )
+    check(
         "reference_fixture_present",
         bool(reference_cases),
         "reference retrieval fixtures exist",
@@ -441,8 +610,12 @@ def main() -> None:
     )
     check(
         "reference_fixture_covers_project_framework",
-        any(case.get("id") == "project-framework-daily-news-zh" for case in reference_cases),
-        "reference retrieval fixtures cover project framework guidance",
+        any(
+            case.get("id") == "project-framework-daily-news-zh"
+            and "runnable_template_asset" in case.get("required_concepts", [])
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover topology-first project guidance and the runnable asset",
         failures,
         passes,
     )
@@ -492,6 +665,21 @@ def main() -> None:
         "reference_fixture_covers_model_quality_validation",
         any(case.get("id") == "model-quality-validation-routing-zh" for case in reference_cases),
         "reference retrieval fixtures cover model-request-based quality and routing guidance",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_execution_topology_validation",
+        any(case.get("id") == "execution-topology-validation-zh" for case in reference_cases),
+        "reference retrieval fixtures cover schema/event topology audits",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_agently_design",
+        any(case.get("id") == "design-system-boundaries-zh" for case in reference_cases)
+        and any(case.get("id") == "design-model-request-topology-en" for case in reference_cases),
+        "reference retrieval fixtures cover system boundaries and ModelRequest topology design",
         failures,
         passes,
     )
