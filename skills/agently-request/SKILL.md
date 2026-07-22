@@ -29,6 +29,12 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
 - Keep provider settings outside prompt/workflow code. Prefer settings files
   with `${ENV.xxx}` placeholders for environment-specific values.
+- Keep a one-off request contract together at the call site: make its
+  `input`, `info`, `instruct`, `output`, and result-consumption path readable as
+  one execution block. A Prompt config file plus explicit `mappings` is also
+  one cohesive contract. Extract pieces only for real reuse, an independent
+  owner/versioning boundary, product-editable configuration, or genuinely
+  dynamic composition; formatting alone is not a reason to add lookup hops.
 - Put runtime values in `input`, authoritative source/API/schema facts in
   `info`, transformation/call rules in `instruct`, and the exact
   machine-consumable shape in `output`.
@@ -109,6 +115,8 @@ ContextReader, not inside the memory plugin.
 
 - Handwritten provider HTTP, JSON repair, retry, or prompt templating before
   checking native settings/output contracts.
+- Moving a one-use schema, prompt slot, or request step into a distant constant,
+  helper, or wrapper only to make the call site look shorter.
 - Re-requesting one model call separately for text, data, and metadata.
 - Hiding retrieval inside unrelated prompt formatting.
 - Recreating generic Workspace/ContextBuilder behavior instead of composing

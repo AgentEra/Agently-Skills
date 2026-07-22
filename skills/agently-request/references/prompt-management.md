@@ -5,6 +5,18 @@ Use this skill when the core problem is how prompt state should be structured be
 ## Native-First Rules
 
 - prefer `input(...)`, `instruct(...)`, `info(...)`, and `output(...)` over concatenated prompt strings
+- keep information with the same change reason and consumer together. For a
+  one-off request, prefer one expression-local execution block that shows
+  `input`, `info`, `instruct`, `output`, and result consumption together. A
+  single Prompt Configure YAML/JSON file loaded with explicit `mappings` is the
+  equivalent declarative form
+- optimize for review-time lookup count and depth for both people and coding
+  agents. Do not extract a one-use schema, prompt fragment, or forwarding helper
+  merely to make the file tree or call expression look formally layered
+- extraction is justified when the extracted contract has an independent owner
+  or version/review lifecycle, is reused unchanged by multiple consumers, must
+  be product-editable outside Python, or is genuinely generated/conditional.
+  Keep the extracted owner directly discoverable from the request call site
 - when model output must satisfy a documented API request, SDK/module
   interface, or function signature, compose the prompt as one integration
   contract: runtime facts in `input`, authoritative API/schema documentation,
@@ -53,6 +65,9 @@ Use this skill when the core problem is how prompt state should be structured be
 ## Anti-Patterns
 
 - do not flatten business context into one opaque string unless the task is trivial
+- do not trade a readable request block for distant one-use constants, tiny
+  getters, pass-through request builders, or wrapper layers that only satisfy a
+  preferred visual format
 - do not rebuild prompt templates through ad hoc `.format(...)` or string concatenation when prompt mappings already fit
 - do not duplicate a large slot into another slot just to refer to it; use
   `${INPUT...}` / `${INFO...}` / `${INSTRUCT...}` references so the rendered

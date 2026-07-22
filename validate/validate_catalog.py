@@ -91,8 +91,15 @@ def main() -> None:
     check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 7-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
+    catalog_guidance_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     design_text = (SKILLS / "agently-design" / "SKILL.md").read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
+    request_prompt_management_text = (
+        SKILLS / "agently-request" / "references" / "prompt-management.md"
+    ).read_text(encoding="utf-8")
+    project_framework_text = (
+        SKILLS / "agently" / "references" / "project-framework.md"
+    ).read_text(encoding="utf-8")
     request_model_response_text = (
         SKILLS / "agently-request" / "references" / "model-response.md"
     ).read_text(encoding="utf-8")
@@ -156,6 +163,20 @@ def main() -> None:
         is not None
         and "No progressive consumer" in request_model_response_text,
         "request guidance chooses final data getters when no stream is consumed",
+        failures,
+        passes,
+    )
+    check(
+        "request_contract_information_locality",
+        "one-off request contract together at the call site" in request_text
+        and "same change reason and consumer" in request_prompt_management_text
+        and "review-time lookup count and depth" in request_prompt_management_text
+        and "independent owner" in request_prompt_management_text
+        and "unrelated responsibilities" in project_framework_text
+        and "information-retrieval hops" in project_framework_text
+        and "one Prompt Configure file plus explicit" in catalog_guidance_text
+        and "god module" in catalog_guidance_text,
+        "request and project guidance co-locate related information without creating god modules",
         failures,
         passes,
     )

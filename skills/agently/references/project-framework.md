@@ -181,6 +181,20 @@ MCP client consumption already belongs to Agently Action management. Do not add
 an application-local MCP client service or a function that only forwards one
 transport object to the Agently MCP registration call.
 
+## Information Locality
+
+Co-locate information that has the same change reason and consumer. For people
+and coding agents, minimize the information-retrieval hops and nesting depth
+needed to understand one request, invariant, or side effect. A one-use schema,
+constant, helper, or class should not live elsewhere merely to make the local
+code shorter or satisfy a preferred visual format.
+
+This does not authorize a god module. Split unrelated responsibilities, and
+extract related information when the new boundary owns reuse, independent
+versioning or review, policy/lifecycle, non-trivial translation, or dynamic
+composition. After extraction, keep the owner directly discoverable from its
+call site. The goal is cohesive locality, not maximum inlining.
+
 ## Wrapper Acceptance Test
 
 Before adding a Service, Manager, Factory, repository facade, request wrapper,
