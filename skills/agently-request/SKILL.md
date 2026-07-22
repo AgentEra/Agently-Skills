@@ -30,12 +30,12 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
 ## Native-First Rules
 
 - keep provider settings outside prompt and workflow code; prefer settings files with `${ENV.xxx}` placeholders when deployment values differ by environment
-- keep a one-off request contract together at the call site: make its `input`,
-  `info`, `instruct`, `output`, and result-consumption path readable as one
-  execution block. A Prompt config file plus explicit `mappings` is also one
-  cohesive contract. Extract pieces only for real reuse, an independent
-  owner/versioning boundary, product-editable configuration, or genuinely
-  dynamic composition; formatting alone is not a reason to add lookup hops
+- keep a one-off Agently fluent request readable as one chain: show
+  `.input(...)`, `.info(...)`, `.instruct(...)`, `.output(...)`, and its terminal
+  result call such as `.get_result()`, `.get_data()`, or `.async_get_data()`
+  together. A Prompt config file plus explicit `mappings` is the declarative
+  equivalent. Split only for real reuse, independently owned/versioned
+  configuration, or genuinely dynamic composition
 - keep stable prompt and output contracts in prompt config when shared across a request family
 - when model output feeds a documented API request, module interface, or
   function call, use the positive integration-contract recipe: runtime values
@@ -150,8 +150,8 @@ request clearly needs branching, waiting, resume, or durable orchestration, use
 ## Anti-Patterns
 
 - do not handwrite provider HTTP calls before checking native model requester settings
-- do not move a one-use schema, prompt slot, or request step into a distant
-  constant, helper, or wrapper only to make the call site look shorter
+- do not move a one-use schema or prompt step away from its Agently request
+  chain only to make the chain look shorter
 - do not rebuild prompt templates with ad hoc string formatting when prompt mappings fit
 - do not handwrite JSON repair/retry loops before using output contracts and validation
 - do not re-request the same model call only to get text, parsed data, or metadata separately

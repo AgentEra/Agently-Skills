@@ -21,17 +21,11 @@ Treat this as a menu of owner boundaries, not a required directory checklist.
 
 ## Information Locality
 
-Co-locate information that has the same change reason and consumer. For people
-and coding agents, minimize the information-retrieval hops and nesting depth
-needed to understand one request, invariant, or side effect. A one-use schema,
-constant, helper, factory, or class should not live elsewhere merely to make the
-local code shorter or satisfy a preferred visual format.
-
-This does not authorize a god module. Split unrelated responsibilities, and
-extract related information when the new boundary owns reuse, independent
-versioning or review, policy/lifecycle, non-trivial translation, or dynamic
-composition. After extraction, keep the owner directly discoverable from its
-call site. The goal is cohesive locality, not maximum inlining.
+Minimize the cross-file lookup count and nesting depth required by people and
+coding agents to understand the current behavior. Do not split one-use schemas,
+constants, helpers, factories, classes, or wrappers into separate locations
+unless the new boundary has actual reuse value or an independently
+owned/versioned contract. Formal separation without either benefit is over-design.
 
 ## Framework Internal Module Rules
 
