@@ -11,11 +11,13 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
   the schema is stable and shared across a request family
 - prefer `.output(...)` for machine-readable results when the schema is dynamic, exploratory, or easier to keep close to code
 - for Agently `4.1.4.3+`, a Pydantic v2 `BaseModel` class may be passed
-  directly to `.output(ModelClass, format="json")`, including models with
-  nested `BaseModel` fields and lists. Agently projects the model recursively
-  into the prompt schema and preserves the original class for
-  `get_data_object()` / `async_get_data_object()`; successful object reads
-  return an instance of that class
+  directly to `.output(ModelClass, format=...)`, including models with nested
+  `BaseModel` fields and lists. Agently projects requiredness, nullability,
+  aliases, enum/literal values, length constraints, numeric bounds,
+  `multiple_of`, patterns, and recognized formats recursively into the
+  model-facing field requirements for every structured output format. The
+  original class remains the typed acceptance authority for
+  `get_data_object()` / `async_get_data_object()`
 - when parsed output feeds an API, SDK, module interface, or function, mirror
   the consumed request/argument structure instead of returning an opaque dict.
   Describe every consumed field with its contract meaning, exact type,
@@ -101,13 +103,18 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
   intentionally empty values remain valid when the path exists. Use third-slot
   `"not_null"` only when a required path must also contain a meaningful value;
   it rejects `None`, blank strings, empty lists or wildcard matches, and lists
-  containing missing required values while still accepting `False` and `0`
+  containing missing required values while still accepting `False` and `0`.
+  Both policies are rendered into the initial model-facing field requirements,
+  so generation guidance and result-side ensure checks use the same semantics
 - use manual `ensure_keys` only when the required path is runtime-dependent, conditional, or awkward to express in the static schema
 - `max_retries=3` means Agently may make up to three additional model attempts
-  after the initial call when parsing, required-key extraction, strict output
-  validation, or custom validators fail. Retries commonly recover ordinary
-  omissions, JSON/markdown parse mistakes, and auto-format degradation. They can
-  still fail after all attempts when the model repeatedly echoes placeholder
+  after the initial call when parsing, Pydantic model validation, required-key
+  extraction, strict output validation, or custom validators fail. Pydantic
+  failures add bounded field-level correction feedback to the next attempt and
+  are never accepted as raw invalid dicts, including when
+  `raise_ensure_failure=False`. Retries commonly recover ordinary omissions,
+  JSON/markdown parse mistakes, and auto-format degradation. They can still
+  fail after all attempts when the model repeatedly echoes placeholder
   scaffolding, fills boolean/numeric fields with prose, produces malformed
   nested arrays, is truncated by long context, or must satisfy many wildcard
   paths such as `rule_results[*].evidence`
