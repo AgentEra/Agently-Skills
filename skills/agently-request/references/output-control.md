@@ -112,10 +112,13 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
   extraction, strict output validation, or custom validators fail. Pydantic
   failures add bounded field-level correction feedback to the next attempt and
   are never accepted as raw invalid dicts, including when
-  `raise_ensure_failure=False`. Retries commonly recover ordinary omissions,
-  JSON/markdown parse mistakes, and auto-format degradation. They can still
-  fail after all attempts when the model repeatedly echoes placeholder
-  scaffolding, fills boolean/numeric fields with prose, produces malformed
+  `raise_ensure_failure=False`. A retryable custom validator failure adds its
+  bounded `reason` to the same complete-replacement correction prompt; its
+  optional `payload` and handler exception details remain host/runtime-only.
+  Retries commonly recover ordinary omissions, JSON/markdown parse mistakes,
+  and auto-format degradation. They can still fail after all attempts when the
+  model repeatedly echoes placeholder scaffolding, fills boolean/numeric fields
+  with prose, produces malformed
   nested arrays, is truncated by long context, or must satisfy many wildcard
   paths such as `rule_results[*].evidence`
 - prefer `.validate(...)` or `validate_handler=` when the field exists but the value still needs business validation
