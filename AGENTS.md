@@ -208,6 +208,14 @@ Use this file as installation-time guidance after the skills are added into anot
   `instant` generator into a no-op loop before reading the final result. Stream
   only when items are published, recorded, applied to state/UI, or used for
   explicitly cancelable/idempotent preparation.
+- When `instant` is used to overlap model generation with downstream work, put
+  compact trigger fields before long explanatory or artifact fields. Start work
+  only from a complete canonical field or list item, deduplicate it by a
+  host-owned payload key, dispatch it without blocking continued stream
+  consumption, and reconcile the started set against the final validated data.
+  Reuse matching work, start final items that were not observed provisionally,
+  and cancel or discard provisional extras. A field-start event may map to a
+  stable host-owned status, but raw parser paths are not the UI protocol.
 - For retrieval-backed natural-language answers, expose one trusted `ref_id` or
   evidence `cite_as` per source and use application-level
   `[[ref:<ref_id>]]` tokens. Host code validates and resolves tokens, builds
