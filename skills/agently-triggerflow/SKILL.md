@@ -137,6 +137,29 @@ state, interrupt/resume ledgers, declared resource requirements, and eligible
 metadata. It does not serialize live clients, callbacks, semaphores, tasks,
 coroutine frames, secrets, or stateful external sessions.
 
+For payload-heavy terminal histories, use the typed snapshot projection policy
+instead of deleting raw snapshot fields:
+
+```python
+execution.set_snapshot_projection_policy(
+    terminal_value_mode="digest",
+    min_value_bytes=4096,
+)
+snapshot = execution.save(require_idle=True)
+```
+
+Digest projection is opt-in. It preserves pending interrupts and incomplete
+resume records, projects only eligible terminal interrupt values and completed
+SignalNet resume metadata, and keeps duplicate/conflicting
+`resume_request_id` checks through canonical digests. It intentionally gives up
+full historical body readback for projected values, defers while the execution
+is active, and does not bound current state or `last_signal`.
+
+Keep this separate from `set_compaction_policy(...)`: that policy compacts
+durable RuntimeEvent records into segments, anchors, and artifact refs. It does
+not project execution-snapshot `interrupts`, `resume_ledger`, or `signal_net`.
+Physical snapshot/artifact TTL and version retention remain provider-owned.
+
 Declare resource requirements and restore live ExecutionResources through
 host/plugin resolvers. A stateful external system must persist its own ref,
 version, lease, or fence token and validate it before load is ready.
