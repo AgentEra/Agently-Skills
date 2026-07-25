@@ -137,6 +137,38 @@
         "attach_mcp"
       ],
       "live_smoke_profile": "local"
+    },
+    {
+      "id": "instant-deliberation-progress-native",
+      "reference_example": "skills/agently-request/examples/instant_deliberation_progress.py",
+      "required_primitives": [
+        "\"generation_plan\"",
+        "get_async_generator(type=\"instant\")",
+        "\"streaming_parse_deferred\"",
+        "async_get_data()"
+      ],
+      "forbidden_antipatterns": [
+        "\"reasoning\":",
+        "\"thinking\":",
+        "while True"
+      ],
+      "live_smoke_profile": "local"
+    },
+    {
+      "id": "instant-retrieval-overlap-native",
+      "reference_example": "skills/agently-triggerflow/examples/instant_retrieval_overlap.py",
+      "required_primitives": [
+        "wildcard_path == \"retrieval_tasks[*]\"",
+        "async_emit_nowait(",
+        "async_get_data(max_retries=1)",
+        "async_close"
+      ],
+      "forbidden_antipatterns": [
+        "await retrieve(",
+        "requests.post(",
+        "while True"
+      ],
+      "live_smoke_profile": "local"
     }
   ]
 }

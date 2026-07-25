@@ -231,6 +231,41 @@ When an attempt fails, is repaired, or is superseded, invalidate its provisional
 values. Cross the final validation barrier only after the same result provides
 its parsed final data and configured validation passes.
 
+### Start, cache, reconcile
+
+Use one explicit three-phase contract when a completed early field can start
+useful work while the model continues generating:
+
+1. **start** — put compact trigger records before long explanation or artifact
+   fields; act only when the canonical field or list item is complete;
+2. **cache** — derive a host-owned key from the task-relevant payload and start
+   only idempotent/cancelable work, under the owning concurrency limit;
+3. **reconcile** — after `async_get_data()` returns the final validated object,
+   reuse matching work, start accepted items that were not observed
+   provisionally, and cancel or discard provisional extras.
+
+The stream loop must keep consuming model output after dispatch. Awaiting each
+retrieval, tool call, or preparation inline merely moves the serial bottleneck
+into the parser loop. Use TriggerFlow managed non-blocking signals when the
+fan-out and join are application-visible.
+
+Prefer generating all compact trigger records first, followed by a short
+user-safe progress explanation and then the expensive structured artifact.
+Interleaving a long explanation after every trigger delays later independent
+work without improving its inputs. An exception is a consumer that genuinely
+needs each explanation before it may authorize the next trigger.
+
+Final reconciliation is mandatory even when provider retry markers are handled.
+Output parsing, ensure checks, or custom validation can accept a replacement
+attempt after the original instant stream has ended; final accepted items are
+the authority. Provider retries and repeated deltas must not create repeated
+retrievals or side effects.
+
+A field-start observation may become a stable host-owned status such as
+`generating_artifact`. Model-generated progress prose is appropriate only when
+its natural-language content is itself useful to the user. Do not expose raw
+paths as the frontend protocol.
+
 ```mermaid
 sequenceDiagram
   participant P as Producer request
@@ -241,6 +276,13 @@ sequenceDiagram
   P->>V: final parsed object
   V-->>C: accept attempt or invalidate provisional work
 ```
+
+For large structured generation, a bounded artifact such as
+`generation_plan`, `evidence_assessment`, or `risk_checks` may appear before the
+large field when a later field, workflow node, or user-process view consumes it.
+This is an observable structured contract, not hidden chain-of-thought. Declare
+its bounds, consumer, visibility, retention, and failure behavior; a generic
+`reasoning` field still does not qualify.
 
 ## Schema-to-Flow Map
 

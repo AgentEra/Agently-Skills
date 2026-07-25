@@ -67,6 +67,17 @@ absent, dispatch and retry timing keep the legacy immediate behavior.
   own slot. For CLI consumers that print multiple paths into one terminal area,
   use a small state flag or buffer and flush later-path deltas only after the
   earlier path's completion event has been handled
+- map the first observed event under a target field to a stable host-owned
+  status when "generation started" is useful. Start downstream work only from a
+  complete canonical field or list item, such as
+  `wildcard_path == "retrieval_tasks[*]" and is_complete`
+- do not await long downstream work inside the stream loop. Dispatch it through
+  a bounded, managed async owner and continue consuming. Deduplicate using a
+  host-derived key from the task-relevant payload
+- after the stream, treat `async_get_data()` as authoritative and reconcile its
+  accepted items with provisional work. Validation retry can produce accepted
+  data that was not observed on the original instant stream; start missing
+  accepted work and cancel or discard provisional extras
 
 Final-only consumption:
 
@@ -95,6 +106,22 @@ async for item in result.get_async_generator(type="instant"):
     await publish_structured_patch(item)
 data = await result.async_get_data()
 ```
+
+For early retrieval or preparation, use:
+
+```text
+complete instant item
+-> host payload key
+-> managed bounded dispatch
+-> keep consuming
+-> final async_get_data()
+-> reuse / start missing / cancel or discard extras
+```
+
+This avoids both all-serial latency and duplicate work. `$status` retry events
+are useful observer facts, but they do not replace final reconciliation.
+Irreversible effects still wait for the final accepted result. See
+`../../agently-triggerflow/examples/instant_retrieval_overlap.py`.
 
 ## Anti-Patterns
 

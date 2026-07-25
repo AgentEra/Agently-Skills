@@ -56,6 +56,14 @@ changes, external publication, payment, deletion, and final business decisions
 must wait for the final parsed result and configured validation. When the
 attempt fails or is superseded, invalidate its provisional work.
 
+For provisional fan-out, keep a host-owned map from canonical task payload to
+the managed task or cached result. Complete early items may start within the
+external adapter's concurrency and rate limits while the stream consumer keeps
+reading. After final validation, join only accepted keys, start any accepted
+key missed by streaming, and cancel or discard every extra provisional key.
+This final reconciliation is the correctness barrier and also prevents provider
+replay or repeated deltas from repeating retrievals.
+
 ## Retry, Repair, and Replan
 
 Before another attempt, record:

@@ -136,3 +136,24 @@ Avoid exposing:
 ## Validation Rule
 
 A good bridge layer lets you change the model schema details without forcing the frontend to rewrite its event consumer, as long as the business event contract stays the same.
+
+## Provisional Downstream Fan-Out
+
+The same bridge can start independent work before the full model result exists,
+but only with a start/cache/reconcile contract:
+
+1. require a complete canonical `instant` item;
+2. compute a host-owned key from its task-relevant payload;
+3. call `await data.async_emit_nowait(...)` once for that key and continue the
+   stream loop;
+4. let the TriggerFlow execution own concurrency, close, and task draining;
+5. read final validated data from the same result;
+6. reuse matching work, emit missing accepted items, and cancel or discard
+   provisional extras before the final join.
+
+Do not await each retrieval inline in the model stream loop, and do not use a
+partial string delta as an external request. Repeated deltas, provider replay,
+and validation replacement attempts must converge on the same host key rather
+than repeat work. Only read-only or otherwise idempotent/cancelable preparation
+may start provisionally. See
+`examples/instant_retrieval_overlap.py`.
