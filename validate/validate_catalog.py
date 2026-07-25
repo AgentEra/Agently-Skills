@@ -683,6 +683,21 @@ def main() -> None:
         failures,
         passes,
     )
+    check(
+        "reference_fixture_covers_instant_overlap_reconcile",
+        any(
+            case.get("id") == "design-instant-overlap-reconcile-zh"
+            and {
+                "host_key_deduplication",
+                "final_reconciliation",
+                "bounded_structured_deliberation",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover provisional instant fan-out and final reconciliation",
+        failures,
+        passes,
+    )
 
     print("V2 catalog validation")
     print(f"passes: {len(passes)}")

@@ -71,9 +71,24 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
     When several paths share one CLI output area, buffer later-path deltas until
     the earlier path completion event has been handled; Web UI, SSE, and
     WebSocket consumers should normally render paths into separate slots
+  - when early fields start independent work, order compact trigger records
+    before long explanations or artifacts. Start only from complete canonical
+    fields/items, keep consuming while bounded work runs, and reconcile against
+    final validated data
+  - incremental JSON parsing may emit
+    `$status.status == "streaming_parse_deferred"` after a large incomplete
+    buffer crosses its safety threshold. Treat this as loss of progressive
+    optimization, not final correctness; keep control fields compact and early
+  - hybrid typed JSON blocks stream as block text and become typed values at
+    finalization. Use JSON when nested path-level early triggers are required
   - for typed handlers, import `StreamingData`, `AgentlySpecificResultMessage`,
     and `AgentlyModelResultMessage` from `agently`; use `agently.types.data`
     for the full typed data namespace
+- for large structured generation, an early bounded `generation_plan`,
+  `evidence_assessment`, or `risk_checks` field is appropriate only when a
+  later field, workflow node, or user-process view consumes it. Declare its
+  bounds, visibility, retention, and failure behavior. Do not use a generic
+  `reasoning`, `analysis`, or `thinking` field or request hidden chain-of-thought
 - account for observed model reliability when recommending formats:
   - `auto` can degrade to JSON and retry when markdown-style parsing fails, but
     do not depend on retry latency for hot paths. Recent qwen2.5:7b checks

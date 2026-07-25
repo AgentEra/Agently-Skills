@@ -395,6 +395,42 @@
         "instant_invalidation",
         "planned_actual_diff"
       ]
+    },
+    {
+      "id": "design-instant-overlap-reconcile-zh",
+      "query": "已经路由到 agently-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "compact_trigger_fields_first",
+          "description": "Compact independent trigger records precede long explanations and artifacts."
+        },
+        {
+          "id": "host_key_deduplication",
+          "description": "Host-owned payload keys deduplicate provisional downstream work."
+        },
+        {
+          "id": "final_reconciliation",
+          "description": "Final validated data reuses matching work, starts missing accepted items, and cancels or discards provisional extras."
+        },
+        {
+          "id": "bounded_structured_deliberation",
+          "description": "Early generation plans are bounded consumed artifacts rather than hidden chain-of-thought."
+        }
+      ],
+      "required_concepts": [
+        "compact_trigger_fields_first",
+        "host_key_deduplication",
+        "final_reconciliation",
+        "bounded_structured_deliberation"
+      ]
     }
   ]
 }
