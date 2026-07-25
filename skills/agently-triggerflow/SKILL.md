@@ -60,6 +60,13 @@ Graph adjacency proves activation, not value transfer.
   nowait tasks and returns the close snapshot.
 - Pending interrupts make close fail by default. Choose cancellation deliberately
   when abandoning waits.
+- Active non-paused children created by `to_sub_flow(...)` are visible through
+  `execution.get_sub_flow_frames()`. Use
+  `async_emit_to_sub_flow(frame_id, ...)` for best-effort child signaling and
+  `async_cancel_sub_flow(frame_id, reason=...)` to cancel/fence one child while
+  keeping the parent execution open. A cancelled child does not write back or
+  continue downstream. See `examples/active_sub_flow_control.py` for the
+  explicit execution shape.
 
 Do not make code after `await data.async_pause_for(...)` the restart contract.
 Put post-resume behavior in a downstream chunk, `data.is_resume` branch, or
@@ -76,9 +83,11 @@ explicit resume event handler.
   of `flow_data`; `load()` replaces the current
   flow-shared value with that copy. This does not provide execution isolation,
   CAS, merge, or concurrency safety.
-- Use `TaskWorkspace` for task files/artifacts and `RecordStore` when data must
-  outlive a run, be shared across runs, or support records, snapshots,
-  RuntimeEvents, leases, or durable refs.
+- Use `TaskWorkspace` for task files/artifacts and a business-owned database or
+  RecordStore record collection when deterministic domain state must outlive or
+  be shared across runs. Execution snapshots are for restart/disconnected-wait
+  recovery, not business audit or state archival. Use durable RuntimeEvents or
+  purpose-built audit records when durable history is actually required.
 - Keep compact refs/status in execution state and full bodies cold.
 - Bind RecordStore ports explicitly. Ordinary observation belongs in
   logs/DevTools; `runtime_event_store` is only for requested durable audit/replay.
@@ -136,6 +145,64 @@ that need neither persistence nor record access.
 state, interrupt/resume ledgers, declared resource requirements, and eligible
 metadata. It does not serialize live clients, callbacks, semaphores, tasks,
 coroutine frames, secrets, or stateful external sessions.
+
+For payload-heavy terminal histories, use the typed snapshot projection policy
+instead of deleting raw snapshot fields:
+
+```python
+execution.set_snapshot_projection_policy(
+    terminal_value_mode="digest",
+    min_value_bytes=4096,
+)
+snapshot = execution.save(require_idle=True)
+```
+
+Digest projection is opt-in. It preserves pending interrupts and incomplete
+resume records, projects only eligible terminal interrupt values and completed
+SignalNet resume metadata, and keeps duplicate/conflicting
+`resume_request_id` checks through canonical digests. It intentionally gives up
+full historical body readback for projected values, defers while the execution
+is active, and does not bound current state or `last_signal`.
+
+Keep this separate from `set_compaction_policy(...)`: that policy compacts
+durable RuntimeEvent records into segments, anchors, and artifact refs. It does
+not project execution-snapshot `interrupts`, `resume_ledger`, or `signal_net`.
+Physical snapshot version retention remains provider-owned. The built-in local
+RecordStore keeps the latest three execution snapshots per `run_id` by default:
+
+```python
+record_store = RecordStore(
+    "./recovery",
+    mode="read_write",
+    snapshot_retention={"keep_last": 5},
+)
+execution.set_snapshot_retention_policy(keep_last=2)
+await execution.async_save(record_store)
+```
+
+`{"keep_last": None}` or the execution override with `keep_last=None` disables
+automatic pruning at that layer. The execution override has precedence and
+survives save/load. Generic `put_checkpoint(...)` writes are not automatically
+pruned.
+
+For active recovery hygiene, require the execution to be idle and preserve at
+least one latest point:
+
+```python
+report = await execution.async_prune_recovery_snapshots(keep_last=1)
+```
+
+This method resolves `execution.run_id`; low-level provider administration
+still requires `record_store.prune_snapshots(run_id, keep_last=...)`. Use
+`delete_snapshot(run_id)` only for explicit full cleanup. Do not combine
+snapshot projection, physical retention, RuntimeEvent compaction, and business
+data retention into one policy.
+
+Running sub-flow frame metadata may appear in a snapshot for audit, but the
+live child execution is not restart-resumable. Loading a snapshot with a
+`running` or `cancel_requested` frame fails closed. Settle or cancel active
+children before taking a restart-resumable snapshot; projected `waiting` child
+frames keep their normal root-interrupt resume contract.
 
 Declare resource requirements and restore live ExecutionResources through
 host/plugin resolvers. A stateful external system must persist its own ref,
