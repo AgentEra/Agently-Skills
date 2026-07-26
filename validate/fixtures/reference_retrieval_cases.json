@@ -431,6 +431,37 @@
         "final_reconciliation",
         "bounded_structured_deliberation"
       ]
+    },
+    {
+      "id": "design-request-snapshot-boundary-zh",
+      "query": "已经路由到 agently-design。什么时候应把意图识别、决策和回复合并到同一个 ModelRequest，什么时候必须拆分？如果前置模型结果要先触发 Action 或系统检索，而后置回答必须使用新返回的数据，instant 能否把结果送回仍在生成的同一次请求？应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "same_snapshot_merge",
+          "description": "Supporting semantic steps may share one ordered ModelRequest when later fields need only dispatch-time input and earlier same-response fields."
+        },
+        {
+          "id": "new_observation_split",
+          "description": "A later semantic step starts a new ModelRequest after an Action, system access, readback, or host computation produces a required new observation."
+        },
+        {
+          "id": "instant_no_backfeed",
+          "description": "Instant can start provisional work early but cannot inject that work's later result into the already-running request."
+        }
+      ],
+      "required_concepts": [
+        "same_snapshot_merge",
+        "new_observation_split",
+        "instant_no_backfeed"
+      ]
     }
   ]
 }
