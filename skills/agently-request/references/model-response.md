@@ -13,6 +13,29 @@ long-running task needs provider-level dispatch limits. Use
 retries should back off instead of immediately re-issuing. If these settings are
 absent, dispatch and retry timing keep the legacy immediate behavior.
 
+## Reuse One Result or Start a Later Request
+
+One result can expose text, structured data, metadata, and progressive fields
+without reissuing its ModelRequest. It cannot gain new input after dispatch.
+Keep supporting semantic fields and the final answer in one ordered output
+contract when they share the request-time input/evidence snapshot and later
+fields need only earlier fields from that same response.
+
+Start a later ModelRequest when its semantic output needs a fact created by an
+Action, tool, API/database read, file or artifact readback, approval/resume, or
+host computation after the first request was dispatched:
+
+```text
+R1 plan
+-> execute and validate observed result
+-> R2 judgment or grounded answer
+```
+
+`instant` may start cancelable/idempotent work from a complete early field. If
+the result of that work is needed by model generation, it still crosses this
+boundary: reconcile and join first, then supply the observed result to R2.
+Streaming cannot inject later data into the already-running R1.
+
 ## Native-First Rules
 
 - prefer `get_result()` when one request result must be consumed more than once

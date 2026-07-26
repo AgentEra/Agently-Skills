@@ -42,6 +42,11 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
   enum/format/range, nullability, and cross-field constraints.
 - Order structured fields support-before-conclusion: evidence, assumptions,
   checks, and concise rationale before verdict, reply, summary, or action.
+- Combine would-be request steps when they share one request-time input/evidence
+  snapshot and later fields depend only on that snapshot plus earlier bounded
+  fields in the same response. If a later semantic result needs an Action,
+  system lookup, approval, artifact readback, or host computation performed
+  after dispatch, await and validate that observation and start a new request.
 - Use `.output(...)` tuple ensure flags for fixed required leaves and runtime
   `ensure_keys` only for runtime-dependent paths.
 - Validate schema, offered keys, authorization, and deterministic constraints
@@ -81,6 +86,9 @@ observed results to the next semantic step.
 - Treat `instant` updates as provisional. Use them for UI or explicitly
   cancelable/idempotent preparation; irreversible work waits for final parsed
   output and host validation.
+- `instant` may start work before the response finishes, but its result is not
+  new input to the same in-flight request. When later model output needs that
+  result, join after final reconciliation and pass it to a later ModelRequest.
 
 ## Context and Retrieval
 

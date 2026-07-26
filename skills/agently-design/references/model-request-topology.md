@@ -31,6 +31,12 @@ Focused retrieval summary:
   `thinking` fields are not output contracts;
 - shared input, authorization, validation, retry, and lifecycle favor one
   ordered ModelRequest; independent boundaries require a next-pass request;
+- one request can combine supporting semantic steps only while every later
+  field can be derived from the request-time input snapshot plus earlier fields
+  in that same response;
+- if a later semantic step needs an Action, system access, approval, readback,
+  or host computation performed after dispatch, await and validate that new
+  observation before starting a later ModelRequest;
 - a field's claimed quality benefit remains a design hypothesis until
   representative comparison or controlled A/B evidence supports it.
 
@@ -131,6 +137,49 @@ authorization or model settings, independent retry/repair, parallel execution,
 or a separately observable lifecycle. If strict pass isolation or independent
 validation is required, do not rely only on field order; use an explicit
 next-pass node.
+
+## Request-Time Snapshot and New-Information Boundary
+
+These are design-analysis labels, not new Agently runtime types or APIs. A
+ModelRequest starts from a snapshot of the prompt, settings, and information
+available when it is dispatched. The model can use earlier tokens and bounded
+earlier fields in that same ordered response while generating later fields, but
+it cannot consume a fact that does not exist until host or external work runs
+after dispatch.
+
+Use this two-question test before counting nodes:
+
+1. Can every fact needed by the final field be derived from dispatch-time
+   `input` / `info` plus earlier fields in the same output contract?
+2. Does any required fact appear only after an Action, tool, API/database read,
+   file or artifact readback, approval/resume, side effect, or host computation
+   executes?
+
+If the first answer is yes and the second is no, one ordered ModelRequest is a
+candidate. If the second answer is yes, the new observation is a request
+boundary: finish the producing request, execute and validate the behavior, and
+then provide its observed result to a later ModelRequest. The later semantic
+step cannot be made correct by adding another field to the original schema.
+
+| Situation | Topology |
+|---|---|
+| Intent, bounded decision factors, route, and reply all use the same ticket and policy snapshot | one ordered ModelRequest |
+| An earlier field is a bounded generation scaffold consumed by a later field | one ordered ModelRequest with a declared `same-response` edge |
+| An early field starts cancelable/idempotent preparation, but that preparation result is not needed by later fields in the current response | one ModelRequest may use `instant`, followed by final reconciliation |
+| A search plan must run retrieval and the grounded answer must consume the retrieved sources | `R1 -> retrieval Action -> validate/readback -> R2` |
+| A model proposes a calculation, host code executes it, and a later judgment needs the observed number | `R1 -> deterministic execution -> validate -> R2` |
+| Different authorization, model settings, evidence visibility, validation, repair, or lifecycle is required | separate ModelRequests even without an external Action |
+
+Combining compatible steps can reduce provider requests and repeated context,
+and it lets a conclusion use bounded earlier fields as shared generation
+context. Do not describe this as access to hidden chain-of-thought: any
+application-level deliberation field must still be task-specific, bounded, and
+consumed. A quality gain is a design hypothesis until representative evidence
+or A/B comparison supports it.
+
+An Agent or Action loop may expose one high-level application execution while
+internally crossing several ModelRequest and Action stages. Count the logical
+topology rather than calling the whole loop one model request.
 
 ## Structured Deliberation Without Hidden Thought
 
@@ -260,6 +309,14 @@ Output parsing, ensure checks, or custom validation can accept a replacement
 attempt after the original instant stream has ended; final accepted items are
 the authority. Provider retries and repeated deltas must not create repeated
 retrievals or side effects.
+
+`instant` can move work earlier in time; it cannot move a new observation back
+into the already-running request. If a later model-generated field must consume
+the result of provisional work, use `instant` to start that work, keep consuming
+the producer stream, cross a final validation and join barrier, and then start a
+later ModelRequest with the observed result. The producer may continue emitting
+independent UI status or artifacts, but it must not claim a grounded conclusion
+that depends on data it has not received.
 
 A field-start observation may become a stable host-owned status such as
 `generating_artifact`. Model-generated progress prose is appropriate only when

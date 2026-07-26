@@ -32,12 +32,20 @@ Map the real dependencies before implementation:
 - required serial value edges;
 - independent branches and joins;
 - provisional structured progress safe for UI or cancelable/idempotent work;
+- request-time information boundaries: a later model stage that needs an
+  Action/system/readback result must start after that observed result is
+  validated, not remain a later field of the producing request;
 - side-effect ordering and external capacity constraints;
 - external waits, retries, repair, and terminal behavior.
 
 Use `batch(...)`, `for_each(...)`, `when(...)`, and managed emits for bounded
 concurrency and graph-visible joins. Do not default a complex flow to all-serial
 execution merely because it is easier to write.
+
+`instant` may trigger provisional work before its producing request completes.
+If a later ModelRequest needs the work's result, make the join visible as
+`R1 -> Action/system work -> validation -> R2`; do not treat `instant` as a
+back-channel into R1.
 
 Represent repetition with a graph-visible back edge. Do not hide a `while True`
 lifecycle, retry, or revision loop inside a chunk handler.

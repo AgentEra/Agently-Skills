@@ -216,6 +216,14 @@ Use this file as installation-time guidance after the skills are added into anot
   Reuse matching work, start final items that were not observed provisionally,
   and cancel or discard provisional extras. A field-start event may map to a
   stable host-owned status, but raw parser paths are not the UI protocol.
+- Treat a ModelRequest as a request-time input snapshot. Combine supporting
+  semantic steps in one ordered request when later fields need only that
+  snapshot plus earlier bounded fields in the same response. If a later model
+  step needs an Action/tool result, system lookup, approval/resume payload,
+  artifact readback, or host computation produced after dispatch, await and
+  validate that new observation before starting a later ModelRequest.
+  `instant` may start provisional work early, but it cannot feed that work's
+  later result back into the already-running request.
 - For retrieval-backed natural-language answers, expose one trusted `ref_id` or
   evidence `cite_as` per source and use application-level
   `[[ref:<ref_id>]]` tokens. Host code validates and resolves tokens, builds
