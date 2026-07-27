@@ -31,7 +31,9 @@ summary alone.
    point-to-point, fan-out, join, stream, and terminal edges.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
 9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
-10. Design observability and validation before implementation.
+10. Design observability and validation before implementation. Every
+    model-satisfiable acceptance rule must reach the producer before its first
+    attempt; classify deliberately hidden host gates separately.
 11. Route concrete implementation to the owning leaf Skills.
 12. For audits, reconstruct actual topology and diff it against the plan.
 
@@ -125,6 +127,9 @@ result and configured validation accept the originating attempt.
   requests, provider attempts, stages, and consumers.
 - Do not claim root cause from final output alone; verify the earliest divergent
   node or edge against direct runtime, source, and artifact evidence.
+- Do not use hard-validator rejection as an undisclosed prompt-discovery loop.
+  If a production gate cannot be safely explained to the model, warn the
+  developer and require explicit second confirmation before implementing it.
 
 ## Completion Gate
 
@@ -133,5 +138,7 @@ every ModelRequest node has an ownership and boundary reason, and every
 model-produced field has an authorized same-response, next-pass, external, or
 user-process consumer with a declared consumption contract. Confirm that every
 provisional path has invalidation behavior, every loop has progress and terminal
-rules, and every important edge is observable. Then hand concrete work to the
+rules, every model-satisfiable validation rule is present before the first
+attempt, and every intentionally hidden gate has an explicit host-owned policy.
+Then hand concrete work to the
 mechanism-owning Skills without copying their API instructions here.

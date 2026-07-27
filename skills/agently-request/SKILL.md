@@ -40,6 +40,11 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
   machine-consumable shape in `output`.
 - Define each downstream-consumed field's type, semantics, requiredness,
   enum/format/range, nullability, and cross-field constraints.
+- When post-generation business validation expects the model to satisfy a rule,
+  provide that rule before the first attempt through `input`, `info`,
+  `instruct`, and `output` as appropriate. Keep deterministic validation as the
+  acceptance authority; validator retry feedback repairs a declared contract
+  and must not become blind rule discovery.
 - Order structured fields support-before-conclusion: evidence, assumptions,
   checks, and concise rationale before verdict, reply, summary, or action.
 - Combine would-be request steps when they share one request-time input/evidence
@@ -146,3 +151,7 @@ inside the plugin.
   RecordStore, TaskContext, ContextSource, and ContextReader.
 - Treating a retrieval hit, memory record, or provisional stream field as final
   semantic proof.
+- Generating from an underspecified prompt and relying on hard-validator
+  failures to teach the model one rule per retry. If a production gate cannot
+  be safely stated, warn the developer with the risks and alternatives, then
+  require explicit second confirmation before implementing that named gate.

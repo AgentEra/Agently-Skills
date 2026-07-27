@@ -246,6 +246,18 @@ Use this file as installation-time guidance after the skills are added into anot
   requiredness, enum, format, range, nullability, and dependency details where
   applicable. This is necessary boundary/output control, not business-logic
   intrusion; deterministic validation still runs before the real call.
+- When post-generation business validation expects model output to satisfy a
+  rule, provide the non-sensitive satisfiable rule before the first attempt in
+  `input`, `info`, `instruct`, or `output`. Keep Pydantic, `.validate(...)`,
+  authorization, and side-effect checks as deterministic acceptance
+  authorities; their retry feedback repairs a declared contract and must not be
+  the only way the model discovers it. Blind generation followed by hard
+  rejection until the model happens to pass is prohibited. If a production
+  gate cannot be safely or concretely stated but the developer still requests
+  it, stop before implementation, explain the hidden/missing rule, affected
+  output, retry/cost/latency/nondeterminism/liveness risks, safer alternatives,
+  and proposed retry/terminal policy, then require a new explicit confirmation
+  for that named gate. A prior blanket instruction is not sufficient.
 - Keep provider settings under the namespace actually read by the active plugin. For `OpenAICompatible`, prefer `plugins.ModelRequester.OpenAICompatible.*`.
 - Prefer `Agently.load_settings("yaml_file", path, auto_load_env=True)` for file-backed settings. Use `Agently.set_settings(...)` for inline overrides.
 - Keep optional DevTools wiring in the integration layer through `ObservationBridge`, `EvaluationBridge`, or `create_local_observation_app` instead of scattering debug hooks across workflow code.
