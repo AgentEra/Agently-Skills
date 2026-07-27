@@ -112,6 +112,12 @@ def main() -> None:
     request_prompt_management_text = (
         SKILLS / "agently-request" / "references" / "prompt-management.md"
     ).read_text(encoding="utf-8")
+    request_output_control_text = (
+        SKILLS / "agently-request" / "references" / "output-control.md"
+    ).read_text(encoding="utf-8")
+    request_output_expected_text = (
+        SKILLS / "agently-request" / "outputs" / "output-control-expected.md"
+    ).read_text(encoding="utf-8")
     project_framework_text = (
         SKILLS / "agently" / "references" / "project-framework.md"
     ).read_text(encoding="utf-8")
@@ -215,6 +221,20 @@ def main() -> None:
         and "In Agently fluent request examples" in catalog_guidance_text
         and "One Prompt Configure file plus explicit" in catalog_guidance_text,
         "Agently fluent request guidance keeps one-off request chains locally readable",
+        failures,
+        passes,
+    )
+    check(
+        "rule_first_business_validation_guidance",
+        "Rule-First Business Validation" in request_output_control_text
+        and "blind gate discovery" in request_output_control_text
+        and "new developer response explicitly confirms" in request_output_control_text
+        and "blind rule discovery" in request_text
+        and "model-satisfiable acceptance rule" in design_text
+        and "Blind generation followed by hard" in catalog_guidance_text
+        and "rejection until the model happens to pass" in catalog_guidance_text
+        and "trial-and-error retry tutor" in request_output_expected_text,
+        "business validation rules reach the model before first attempt and hidden gates require confirmation",
         failures,
         passes,
     )
@@ -733,6 +753,22 @@ def main() -> None:
             for case in reference_cases
         ),
         "reference retrieval fixtures cover same-request merging and new-observation splitting",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_rule_first_validation",
+        any(
+            case.get("id") == "request-rule-first-validation-zh"
+            and {
+                "rule_first_validation",
+                "validator_remains_authority",
+                "blind_gate_discovery_antipattern",
+                "hidden_gate_second_confirmation",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover rule-first validation and hidden-gate confirmation",
         failures,
         passes,
     )

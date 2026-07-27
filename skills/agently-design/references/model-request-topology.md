@@ -254,6 +254,16 @@ When output must call a documented interface, put runtime facts in `input`,
 authoritative contract material in `info`, call rules in `instruct`, and the
 exact downstream shape in `output`. Deterministically validate before the call.
 
+For each post-generation acceptance edge, distinguish the deterministic
+validator from the rule-delivery contract. If the model is expected to satisfy
+a rule, the non-sensitive satisfiable form of that rule must be present before
+the first attempt in `input`, `info`, `instruct`, or `output`. Retry feedback
+may repair a declared rule violation; it must not make repeated rejection the
+only way the producer discovers the contract. Deliberately hidden security,
+authorization, integrity, or holdout gates remain host-owned and should fail
+closed or use an explicit fallback rather than silently tutoring the model
+through retries.
+
 ## Design Edges Before Schema
 
 An output field is an orchestration contract when any later request, Action,

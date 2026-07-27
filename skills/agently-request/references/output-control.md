@@ -4,6 +4,52 @@ Use this skill when the question is what shape the model should return and how t
 
 The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or `.validate(...)`. Requests for stable JSON-like fields, structured reports, or machine-readable sections should route here.
 
+## Rule-First Business Validation
+
+When application code expects model output to satisfy a business rule and a
+post-generation validator will accept, reject, or retry that output, give the
+model the satisfiable rule before the first attempt. Put runtime candidate
+values and limits in `input`, authoritative policy or interface facts in
+`info`, behavior and transformation rules in `instruct`, and field types,
+requiredness, enum/range/format/nullability, and cross-field constraints in
+`output`.
+
+Keep `.validate(...)`, Pydantic, DTO, authorization, and side-effect checks as
+deterministic acceptance authorities. Telling the model the rule does not
+replace enforcement. A validator's bounded retry `reason` is correction
+feedback for an already-declared contract; it is not the primary way to reveal
+rules. The topology
+
+```text
+underspecified generation -> hard rejection -> retry learns one more rule
+```
+
+is blind gate discovery and an anti-pattern. It wastes calls, raises latency
+and cost, makes acceptance depend on collision order, and may exhaust retries
+without proving whether the task is impossible or merely underspecified.
+
+Host-only authorization, security, anti-abuse, integrity, and holdout evaluation
+details may remain hidden when disclosure would weaken the gate or leak an
+expected answer. Still provide the safe public contract the model is allowed to
+follow. Do not turn an intentionally hidden gate into an automatic
+trial-and-error tutor; prefer a non-retryable fail-closed result, safe
+normalization, manual review, or another explicitly owned fallback.
+
+If a requested production gate cannot be expressed safely or concretely but
+the developer still asks to hard-reject or retry model output, stop before
+implementation and issue a warning that names:
+
+- the missing or intentionally hidden rule and affected output;
+- why the model cannot anticipate the acceptance condition;
+- expected retry, latency, cost, nondeterminism, and liveness risks;
+- safer options such as declaring a non-sensitive rule subset, changing the
+  schema, deterministic normalization, fail-closed handling, or manual review;
+- the proposed retry/terminal policy if the hidden gate is retained.
+
+Implement only after a new developer response explicitly confirms that named
+gate and its risks. A prior blanket instruction to proceed is not this second
+confirmation. Without confirmation, do not silently add the gate.
+
 ## Native-First Rules
 
 - default to async-first response consumption when structured output will be streamed, reused, or served over an async boundary
@@ -183,6 +229,8 @@ The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or 
 - do not rebuild a stable shared schema in Python if prompt config can own it once
 - do not build custom retry loops for missing keys before using tuple `ensure` or, when necessary, runtime `ensure_keys`
 - do not overload tuple `True` or runtime `ensure_keys` with value checks that belong in explicit `"not_null"` or `.validate(...)`
+- do not use an underspecified first attempt plus hard-validator retries as a
+  rule-discovery loop
 - do not default to sync-only result handling when the caller is already async-capable
 - do not rely on keyword, substring, regex, or text snapshot checks as the main
   assertion for whether model-generated content satisfies business rules

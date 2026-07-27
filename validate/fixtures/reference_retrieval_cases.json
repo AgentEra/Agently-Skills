@@ -462,6 +462,42 @@
         "new_observation_split",
         "instant_no_backfeed"
       ]
+    },
+    {
+      "id": "request-rule-first-validation-zh",
+      "query": "已经路由到 agently-request。业务代码想让模型先自由生成，再用 `.validate(...)` 的隐藏规则反复拒绝，靠 retry 逐步撞出合格结果。应该先看哪份参考来确认为什么必须在首次请求前提供可满足规则，以及规则无法说明时 Coding Agent 为什么要警告并取得二次确认？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/output-control.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "rule_first_validation",
+          "description": "A model-satisfiable business rule is supplied before the first attempt through input, info, instruct, or output."
+        },
+        {
+          "id": "validator_remains_authority",
+          "description": "Deterministic validation remains authoritative while retry feedback only repairs an already-declared contract."
+        },
+        {
+          "id": "blind_gate_discovery_antipattern",
+          "description": "Underspecified generation followed by hard rejection is prohibited as a trial-and-error rule-discovery loop."
+        },
+        {
+          "id": "hidden_gate_second_confirmation",
+          "description": "An unexpressible production gate requires a detailed coding-agent warning and a new explicit developer confirmation before implementation."
+        }
+      ],
+      "required_concepts": [
+        "rule_first_validation",
+        "validator_remains_authority",
+        "blind_gate_discovery_antipattern",
+        "hidden_gate_second_confirmation"
+      ]
     }
   ]
 }
