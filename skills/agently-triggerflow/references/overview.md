@@ -15,6 +15,24 @@ so irreversible side effects and business decisions must wait for the final
 parsed result and configured validation. An all-serial topology selected
 without dependency analysis is an anti-pattern.
 
+Treat every ModelRequest as starting from its request-time input snapshot. Keep
+supporting semantic steps in one ordered request when later fields need only
+that snapshot and earlier bounded fields in the same response. When a later
+semantic step needs a new observation produced after dispatch—an Action/tool
+result, API or database read, file/artifact readback, approval/resume payload,
+or host computation—make the boundary graph-visible:
+
+```text
+R1 -> Action/system work -> host validation/readback -> R2
+```
+
+`instant` can start cancelable/idempotent work from a complete early field and
+overlap it with the rest of R1. It cannot inject the work's result into R1. If
+R2 needs that result, keep consuming R1, reconcile its final accepted trigger
+set, join the observed work, then dispatch R2 with the validated observation.
+Independent work may still fan out concurrently on either side of this required
+serial value edge.
+
 Make pressure controls user-adjustable at their real boundaries. Use
 `create_execution(concurrency=N)` / `execution.set_concurrency(N)` for the
 execution-wide dispatch budget, operator `concurrency=` for local fan-out,

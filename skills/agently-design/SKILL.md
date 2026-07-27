@@ -22,8 +22,10 @@ summary alone.
    work, or a hybrid decision before deciding ModelRequest node boundaries.
 3. Assign every decision, state, and effect to an existing owner layer.
 4. Draw planned request and execution dependencies before choosing APIs.
-5. Create a separate ModelRequest only when its decision, input/context boundary,
-   output contract, consumer, lifecycle, retry, or parallelism needs independence.
+5. Test the request-time input snapshot: combine ordered supporting steps only
+   when later fields need no fact beyond dispatch-time input and earlier fields
+   in the same response. Split after any Action, system access, approval,
+   readback, or host computation whose new observation a later model step needs.
 6. Design each ModelRequest prompt/output contract from declared consumer needs.
 7. Map output fields to same-response, next-pass, external, user-process,
    point-to-point, fan-out, join, stream, and terminal edges.
@@ -110,6 +112,9 @@ result and configured validation accept the originating attempt.
   with tokenization, keyword tables, substring rules, or regular expressions.
 - Do not equate model participation with a separate ModelRequest; first test
   whether an existing ordered contract or an existing loop node owns the work.
+- Do not force a post-Action or post-readback semantic step into the producing
+  request. `instant` can start provisional work early, but it cannot inject that
+  work's later result into an already-running ModelRequest.
 - Do not request hidden chain-of-thought. Use bounded, task-specific
   deliberation artifacts only when their semantic role and consumption contract
   are explicit. A generic `reasoning`, `analysis`, or `thinking` field without

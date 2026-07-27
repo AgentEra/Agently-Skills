@@ -102,6 +102,12 @@ def main() -> None:
         / "references"
         / "information-and-evidence-design.md"
     ).read_text(encoding="utf-8")
+    design_model_request_topology_text = (
+        SKILLS
+        / "agently-design"
+        / "references"
+        / "model-request-topology.md"
+    ).read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
     request_prompt_management_text = (
         SKILLS / "agently-request" / "references" / "prompt-management.md"
@@ -132,6 +138,9 @@ def main() -> None:
         SKILLS / "agently-dynamic-task" / "references" / "overview.md"
     ).read_text(encoding="utf-8")
     triggerflow_text = (SKILLS / "agently-triggerflow" / "SKILL.md").read_text(encoding="utf-8")
+    triggerflow_overview_text = (
+        SKILLS / "agently-triggerflow" / "references" / "overview.md"
+    ).read_text(encoding="utf-8")
     execution_topology_path = (
         SKILLS / "agently" / "references" / "execution-topology-validation.md"
     )
@@ -206,6 +215,20 @@ def main() -> None:
         and "In Agently fluent request examples" in catalog_guidance_text
         and "One Prompt Configure file plus explicit" in catalog_guidance_text,
         "Agently fluent request guidance keeps one-off request chains locally readable",
+        failures,
+        passes,
+    )
+    check(
+        "model_request_snapshot_and_new_observation_boundary",
+        "request-time input snapshot" in design_model_request_topology_text
+        and "Action, tool, API/database read" in design_model_request_topology_text
+        and "cannot move a new observation back" in design_model_request_topology_text
+        and "request-time input/evidence" in request_text
+        and "snapshot and later fields" in request_text
+        and "cannot inject the work's result into R1" in triggerflow_overview_text
+        and "Treat a ModelRequest as a request-time input snapshot"
+        in catalog_guidance_text,
+        "request guidance merges same-snapshot work and splits after required new observations",
         failures,
         passes,
     )
@@ -695,6 +718,21 @@ def main() -> None:
             for case in reference_cases
         ),
         "reference retrieval fixtures cover provisional instant fan-out and final reconciliation",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_request_snapshot_boundary",
+        any(
+            case.get("id") == "design-request-snapshot-boundary-zh"
+            and {
+                "same_snapshot_merge",
+                "new_observation_split",
+                "instant_no_backfeed",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover same-request merging and new-observation splitting",
         failures,
         passes,
     )
