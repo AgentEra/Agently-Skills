@@ -100,6 +100,57 @@ completion means the model/result reached its own final state. Consumer
 early-close means a UI or transport stopped listening; it must not silently mark
 the underlying work complete or authorize effects.
 
+## User-Driven Task Continuation
+
+Do not treat a user's word such as "continue" as a deterministic resume command.
+Separate structured interface intent from prose-derived intent:
+
+- a host-issued **Resume this task** action may route deterministically after
+  authorization and lifecycle checks;
+- a reply structurally bound to one task fixes the candidate identity, not the
+  lifecycle intent. Its free-form text still needs semantic judgment;
+- a free-form message requires one structured ModelRequest to judge whether the
+  user means `resume_existing`, `start_new`, or `clarify`;
+- a task that is still running is not resumable. Report or observe its current
+  execution instead of starting a duplicate;
+- a completed task is not continued by replaying its terminal snapshot. New
+  follow-up work starts a fresh task and may consume the prior result or
+  evidence through TaskContext.
+
+Before the semantic request, host code must discover and authorize candidates.
+Project each resumable candidate with one short `selection_key` plus only
+task-relevant facts such as goal summary, last trusted progress, remaining work,
+and snapshot compatibility. Keep canonical task ids, snapshot refs, and full
+metadata host-side.
+
+The ModelRequest owns only the semantic relationship between the current
+message and the offered candidates. Its output contract should contain:
+
+- `decision`: required enum `resume_existing | start_new | clarify`;
+- `selection_key`: nullable string, required to be one of the offered keys when
+  `decision=resume_existing`;
+- `clarification_question`: nullable bounded string, required when
+  `decision=clarify`.
+
+After parsing, host code must validate authorization, offered-key membership,
+canonical identity, non-terminal status, absence of another live execution,
+snapshot presence/version, and the cross-field decision contract. Unknown,
+stale, unauthorized, or ambiguous candidates fail closed to clarification.
+Never ask the model to reproduce `task_id`, snapshot ids, or identity-heavy
+records.
+
+Resume preserves the original task goal, success criteria, and deliverable
+contract. If the user changes any of them, asks for a fresh attempt, or requests
+new work after completion, create a new AgentExecution/task id. The new task may
+bind authorized prior results, evidence, or artifacts as context without
+misrepresenting that relationship as resume.
+
+Keep this as one logical ModelRequest: candidate facts, routing rules, decision,
+selection key, and optional clarification share one request-time snapshot.
+Dispatch remains a later host-owned effect after final parsing and deterministic
+validation. Do not add a keyword router, Interface-owned task manager, or a
+parallel resume lifecycle.
+
 ## Terminal Status Matrix
 
 | Status | Required meaning |
