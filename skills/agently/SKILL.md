@@ -140,6 +140,10 @@ not an execution engine.
 - Use `agent.create_task(...)` when the model should own a long task's planning,
   bounded work, evidence, verification, and replan loop. It returns an
   AgentExecution draft, not a public AgentTask handle.
+- For an interface user's free-form "continue" request, let a structured
+  ModelRequest choose resume, new task, or clarification from host-offered
+  resumable candidates; keep authorization, lifecycle state, key validation,
+  and dispatch host-owned. Route the full design to `agently-design`.
 - Use TriggerFlow for framework-visible progression, branching, concurrency,
   retry, approval, pause/resume, intervention, or signal-network behavior.
 - Use TaskDAG/DynamicTask for untrusted model-generated or app-submitted DAG
