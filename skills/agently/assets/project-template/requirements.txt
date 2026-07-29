@@ -1,4 +1,4 @@
-agently>=4.1.4.3,<4.2
+agently>=4.1.4.5,<4.2
 fastapi>=0.104,<1
 fastmcp>=3,<4
 uvicorn>=0.30,<1

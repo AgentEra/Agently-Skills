@@ -104,6 +104,80 @@ confirmation. Without confirmation, do not silently add the gate.
     article, email, explanation, report, Markdown page, HTML page, or other
     single multi-paragraph document; read it with `start()` / `async_start()` or
     `response.result.get_text()`
+- when one direct business result may exceed the provider output window, put
+  `.ensure_long_output()` on the unstarted `AgentExecution`, after the prompt
+  and output contract and before any result reader. It defaults off and applies
+  equally to `get_data`, `get_text`, `get_data_object`, result facades, and
+  generators; do not hide it in one getter or overload `.output(...)` with
+  execution policy
+  - the first ModelRequest keeps the original contract. Only normalized
+    `length` / `incomplete` starts the TriggerFlow-visible continuation loop
+  - current lossless carriers are plain text and resolved `json`; other
+    structured formats fail before dispatch when the option is enabled
+  - continuation is append-only, uses TaskWorkspace write/readback/digest
+    evidence, and applies the original schema/Pydantic/ensure/custom validators
+    to the replayed final candidate
+  - carry each slot's value contract in the private continuation input and
+    project it from the original Agently declaration so nested array/object
+    shapes and nested Pydantic constraints survive. Validate every structured
+    unit with the independent local slot model before commit. Enforce exact
+    list bounds incrementally and hold later dependent slots behind an
+    incomplete exact list. Keep a valid contiguous prefix when a later
+    update fails, but regenerate the rejected update and its whole tail from
+    the next `unit_index`
+  - expose one exact host-issued mnemonic `path_key` per offered slot; do not
+    provide a second model-copyable schema-path identifier. Authorize the whole
+    offered key and reconstruct canonical paths from host state
+  - retain a trusted explicitly empty list as an empty-container manifest fact;
+    do not synthesize missing list paths as empty or accept an empty declaration
+    after any item/prior declaration
+  - retain trusted explicitly empty text as a text-presence fact. Before
+    accepting continuation `is_final`, require declared ensure paths to have
+    manifest facts and continue missing delivery without spending the caller's
+    final-validation retry allowance
+  - treat a closed structured string as one immutable atomic schema value:
+    never re-offer or append it after commit. Represent a value beyond the
+    4000-character unit bound as an ordered chunk list, or use plain text for
+    one freeform artifact
+  - close the small `base_revision` / `base_digest` / `anchor` control header
+    before emitting business updates. Use the latest accepted-unit digest as
+    the exact anchor; give plain-text continuations a bounded document start,
+    exact accepted tail, and host-counted accepted character total as one
+    read-only continuity context rather than making the model echo long
+    business text in the header or estimate prior length. Commit exactly one plain-text
+    update per logical continuation so every next join is generated from a
+    refreshed accepted suffix; retain the first valid update and regenerate a
+    response-supplied tail. A provider `length` terminal
+    before header closure is bounded observable no progress: preserve the
+    manifest, retry with header-first/one-update guidance, and terminate after
+    the third consecutive no-progress continuation
+  - JSON units with `completion_source="synthetic_repair"` are provisional and
+    must be regenerated; retain only `observed_boundary` or raw-final
+    `final_reconciliation` units
+  - let the long-output delivery flow own continuation repair, with one
+    physical request per continuation. Record a malformed provider-complete
+    envelope as bounded `continuation_envelope_invalid` no progress; reserve
+    caller `max_retries` for final assembled-value validation
+  - after large instant JSON parsing defers, keep a successful provider-complete
+    final parse authoritative. Observed-boundary events may update the
+    provisional snapshot only when no valid final parse exists
+  - if final replay fails a model-repairable schema, ensure, or declared
+    validator rule, retain accepted units and use the bounded validation retry
+    allowance to request only missing/additional units. Manifest, readback,
+    digest, and lineage failures are integrity failures and must fail
+    immediately rather than enter model repair
+  - the private envelope must not enter the business stream, and continuation
+    requests must not inherit Action/tool handlers
+  - treat a zero-update `is_final` assertion after provider `length` as
+    no-progress evidence, not completion proof
+  - use bounded `long_output_no_progress` diagnostics to inspect reason,
+    observed header fields, manifest revision, and accepted-unit count without
+    recording raw provider bodies
+  - this is direct ModelRequest delivery, not AgentTask. Do not combine it with
+    an explicit AgentTask strategy; split task planning/tool work from the long
+    terminal delivery execution
+  - never claim semantic exhaustiveness without a declared expected
+    count/key/reference or equivalent validator
 - choose streaming mode separately from output format:
   - use `get_generator(type="instant")` or
     `get_async_generator(type="instant")` when UI/progress consumers need

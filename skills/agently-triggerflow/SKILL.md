@@ -50,6 +50,22 @@ back-channel into R1.
 Represent repetition with a graph-visible back edge. Do not hide a `while True`
 lifecycle, retry, or revision loop inside a chunk handler.
 
+The built-in `.ensure_long_output()` execution policy is an example of this
+boundary: its first ModelRequest stays ordinary, while a normalized
+length/incomplete terminal activates TriggerFlow-visible continuation,
+append-only commit, and final validation nodes. Treat each continuation as a
+new logical request, keep private envelopes out of the public business stream,
+close the revision/digest/anchor header before business updates, validate
+structured units locally before commit, and stop after the third consecutive
+no-progress occurrence. A provider length terminal before header closure is a
+recoverable graph-visible no-progress event that must not change the manifest;
+closed stale/mismatched headers remain terminal. Final schema or
+declared-validator repair uses a bounded graph back edge while retaining
+accepted units; manifest, readback, digest, and lineage failures stay terminal.
+Use execution-managed `async_emit_nowait(...)` for these back edges so segment
+count does not grow the Python call stack. Application code should use the
+execution method rather than rebuild that delivery loop.
+
 For audits, trace exact values and signals through ModelRequest, Action,
 subflow, TaskWorkspace/RecordStore, wait/resume, repair, and terminal boundaries.
 Graph adjacency proves activation, not value transfer.
