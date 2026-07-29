@@ -81,7 +81,10 @@ Graph adjacency proves activation, not value transfer.
 - Start with a positional value: `await execution.async_start(value)`. The value
   is not a custom event.
 - Close with `await execution.async_close()`. Close drains execution-managed
-  nowait tasks and returns the close snapshot.
+  nowait tasks and returns the close snapshot. A finite `timeout=` is one
+  settlement deadline across wait and forced cancellation; unresolved
+  cancellation raises with owner diagnostics. A top-level managed task that
+  failed before close is still consumed once by close.
 - Pending interrupts make close fail by default. Choose cancellation deliberately
   when abandoning waits.
 - Active non-paused children created by `to_sub_flow(...)` are visible through
