@@ -104,7 +104,11 @@ explicit resume event handler.
 - Execution state is the per-execution data store and chunk-to-chunk handoff contract.
   Use `data.get_state(...)` / `data.set_state(...)` and async variants;
   setters replace the complete value and `append_state(...)` is only for
-  intentional list accumulation. Do not add a translation helper or shadow
+  intentional list accumulation. An async chunk must await
+  `data.async_set_state(...)`, `data.async_append_state(...)`,
+  `data.async_del_state(...)`, async emit, and async stream methods; sync
+  facades are compatibility paths that block the caller thread and are intended
+  for sync chunks and sync callers. Do not add a translation helper or shadow
   store; put durable cross-run data in RecordStore or another explicit provider.
 - `flow_data` is shared across executions. The `execution.save()` snapshot includes a serialized copy
   of `flow_data`; `load()` replaces the current
