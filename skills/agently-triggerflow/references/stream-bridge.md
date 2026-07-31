@@ -133,6 +133,10 @@ Avoid exposing:
 - UI event naming belongs to TriggerFlow, because the workflow owns the delivery contract
 - stream shutdown belongs to execution close, not to ad hoc UI timeout logic
 
+The current local transport gives each runtime-stream reader an independent,
+ordered replay cursor. Treat that as process-local delivery only: it is not
+durable replay, backpressure, acknowledgement, or exactly-once delivery.
+
 ## Validation Rule
 
 A good bridge layer lets you change the model schema details without forcing the frontend to rewrite its event consumer, as long as the business event contract stays the same.
