@@ -67,6 +67,14 @@ package is not an executor or permission grant.
 - `TaskWorkspace` is a file boundary only. Use its read/write/edit/glob/grep/
   patch/export methods for task files and artifacts; do not store arbitrary
   durable records inside it through a hidden database API.
+- Direct `.ensure_long_output()` delivery uses execution-private TaskWorkspace
+  files for raw segments, immutable accepted units, manifests, and final
+  candidate readback. Those refs are staging evidence, not automatically
+  durable public artifacts. Every accepted write must be completely read back
+  with matching bytes and digest before the manifest advances. Structured
+  units must also pass their slot schema before commit. Model-repairable final
+  validation may add new units without discarding accepted ones, but any
+  manifest/readback/digest/lineage mismatch fails immediately.
 - A required AgentTask terminal deliverable starts as a staged candidate. The
   verifier receives a complete readback; only acceptance permits digest-pinned
   atomic promotion to the target and a complete post-promotion readback.

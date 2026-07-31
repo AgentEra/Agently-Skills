@@ -7,6 +7,9 @@ Use this skill for provider wiring and transport setup before request logic is d
 - default to async-first guidance when the configured model will be used from services, streaming paths, or concurrent workflows
 - when settings live in files, prefer `Agently.load_settings("yaml_file", path, auto_load_env=True)`
 - use `Agently.set_settings(...)` or `agent.set_settings(...)` for inline mappings or host-owned overrides
+- `agent.set_settings(...)` returns the same Agent and may stay in a fluent
+  Agent chain; do not describe or type it as returning the underlying
+  `Settings` store
 - when inline settings benefit from editor hints, use typed helper classes from
   `agently.types.settings` (for example `OpenAICompatibleSettings`) and pass
   the instance directly to `Agently.set_settings(...)`; treat the helper as a

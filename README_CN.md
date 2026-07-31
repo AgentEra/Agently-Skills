@@ -7,8 +7,8 @@
 
 ## 兼容性
 
-默认公开 catalog 是当前 Agently-Skills generation `v2`，已与 Agently 4.1.4.3
-发布线的 runtime 能力和新的 7-skill 结构对齐。
+默认公开 catalog 是当前 Agently-Skills generation `v2`，已为 Agently 4.1.4.6
+开发线和新的 7-skill 结构完成准备。
 
 机器可读兼容声明位于 `compatibility/support.json`。默认分支只保留当前公开
 catalog，避免 coding-agent 的 Skill 检索命中已退役的历史 Skills。

@@ -76,6 +76,11 @@ Streaming cannot inject later data into the already-running R1.
   facts matter. Do not force a freeform document body through `.output()` only
   to obtain instant fields; handle replay boundaries at the consumer when
   plain delta is the right body stream
+- for OpenAI-compatible SSE, treat an explicit `[DONE]` as the logical response
+  terminal and stop consuming that iterator immediately. Preserve the completed
+  `original_done`, `meta`, usage, and `finish_reason` even if the gateway's later
+  HTTP chunked close is malformed. A disconnect before `[DONE]` remains a
+  transport failure; never synthesize success from partial output alone
 - annotate common stream consumers from `agently`: `StreamingData` for
   `instant` / `streaming_parse`, `AgentlySpecificResultMessage` for
   `specific`, and `AgentlyModelResultMessage` for `all`; use
@@ -101,6 +106,12 @@ Streaming cannot inject later data into the already-running R1.
   accepted items with provisional work. Validation retry can produce accepted
   data that was not observed on the original instant stream; start missing
   accepted work and cancel or discard provisional extras
+- inspect JSON `StreamingData.completion_source` before using a done item as
+  durable evidence: `observed_boundary` means the provider emitted its closing
+  delimiter, `final_reconciliation` means the raw final JSON closed, and
+  `synthetic_repair` means the parser only completed an open suffix. All stream
+  items remain provisional until final validation, and synthetic repair must
+  never authorize irreversible work or long-output retention
 
 Final-only consumption:
 

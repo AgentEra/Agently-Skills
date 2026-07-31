@@ -31,6 +31,13 @@ assert session is not None
 session.use_memory(mode="AgentlyMemory")
 ```
 
+Inside an async service or handler, mutate active chat history with
+`await agent.async_add_chat_history(...)`,
+`await agent.async_set_chat_history(...)`,
+`await agent.async_reset_chat_history()`, and
+`await agent.async_clean_context_window()`. Their sync counterparts are for
+sync callers; compatibility use from async code blocks the caller thread.
+
 For a standalone Session, pass the storage owner explicitly:
 
 ```python

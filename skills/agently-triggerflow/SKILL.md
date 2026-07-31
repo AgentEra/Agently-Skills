@@ -50,6 +50,22 @@ back-channel into R1.
 Represent repetition with a graph-visible back edge. Do not hide a `while True`
 lifecycle, retry, or revision loop inside a chunk handler.
 
+The built-in `.ensure_long_output()` execution policy is an example of this
+boundary: its first ModelRequest stays ordinary, while a normalized
+length/incomplete terminal activates TriggerFlow-visible continuation,
+append-only commit, and final validation nodes. Treat each continuation as a
+new logical request, keep private envelopes out of the public business stream,
+close the revision/digest/anchor header before business updates, validate
+structured units locally before commit, and stop after the third consecutive
+no-progress occurrence. A provider length terminal before header closure is a
+recoverable graph-visible no-progress event that must not change the manifest;
+closed stale/mismatched headers remain terminal. Final schema or
+declared-validator repair uses a bounded graph back edge while retaining
+accepted units; manifest, readback, digest, and lineage failures stay terminal.
+Use execution-managed `async_emit_nowait(...)` for these back edges so segment
+count does not grow the Python call stack. Application code should use the
+execution method rather than rebuild that delivery loop.
+
 For audits, trace exact values and signals through ModelRequest, Action,
 subflow, TaskWorkspace/RecordStore, wait/resume, repair, and terminal boundaries.
 Graph adjacency proves activation, not value transfer.
@@ -65,7 +81,10 @@ Graph adjacency proves activation, not value transfer.
 - Start with a positional value: `await execution.async_start(value)`. The value
   is not a custom event.
 - Close with `await execution.async_close()`. Close drains execution-managed
-  nowait tasks and returns the close snapshot.
+  nowait tasks and returns the close snapshot. A finite `timeout=` is one
+  settlement deadline across wait and forced cancellation; unresolved
+  cancellation raises with owner diagnostics. A top-level managed task that
+  failed before close is still consumed once by close.
 - Pending interrupts make close fail by default. Choose cancellation deliberately
   when abandoning waits.
 - Active non-paused children created by `to_sub_flow(...)` are visible through
@@ -85,7 +104,11 @@ explicit resume event handler.
 - Execution state is the per-execution data store and chunk-to-chunk handoff contract.
   Use `data.get_state(...)` / `data.set_state(...)` and async variants;
   setters replace the complete value and `append_state(...)` is only for
-  intentional list accumulation. Do not add a translation helper or shadow
+  intentional list accumulation. An async chunk must await
+  `data.async_set_state(...)`, `data.async_append_state(...)`,
+  `data.async_del_state(...)`, async emit, and async stream methods; sync
+  facades are compatibility paths that block the caller thread and are intended
+  for sync chunks and sync callers. Do not add a translation helper or shadow
   store; put durable cross-run data in RecordStore or another explicit provider.
 - `flow_data` is shared across executions. The `execution.save()` snapshot includes a serialized copy
   of `flow_data`; `load()` replaces the current

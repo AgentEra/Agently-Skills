@@ -30,6 +30,21 @@ runtime streams, and close belong to TriggerFlow. A local async caller may
 overlap a small set of independent single requests when no graph-visible
 lifecycle is needed. Submitted acyclic plans belong to TaskDAG / Dynamic Task.
 
+When one direct AgentExecution business result crosses model output windows,
+keep the public intent on the execution (`.ensure_long_output()`) and make every
+continuation/commit/validate back edge visible in TriggerFlow. One continuation
+segment is a new logical ModelRequest, not a retry attempt. Keep complete units
+behind TaskWorkspace refs and digests, validate each unit against its slot
+contract, retain only a valid contiguous prefix before any rejected tail,
+reject synthetic parser completions, close the revision/digest/anchor header
+before business updates, and replay the accepted manifest through the original
+validators. A length terminal before header closure is graph-visible bounded no
+progress and leaves the manifest unchanged; a closed stale header remains
+terminal. A model-repairable final validation failure may use a bounded back
+edge while preserving committed units; integrity failures remain terminal. Do
+not turn long delivery into AgentTask planning or hide a provider loop in a
+result getter.
+
 Use async Agently APIs in services and workflows. Consume `instant` only when a
 real UI, observer, state update, or cancelable/idempotent preparation uses it;
 otherwise await final data directly.
