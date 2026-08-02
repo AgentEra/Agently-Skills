@@ -49,6 +49,19 @@ Recommended environment split:
 Keep this wiring in the app or observability layer, not inside prompt helpers or chunk handlers.
 `ObservationBridge` uploads through a background queue and coalesces high-frequency events such as `model.streaming`; call `await bridge.flush()` before a short-lived script exits when full delivery matters.
 
+The listener receiver is a separate concern from the sender bridge. Current
+DevTools uses a bounded, run-partitioned ingest pipeline so one run stays
+ordered across concurrent requests and awaited async sinks. Agently-Stage is a
+private dispatcher/worker lifetime mechanism only. DevTools owns partitioning,
+pressure, processed acknowledgement, errors, storage, and subscriptions; do
+not describe Stage as the event bus or retry/durability owner.
+
+Receiver pressure settings are `observation.ingest.worker_count` (default `4`),
+`observation.ingest.queue_limit` (default `64` per intake/partition queue), and
+`observation.ingest.shutdown_timeout_seconds` (default `5.0`). Normal shutdown
+drains admitted batches. Timeout cancellation is cooperative and does not prove
+that a blocking external sink or side effect stopped.
+
 Model request RuntimeEvents may include `payload.model_request_telemetry` on
 `model.request_started`, `model.requesting`, `model.status`, `model.completed`, `model.meta`,
 `model.request_failed`, and `model.requester.error`. Treat it as compact
@@ -62,6 +75,14 @@ upward for the selected run branch. Terminal `model.status` events may carry
 estimated input/output character lengths without exposing the raw request
 payload. Do not feed telemetry back into route selection, retries, budget caps,
 verifier judgment, quality scoring, planner context, or prompts.
+
+Provider reasoning observations use high-frequency `model.reasoning.delta` and
+terminal `model.reasoning.completed`. DevTools reconstructs them in a separate
+Reasoning tab and shows an explicit unavailable state when no provider reasoning
+was emitted. `usage_summary.provider.reasoning_tokens` is nullable, displayed
+and aggregated independently, and must come from explicit provider usage such
+as completion/output token details or an equivalent thinking-token field. Never
+estimate it from text or add it again to provider output/completion/total values.
 
 `model.status` is a compact attempt-outcome observation. A `failed` payload
 with `retry=True` means partial stream output was replaced; `cancelled` is
