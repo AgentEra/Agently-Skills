@@ -74,12 +74,16 @@ Graph adjacency proves activation, not value transfer.
 
 - Prefer async handlers, execution entrypoints, and stream consumers.
 - Do not force a provider-owned synchronous interface to become async merely
-  because its implementation calls an async SDK. With Agently-Stage 0.3.6+, a
+  because its implementation calls an async SDK. With Agently-Stage 0.3.7+, a
   sync chunk may call a sync wrapper that uses `with Stage()` and may then
   continue through TriggerFlow sync facades. Stage detects the surrounding
-  physical carrier; the provider does not need to discover TriggerFlow's
-  private Stage usage. This boundary still blocks its worker, so prefer native
-  async APIs when the caller owns the async interface.
+  physical carrier and excludes every upstream carrier in a transitive sync
+  wait chain; the provider does not need to discover TriggerFlow's private Stage
+  usage. This boundary still blocks its worker, so prefer native async APIs when
+  the caller owns the async interface. Automatic routing cannot move work that
+  owns the blocked caller loop: if an async chunk invokes a sync facade that
+  must dispatch loop-bound work on that same loop, use the async facade and
+  `await` it on the owner loop.
 - Use `flow.start(...)` / `flow.async_start(...)` only for finite, self-closing
   runs whose caller needs no execution handle.
 - Use `flow.create_execution(auto_close=False)` when the host needs pause/resume,

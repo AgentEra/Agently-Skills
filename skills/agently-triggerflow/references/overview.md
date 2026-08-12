@@ -6,13 +6,16 @@ Prefer async-first flow handlers and execution APIs. When the UI needs progressi
 
 Async-first is not authority to redesign an interface owned by a Function or
 tool provider. On the Agently 4.1.4.7 development line with Agently-Stage
-0.3.6+, a synchronous chunk may call a provider-owned sync wrapper that uses
+0.3.7+, a synchronous chunk may call a provider-owned sync wrapper that uses
 `with Stage()` to wait for an async SDK, then continue with
 `data.set_state(...)` or another sync execution facade. Stage selects a
-physically safe carrier automatically even though TriggerFlow also uses Stage
-internally. The provider should not probe for that private environment. Use
-direct `await` when the surrounding async API is under application control; a
-loop-bound object must remain on and be awaited from its owner loop.
+physically safe carrier automatically, including across transitive synchronous
+wait chains, even though TriggerFlow also uses Stage internally. The provider
+should not probe for that private environment. Use direct `await` when the
+surrounding async API is under application control. Automatic routing cannot
+move work that owns the blocked caller loop: an async chunk that calls a sync
+state facade which must dispatch loop-bound work on the same loop must use the
+async facade and await it there.
 
 Before implementing a complex service or script, draw the actual dependency
 graph. Keep edges serial only for real data dependencies, ordering guarantees,
