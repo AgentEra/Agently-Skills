@@ -4,6 +4,16 @@ This skill owns TriggerFlow orchestration, execution state, runtime stream, sub-
 
 Prefer async-first flow handlers and execution APIs. When the UI needs progressive updates, bridge model-side structured streaming into workflow-side runtime stream items so the frontend consumes stable business events instead of raw parser paths.
 
+Async-first is not authority to redesign an interface owned by a Function or
+tool provider. On the Agently 4.1.4.7 development line with Agently-Stage
+0.3.6+, a synchronous chunk may call a provider-owned sync wrapper that uses
+`with Stage()` to wait for an async SDK, then continue with
+`data.set_state(...)` or another sync execution facade. Stage selects a
+physically safe carrier automatically even though TriggerFlow also uses Stage
+internally. The provider should not probe for that private environment. Use
+direct `await` when the surrounding async API is under application control; a
+loop-bound object must remain on and be awaited from its owner loop.
+
 Before implementing a complex service or script, draw the actual dependency
 graph. Keep edges serial only for real data dependencies, ordering guarantees,
 side-effect safety, or external capacity constraints. Run independent stages
@@ -88,6 +98,7 @@ For graph, export, and observation design, read `references/devtools-graph.md`.
 When writing or updating guidance, align with the current Agently examples:
 
 - `examples/trigger_flow/*.py` for compact lifecycle, emit, stream, sub-flow, save/load, and config export examples
+- `examples/trigger_flow/automatic_stage_sync_provider.py` for the low-level sync chunk -> provider `with Stage()` -> async SDK -> sync state round trip
 - `examples/step_by_step/11-triggerflow-*.py` for tutorial-style coverage of the same APIs
 - `examples/fastapi/fastapi_helper_triggerflow_ollama.py` for local Ollama + FastAPIHelper integration
 - `examples/devtools/*trigger_flow*.py` and observation bridge examples for DevTools integration
