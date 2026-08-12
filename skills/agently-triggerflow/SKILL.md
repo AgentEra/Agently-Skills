@@ -73,6 +73,13 @@ Graph adjacency proves activation, not value transfer.
 ## Lifecycle
 
 - Prefer async handlers, execution entrypoints, and stream consumers.
+- Do not force a provider-owned synchronous interface to become async merely
+  because its implementation calls an async SDK. With Agently-Stage 0.3.6+, a
+  sync chunk may call a sync wrapper that uses `with Stage()` and may then
+  continue through TriggerFlow sync facades. Stage detects the surrounding
+  physical carrier; the provider does not need to discover TriggerFlow's
+  private Stage usage. This boundary still blocks its worker, so prefer native
+  async APIs when the caller owns the async interface.
 - Use `flow.start(...)` / `flow.async_start(...)` only for finite, self-closing
   runs whose caller needs no execution handle.
 - Use `flow.create_execution(auto_close=False)` when the host needs pause/resume,
@@ -108,8 +115,11 @@ explicit resume event handler.
   `data.async_set_state(...)`, `data.async_append_state(...)`,
   `data.async_del_state(...)`, async emit, and async stream methods; sync
   facades are compatibility paths that block the caller thread and are intended
-  for sync chunks and sync callers. Do not add a translation helper or shadow
-  store; put durable cross-run data in RecordStore or another explicit provider.
+  for sync chunks and sync callers. A provider-owned sync wrapper may use
+  `with Stage()` around an async method and then call these facades; do not
+  require the provider to inspect the framework's private Stage environment or
+  rewrite its public method. Do not add a translation helper or shadow store;
+  put durable cross-run data in RecordStore or another explicit provider.
 - `flow_data` is shared across executions. The `execution.save()` snapshot includes a serialized copy
   of `flow_data`; `load()` replaces the current
   flow-shared value with that copy. This does not provide execution isolation,

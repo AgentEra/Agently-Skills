@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Agently-Skills",
   "framework": "agently",
-  "aligned_framework_version": "4.1.4.6",
+  "aligned_framework_version": "4.1.4.7",
   "catalog_generation": "v2",
   "supported_catalog_generations": [
     "v2"
