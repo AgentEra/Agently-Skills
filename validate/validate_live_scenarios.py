@@ -139,6 +139,8 @@ async def judge_route_case(case: dict) -> dict:
         "- Do not omit agently-request when the request explicitly asks for required keys, response reuse, prompt config, provider settings, retrieval, or a stable machine-readable object from one model step.\n"
         "- If both workflow-side response reuse and workflow-side structured fan-out are explicit, prefer agently-triggerflow first and then add the most central companion skill before any secondary companion.\n"
         "- If the request is about mixed sync and async function, module, or process orchestration, branch-collect, or waiting for multiple events, prefer agently-triggerflow even when some steps are not model calls.\n"
+        "- If the request directly asks for a bounded Stage lifetime scope, with Stage(), Stage.as_sync/as_async, a loop-neutral StageHandle, a Tunnel replay channel, or a process-local EventEmitter without workflow topology, prefer agently-stage when installed.\n"
+        "- Do not require TriggerFlow for standalone Stage context managers, scalar sync/async adapters, Tunnel channels, or EventEmitter listeners.\n"
         "- If the request explicitly wants prompt management, model setup, and business workflow split into separate layers, prefer agently-triggerflow first for the workflow layer, then append agently-request when installed.\n"
         "- If the request explicitly wants config files or YAML to bridge frontend-controlled behavior into prompt or request behavior, prefer agently-request when installed.\n"
         "- If that same config-bridge request also says the config should drive workflow stages or flow parameters, append agently-triggerflow after agently-request when installed.\n"
@@ -234,6 +236,16 @@ async def main() -> None:
     parser = argparse.ArgumentParser(description="Run V2 live validation scenarios.")
     parser.add_argument("--require-model", action="store_true", help="Fail if DeepSeek settings are missing.")
     parser.add_argument(
+        "--allow-model-calls",
+        action="store_true",
+        help="Explicitly authorize the model-backed smoke and route cases.",
+    )
+    parser.add_argument(
+        "--max-model-requests",
+        type=int,
+        help="Required request budget for model-backed validation, including one retry per case.",
+    )
+    parser.add_argument(
         "--timeout-seconds",
         type=int,
         default=60,
@@ -250,7 +262,20 @@ async def main() -> None:
     passes: list[str] = []
     failures: list[str] = []
 
-    if configure_deepseek():
+    fixtures = json.loads(ROUTE_FIXTURES.read_text(encoding="utf-8"))["cases"]
+    worst_case_requests = (len(fixtures) + 2) * 2
+    authorized = (
+        args.allow_model_calls
+        and args.max_model_requests is not None
+        and args.max_model_requests >= worst_case_requests
+    )
+
+    if args.allow_model_calls and not authorized:
+        failures.append(
+            "model_authorization: --allow-model-calls requires "
+            f"--max-model-requests >= {worst_case_requests}"
+        )
+    elif authorized and configure_deepseek():
         await run_model_smoke(failures, passes)
         await run_route_live_validation(
             failures,
@@ -258,12 +283,22 @@ async def main() -> None:
             timeout_seconds=args.timeout_seconds,
             concurrency=args.route_concurrency,
         )
-    else:
+    elif authorized:
         missing = ["DEEPSEEK_BASE_URL", "DEEPSEEK_DEFAULT_MODEL", "DEEPSEEK_API_KEY"]
         if args.require_model:
             failures.append(f"deepseek_env: missing one or more required vars {missing}")
         else:
             passes.append(f"deepseek_env: skipped model-backed smoke because vars are not fully set {missing}")
+    elif args.require_model:
+        failures.append(
+            "model_authorization: --require-model also requires "
+            "--allow-model-calls and a sufficient --max-model-requests budget"
+        )
+    else:
+        passes.append(
+            "model_authorization: skipped model-backed validation; explicit "
+            "--allow-model-calls and --max-model-requests are required"
+        )
 
     print("V2 live scenario validation")
     print(f"passes: {len(passes)}")

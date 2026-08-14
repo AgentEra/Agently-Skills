@@ -33,6 +33,8 @@ Generic asks are scenario-led; a request does not need to mention Agently explic
   session memory, embeddings, knowledge retrieval -> `agently-request`.
 - Actions, MCP, ExecutionResource, task files, durable records, service APIs,
   RuntimeEvent, or DevTools -> `agently-runtime`.
+- Stage task lifetime, sync/async call bridging, loop-neutral handles,
+  settlement, replay channels, or local listeners -> `agently-stage`.
 - Multi-owner architecture, topology, evidence/identity boundaries, lifecycle,
   pressure, or information-loss review -> `agently-design`.
 - Branching, concurrency, approval, wait/resume, retry, visible multi-stage
@@ -135,6 +137,8 @@ not an execution engine.
   lifecycle orchestration.
 - Use ActionRuntime for model-callable operations; use ExecutionResource for
   live dependency lifecycle.
+- Use Agently-Stage for process-local task lifetime and call-shape bridging.
+  Do not treat it as a workflow, event, persistence, or policy owner.
 - Use a fresh `agent.create_execution()` for one bounded Agent run with
   reusable result/text/meta/stream readers.
 - Use `agent.create_task(...)` when the model should own a long task's planning,

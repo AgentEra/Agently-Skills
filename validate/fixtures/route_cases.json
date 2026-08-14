@@ -2,6 +2,78 @@
   "version": 2,
   "cases": [
     {
+      "id": "stage-sync-async-bridge-en",
+      "scenario_id": "stage-runtime-bridge",
+      "locale": "en",
+      "intent_style": "stage-direct",
+      "query": "Use Agently-Stage to expose a synchronous wrapper for an async SDK, return a loop-neutral handle, and wait for retained cleanup to settle.",
+      "installed_skills": [
+        "agently",
+        "agently-stage",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-stage"
+        ],
+        [
+          "agently",
+          "agently-stage"
+        ]
+      ]
+    },
+    {
+      "id": "stage-tunnel-replay-zh",
+      "scenario_id": "stage-runtime-bridge",
+      "locale": "zh",
+      "intent_style": "stage-channel-direct",
+      "query": "用 Agently-Stage 的 Tunnel 做一个支持同步和异步订阅者的进程内 replay channel，慢消费者不能静默丢数据。",
+      "installed_skills": [
+        "agently",
+        "agently-stage",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-stage"
+        ]
+      ]
+    },
+    {
+      "id": "stage-event-emitter-hooks-zh",
+      "scenario_id": "stage-runtime-bridge",
+      "locale": "zh",
+      "intent_style": "stage-event-emitter-direct",
+      "query": "用 Agently-Stage 的 EventEmitter 做进程内插件钩子，监听器可以是同步或异步函数；这不是工作流，也不需要持久消息总线。",
+      "installed_skills": [
+        "agently",
+        "agently-stage",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-stage"
+        ]
+      ]
+    },
+    {
+      "id": "stage-context-and-adapters-en",
+      "scenario_id": "stage-runtime-bridge",
+      "locale": "en",
+      "intent_style": "stage-scope-direct",
+      "query": "Use with Stage() as a standalone bounded task-lifetime scope, expose an async SDK through Stage.as_sync(), and adapt one blocking helper with Stage.as_async(). No workflow topology is needed.",
+      "installed_skills": [
+        "agently",
+        "agently-stage",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-stage"
+        ]
+      ]
+    },
+    {
       "id": "generic-unresolved-no-framework-en",
       "scenario_id": "generic-unresolved-kickoff",
       "locale": "en",
@@ -259,6 +331,7 @@
       "query": "我们要重构一条业务链路，里面混着同步函数、异步函数、模块调用和多任务处理。我还没决定是继续手写线程或协程补丁，还是升级成工作流编排。",
       "installed_skills": [
         "agently",
+        "agently-stage",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
@@ -275,6 +348,7 @@
       "query": "Orchestrate mixed sync and async functions in one flow, run branches in parallel, wait for all branch results with branch-collect semantics, and continue only after every task finishes.",
       "installed_skills": [
         "agently",
+        "agently-stage",
         "agently-triggerflow"
       ],
       "expected_route_paths": [

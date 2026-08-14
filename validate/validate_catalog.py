@@ -15,6 +15,7 @@ EXPECTED_SKILLS = {
     "agently-design",
     "agently-request",
     "agently-runtime",
+    "agently-stage",
     "agently-dynamic-task",
     "agently-triggerflow",
     "agently-migration",
@@ -88,7 +89,7 @@ def main() -> None:
         passes,
     )
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
-    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 7-skill set", failures, passes)
+    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 8-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
     catalog_guidance_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
@@ -138,6 +139,13 @@ def main() -> None:
     )
     runtime_actions_text = (
         SKILLS / "agently-runtime" / "references" / "actions-runtime.md"
+    ).read_text(encoding="utf-8")
+    stage_text = (SKILLS / "agently-stage" / "SKILL.md").read_text(encoding="utf-8")
+    stage_lifecycle_text = (
+        SKILLS / "agently-stage" / "references" / "task-lifecycle.md"
+    ).read_text(encoding="utf-8")
+    stage_bridges_text = (
+        SKILLS / "agently-stage" / "references" / "bridges-streams-events.md"
     ).read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_overview_text = (
@@ -197,6 +205,22 @@ def main() -> None:
         and "agently-dynamic-task" in design_text
         and "model-request-topology.md" in design_text,
         "agently-design owns cross-layer design while routing executable details to leaf owners",
+        failures,
+        passes,
+    )
+    check(
+        "stage_owner_boundary",
+        "process-local task lifetime" in stage_text
+        and "TriggerFlowExecution" in stage_text
+        and "It does not own" in stage_text
+        and "Stage.create_task" in stage_lifecycle_text
+        and "StageCallBridge" in stage_bridges_text
+        and "TunnelLagError" in stage_bridges_text
+        and "standalone lifecycle APIs" in stage_lifecycle_text
+        and "Use `Tunnel` independently" in stage_bridges_text
+        and "Use `EventEmitter` independently" in stage_bridges_text
+        and "TriggerFlow is not required" in stage_text,
+        "Agently-Stage guidance covers standalone scopes, adapters, channels, and listeners without taking workflow or policy ownership",
         failures,
         passes,
     )
@@ -446,14 +470,16 @@ def main() -> None:
         skill_dir = SKILLS / skill_name
         skill_md = skill_dir / "SKILL.md"
         check(f"{skill_name}_skill_md", skill_md.exists(), "SKILL.md exists", failures, passes)
-        for subdir in ("references", "examples", "outputs", "scripts"):
-            check(
-                f"{skill_name}_{subdir}",
-                (skill_dir / subdir).exists(),
-                f"{subdir} directory exists",
-                failures,
-                passes,
-            )
+        for subdir in ("references", "examples", "outputs", "scripts", "agents"):
+            resource_path = skill_dir / subdir
+            if resource_path.exists():
+                check(
+                    f"{skill_name}_{subdir}",
+                    resource_path.is_dir(),
+                    f"optional {subdir} resource is a directory",
+                    failures,
+                    passes,
+                )
         if skill_md.exists():
             text = skill_md.read_text(encoding="utf-8")
             frontmatter = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)

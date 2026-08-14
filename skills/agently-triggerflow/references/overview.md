@@ -6,7 +6,7 @@ Prefer async-first flow handlers and execution APIs. When the UI needs progressi
 
 Async-first is not authority to redesign an interface owned by a Function or
 tool provider. On the Agently 4.1.4.7 development line with Agently-Stage
-0.3.7+, a synchronous chunk may call a provider-owned sync wrapper that uses
+0.3.8+, a synchronous chunk may call a provider-owned sync wrapper that uses
 `with Stage()` to wait for an async SDK, then continue with
 `data.set_state(...)` or another sync execution facade. Stage selects a
 physically safe carrier automatically, including across transitive synchronous

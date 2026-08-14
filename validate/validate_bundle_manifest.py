@@ -14,6 +14,7 @@ APP_SKILLS = {
     "agently-design",
     "agently-request",
     "agently-runtime",
+    "agently-stage",
     "agently-dynamic-task",
     "agently-triggerflow",
 }
@@ -98,7 +99,7 @@ def main() -> None:
     check(
         "app_skills",
         app_active == APP_SKILLS,
-        "app bundle combines router, cross-layer design, request, runtime, Dynamic Task, and TriggerFlow skills",
+        "app bundle combines router, cross-layer design, request, Stage, runtime, Dynamic Task, and TriggerFlow skills",
         failures,
         passes,
     )

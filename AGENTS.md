@@ -52,6 +52,10 @@ Use this file as installation-time guidance after the skills are added into anot
   Prefer current usage snippets or before/after snippets over abstract prose
   when that will make the change easier to inspect.
 - Version numbers are part of the release-prep change and must be updated before final validation, merging, or publishing; do not rely on post-publish metadata-only edits to trigger a release workflow.
+- Agently-Stage is the required-runtime companion. A Stage version that raises
+  Agently's minimum dependency must be built and tested against Agently,
+  published to PyPI, and clean-installed before the Agently minimum and lock
+  move. A tag or local wheel is not publication evidence.
 - Development-line planning must not change package release numbers. In the
   main repository, do not update `pyproject.toml`, `agently/compatibility.py`,
   `compatibility/index.json` `latest_release`, or create
@@ -269,6 +273,9 @@ Use this file as installation-time guidance after the skills are added into anot
   evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
 - `agently-runtime`: Action Runtime, tools, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
+- `agently-stage`: Stage task lifetime, sync/async bridges, loop-neutral
+  handles, settlement, StageStream, Tunnel, EventEmitter, pressure, and idle
+  diagnostics
 - `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
 - `agently-dynamic-task`: submitted or model-generated TaskDAG planning,
   validation, resolver binding, and execution through the TriggerFlow substrate

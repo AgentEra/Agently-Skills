@@ -8,7 +8,7 @@ Official documentation: <https://agently.tech/docs/en/> | <https://agently.cn/do
 ## Compatibility
 
 The default public catalog is the current Agently-Skills generation `v2`,
-aligned with the Agently 4.1.4.7 development line and the compact 7-skill
+aligned with the Agently 4.1.4.7 development line and the compact 8-skill
 structure.
 
 Machine-readable compatibility support lives in `compatibility/support.json`.
@@ -46,7 +46,7 @@ README.
 
 ## Current Catalog
 
-The default catalog contains 7 public skills:
+The default catalog contains 8 public skills:
 
 - `agently` - top-level router for unresolved model-powered product,
   assistant, internal-tool, automation, evaluator, workflow, or project-structure
@@ -61,6 +61,9 @@ The default catalog contains 7 public skills:
 - `agently-runtime` - Action Runtime, built-in action packages, tool
   compatibility, MCP, ExecutionResource lifecycle, service exposure,
   auto-function helpers, and `KeyWaiter`.
+- `agently-stage` - process-local task lifetime, sync/async call bridging,
+  loop-neutral handles, settlement, StageStream, Tunnel, EventEmitter,
+  backpressure, and idle diagnostics.
 - `agently-dynamic-task` - Dynamic Task DAG planning, `TaskDAG` validation,
   resolver handlers, and `TaskDAGExecutor` execution through
   `Agently.create_dynamic_task(...)`.
@@ -97,6 +100,7 @@ for skill in \
   agently-design \
   agently-request \
   agently-runtime \
+  agently-stage \
   agently-dynamic-task \
   agently-triggerflow
 do
@@ -125,5 +129,5 @@ Inspect the default public catalog:
 npx skills add . --list
 ```
 
-The default listing and standard install path expose only the current 7-skill
+The default listing and standard install path expose only the current 8-skill
 catalog.

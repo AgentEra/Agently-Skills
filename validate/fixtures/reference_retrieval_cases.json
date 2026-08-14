@@ -498,6 +498,69 @@
         "blind_gate_discovery_antipattern",
         "hidden_gate_second_confirmation"
       ]
+    },
+    {
+      "id": "stage-independent-scope-adapters-en",
+      "query": "Routing already selected agently-stage. Which focused references explain using with Stage() as an independent bounded lifetime scope and using Stage.as_sync/as_async directly without introducing TriggerFlow?",
+      "matched_skills": [
+        "agently-stage"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-stage/references/task-lifecycle.md",
+          "skills/agently-stage/references/bridges-streams-events.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "standalone_stage_scope",
+          "description": "with Stage() and async with Stage() are standalone bounded lifecycle APIs and do not require TriggerFlow."
+        },
+        {
+          "id": "standalone_scalar_adapters",
+          "description": "Stage.as_sync and Stage.as_async independently adapt one scalar callable while owning invocation settlement."
+        },
+        {
+          "id": "workflow_boundary",
+          "description": "TriggerFlow is added only when visible workflow topology or workflow lifecycle is actually required."
+        }
+      ],
+      "required_concepts": [
+        "standalone_stage_scope",
+        "standalone_scalar_adapters",
+        "workflow_boundary"
+      ]
+    },
+    {
+      "id": "stage-tunnel-event-emitter-zh",
+      "query": "已经路由到 agently-stage。我要确认 Tunnel 的进程内回放订阅场景和 EventEmitter 的本地插件钩子场景，它们都应该可以独立使用而不是被写成 TriggerFlow 的附属能力。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-stage"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-stage/references/bridges-streams-events.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "independent_tunnel",
+          "description": "Tunnel independently owns process-local ordered replay and per-subscriber sync or async cursors."
+        },
+        {
+          "id": "independent_event_emitter",
+          "description": "EventEmitter independently owns process-local listener registration and invocation for local hooks."
+        },
+        {
+          "id": "non_durable_boundary",
+          "description": "Neither primitive claims durable remote messaging, workflow state, retry, or exactly-once delivery."
+        }
+      ],
+      "required_concepts": [
+        "independent_tunnel",
+        "independent_event_emitter",
+        "non_durable_boundary"
+      ]
     }
   ]
 }

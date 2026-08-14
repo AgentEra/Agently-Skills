@@ -177,6 +177,42 @@ def main() -> None:
         failures,
         passes,
     )
+    check(
+        "stage_direct_cases_present",
+        {
+            case.get("id")
+            for case in cases
+            if case.get("scenario_id") == "stage-runtime-bridge"
+            and any(
+                path and path[0] == "agently-stage"
+                for path in case.get("expected_route_paths", [])
+            )
+        }
+        >= {
+            "stage-sync-async-bridge-en",
+            "stage-tunnel-replay-zh",
+            "stage-event-emitter-hooks-zh",
+            "stage-context-and-adapters-en",
+        },
+        "fixtures route direct Stage scopes, adapters, Tunnel, and EventEmitter work to agently-stage",
+        failures,
+        passes,
+    )
+    check(
+        "stage_does_not_take_workflow_owner",
+        any(
+            case.get("id") == "mixed-sync-async-orchestration-en"
+            and "agently-stage" in case.get("installed_skills", [])
+            and all(
+                not path or path[0] != "agently-stage"
+                for path in case.get("expected_route_paths", [])
+            )
+            for case in cases
+        ),
+        "fixtures keep explicit workflow orchestration with TriggerFlow even when agently-stage is installed",
+        failures,
+        passes,
+    )
 
     check(
         "intent_grouped_routes_present",
