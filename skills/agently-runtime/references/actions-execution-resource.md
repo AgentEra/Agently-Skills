@@ -132,8 +132,9 @@ TaskWorkspace
 
 `TaskWorkspace` owns file containment and artifacts; it does not supply a
 runtime or toolchain. `ExecutionResource` selects and manages the provider; it
-is not renamed to Sandbox. Docker is the built-in isolated provider. An
-explicit `trusted_local` fallback is unsafe and may only be enabled by the host
+is not renamed to Sandbox. Docker is the built-in isolated provider; the
+optional `gvisor` provider uses Docker's registered `runsc` runtime. An explicit
+`trusted_local` fallback is unsafe and may only be enabled by the host
 with `unsafe_fallback=True` and non-required isolation. Never describe it as a
 sandbox.
 
@@ -159,6 +160,15 @@ and declared `expected_outputs`; it never accepts raw compiler, package-manager,
 mount, sandbox-policy, or provider commands. Provider probes report observed
 toolchain versions and safety/isolation facts, and those facts remain attached
 to the Action result metadata for audit.
+
+Use `agent.enable_python(sandbox="gvisor")` only when the host Docker daemon
+has a working `runsc` runtime. This explicit selection verifies Docker, daemon
+runtime registration, image availability under the host-selected policy, and a
+bounded runsc container before it becomes ready. Missing, malformed,
+unregistered, or non-executable runsc fails closed and never falls back to runc,
+`auto`, or `trusted_local`; verified runtime facts remain in handle and Action
+result metadata. gVisor does not add a default import dependency, and its name
+does not upgrade unsafe Docker arguments into stronger safety claims.
 
 Expected outputs are bounded, normalized paths under `output/`; a missing
 declared output fails the Action. Providers bound retained stdout/stderr, stop
