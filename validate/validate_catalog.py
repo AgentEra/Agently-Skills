@@ -249,6 +249,19 @@ def main() -> None:
         passes,
     )
     check(
+        "request_prompt_context_locality_guidance",
+        "Each prompt slot is request-local only when it changes what the current request asks, permits, forbids, or needs to produce."
+        in request_prompt_management_text
+        and "If removing a candidate item would not change the current request's effective task, contract, evidence, or decision, remove or rewrite it."
+        in request_prompt_management_text
+        and "A proper name may remain only when it identifies a real domain contract, allowlist, evidence item, input fact, or capability boundary that changes the current request."
+        in request_prompt_management_text
+        and "execution.get_prompt_text()" in request_prompt_management_text,
+        "prompt-management guidance defines request-local relevance, the removal counterfactual, the proper-name boundary, and rendered-prompt auditing",
+        failures,
+        passes,
+    )
+    check(
         "rule_first_business_validation_guidance",
         "Rule-First Business Validation" in request_output_control_text
         and "blind gate discovery" in request_output_control_text
@@ -692,6 +705,25 @@ def main() -> None:
         "reference_fixture_covers_prompt_placeholders",
         any(case.get("id") == "prompt-placeholder-config-en" for case in reference_cases),
         "reference retrieval fixtures cover prompt placeholder mappings",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_request_prompt_context_locality",
+        any(
+            case.get("id") == "request-prompt-context-locality-zh"
+            and case.get("matched_skills") == ["agently-request"]
+            and case.get("expected_reference_sets")
+            == [["skills/agently-request/references/prompt-management.md"]]
+            and {
+                "request_local_relevance",
+                "self_contained_context",
+                "implementation_name_rewriting",
+                "rendered_prompt_audit",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover request-local context, self-contained prompts, implementation-name rewriting, and rendered-prompt auditing",
         failures,
         passes,
     )
