@@ -138,6 +138,13 @@ optional `gvisor` provider uses Docker's registered `runsc` runtime. An explicit
 with `unsafe_fallback=True` and non-required isolation. Never describe it as a
 sandbox.
 
+Treat `sandbox=` on the Python and Node.js convenience helpers as a compatibility
+shortcut limited to `auto`, `docker`, and `trusted_local`. Optional mechanisms
+are plugins. Select them only through the provider-neutral `providers=` and
+`isolation=` arguments; keep mechanism-specific configuration in that
+provider's candidate descriptor. Do not add plugin ids, aliases, capability
+assumptions, or configuration branches to core Action helpers.
+
 The public `isolation=` value is selection policy. Provider capability evidence
 is a mapping of concrete boolean isolation axes: process containment,
 host-filesystem restriction, privilege-escalation blocking, and syscall
@@ -161,8 +168,9 @@ mount, sandbox-policy, or provider commands. Provider probes report observed
 toolchain versions and safety/isolation facts, and those facts remain attached
 to the Action result metadata for audit.
 
-Use `agent.enable_python(sandbox="gvisor")` only when the host Docker daemon
-has a working `runsc` runtime. This explicit selection verifies Docker, daemon
+Use
+`agent.enable_code_runtime(language="python", providers=["gvisor"], isolation="required")`
+only when the host Docker daemon has a working `runsc` runtime. This explicit selection verifies Docker, daemon
 runtime registration, image availability under the host-selected policy, and a
 bounded runsc container before it becomes ready. Missing, malformed,
 unregistered, or non-executable runsc fails closed and never falls back to runc,
@@ -170,16 +178,18 @@ unregistered, or non-executable runsc fails closed and never falls back to runc,
 result metadata. gVisor does not add a default import dependency, and its name
 does not upgrade unsafe Docker arguments into stronger safety claims.
 
-On macOS, `agent.enable_python(sandbox="seatbelt")` selects only the optional
-Seatbelt provider. Its SBPL profile denies network by default and derives all
+On macOS,
+`agent.enable_code_runtime(language="python", providers=["seatbelt"], isolation="preferred")`
+selects only the optional Seatbelt provider. Its SBPL profile denies network by default and derives all
 writable paths from the TaskWorkspace grant; it accepts no raw SBPL or extra
 host write roots and never falls back to Docker or `trusted_local`. The initial
 toolchain-compatible profile permits broad host reads, so it truthfully reports
 `host_filesystem_restricted=false` and uses preferred rather than required
 isolation. Choose Docker/gVisor when host-read isolation is required.
 
-On Linux, `agent.enable_python(sandbox="landlock")` selects only the optional
-filesystem-only Landlock provider. A provider-owned helper validates a
+On Linux,
+`agent.enable_code_runtime(language="python", providers=["landlock"], isolation="preferred")`
+selects only the optional filesystem-only Landlock provider. A provider-owned helper validates a
 host-generated rule manifest, applies `PR_SET_NO_NEW_PRIVS` plus ABI-aware
 rules derived only from system/toolchain roots and TaskWorkspace grants, then
 execs the adapter argv through bounded process ownership. It accepts no raw
