@@ -75,7 +75,7 @@
     },
     {
       "id": "request-prompt-context-locality-zh",
-      "query": "已经路由到 agently-request。我想审查一条模型请求：保留会改变当前任务的真实权限、枚举和证据，把没有请求级作用的内部实现名称改写成模型可理解的角色或删掉，并在发送前检查模型实际看到的完整提示。应该先看哪份参考？",
+      "query": "已经路由到 agently-request。我想审查一条模型请求：保留会改变模型决策或允许 verdict 的有效上游调用方保证，以及有明确用户/UI 消费者的过程说明；把没有请求级作用的内部实现名称改写成可理解的行为或删掉。发送前检查 execution draft；若 TaskContext、Session、Skill 或检索还会注入内容，再用有界测试检查注入后最终 ModelRequest 的 prompt_text。应该先看哪份参考？",
       "matched_skills": [
         "agently-request"
       ],
@@ -98,15 +98,30 @@
           "description": "An implementation-specific name without request-level effect is removed or rewritten as an understandable role or behavior."
         },
         {
-          "id": "rendered_prompt_audit",
-          "description": "Inspect the rendered one-run prompt with execution.get_prompt_text() before dispatch when auditing prompt context."
+          "id": "user_visible_process_consumer",
+          "description": "Useful user-visible process context, state, or explanation is retained only with a declared user or UI consumer."
+        },
+        {
+          "id": "effective_caller_guarantee",
+          "description": "An effective upstream caller guarantee is retained or rewritten behaviorally when it changes the model-owned decision or allowed verdict set."
+        },
+        {
+          "id": "execution_draft_audit",
+          "description": "Before dispatch, execution.get_prompt_text() audits the rendered execution draft rather than the final ModelRequest prompt."
+        },
+        {
+          "id": "observed_final_prompt_audit",
+          "description": "When runtime extensions inject later, a bounded test inspects the observed final ModelRequest prompt_text emitted or built after injection, with secrets redacted before retention."
         }
       ],
       "required_concepts": [
         "request_local_relevance",
         "self_contained_context",
         "implementation_name_rewriting",
-        "rendered_prompt_audit"
+        "user_visible_process_consumer",
+        "effective_caller_guarantee",
+        "execution_draft_audit",
+        "observed_final_prompt_audit"
       ]
     },
     {

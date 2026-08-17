@@ -230,7 +230,7 @@ Record for every logical node:
 | decision | What business decision or transformation occurs? |
 | prerequisites | Which trusted facts, capabilities, and prior fields are required? |
 | prompt slots | What enters `agent`, `input`, `info`, `instruct`, `output`, `attachment`, and `chat_history`? |
-| prompt relevance | For each item, what current-node task, contract, evidence, permission, restriction, or required result would change if it were absent? |
+| prompt relevance | For each item, what current-node input interpretation, authoritative fact/policy/schema/evidence, model-owned decision/transformation, output/consumer/tool/capability boundary, or useful user-visible process context/state/explanation with a declared user or UI consumer would change if it were absent? |
 | execution context | Which state, Workspace refs, settings, provider, and authorization apply? |
 | output schema | What are each field's type, meaning, requiredness, enum/format/range/nullability, and cross-field rules? |
 | consumers | Which same-response field, next pass, request, Action, UI, join, state transition, or terminal gate reads each field? |
@@ -255,6 +255,19 @@ Do not add project history or an unexplained implementation name merely because
 it is available to the application. Preserve domain contracts, allowlists,
 evidence, input facts, and capability boundaries that change the current node;
 otherwise remove the item or express its request-relevant role.
+
+Retain or behaviorally rewrite an effective upstream caller guarantee when it
+changes the model-owned decision or the allowed verdict set. Project origin is
+not a reason to delete it. Conversely, the user-visible-process role requires
+a declared user or UI consumer and does not authorize generic project
+narration.
+
+Before dispatch, `execution.get_prompt_text()` audits only the rendered
+execution draft. If TaskContext, Session, Skills, retrieval, Actions, or another
+runtime extension can inject later, observe the final ModelRequest `prompt_text`
+emitted or built after injection in a bounded test. The post-start execution
+snapshot is not sufficient evidence for late injections. Redact secrets before
+retaining prompt evidence.
 
 When output must call a documented interface, put runtime facts in `input`,
 authoritative contract material in `info`, call rules in `instruct`, and the
