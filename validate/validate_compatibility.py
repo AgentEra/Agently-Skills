@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SUPPORT = ROOT / "compatibility" / "support.json"
 DEFAULT_BUNDLE_MANIFEST = ROOT / "bundles" / "manifest.json"
-AGENTLY_ROOT = ROOT.parent / "Agently"
+AGENTLY_ROOT = Path(
+    os.environ.get("AGENTLY_ROOT", str(ROOT.parent / "Agently"))
+).resolve()
 AGENTLY_INDEX = AGENTLY_ROOT / "compatibility" / "index.json"
 AGENTLY_IN_DEVELOPMENT = AGENTLY_ROOT / "compatibility" / "in-development.json"
 
@@ -37,6 +40,8 @@ def main() -> None:
     recommended_bundle = support.get("recommended_bundle")
     aligned_version = support.get("aligned_framework_version")
     archived_catalogs = support.get("archived_catalog_generations", [])
+    runtime_dependencies = support.get("supported_runtime_dependencies", {})
+    stage_dependency = runtime_dependencies.get("agently_stage", {})
 
     check("schema_version", support.get("schema_version") == 1, "support manifest schema is 1", failures, passes)
     check("framework", support.get("framework") == "agently", "framework is agently", failures, passes)
@@ -52,6 +57,15 @@ def main() -> None:
     check("recommended_bundle", recommended_bundle == "app", "current support manifest recommends app bundle", failures, passes)
     check("authoring_protocols", bool(authoring), "authoring protocols declared", failures, passes)
     check("devtools_guidance_protocols", bool(devtools_guidance), "devtools guidance protocols declared", failures, passes)
+    check(
+        "stage_runtime_dependency",
+        stage_dependency.get("package") == "agently-stage"
+        and stage_dependency.get("skill") == "agently-stage"
+        and isinstance(stage_dependency.get("version_specifier"), str),
+        "Agently-Stage runtime dependency and owning Skill are declared",
+        failures,
+        passes,
+    )
     archived_v1 = next((item for item in archived_catalogs if item.get("generation") == "v1"), None)
     check("archived_v1_listed", isinstance(archived_v1, dict), "support manifest lists archived V1 generation", failures, passes)
     if isinstance(archived_v1, dict):
@@ -167,6 +181,12 @@ def main() -> None:
     if AGENTLY_IN_DEVELOPMENT.exists():
         in_development = json.loads(AGENTLY_IN_DEVELOPMENT.read_text(encoding="utf-8"))
         skills = in_development.get("companions", {}).get("skills", {})
+        stage_support = in_development.get("runtime_support", {}).get(
+            "agently_stage", {}
+        )
+        stage_guidance = skills.get("runtime_dependency_guidance", {}).get(
+            "agently_stage", {}
+        )
         target_version = in_development.get("target_version")
         check(
             "in_development_authoring_protocol_supported",
@@ -193,6 +213,30 @@ def main() -> None:
             "in_development_recommended_bundle_supported",
             skills.get("recommended_bundle") == recommended_bundle,
             "Agently in-development recommended Skills bundle is supported by Agently-Skills",
+            failures,
+            passes,
+        )
+        check(
+            "in_development_stage_role",
+            stage_support.get("role") == "required_runtime_dependency",
+            "Agently declares Stage as the required-runtime companion",
+            failures,
+            passes,
+        )
+        check(
+            "in_development_stage_version_supported",
+            stage_support.get("version_specifier")
+            == stage_dependency.get("version_specifier"),
+            "Agently-Skills Stage guidance matches the Agently required range",
+            failures,
+            passes,
+        )
+        check(
+            "in_development_stage_skill_matches",
+            stage_guidance.get("skill") == stage_dependency.get("skill")
+            and stage_guidance.get("version_specifier")
+            == stage_dependency.get("version_specifier"),
+            "Agently manifest routes required Stage guidance to the supported Skill",
             failures,
             passes,
         )
@@ -237,6 +281,13 @@ def main() -> None:
         "readme_mentions_aligned_version",
         f"Agently {aligned_version}" in readme,
         "README mentions the aligned Agently release line",
+        failures,
+        passes,
+    )
+    check(
+        "readme_mentions_stage_skill",
+        "agently-stage" in readme and "8 public skills" in readme,
+        "README lists the Agently-Stage Skill in the current catalog",
         failures,
         passes,
     )

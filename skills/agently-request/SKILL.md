@@ -38,6 +38,20 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 - Put runtime values in `input`, authoritative source/API/schema facts in
   `info`, transformation/call rules in `instruct`, and the exact
   machine-consumable shape in `output`.
+- Keep request-local cohesion: retain prompt context only when it changes the
+  current request's task, contract, evidence, permission, restriction, or
+  required result, or provides useful user-visible process context, state, or
+  explanation with a declared user or UI consumer. Retain or behaviorally
+  rewrite an effective upstream caller guarantee when it changes the
+  model-owned decision or the allowed verdict set. Do not assume the model can
+  infer unexplained external project context; provide the compact facts it
+  needs in this request.
+- Before dispatch, use `execution.get_prompt_text()` only to audit the rendered
+  execution draft. When TaskContext, Session, Skills, retrieval, Actions, or
+  other runtime extensions can inject later, use a bounded test to observe the
+  final ModelRequest `prompt_text` emitted or built after injection. Do not
+  treat the post-start execution snapshot as sufficient evidence for late
+  injections, and redact secrets before retaining prompt evidence.
 - Define each downstream-consumed field's type, semantics, requiredness,
   enum/format/range, nullability, and cross-field constraints.
 - When post-generation business validation expects the model to satisfy a rule,
@@ -172,6 +186,11 @@ inside the plugin.
   checking native settings/output contracts.
 - Moving a one-use schema or prompt step away from its Agently request chain
   only to make the chain look shorter.
+- Carrying implementation names or project history that do not affect the
+  current request, while assuming the model understands their external context.
+- Deleting an effective caller guarantee because it originated upstream, or
+  retaining generic project narration as "user-visible" without a declared
+  user or UI consumer.
 - Re-requesting one model call separately for text, data, and metadata.
 - Hiding retrieval inside unrelated prompt formatting.
 - Recreating generic Workspace/ContextBuilder behavior instead of composing

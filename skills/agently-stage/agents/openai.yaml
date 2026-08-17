@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Stage"
+  short_description: "Build safe sync/async runtime bridges with Agently Stage"
+  default_prompt: "Use $agently-stage to choose and implement the correct Stage task-lifetime or sync/async bridge pattern."

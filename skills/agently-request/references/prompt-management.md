@@ -58,6 +58,35 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Request-Local Context
+
+Each model-visible prompt item must serve at least one current-request role:
+
+1. Interpret a supplied input.
+2. Provide an authoritative fact, policy, schema, or evidence item.
+3. Change the model-owned decision or transformation.
+4. Define an output, consumer, tool, or capability boundary.
+5. Provide useful user-visible process context, state, or explanation with a declared user or UI consumer.
+
+Use the prompt slots deliberately: `agent` supplies stable role/capabilities;
+`input` supplies current facts; `info` supplies authoritative contract and
+evidence; `instruct` supplies task rules; and `output` supplies the required
+result shape. Together they must give the model a self-contained account of
+the current request, rather than assuming unexplained external project context.
+
+Apply the removal counterfactual to every candidate item: If removing a candidate item would not change the current request's effective task, contract, evidence, decision, allowed verdict, or declared user/UI projection, remove or rewrite it. Project-level origin is not a removal test: retain a shared policy or fact when it changes this request. Retain or behaviorally rewrite an effective upstream caller guarantee when it changes the model-owned decision or the allowed verdict set. A proper name may remain only when it identifies a real domain contract, allowlist, evidence item, input fact, or capability boundary that changes the current request. Otherwise, rewrite an unexplained implementation name as its request-relevant role, or remove it. The fifth role does not justify generic project narration: name the user or UI consumer and the useful process context, state, or explanation it receives.
+
+Compact example:
+
+| | `info` |
+|---|---|
+| Bad | “Follow the project’s worker-manager convention.” |
+| Good | “Allowed actions: approve or reject. Evidence: the attached request and its policy record.” |
+
+Audit at two levels: first review each slot against its role and the removal
+counterfactual; then inspect the actual rendered request, including mappings
+and references. Before dispatch, `execution.get_prompt_text()` audits the rendered execution draft, not the final ModelRequest prompt. When TaskContext, Session, Skills, retrieval, Actions, or other runtime extensions can inject later, a bounded test must observe the final ModelRequest `prompt_text` emitted or built after injection. Do not treat the post-start execution snapshot as sufficient evidence for late injections. Redact secrets before retaining prompt evidence.
+
 ## Anti-Patterns
 
 - do not flatten business context into one opaque string unless the task is trivial
@@ -72,6 +101,12 @@ Use this skill when the core problem is how prompt state should be structured be
   `prompt` field with Configure Prompt shape when an internal model request
   needs configurable `input`, `instruct`, `output`, or `output_format`
 - do not use prompt config files as a substitute for workflow state
+- do not retain a name merely because it came from project setup, or rewrite a
+  domain contract, allowlist, evidence item, input fact, or capability boundary
+  that changes the current request.
+- do not remove an effective upstream guarantee that changes the decision or
+  allowed verdicts, and do not retain generic project narration under the
+  user-visible-process role without a declared user or UI consumer.
 
 ## Read Next
 

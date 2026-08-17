@@ -15,6 +15,7 @@ EXPECTED_SKILLS = {
     "agently-design",
     "agently-request",
     "agently-runtime",
+    "agently-stage",
     "agently-dynamic-task",
     "agently-triggerflow",
     "agently-migration",
@@ -88,7 +89,7 @@ def main() -> None:
         passes,
     )
     actual_skills = {path.name for path in SKILLS.iterdir() if path.is_dir()}
-    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 7-skill set", failures, passes)
+    check("catalog_exact", actual_skills == EXPECTED_SKILLS, "public catalog matches current 8-skill set", failures, passes)
 
     playbook_text = (SKILLS / "agently" / "SKILL.md").read_text(encoding="utf-8")
     catalog_guidance_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
@@ -138,6 +139,13 @@ def main() -> None:
     )
     runtime_actions_text = (
         SKILLS / "agently-runtime" / "references" / "actions-runtime.md"
+    ).read_text(encoding="utf-8")
+    stage_text = (SKILLS / "agently-stage" / "SKILL.md").read_text(encoding="utf-8")
+    stage_lifecycle_text = (
+        SKILLS / "agently-stage" / "references" / "task-lifecycle.md"
+    ).read_text(encoding="utf-8")
+    stage_bridges_text = (
+        SKILLS / "agently-stage" / "references" / "bridges-streams-events.md"
     ).read_text(encoding="utf-8")
     dynamic_task_text = (SKILLS / "agently-dynamic-task" / "SKILL.md").read_text(encoding="utf-8")
     dynamic_task_overview_text = (
@@ -201,6 +209,22 @@ def main() -> None:
         passes,
     )
     check(
+        "stage_owner_boundary",
+        "process-local task lifetime" in stage_text
+        and "TriggerFlowExecution" in stage_text
+        and "It does not own" in stage_text
+        and "Stage.create_task" in stage_lifecycle_text
+        and "StageCallBridge" in stage_bridges_text
+        and "TunnelLagError" in stage_bridges_text
+        and "standalone lifecycle APIs" in stage_lifecycle_text
+        and "Use `Tunnel` independently" in stage_bridges_text
+        and "Use `EventEmitter` independently" in stage_bridges_text
+        and "TriggerFlow is not required" in stage_text,
+        "Agently-Stage guidance covers standalone scopes, adapters, channels, and listeners without taking workflow or policy ownership",
+        failures,
+        passes,
+    )
+    check(
         "request_final_getter_without_discarded_stream",
         "directly await `async_get_data()`" in request_text
         and re.search(
@@ -221,6 +245,57 @@ def main() -> None:
         and "In Agently fluent request examples" in catalog_guidance_text
         and "One Prompt Configure file plus explicit" in catalog_guidance_text,
         "Agently fluent request guidance keeps one-off request chains locally readable",
+        failures,
+        passes,
+    )
+    check(
+        "request_prompt_context_locality_guidance",
+        "Interpret a supplied input."
+        in request_prompt_management_text
+        and "Provide an authoritative fact, policy, schema, or evidence item."
+        in request_prompt_management_text
+        and "Change the model-owned decision or transformation."
+        in request_prompt_management_text
+        and "Define an output, consumer, tool, or capability boundary."
+        in request_prompt_management_text
+        and "Provide useful user-visible process context, state, or explanation with a declared user or UI consumer."
+        in request_prompt_management_text
+        and "If removing a candidate item would not change the current request's effective task, contract, evidence, decision, allowed verdict, or declared user/UI projection, remove or rewrite it."
+        in request_prompt_management_text
+        and "Retain or behaviorally rewrite an effective upstream caller guarantee when it changes the model-owned decision or the allowed verdict set."
+        in request_prompt_management_text
+        and "Before dispatch, `execution.get_prompt_text()` audits the rendered execution draft, not the final ModelRequest prompt."
+        in request_prompt_management_text
+        and "observe the final ModelRequest `prompt_text` emitted or built after injection"
+        in request_prompt_management_text
+        and "Do not treat the post-start execution snapshot as sufficient evidence for late injections."
+        in request_prompt_management_text
+        and "Redact secrets before retaining prompt evidence."
+        in request_prompt_management_text,
+        "prompt-management guidance defines all five relevance roles, the retain-side boundary, and draft-versus-final prompt auditing",
+        failures,
+        passes,
+    )
+    check(
+        "cross_surface_prompt_context_locality_guidance",
+        all(
+            re.search(r"declared\s+user or UI consumer", text) is not None
+            and re.search(r"effective\s+upstream\s+caller\s+guarantee", text)
+            is not None
+            for text in (
+                request_text,
+                design_text,
+                design_model_request_topology_text,
+                catalog_guidance_text,
+            )
+        )
+        and re.search(r"rendered\s+execution draft", catalog_guidance_text)
+        is not None
+        and re.search(
+            r"final ModelRequest\s+`prompt_text`", catalog_guidance_text
+        )
+        is not None,
+        "request, design, topology, and catalog guidance preserve the fifth role and distinguish draft from final prompt evidence",
         failures,
         passes,
     )
@@ -446,14 +521,16 @@ def main() -> None:
         skill_dir = SKILLS / skill_name
         skill_md = skill_dir / "SKILL.md"
         check(f"{skill_name}_skill_md", skill_md.exists(), "SKILL.md exists", failures, passes)
-        for subdir in ("references", "examples", "outputs", "scripts"):
-            check(
-                f"{skill_name}_{subdir}",
-                (skill_dir / subdir).exists(),
-                f"{subdir} directory exists",
-                failures,
-                passes,
-            )
+        for subdir in ("references", "examples", "outputs", "scripts", "agents"):
+            resource_path = skill_dir / subdir
+            if resource_path.exists():
+                check(
+                    f"{skill_name}_{subdir}",
+                    resource_path.is_dir(),
+                    f"optional {subdir} resource is a directory",
+                    failures,
+                    passes,
+                )
         if skill_md.exists():
             text = skill_md.read_text(encoding="utf-8")
             frontmatter = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
@@ -666,6 +743,28 @@ def main() -> None:
         "reference_fixture_covers_prompt_placeholders",
         any(case.get("id") == "prompt-placeholder-config-en" for case in reference_cases),
         "reference retrieval fixtures cover prompt placeholder mappings",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_request_prompt_context_locality",
+        any(
+            case.get("id") == "request-prompt-context-locality-zh"
+            and case.get("matched_skills") == ["agently-request"]
+            and case.get("expected_reference_sets")
+            == [["skills/agently-request/references/prompt-management.md"]]
+            and {
+                "request_local_relevance",
+                "self_contained_context",
+                "implementation_name_rewriting",
+                "user_visible_process_consumer",
+                "effective_caller_guarantee",
+                "execution_draft_audit",
+                "observed_final_prompt_audit",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover both locality extremes, a declared user/UI consumer, and draft-versus-final prompt auditing",
         failures,
         passes,
     )

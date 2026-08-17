@@ -24,6 +24,8 @@ topology needs.
   `../agently/references/execution-topology-validation.md`.
 - RecordStore, TaskWorkspace, TaskContext, or Skills ownership:
   `../agently/references/context-and-skills.md`.
+- Direct Stage scopes, handles, settlement, bridges, channels, or listeners:
+  use `agently-stage`.
 
 ## Topology First
 
@@ -74,7 +76,7 @@ Graph adjacency proves activation, not value transfer.
 
 - Prefer async handlers, execution entrypoints, and stream consumers.
 - Do not force a provider-owned synchronous interface to become async merely
-  because its implementation calls an async SDK. With Agently-Stage 0.3.7+, a
+  because its implementation calls an async SDK. With Agently-Stage 0.3.8+, a
   sync chunk may call a sync wrapper that uses `with Stage()` and may then
   continue through TriggerFlow sync facades. Stage detects the surrounding
   physical carrier and excludes every upstream carrier in a transitive sync

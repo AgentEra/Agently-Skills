@@ -26,7 +26,10 @@ summary alone.
    when later fields need no fact beyond dispatch-time input and earlier fields
    in the same response. Split after any Action, system access, approval,
    readback, or host computation whose new observation a later model step needs.
-6. Design each ModelRequest prompt/output contract from declared consumer needs.
+6. Design each ModelRequest prompt/output contract from declared consumer needs,
+   and check every prompt-slot item for current-node relevance: it must change
+   that node's task, contract, evidence, permission, restriction, or required
+   result.
 7. Map output fields to same-response, next-pass, external, user-process,
    point-to-point, fan-out, join, stream, and terminal edges.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
@@ -103,12 +106,28 @@ Use types and field-level constraints wherever a downstream system consumes
 model output. Treat `instant` values as provisional until the final parsed
 result and configured validation accept the originating attempt.
 
+For every ModelRequest node, keep an item only when it changes the current
+node's task, contract, evidence, permission, restriction, or required result,
+or provides useful user-visible process context, state, or explanation with a
+declared user or UI consumer. Retain or behaviorally rewrite an effective
+upstream caller guarantee when it changes the model-owned decision or the
+allowed verdict set. Audit the rendered execution draft before dispatch; when
+runtime extensions can inject later, observe the final ModelRequest
+`prompt_text` after injection in a bounded test and redact retained evidence.
+
 ## Anti-Patterns
 
 - Do not turn this Skill into a broad `best-practices` dumping ground.
 - Do not create a parallel executable topology beside TriggerFlow or TaskDAG.
 - Do not review an output schema in isolation when its fields feed downstream
   requests, Actions, joins, UI streams, or terminal gates.
+- Do not copy project history or unexplained implementation names into a node
+  contract merely because they are available; retain only current-node-relevant
+  context and preserve real domain contracts, allowlists, evidence, input facts,
+  and capability boundaries that change the request.
+- Do not delete effective upstream guarantees as project-origin context, or
+  treat generic project narration as useful user-visible process context
+  without a declared user or UI consumer.
 - Do not replace model-owned semantic understanding, intent recognition,
   routing, response generation, judgment, planning, or ambiguity resolution
   with tokenization, keyword tables, substring rules, or regular expressions.

@@ -52,6 +52,10 @@ Use this file as installation-time guidance after the skills are added into anot
   Prefer current usage snippets or before/after snippets over abstract prose
   when that will make the change easier to inspect.
 - Version numbers are part of the release-prep change and must be updated before final validation, merging, or publishing; do not rely on post-publish metadata-only edits to trigger a release workflow.
+- Agently-Stage is the required-runtime companion. A Stage version that raises
+  Agently's minimum dependency must be built and tested against Agently,
+  published to PyPI, and clean-installed before the Agently minimum and lock
+  move. A tag or local wheel is not publication evidence.
 - Development-line planning must not change package release numbers. In the
   main repository, do not update `pyproject.toml`, `agently/compatibility.py`,
   `compatibility/index.json` `latest_release`, or create
@@ -182,6 +186,21 @@ Use this file as installation-time guidance after the skills are added into anot
   declarative equivalent. Split the chain only for actual reuse, independently
   owned/versioned configuration, or genuinely dynamic composition; do not move
   a one-use schema or prompt step elsewhere merely to make the chain shorter.
+- Keep every prompt-slot item request-local: it must change the current
+  request's task, contract, evidence, permission, restriction, or required
+  result, or provide useful user-visible process context, state, or explanation
+  with a declared user or UI consumer. Do not remove a real domain contract,
+  allowlist, evidence item, input fact, or capability boundary merely because it
+  came from project-level setup; apply the removal counterfactual to its effect
+  on this request. Retain or behaviorally rewrite an effective upstream caller
+  guarantee when it changes the model-owned decision or the allowed verdict
+  set. Rewrite or remove unexplained implementation names only when they are
+  request-irrelevant; the user-visible role does not authorize generic project
+  narration. Before dispatch, `execution.get_prompt_text()` audits the rendered
+  execution draft. When runtime extensions can inject later, use a bounded test
+  to observe the final ModelRequest `prompt_text` after injection; the post-start
+  execution snapshot is not sufficient evidence. Redact secrets before
+  retaining prompt evidence.
 - Use direct FastAPI for an ordinary typed HTTP API and FastMCP for MCP-server
   exposure. Keep both as inbound adapters over the same owned async application
   entry and approved result projection. `FastAPIHelper` remains available when
@@ -269,6 +288,9 @@ Use this file as installation-time guidance after the skills are added into anot
   evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
 - `agently-runtime`: Action Runtime, tools, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
+- `agently-stage`: Stage task lifetime, sync/async bridges, loop-neutral
+  handles, settlement, StageStream, Tunnel, EventEmitter, pressure, and idle
+  diagnostics
 - `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
 - `agently-dynamic-task`: submitted or model-generated TaskDAG planning,
   validation, resolver binding, and execution through the TriggerFlow substrate

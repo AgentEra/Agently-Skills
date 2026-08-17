@@ -74,6 +74,57 @@
       ]
     },
     {
+      "id": "request-prompt-context-locality-zh",
+      "query": "已经路由到 agently-request。我想审查一条模型请求：保留会改变模型决策或允许 verdict 的有效上游调用方保证，以及有明确用户/UI 消费者的过程说明；把没有请求级作用的内部实现名称改写成可理解的行为或删掉。发送前检查 execution draft；若 TaskContext、Session、Skill 或检索还会注入内容，再用有界测试检查注入后最终 ModelRequest 的 prompt_text。应该先看哪份参考？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "request_local_relevance",
+          "description": "Each prompt item is retained only when it changes the current request's task, contract, evidence, permission, restriction, or required result."
+        },
+        {
+          "id": "self_contained_context",
+          "description": "The rendered request contains the task-relevant context the model needs instead of assuming unexplained external project knowledge."
+        },
+        {
+          "id": "implementation_name_rewriting",
+          "description": "An implementation-specific name without request-level effect is removed or rewritten as an understandable role or behavior."
+        },
+        {
+          "id": "user_visible_process_consumer",
+          "description": "Useful user-visible process context, state, or explanation is retained only with a declared user or UI consumer."
+        },
+        {
+          "id": "effective_caller_guarantee",
+          "description": "An effective upstream caller guarantee is retained or rewritten behaviorally when it changes the model-owned decision or allowed verdict set."
+        },
+        {
+          "id": "execution_draft_audit",
+          "description": "Before dispatch, execution.get_prompt_text() audits the rendered execution draft rather than the final ModelRequest prompt."
+        },
+        {
+          "id": "observed_final_prompt_audit",
+          "description": "When runtime extensions inject later, a bounded test inspects the observed final ModelRequest prompt_text emitted or built after injection, with secrets redacted before retention."
+        }
+      ],
+      "required_concepts": [
+        "request_local_relevance",
+        "self_contained_context",
+        "implementation_name_rewriting",
+        "user_visible_process_consumer",
+        "effective_caller_guarantee",
+        "execution_draft_audit",
+        "observed_final_prompt_audit"
+      ]
+    },
+    {
       "id": "model-settings-env-en",
       "query": "After agently-request is already matched for model setup, I need the supporting doc that explains keeping provider settings in config files, using `${ENV.xxx}` placeholders, calling `Agently.load_settings(\"yaml_file\", path, auto_load_env=True)`, and optionally failing fast on missing env names. Which file should I read first?",
       "matched_skills": [
@@ -497,6 +548,69 @@
         "validator_remains_authority",
         "blind_gate_discovery_antipattern",
         "hidden_gate_second_confirmation"
+      ]
+    },
+    {
+      "id": "stage-independent-scope-adapters-en",
+      "query": "Routing already selected agently-stage. Which focused references explain using with Stage() as an independent bounded lifetime scope and using Stage.as_sync/as_async directly without introducing TriggerFlow?",
+      "matched_skills": [
+        "agently-stage"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-stage/references/task-lifecycle.md",
+          "skills/agently-stage/references/bridges-streams-events.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "standalone_stage_scope",
+          "description": "with Stage() and async with Stage() are standalone bounded lifecycle APIs and do not require TriggerFlow."
+        },
+        {
+          "id": "standalone_scalar_adapters",
+          "description": "Stage.as_sync and Stage.as_async independently adapt one scalar callable while owning invocation settlement."
+        },
+        {
+          "id": "workflow_boundary",
+          "description": "TriggerFlow is added only when visible workflow topology or workflow lifecycle is actually required."
+        }
+      ],
+      "required_concepts": [
+        "standalone_stage_scope",
+        "standalone_scalar_adapters",
+        "workflow_boundary"
+      ]
+    },
+    {
+      "id": "stage-tunnel-event-emitter-zh",
+      "query": "已经路由到 agently-stage。我要确认 Tunnel 的进程内回放订阅场景和 EventEmitter 的本地插件钩子场景，它们都应该可以独立使用而不是被写成 TriggerFlow 的附属能力。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-stage"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-stage/references/bridges-streams-events.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "independent_tunnel",
+          "description": "Tunnel independently owns process-local ordered replay and per-subscriber sync or async cursors."
+        },
+        {
+          "id": "independent_event_emitter",
+          "description": "EventEmitter independently owns process-local listener registration and invocation for local hooks."
+        },
+        {
+          "id": "non_durable_boundary",
+          "description": "Neither primitive claims durable remote messaging, workflow state, retry, or exactly-once delivery."
+        }
+      ],
+      "required_concepts": [
+        "independent_tunnel",
+        "independent_event_emitter",
+        "non_durable_boundary"
       ]
     }
   ]

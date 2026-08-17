@@ -8,7 +8,7 @@
 ## 兼容性
 
 默认公开 catalog 是当前 Agently-Skills generation `v2`，已为 Agently 4.1.4.7
-开发线和新的 7-skill 结构完成准备。
+开发线和新的 8-skill 结构完成准备。
 
 机器可读兼容声明位于 `compatibility/support.json`。默认分支只保留当前公开
 catalog，避免 coding-agent 的 Skill 检索命中已退役的历史 Skills。
@@ -41,7 +41,7 @@ README 中。
 
 ## 当前 Catalog
 
-默认 catalog 一共 7 个公开 skills：
+默认 catalog 一共 8 个公开 skills：
 
 - `agently` - 未定层级的模型应用、助手、内部工具、自动化、评估器、工作流、
   项目结构重构请求的统一入口。
@@ -53,6 +53,8 @@ README 中。
 - `agently-runtime` - Action Runtime、内置 action packages、tool 兼容入口、
   MCP、ExecutionResource 生命周期、服务暴露、auto-function helpers、
   以及 `KeyWaiter`。
+- `agently-stage` - 进程内任务生命周期、同步/异步调用桥接、loop-neutral handle、
+  settlement、StageStream、Tunnel、EventEmitter、背压与 idle 诊断。
 - `agently-dynamic-task` - Dynamic Task DAG 规划、`TaskDAG` 校验、resolver
   handlers，以及通过 `Agently.create_dynamic_task(...)` 使用 `TaskDAGExecutor`
   执行。
@@ -85,6 +87,7 @@ for skill in \
   agently-design \
   agently-request \
   agently-runtime \
+  agently-stage \
   agently-dynamic-task \
   agently-triggerflow
 do
@@ -112,4 +115,4 @@ npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill agently -y
 npx skills add . --list
 ```
 
-默认列表和常规安装路径只暴露当前 7-skill catalog。
+默认列表和常规安装路径只暴露当前 8-skill catalog。

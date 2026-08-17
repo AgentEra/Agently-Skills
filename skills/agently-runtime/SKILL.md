@@ -17,6 +17,8 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
   SQLite resources: read `references/actions-execution-resource.md`.
 - RuntimeEvent, logs, traces, evaluation, playground, or DevTools: read
   `references/devtools.md`.
+- Stage task lifetime, sync/async bridging, loop-neutral handles, settlement,
+  StageStream, Tunnel, or EventEmitter: use `agently-stage`.
 - TaskContext, ContextReader, TaskWorkspace, RecordStore, SkillLibrary, or the
   SkillsExecutor compatibility facade: read
   `../agently/references/context-and-skills.md`.
