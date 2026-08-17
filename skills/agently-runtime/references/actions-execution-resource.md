@@ -170,6 +170,14 @@ unregistered, or non-executable runsc fails closed and never falls back to runc,
 result metadata. gVisor does not add a default import dependency, and its name
 does not upgrade unsafe Docker arguments into stronger safety claims.
 
+On macOS, `agent.enable_python(sandbox="seatbelt")` selects only the optional
+Seatbelt provider. Its SBPL profile denies network by default and derives all
+writable paths from the TaskWorkspace grant; it accepts no raw SBPL or extra
+host write roots and never falls back to Docker or `trusted_local`. The initial
+toolchain-compatible profile permits broad host reads, so it truthfully reports
+`host_filesystem_restricted=false` and uses preferred rather than required
+isolation. Choose Docker/gVisor when host-read isolation is required.
+
 Expected outputs are bounded, normalized paths under `output/`; a missing
 declared output fails the Action. Providers bound retained stdout/stderr, stop
 their owned process or container on timeout/cancellation, and surface cleanup
