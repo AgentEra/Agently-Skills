@@ -74,6 +74,42 @@
       ]
     },
     {
+      "id": "request-prompt-context-locality-zh",
+      "query": "已经路由到 agently-request。我想审查一条模型请求：保留会改变当前任务的真实权限、枚举和证据，把没有请求级作用的内部实现名称改写成模型可理解的角色或删掉，并在发送前检查模型实际看到的完整提示。应该先看哪份参考？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "request_local_relevance",
+          "description": "Each prompt item is retained only when it changes the current request's task, contract, evidence, permission, restriction, or required result."
+        },
+        {
+          "id": "self_contained_context",
+          "description": "The rendered request contains the task-relevant context the model needs instead of assuming unexplained external project knowledge."
+        },
+        {
+          "id": "implementation_name_rewriting",
+          "description": "An implementation-specific name without request-level effect is removed or rewritten as an understandable role or behavior."
+        },
+        {
+          "id": "rendered_prompt_audit",
+          "description": "Inspect the rendered one-run prompt with execution.get_prompt_text() before dispatch when auditing prompt context."
+        }
+      ],
+      "required_concepts": [
+        "request_local_relevance",
+        "self_contained_context",
+        "implementation_name_rewriting",
+        "rendered_prompt_audit"
+      ]
+    },
+    {
       "id": "model-settings-env-en",
       "query": "After agently-request is already matched for model setup, I need the supporting doc that explains keeping provider settings in config files, using `${ENV.xxx}` placeholders, calling `Agently.load_settings(\"yaml_file\", path, auto_load_env=True)`, and optionally failing fast on missing env names. Which file should I read first?",
       "matched_skills": [
