@@ -178,6 +178,15 @@ toolchain-compatible profile permits broad host reads, so it truthfully reports
 `host_filesystem_restricted=false` and uses preferred rather than required
 isolation. Choose Docker/gVisor when host-read isolation is required.
 
+On Linux, `agent.enable_python(sandbox="bubblewrap")` selects only the optional
+Bubblewrap provider. It creates process and network namespaces by default,
+mounts provider-owned system/toolchain roots read-only, and mounts TaskWorkspace
+roots only according to their grants. It accepts no raw bwrap, bind, or tmpfs
+arguments and never falls back to Docker or `trusted_local`. Bubblewrap does not
+filter syscalls, so it reports `syscalls_restricted=false` and uses preferred
+isolation. A host that blocks unprivileged namespaces fails closed; do not weaken
+AppArmor or userns policy merely to make the provider available.
+
 Expected outputs are bounded, normalized paths under `output/`; a missing
 declared output fails the Action. Providers bound retained stdout/stderr, stop
 their owned process or container on timeout/cancellation, and surface cleanup
