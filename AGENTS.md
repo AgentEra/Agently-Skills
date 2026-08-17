@@ -188,11 +188,19 @@ Use this file as installation-time guidance after the skills are added into anot
   a one-use schema or prompt step elsewhere merely to make the chain shorter.
 - Keep every prompt-slot item request-local: it must change the current
   request's task, contract, evidence, permission, restriction, or required
-  result. Do not remove a real domain contract, allowlist, evidence item, input
-  fact, or capability boundary merely because it came from project-level setup;
-  apply the removal counterfactual to its effect on this request. Rewrite or
-  remove unexplained implementation names only when they are request-irrelevant,
-  and audit both slot roles and the fully rendered prompt before dispatch.
+  result, or provide useful user-visible process context, state, or explanation
+  with a declared user or UI consumer. Do not remove a real domain contract,
+  allowlist, evidence item, input fact, or capability boundary merely because it
+  came from project-level setup; apply the removal counterfactual to its effect
+  on this request. Retain or behaviorally rewrite an effective upstream caller
+  guarantee when it changes the model-owned decision or the allowed verdict
+  set. Rewrite or remove unexplained implementation names only when they are
+  request-irrelevant; the user-visible role does not authorize generic project
+  narration. Before dispatch, `execution.get_prompt_text()` audits the rendered
+  execution draft. When runtime extensions can inject later, use a bounded test
+  to observe the final ModelRequest `prompt_text` after injection; the post-start
+  execution snapshot is not sufficient evidence. Redact secrets before
+  retaining prompt evidence.
 - Use direct FastAPI for an ordinary typed HTTP API and FastMCP for MCP-server
   exposure. Keep both as inbound adapters over the same owned async application
   entry and approved result projection. `FastAPIHelper` remains available when

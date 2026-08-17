@@ -250,15 +250,52 @@ def main() -> None:
     )
     check(
         "request_prompt_context_locality_guidance",
-        "Each prompt slot is request-local only when it changes what the current request asks, permits, forbids, or needs to produce."
+        "Interpret a supplied input."
         in request_prompt_management_text
-        and "If removing a candidate item would not change the current request's effective task, contract, evidence, or decision, remove or rewrite it."
+        and "Provide an authoritative fact, policy, schema, or evidence item."
         in request_prompt_management_text
-        and "A proper name may remain only when it identifies a real domain contract, allowlist, evidence item, input fact, or capability boundary that changes the current request."
+        and "Change the model-owned decision or transformation."
         in request_prompt_management_text
-        and "Before dispatch, inspect the fully rendered one-run prompt with `execution.get_prompt_text()` to verify the context is self-contained and request-local."
+        and "Define an output, consumer, tool, or capability boundary."
+        in request_prompt_management_text
+        and "Provide useful user-visible process context, state, or explanation with a declared user or UI consumer."
+        in request_prompt_management_text
+        and "If removing a candidate item would not change the current request's effective task, contract, evidence, decision, allowed verdict, or declared user/UI projection, remove or rewrite it."
+        in request_prompt_management_text
+        and "Retain or behaviorally rewrite an effective upstream caller guarantee when it changes the model-owned decision or the allowed verdict set."
+        in request_prompt_management_text
+        and "Before dispatch, `execution.get_prompt_text()` audits the rendered execution draft, not the final ModelRequest prompt."
+        in request_prompt_management_text
+        and "observe the final ModelRequest `prompt_text` emitted or built after injection"
+        in request_prompt_management_text
+        and "Do not treat the post-start execution snapshot as sufficient evidence for late injections."
+        in request_prompt_management_text
+        and "Redact secrets before retaining prompt evidence."
         in request_prompt_management_text,
-        "prompt-management guidance defines request-local relevance, the removal counterfactual, the proper-name boundary, and rendered-prompt auditing",
+        "prompt-management guidance defines all five relevance roles, the retain-side boundary, and draft-versus-final prompt auditing",
+        failures,
+        passes,
+    )
+    check(
+        "cross_surface_prompt_context_locality_guidance",
+        all(
+            re.search(r"declared\s+user or UI consumer", text) is not None
+            and re.search(r"effective\s+upstream\s+caller\s+guarantee", text)
+            is not None
+            for text in (
+                request_text,
+                design_text,
+                design_model_request_topology_text,
+                catalog_guidance_text,
+            )
+        )
+        and re.search(r"rendered\s+execution draft", catalog_guidance_text)
+        is not None
+        and re.search(
+            r"final ModelRequest\s+`prompt_text`", catalog_guidance_text
+        )
+        is not None,
+        "request, design, topology, and catalog guidance preserve the fifth role and distinguish draft from final prompt evidence",
         failures,
         passes,
     )
@@ -720,11 +757,14 @@ def main() -> None:
                 "request_local_relevance",
                 "self_contained_context",
                 "implementation_name_rewriting",
-                "rendered_prompt_audit",
+                "user_visible_process_consumer",
+                "effective_caller_guarantee",
+                "execution_draft_audit",
+                "observed_final_prompt_audit",
             }.issubset(case.get("required_concepts", []))
             for case in reference_cases
         ),
-        "reference retrieval fixtures cover request-local context, self-contained prompts, implementation-name rewriting, and rendered-prompt auditing",
+        "reference retrieval fixtures cover both locality extremes, a declared user/UI consumer, and draft-versus-final prompt auditing",
         failures,
         passes,
     )
