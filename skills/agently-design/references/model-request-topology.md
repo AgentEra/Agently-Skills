@@ -230,6 +230,7 @@ Record for every logical node:
 | decision | What business decision or transformation occurs? |
 | prerequisites | Which trusted facts, capabilities, and prior fields are required? |
 | prompt slots | What enters `agent`, `input`, `info`, `instruct`, `output`, `attachment`, and `chat_history`? |
+| prompt relevance | For each item, what current-node task, contract, evidence, permission, restriction, or required result would change if it were absent? |
 | execution context | Which state, Workspace refs, settings, provider, and authorization apply? |
 | output schema | What are each field's type, meaning, requiredness, enum/format/range/nullability, and cross-field rules? |
 | consumers | Which same-response field, next pass, request, Action, UI, join, state transition, or terminal gate reads each field? |
@@ -249,6 +250,11 @@ Record for every logical node:
 - `chat_history`: relevant conversation continuity, not an unbounded transcript;
 - execution context: state, Workspace refs, attempt and lineage ids;
 - settings: provider/model/runtime configuration, kept outside business prompts.
+
+Do not add project history or an unexplained implementation name merely because
+it is available to the application. Preserve domain contracts, allowlists,
+evidence, input facts, and capability boundaries that change the current node;
+otherwise remove the item or express its request-relevant role.
 
 When output must call a documented interface, put runtime facts in `input`,
 authoritative contract material in `info`, call rules in `instruct`, and the
