@@ -89,7 +89,10 @@ Streaming cannot inject later data into the already-running R1.
   when reasoning output is needed. Provider-native reasoning and a leading
   outer `<think>...</think>` before the answer payload belong in reasoning
   events; `original_delta` / `original_done` keep the raw provider content.
-  Payload-internal `<think>` remains ordinary answer text
+  Payload-internal `<think>` remains ordinary answer text. `type="all"` also
+  exposes the accepted attempt's `reasoning_delta` list and nullable final
+  `reasoning` text; replacement retries reset both. These fields preserve only
+  provider-supplied content and never infer hidden chain-of-thought
 - treat `instant` `.is_complete` as path completion, not a global display-order
   barrier. For Web UI, SSE, or WebSocket consumers, render each path into its
   own slot. For CLI consumers that print multiple paths into one terminal area,
