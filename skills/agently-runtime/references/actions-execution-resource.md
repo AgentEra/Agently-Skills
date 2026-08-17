@@ -178,6 +178,15 @@ toolchain-compatible profile permits broad host reads, so it truthfully reports
 `host_filesystem_restricted=false` and uses preferred rather than required
 isolation. Choose Docker/gVisor when host-read isolation is required.
 
+On Linux, `agent.enable_python(sandbox="landlock")` selects only the optional
+filesystem-only Landlock provider. A provider-owned helper validates a
+host-generated rule manifest, applies `PR_SET_NO_NEW_PRIVS` plus ABI-aware
+rules derived only from system/toolchain roots and TaskWorkspace grants, then
+execs the adapter argv through bounded process ownership. It accepts no raw
+rules, ABI overrides, or extra host paths and never falls back to Docker or
+`trusted_local`. Landlock does not isolate processes, networks, or general
+syscalls, so it reports those limitations and uses preferred isolation.
+
 Expected outputs are bounded, normalized paths under `output/`; a missing
 declared output fails the Action. Providers bound retained stdout/stderr, stop
 their owned process or container on timeout/cancellation, and surface cleanup
