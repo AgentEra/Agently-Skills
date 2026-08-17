@@ -5,7 +5,7 @@ This skill owns TriggerFlow orchestration, execution state, runtime stream, sub-
 Prefer async-first flow handlers and execution APIs. When the UI needs progressive updates, bridge model-side structured streaming into workflow-side runtime stream items so the frontend consumes stable business events instead of raw parser paths.
 
 Async-first is not authority to redesign an interface owned by a Function or
-tool provider. On the Agently 4.1.4.7 development line with Agently-Stage
+tool provider. With Agently 4.1.4.7 and Agently-Stage
 0.3.7+, a synchronous chunk may call a provider-owned sync wrapper that uses
 `with Stage()` to wait for an async SDK, then continue with
 `data.set_state(...)` or another sync execution facade. Stage selects a
