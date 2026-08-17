@@ -58,6 +58,28 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Request-Local Context
+
+Each prompt slot is request-local only when it changes what the current request asks, permits, forbids, or needs to produce.
+Use the five roles deliberately: `agent` supplies stable role/capabilities;
+`input` supplies current facts; `info` supplies authoritative contract and
+evidence; `instruct` supplies task rules; and `output` supplies the required
+result shape. Together they must give the model a self-contained account of
+the current request, rather than assuming unexplained external project context.
+
+Apply the removal counterfactual to every candidate item: If removing a candidate item would not change the current request's effective task, contract, evidence, or decision, remove or rewrite it. Project-level origin is not a removal test: retain a shared policy or fact when it changes this request. A proper name may remain only when it identifies a real domain contract, allowlist, evidence item, input fact, or capability boundary that changes the current request. Otherwise, rewrite an unexplained implementation name as its request-relevant role, or remove it.
+
+Compact example:
+
+| | `info` |
+|---|---|
+| Bad | “Follow the project’s worker-manager convention.” |
+| Good | “Allowed actions: approve or reject. Evidence: the attached request and its policy record.” |
+
+Audit at two levels: first review each slot against its role and the removal
+counterfactual; then inspect the actual rendered request, including mappings
+and references. Before dispatch, inspect the fully rendered one-run prompt with `execution.get_prompt_text()` to verify the context is self-contained and request-local.
+
 ## Anti-Patterns
 
 - do not flatten business context into one opaque string unless the task is trivial
@@ -72,6 +94,9 @@ Use this skill when the core problem is how prompt state should be structured be
   `prompt` field with Configure Prompt shape when an internal model request
   needs configurable `input`, `instruct`, `output`, or `output_format`
 - do not use prompt config files as a substitute for workflow state
+- do not retain a name merely because it came from project setup, or rewrite a
+  domain contract, allowlist, evidence item, input fact, or capability boundary
+  that changes the current request.
 
 ## Read Next
 

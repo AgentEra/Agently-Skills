@@ -26,7 +26,10 @@ summary alone.
    when later fields need no fact beyond dispatch-time input and earlier fields
    in the same response. Split after any Action, system access, approval,
    readback, or host computation whose new observation a later model step needs.
-6. Design each ModelRequest prompt/output contract from declared consumer needs.
+6. Design each ModelRequest prompt/output contract from declared consumer needs,
+   and check every prompt-slot item for current-node relevance: it must change
+   that node's task, contract, evidence, permission, restriction, or required
+   result.
 7. Map output fields to same-response, next-pass, external, user-process,
    point-to-point, fan-out, join, stream, and terminal edges.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
@@ -109,6 +112,10 @@ result and configured validation accept the originating attempt.
 - Do not create a parallel executable topology beside TriggerFlow or TaskDAG.
 - Do not review an output schema in isolation when its fields feed downstream
   requests, Actions, joins, UI streams, or terminal gates.
+- Do not copy project history or unexplained implementation names into a node
+  contract merely because they are available; retain only current-node-relevant
+  context and preserve real domain contracts, allowlists, evidence, input facts,
+  and capability boundaries that change the request.
 - Do not replace model-owned semantic understanding, intent recognition,
   routing, response generation, judgment, planning, or ambiguity resolution
   with tokenization, keyword tables, substring rules, or regular expressions.

@@ -38,6 +38,10 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 - Put runtime values in `input`, authoritative source/API/schema facts in
   `info`, transformation/call rules in `instruct`, and the exact
   machine-consumable shape in `output`.
+- Keep request-local cohesion: retain prompt context only when it changes the
+  current request's task, contract, evidence, permission, restriction, or
+  required result. Do not assume the model can infer unexplained external
+  project context; provide the compact facts it needs in this request.
 - Define each downstream-consumed field's type, semantics, requiredness,
   enum/format/range, nullability, and cross-field constraints.
 - When post-generation business validation expects the model to satisfy a rule,
@@ -172,6 +176,8 @@ inside the plugin.
   checking native settings/output contracts.
 - Moving a one-use schema or prompt step away from its Agently request chain
   only to make the chain look shorter.
+- Carrying implementation names or project history that do not affect the
+  current request, while assuming the model understands their external context.
 - Re-requesting one model call separately for text, data, and metadata.
 - Hiding retrieval inside unrelated prompt formatting.
 - Recreating generic Workspace/ContextBuilder behavior instead of composing
