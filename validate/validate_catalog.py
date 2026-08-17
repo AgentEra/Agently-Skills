@@ -256,7 +256,8 @@ def main() -> None:
         in request_prompt_management_text
         and "A proper name may remain only when it identifies a real domain contract, allowlist, evidence item, input fact, or capability boundary that changes the current request."
         in request_prompt_management_text
-        and "execution.get_prompt_text()" in request_prompt_management_text,
+        and "Before dispatch, inspect the fully rendered one-run prompt with `execution.get_prompt_text()` to verify the context is self-contained and request-local."
+        in request_prompt_management_text,
         "prompt-management guidance defines request-local relevance, the removal counterfactual, the proper-name boundary, and rendered-prompt auditing",
         failures,
         passes,
