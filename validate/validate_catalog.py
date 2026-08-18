@@ -211,6 +211,17 @@ def main() -> None:
         and "request/execution revision binding" in design_model_request_topology_text
         and "Host correlation validation" in design_model_request_topology_text
         and all(
+            re.search(pattern, design_text) is not None
+            for pattern in (
+                r"cache, queue,\s+retry, persistence, or replay",
+                r"Host-owned\s+request/execution revision",
+                r"per-request opaque\s+keys",
+                r"Host-bound lineage over asking the model to copy another request id",
+                r"strictly inline\s+awaited response",
+                r"cannot cross a request boundary",
+            )
+        )
+        and all(
             all(
                 re.search(pattern, text) is not None
                 for pattern in (
