@@ -551,6 +551,43 @@
       ]
     },
     {
+      "id": "design-selection-key-freshness-correlation-en",
+      "query": "Routing already selected agently-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response with a request/execution revision or per-request opaque key, and have the Host validate correlation before canonical lookup? The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/information-and-evidence-design.md",
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "offered_set_membership_not_freshness",
+          "description": "A returned trusted key being a member of the offered set does not by itself prove that the response is fresh for the current Host request."
+        },
+        {
+          "id": "cross_boundary_freshness_binding",
+          "description": "When a response can cross cache, queue, retry, persistence, or replay boundaries, bind it to a request/execution revision or a per-request opaque key."
+        },
+        {
+          "id": "host_correlation_before_canonical_lookup",
+          "description": "The Host validates correlation before the canonical lookup and rejects a stale or mismatched response."
+        },
+        {
+          "id": "strict_inline_response_exception",
+          "description": "A strictly inline response that cannot cross request boundaries does not require the additional correlation ceremony."
+        }
+      ],
+      "required_concepts": [
+        "offered_set_membership_not_freshness",
+        "cross_boundary_freshness_binding",
+        "host_correlation_before_canonical_lookup",
+        "strict_inline_response_exception"
+      ]
+    },
+    {
       "id": "stage-independent-scope-adapters-en",
       "query": "Routing already selected agently-stage. Which focused references explain using with Stage() as an independent bounded lifetime scope and using Stage.as_sync/as_async directly without introducing TriggerFlow?",
       "matched_skills": [

@@ -198,6 +198,22 @@ def main() -> None:
         passes,
     )
     check(
+        "selection_key_freshness_and_host_correlation_guidance",
+        "offered-set membership alone does not prove freshness" in design_information_text
+        and "cache, queue, retry, persistence, or replay" in design_information_text
+        and "request/execution revision binding" in design_information_text
+        and "per-request opaque keys" in design_information_text
+        and "Host correlation validation" in design_information_text
+        and "before canonical lookup" in design_information_text
+        and "strictly inline response" in design_information_text
+        and "cannot cross request boundaries" in design_information_text
+        and "request/execution revision binding" in design_model_request_topology_text
+        and "Host correlation validation" in design_model_request_topology_text,
+        "selection-key guidance binds cross-boundary responses to a fresh Host request before canonical lookup while exempting strictly inline responses",
+        failures,
+        passes,
+    )
+    check(
         "design_cross_owner_boundary",
         "agently-request" in design_text
         and "agently-runtime" in design_text
@@ -822,6 +838,28 @@ def main() -> None:
         any(case.get("id") == "design-system-boundaries-zh" for case in reference_cases)
         and any(case.get("id") == "design-model-request-topology-en" for case in reference_cases),
         "reference retrieval fixtures cover system boundaries and ModelRequest topology design",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_selection_key_freshness_correlation",
+        any(
+            case.get("id") == "design-selection-key-freshness-correlation-en"
+            and case.get("matched_skills") == ["agently-design"]
+            and case.get("expected_reference_sets")
+            == [[
+                "skills/agently-design/references/information-and-evidence-design.md",
+                "skills/agently-design/references/model-request-topology.md",
+            ]]
+            and {
+                "offered_set_membership_not_freshness",
+                "cross_boundary_freshness_binding",
+                "host_correlation_before_canonical_lookup",
+                "strict_inline_response_exception",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover selection-key freshness binding and Host correlation before canonical lookup",
         failures,
         passes,
     )
