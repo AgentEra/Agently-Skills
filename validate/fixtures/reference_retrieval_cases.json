@@ -561,6 +561,12 @@
           "skills/agently-request/references/prompt-management.md"
         ]
       ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-management.md": [
+          "## Reusable Agent Request Isolation",
+          "A fake fluent-call test that only records"
+        ]
+      },
       "concepts": [
         {
           "id": "native_isolated_request",
@@ -598,6 +604,20 @@
           "skills/agently-design/references/model-request-topology.md"
         ]
       ],
+      "excerpt_anchors": {
+        "skills/agently-design/references/information-and-evidence-design.md": [
+          "### Freshness Across Request Boundaries",
+          "Prefer non-overridable per-semantic-request lineage or",
+          "the model must not copy correlation ids",
+          "A strictly inline response"
+        ],
+        "skills/agently-design/references/model-request-topology.md": [
+          "## ModelRequest Node Contract Card",
+          "Prefer non-overridable per-semantic-request lineage or a",
+          "the model must not copy correlation ids",
+          "strictly inline response that cannot cross request boundaries"
+        ]
+      },
       "concepts": [
         {
           "id": "offered_set_membership_not_freshness",
