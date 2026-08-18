@@ -35,8 +35,12 @@ summary alone.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
    For a selection that can cross cache, queue, retry, persistence, or replay,
    bind it to a Host-owned request/execution revision or per-request opaque
-   keys, validate Host correlation before canonical lookup, and prefer
-   Host-bound lineage over asking the model to copy another request id;
+   keys and validate Host correlation before canonical lookup. That binding
+   covers the semantic input/evidence/request revision, not only candidate or
+   catalog state. A caller-supplied logical ID is insufficient without a
+   Host-guaranteed unique association to that semantic revision. Prefer
+   Host-bound lineage over asking the model to copy another request id; the
+   model must not copy correlation ids;
    a strictly inline awaited response that cannot cross a request boundary has
    no extra model-returned correlation requirement.
 9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
@@ -149,8 +153,8 @@ runtime extensions can inject later, observe the final ModelRequest
 - Do not trigger irreversible actions from provisional `instant` updates.
 - Do not ask the model to copy canonical ids, UUIDs, or full metadata for joins.
 - Do not treat offered-set membership as freshness for a delayed, replayed, or
-  retried selection; bind it to Host-owned lineage or per-request opaque keys
-  and validate Host correlation before canonical lookup.
+  retried selection; bind the semantic input/evidence/request revision through
+  Host-owned lineage and validate Host correlation before canonical lookup.
 - Do not diagnose from aggregate request counts without classifying logical
   requests, provider attempts, stages, and consumers.
 - Do not claim root cause from final output alone; verify the earliest divergent

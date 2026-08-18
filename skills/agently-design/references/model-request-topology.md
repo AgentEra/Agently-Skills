@@ -76,7 +76,7 @@ Owner and invariant ledger:
 |---|---|---|---|---|
 | business intent | model-owned semantic | ModelRequest | one declared intent label and evidence basis | model output schema plus offered enum |
 | offered-key membership | host-owned deterministic | host code | returned key belongs to the offered set | exact set lookup |
-| cross-boundary selection freshness | host-owned deterministic | host code | delayed/replayed result correlates to its Host request/execution revision or per-request opaque key | Host correlation validation before canonical lookup |
+| cross-boundary selection freshness | host-owned deterministic | host code | delayed/replayed result has a request/execution revision binding to its semantic input/evidence/request revision, not only candidate state | Host correlation validation before canonical lookup |
 | route decision | hybrid decision | model then host | semantic choice is model-owned; dispatch is host-owned | enum/key validation before dispatch |
 
 Planned node ledger:
@@ -230,7 +230,7 @@ Record for every logical node:
 | id and owner | Which stable logical id and application stage own it? |
 | decision | What business decision or transformation occurs? |
 | prerequisites | Which trusted facts, capabilities, and prior fields are required? |
-| canonical state and freshness | Which Host-owned canonical state is projected, and, if the decision can cross a request boundary, which request/execution revision or per-request opaque key must correlate before lookup? |
+| canonical state and freshness | Which Host-owned canonical state is projected, and, if the decision can cross a request boundary, which semantic input/evidence/request revision must correlate before lookup? Does a caller-supplied logical ID have a Host-guaranteed unique association with that semantic revision? |
 | prompt slots | What enters `agent`, `input`, `info`, `instruct`, `output`, `attachment`, and `chat_history`? |
 | prompt relevance | For each item, what current-node input interpretation, authoritative fact/policy/schema/evidence, model-owned decision/transformation, output/consumer/tool/capability boundary, or useful user-visible process context/state/explanation with a declared user or UI consumer would change if it were absent? |
 | execution context | Which state, Workspace refs, settings, provider, and authorization apply? |
@@ -242,11 +242,15 @@ Record for every logical node:
 
 A decision's offered-set membership alone does not prove freshness. For a
 decision that can cross a cache, queue, retry, persistence, or replay boundary,
-require a request/execution revision binding or per-request opaque keys and
-perform Host correlation validation before canonical lookup. Prefer Host-bound
-lineage over asking the model to copy another request id. A strictly inline
-response that cannot cross request boundaries needs no extra model-returned
-correlation field.
+require a request/execution revision binding or per-request opaque keys. The
+binding must cover the semantic input/evidence/request revision, not only
+candidate or catalog state. A caller-supplied logical ID is insufficient unless
+Host storage guarantees its unique association with that semantic revision.
+Prefer non-overridable per-semantic-request lineage or a
+Host-owned canonical input/evidence revision, and perform Host correlation
+validation before canonical lookup; the model must not copy correlation ids. A
+strictly inline response that cannot cross request boundaries needs no extra
+model-returned correlation field.
 
 ## Prompt-Slot Review
 

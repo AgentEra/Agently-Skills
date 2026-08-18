@@ -58,6 +58,34 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Reusable Agent Request Isolation
+
+When a reusable configured Agent must create a strict hot-only request, use a
+native isolated request boundary:
+
+```python
+request = agent.create_temp_request()
+
+# Equivalent when the caller needs create_request(...) options:
+request = agent.create_request(
+    inherit_agent_prompt=False,
+    inherit_extension_handlers=False,
+)
+```
+
+These calls disable inheritance of the Agent prompt and Agent extension
+handlers; they still use the Agent's request infrastructure and settings. If
+inheritance is intentional, declare the approved inherited slots and handlers,
+then test that explicit contract rather than claiming the request is hot-only.
+
+Audit the final post-prefix ModelRequest prompt through the installed runtime
+after inheritance and extension injection have had their opportunity to run.
+The audit must cover every mechanism allowed by the request contract and redact
+secrets before retaining evidence. A fake fluent-call test that only records
+`.input(...)`, `.instruct(...)`, or `.output(...)` calls cannot prove
+projection isolation when it does not implement real Agent inheritance,
+extension handling, or prompt prefixes.
+
 ## Request-Local Context
 
 Each model-visible prompt item must serve at least one current-request role:

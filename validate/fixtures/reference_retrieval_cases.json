@@ -551,8 +551,44 @@
       ]
     },
     {
+      "id": "request-strict-hot-only-agent-isolation-en",
+      "query": "Routing already selected agently-request. A reusable configured Agent has persistent prompt state and extension handlers, but this request has a strict hot-only projection contract. Which focused reference explains the native isolated request mechanisms, the contract for intentional inheritance, and why a fake fluent-call test cannot prove the final post-prefix prompt boundary?",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "native_isolated_request",
+          "description": "A strict hot-only request from a reusable configured Agent uses create_temp_request or explicitly disables both Agent prompt and extension-handler inheritance."
+        },
+        {
+          "id": "intentional_inheritance_allowlist",
+          "description": "Intentional inheritance declares the approved inherited prompt slots and handlers instead of making an absolute isolation claim."
+        },
+        {
+          "id": "post_prefix_prompt_audit",
+          "description": "A bounded runtime audit observes the final post-prefix ModelRequest prompt after inherited and extension contributions."
+        },
+        {
+          "id": "fake_request_test_limit",
+          "description": "A fake fluent-call test that lacks real Agent inheritance behavior cannot prove projection isolation."
+        }
+      ],
+      "required_concepts": [
+        "native_isolated_request",
+        "intentional_inheritance_allowlist",
+        "post_prefix_prompt_audit",
+        "fake_request_test_limit"
+      ]
+    },
+    {
       "id": "design-selection-key-freshness-correlation-en",
-      "query": "Routing already selected agently-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response with a request/execution revision or per-request opaque key, and have the Host validate correlation before canonical lookup? The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
+      "query": "Routing already selected agently-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response to the semantic input/evidence/request revision rather than only candidate state, and have the Host validate correlation before canonical lookup? A caller-supplied logical ID is insufficient unless Host storage guarantees its unique association with that semantic revision; the model must not copy correlation ids. The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
       "matched_skills": [
         "agently-design"
       ],
@@ -578,13 +614,33 @@
         {
           "id": "strict_inline_response_exception",
           "description": "A strictly inline response that cannot cross request boundaries does not require the additional correlation ceremony."
+        },
+        {
+          "id": "semantic_input_revision_binding",
+          "description": "Host correlation binds the semantic input, evidence, or request revision, not only the candidate or catalog state."
+        },
+        {
+          "id": "logical_id_uniqueness_limit",
+          "description": "A caller-supplied logical ID is insufficient unless Host storage guarantees its unique association with that semantic input revision."
+        },
+        {
+          "id": "host_owned_lineage",
+          "description": "Prefer non-overridable per-semantic-request lineage or a Host-owned canonical input/evidence revision."
+        },
+        {
+          "id": "no_model_copied_correlation",
+          "description": "Correlation remains Host-owned and the model does not copy correlation ids."
         }
       ],
       "required_concepts": [
         "offered_set_membership_not_freshness",
         "cross_boundary_freshness_binding",
         "host_correlation_before_canonical_lookup",
-        "strict_inline_response_exception"
+        "strict_inline_response_exception",
+        "semantic_input_revision_binding",
+        "logical_id_uniqueness_limit",
+        "host_owned_lineage",
+        "no_model_copied_correlation"
       ]
     },
     {

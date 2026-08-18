@@ -201,6 +201,13 @@ Use this file as installation-time guidance after the skills are added into anot
   to observe the final ModelRequest `prompt_text` after injection; the post-start
   execution snapshot is not sufficient evidence. Redact secrets before
   retaining prompt evidence.
+- When a reusable configured Agent must create a strict hot-only request, use
+  `agent.create_temp_request()` or
+  `agent.create_request(inherit_agent_prompt=False,
+  inherit_extension_handlers=False)`. If inheritance is intentional, declare
+  the approved inherited slots and handlers and audit the final post-prefix
+  ModelRequest prompt. A fake fluent-call test cannot establish projection
+  isolation when it does not implement real Agent inheritance or prefixes.
 - Use direct FastAPI for an ordinary typed HTTP API and FastMCP for MCP-server
   exposure. Keep both as inbound adapters over the same owned async application
   entry and approved result projection. `FastAPIHelper` remains available when
@@ -260,10 +267,15 @@ Use this file as installation-time guidance after the skills are added into anot
 - A selection's offered-set membership proves membership, not freshness. If a
   decision can cross a cache, queue, retry, persistence, or replay boundary,
   bind it to a Host-owned request/execution revision or issue per-request
-  opaque keys, and validate Host correlation before canonical lookup. Prefer
-  Host-bound lineage over asking the model to copy another request id. A
-  strictly inline awaited response that cannot cross a request boundary needs
-  no extra model-returned correlation field.
+  opaque keys, and validate Host correlation before canonical lookup. That
+  binding must cover the semantic input/evidence/request revision, not only
+  candidate or catalog state. A caller-supplied logical ID is insufficient
+  unless Host storage guarantees its unique association with that semantic
+  revision. Prefer non-overridable per-semantic-request lineage or a
+  Host-owned canonical input/evidence revision. Prefer Host-bound lineage over
+  asking the model to copy another request id; the model must not copy
+  correlation ids. A strictly inline awaited response that cannot cross a
+  request boundary needs no extra model-returned correlation field.
 - When model output must strictly satisfy a documented API request, module
   interface, or function call, use one explicit integration contract: runtime
   facts in `input`, authoritative API/schema documentation, signatures, and
