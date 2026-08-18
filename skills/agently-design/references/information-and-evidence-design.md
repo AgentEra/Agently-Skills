@@ -50,15 +50,21 @@ identity. Never ask the model to reproduce several opaque ids, unrelated
 A decision's offered-set membership alone does not prove freshness. If a model
 decision can cross a cache, queue, retry, persistence, or replay boundary, use
 a request/execution revision binding owned by the Host or issue per-request
-opaque keys. Perform Host correlation validation before canonical lookup, then
-reconstruct the canonical record from Host state. Prefer Host-bound lineage over
-asking the model to copy another request id. A strictly inline response that
-cannot cross request boundaries needs no extra model-returned correlation field.
+opaque keys. The binding must cover the semantic input/evidence/request
+revision, not only candidate or catalog state. A caller-supplied logical ID is
+insufficient unless Host storage guarantees its unique association with that
+semantic input revision. Prefer non-overridable per-semantic-request lineage or
+a Host-owned canonical input/evidence revision. Perform Host correlation
+validation before canonical lookup, then reconstruct the canonical record from
+Host state; the model must not copy correlation ids. A strictly inline response
+that cannot cross request boundaries needs no extra model-returned correlation
+field.
 
 For example, the model may return only `"selection_key": "c3"`; the Host pairs
-that output with the current revision or per-request opaque key before lookup.
-The key remains an offered-set membership check, while the Host-owned binding
-decides whether that membership belongs to the current request.
+that output with the non-overridable lineage of the semantic request before
+lookup. The key remains an offered-set membership check, while the Host-owned
+binding decides whether that membership belongs to the current input and
+evidence revision.
 
 ## Resource, Snapshot, and Ref Identity
 

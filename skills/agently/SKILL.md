@@ -103,8 +103,13 @@ in host code.
 A selection's offered-set membership proves membership, not freshness. If a
 selection can cross a cache, queue, retry, persistence, or replay boundary,
 bind it to a Host-owned request/execution revision or issue per-request opaque
-keys, and validate Host correlation before canonical lookup. Prefer Host-bound
-lineage over asking the model to copy another request id. A strictly inline
+keys, and validate Host correlation before canonical lookup. That binding must
+cover the semantic input/evidence/request revision, not only candidate or
+catalog state. A caller-supplied logical ID is insufficient unless Host storage
+guarantees its unique association with that semantic revision. Prefer
+non-overridable per-semantic-request lineage or a Host-owned canonical
+input/evidence revision. Prefer Host-bound lineage over asking the model to copy
+another request id; the model must not copy correlation ids. A strictly inline
 awaited response that cannot cross a request boundary needs no extra
 model-returned correlation field.
 

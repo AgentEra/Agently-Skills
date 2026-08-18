@@ -204,12 +204,17 @@ def main() -> None:
         and "request/execution revision binding" in design_information_text
         and re.search(r"per-request\s+opaque\s+keys", design_information_text)
         is not None
-        and "Host correlation validation" in design_information_text
+        and re.search(r"Host correlation\s+validation", design_information_text)
+        is not None
         and "before canonical lookup" in design_information_text
         and "strictly inline response" in design_information_text
         and "cannot cross request boundaries" in design_information_text
         and "request/execution revision binding" in design_model_request_topology_text
-        and "Host correlation validation" in design_model_request_topology_text
+        and re.search(
+            r"Host correlation\s+validation",
+            design_model_request_topology_text,
+        )
+        is not None
         and all(
             re.search(pattern, design_text) is not None
             for pattern in (
@@ -218,7 +223,7 @@ def main() -> None:
                 r"per-request opaque\s+keys",
                 r"Host-bound lineage over asking the model to copy another request id",
                 r"strictly inline\s+awaited response",
-                r"cannot cross a request boundary",
+                r"cannot cross a\s+request\s+boundary",
             )
         )
         and all(
@@ -231,7 +236,7 @@ def main() -> None:
                     r"per-request\s+opaque\s+keys",
                     r"Host\s+correlation before canonical lookup",
                     r"strictly inline\s+awaited response",
-                    r"cannot cross a request boundary",
+                    r"cannot cross a\s+request\s+boundary",
                 )
             )
             for text in (
@@ -241,6 +246,61 @@ def main() -> None:
             )
         ),
         "selection-key guidance binds cross-boundary responses to a fresh Host request before canonical lookup while exempting strictly inline responses",
+        failures,
+        passes,
+    )
+    check(
+        "strict_hot_only_request_and_semantic_input_lineage_guidance",
+        all(
+            phrase in request_prompt_management_text
+            for phrase in (
+                "agent.create_temp_request()",
+                "inherit_agent_prompt=False",
+                "inherit_extension_handlers=False",
+                "approved inherited slots and handlers",
+                "final post-prefix ModelRequest prompt",
+                "fake fluent-call test",
+            )
+        )
+        and "strict hot-only request" in request_text
+        and "reusable configured Agent" in request_text
+        and all(
+            re.search(r"semantic input/evidence/request\s+revision", text)
+            is not None
+            for text in (
+                playbook_text,
+                design_text,
+                design_information_text,
+                design_model_request_topology_text,
+                catalog_guidance_text,
+            )
+        )
+        and all(
+            phrase in text
+            for text in (
+                playbook_text,
+                design_text,
+            )
+            for phrase in (
+                "caller-supplied logical ID",
+                "model must not copy correlation ids",
+            )
+        )
+        and all(
+            re.search(pattern, text) is not None
+            for text in (
+                design_information_text,
+                design_model_request_topology_text,
+                catalog_guidance_text,
+            )
+            for pattern in (
+                r"caller-supplied logical ID",
+                r"non-overridable per-semantic-request lineage",
+                r"Host-owned\s+canonical input/evidence revision",
+                r"model must not copy\s+correlation ids",
+            )
+        ),
+        "strict hot-only requests isolate reusable Agent prompt/handler inheritance, while Host lineage binds the semantic input/evidence revision without model-copied correlation ids",
         failures,
         passes,
     )
@@ -891,6 +951,35 @@ def main() -> None:
             for case in reference_cases
         ),
         "reference retrieval fixtures cover selection-key freshness binding and Host correlation before canonical lookup",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_strict_hot_only_request_and_semantic_input_lineage",
+        any(
+            case.get("id") == "request-strict-hot-only-agent-isolation-en"
+            and case.get("matched_skills") == ["agently-request"]
+            and case.get("expected_reference_sets")
+            == [["skills/agently-request/references/prompt-management.md"]]
+            and {
+                "native_isolated_request",
+                "intentional_inheritance_allowlist",
+                "post_prefix_prompt_audit",
+                "fake_request_test_limit",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        )
+        and any(
+            case.get("id") == "design-selection-key-freshness-correlation-en"
+            and {
+                "semantic_input_revision_binding",
+                "logical_id_uniqueness_limit",
+                "host_owned_lineage",
+                "no_model_copied_correlation",
+            }.issubset(case.get("required_concepts", []))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover strict reusable-Agent isolation and Host-owned semantic-input lineage",
         failures,
         passes,
     )

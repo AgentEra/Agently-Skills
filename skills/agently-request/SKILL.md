@@ -52,6 +52,13 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
   final ModelRequest `prompt_text` emitted or built after injection. Do not
   treat the post-start execution snapshot as sufficient evidence for late
   injections, and redact secrets before retaining prompt evidence.
+- When a reusable configured Agent must create a strict hot-only request, use
+  `agent.create_temp_request()` or
+  `agent.create_request(inherit_agent_prompt=False,
+  inherit_extension_handlers=False)`. If inheritance is intentional, declare
+  the approved inherited slots and handlers and audit the final post-prefix
+  ModelRequest prompt. A fake fluent-call test cannot prove projection
+  isolation because it may not implement real Agent inheritance or prefixes.
 - Define each downstream-consumed field's type, semantics, requiredness,
   enum/format/range, nullability, and cross-field constraints.
 - When post-generation business validation expects the model to satisfy a rule,
