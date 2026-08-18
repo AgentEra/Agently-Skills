@@ -257,6 +257,13 @@ Use this file as installation-time guidance after the skills are added into anot
   and asking it to copy multiple ids or unrelated meta is an anti-pattern. Treat
   the selection key as an application-local required string constrained to the
   offered set, not as a second canonical identity.
+- A selection's offered-set membership proves membership, not freshness. If a
+  decision can cross a cache, queue, retry, persistence, or replay boundary,
+  bind it to a Host-owned request/execution revision or issue per-request
+  opaque keys, and validate Host correlation before canonical lookup. Prefer
+  Host-bound lineage over asking the model to copy another request id. A
+  strictly inline awaited response that cannot cross a request boundary needs
+  no extra model-returned correlation field.
 - When model output must strictly satisfy a documented API request, module
   interface, or function call, use one explicit integration contract: runtime
   facts in `input`, authoritative API/schema documentation, signatures, and

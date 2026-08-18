@@ -50,6 +50,18 @@ Implement only after a new developer response explicitly confirms that named
 gate and its risks. A prior blanket instruction to proceed is not this second
 confirmation. Without confirmation, do not silently add the gate.
 
+## Host-Resolved Selection Outputs
+
+For a model-selected host record, return the offered selection key, not copied
+canonical ids or another request id. A selection's offered-set membership
+proves membership, not freshness. If the decision can cross a cache, queue,
+retry, persistence, or replay boundary, bind it to a Host-owned
+request/execution revision or issue per-request opaque keys, and validate Host
+correlation before canonical lookup. Prefer Host-bound lineage over asking the
+model to copy another request id. A strictly inline awaited response that
+cannot cross a request boundary needs no extra model-returned correlation
+field.
+
 ## Native-First Rules
 
 - default to async-first response consumption when structured output will be streamed, reused, or served over an async boundary
@@ -308,6 +320,9 @@ confirmation. Without confirmation, do not silently add the gate.
 - do not default to sync-only result handling when the caller is already async-capable
 - do not rely on keyword, substring, regex, or text snapshot checks as the main
   assertion for whether model-generated content satisfies business rules
+- do not treat offered-set membership as proof that a delayed, replayed, or
+  retried selection belongs to the current Host request; correlate it before
+  canonical lookup
 
 ## Read Next
 

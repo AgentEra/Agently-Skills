@@ -202,13 +202,33 @@ def main() -> None:
         "offered-set membership alone does not prove freshness" in design_information_text
         and "cache, queue, retry, persistence, or replay" in design_information_text
         and "request/execution revision binding" in design_information_text
-        and "per-request opaque keys" in design_information_text
+        and re.search(r"per-request\s+opaque\s+keys", design_information_text)
+        is not None
         and "Host correlation validation" in design_information_text
         and "before canonical lookup" in design_information_text
         and "strictly inline response" in design_information_text
         and "cannot cross request boundaries" in design_information_text
         and "request/execution revision binding" in design_model_request_topology_text
-        and "Host correlation validation" in design_model_request_topology_text,
+        and "Host correlation validation" in design_model_request_topology_text
+        and all(
+            all(
+                re.search(pattern, text) is not None
+                for pattern in (
+                    r"offered-set membership\s+proves membership,\s+not freshness",
+                    r"cache, queue,\s+retry, persistence, or replay",
+                    r"Host-owned\s+request/execution revision",
+                    r"per-request\s+opaque\s+keys",
+                    r"Host\s+correlation before canonical lookup",
+                    r"strictly inline\s+awaited response",
+                    r"cannot cross a request boundary",
+                )
+            )
+            for text in (
+                playbook_text,
+                request_output_control_text,
+                catalog_guidance_text,
+            )
+        ),
         "selection-key guidance binds cross-boundary responses to a fresh Host request before canonical lookup while exempting strictly inline responses",
         failures,
         passes,

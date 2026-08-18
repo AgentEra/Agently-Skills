@@ -76,6 +76,7 @@ Owner and invariant ledger:
 |---|---|---|---|---|
 | business intent | model-owned semantic | ModelRequest | one declared intent label and evidence basis | model output schema plus offered enum |
 | offered-key membership | host-owned deterministic | host code | returned key belongs to the offered set | exact set lookup |
+| cross-boundary selection freshness | host-owned deterministic | host code | delayed/replayed result correlates to its Host request/execution revision or per-request opaque key | Host correlation validation before canonical lookup |
 | route decision | hybrid decision | model then host | semantic choice is model-owned; dispatch is host-owned | enum/key validation before dispatch |
 
 Planned node ledger:
@@ -229,6 +230,7 @@ Record for every logical node:
 | id and owner | Which stable logical id and application stage own it? |
 | decision | What business decision or transformation occurs? |
 | prerequisites | Which trusted facts, capabilities, and prior fields are required? |
+| canonical state and freshness | Which Host-owned canonical state is projected, and, if the decision can cross a request boundary, which request/execution revision or per-request opaque key must correlate before lookup? |
 | prompt slots | What enters `agent`, `input`, `info`, `instruct`, `output`, `attachment`, and `chat_history`? |
 | prompt relevance | For each item, what current-node input interpretation, authoritative fact/policy/schema/evidence, model-owned decision/transformation, output/consumer/tool/capability boundary, or useful user-visible process context/state/explanation with a declared user or UI consumer would change if it were absent? |
 | execution context | Which state, Workspace refs, settings, provider, and authorization apply? |
@@ -237,6 +239,14 @@ Record for every logical node:
 | maturity | Is the field final-only, provisionally streamable, or attempt-local? |
 | failure | What invalidates it, and which retry/repair/terminal rule follows? |
 | observation | Which lineage, fingerprints, bounded previews, sizes, timing, and status prove the edge? |
+
+A decision's offered-set membership alone does not prove freshness. For a
+decision that can cross a cache, queue, retry, persistence, or replay boundary,
+require a request/execution revision binding or per-request opaque keys and
+perform Host correlation validation before canonical lookup. Prefer Host-bound
+lineage over asking the model to copy another request id. A strictly inline
+response that cannot cross request boundaries needs no extra model-returned
+correlation field.
 
 ## Prompt-Slot Review
 
