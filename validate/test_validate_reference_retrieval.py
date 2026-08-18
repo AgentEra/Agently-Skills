@@ -49,3 +49,32 @@ def test_default_validation_never_configures_or_calls_a_model(monkeypatch) -> No
     monkeypatch.setattr(validator, "configure_deepseek", fail_if_called)
 
     validator.run([])
+
+
+def test_markdown_section_bounds_ignore_heading_like_code_lines() -> None:
+    validator = _load_validator()
+    markdown = """## Target Section
+
+```python
+# This is a Python comment, not a Markdown heading.
+```
+
+support anchor
+
+## Next Section
+
+unrelated
+"""
+
+    bounds = validator.markdown_section_bounds(markdown, "support anchor")
+
+    assert bounds is not None
+    assert markdown[slice(*bounds)] == """## Target Section
+
+```python
+# This is a Python comment, not a Markdown heading.
+```
+
+support anchor
+
+"""

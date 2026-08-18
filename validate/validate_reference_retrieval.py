@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Literal
@@ -17,6 +18,10 @@ from agently import Agently, TriggerFlow
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 SKILLS = ROOT / "skills"
+MAX_EXCERPT_CHARS = 2400
+MAX_ANCHORED_MARKDOWN_CHARS = 3200
+MARKDOWN_HEADING = re.compile(r"^ {0,3}(#{1,6})[ \t]+\S")
+MARKDOWN_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 
 
 def configure_deepseek() -> bool:
@@ -72,25 +77,93 @@ def list_candidate_paths(skill_name: str) -> list[Path]:
 def build_candidate_docs(case: dict) -> list[tuple[str, str]]:
     seen: set[str] = set()
     docs: list[tuple[str, str]] = []
+    declared_anchors = case.get("excerpt_anchors", {})
+    anchors_by_path = declared_anchors if isinstance(declared_anchors, dict) else {}
     for skill_name in case["matched_skills"]:
         for path in list_candidate_paths(skill_name):
             rel_path = path.relative_to(ROOT).as_posix()
             if rel_path in seen:
                 continue
             seen.add(rel_path)
-            docs.append((rel_path, build_excerpt(path)))
+            path_anchors = anchors_by_path.get(rel_path, [])
+            anchors = (
+                [anchor for anchor in path_anchors if isinstance(anchor, str) and anchor]
+                if isinstance(path_anchors, list)
+                else []
+            )
+            docs.append((rel_path, build_excerpt(path, anchors=anchors)))
     return docs
 
 
-def build_excerpt(path: Path) -> str:
+def markdown_section_bounds(text: str, anchor: str) -> tuple[int, int] | None:
+    anchor_offset = text.find(anchor)
+    if anchor_offset < 0:
+        return None
+
+    lines = text.splitlines(keepends=True)
+    headings: list[tuple[int, int, int]] = []
+    offset = 0
+    open_fence: tuple[str, int] | None = None
+    for line_index, line in enumerate(lines):
+        fence = MARKDOWN_FENCE.match(line)
+        if fence:
+            marker = fence.group(1)
+            if open_fence is None:
+                open_fence = (marker[0], len(marker))
+            elif marker[0] == open_fence[0] and len(marker) >= open_fence[1]:
+                open_fence = None
+        heading = MARKDOWN_HEADING.match(line) if open_fence is None and fence is None else None
+        if heading is not None:
+            headings.append((line_index, offset, len(heading.group(1))))
+        offset += len(line)
+
+    containing_heading: tuple[int, int, int] | None = None
+    for heading in headings:
+        if heading[1] > anchor_offset:
+            break
+        containing_heading = heading
+
+    if containing_heading is None:
+        end = headings[0][1] if headings else len(text)
+        return (0, end)
+
+    heading_index, start, level = containing_heading
+    end = len(text)
+    for next_index, next_offset, next_level in headings:
+        if next_index > heading_index and next_level <= level:
+            end = next_offset
+            break
+    return (start, end)
+
+
+def build_markdown_section_excerpt(text: str, anchors: list[str]) -> str:
+    selected_bounds = {
+        bounds
+        for anchor in anchors
+        if (bounds := markdown_section_bounds(text, anchor)) is not None
+    }
+    if not selected_bounds:
+        return text[:MAX_EXCERPT_CHARS].rstrip() + ("\n..." if len(text) > MAX_EXCERPT_CHARS else "")
+
+    sections = [text[start:end].rstrip() for start, end in sorted(selected_bounds)]
+    excerpt = "\n\n...\n\n".join(sections)
+    if len(excerpt) > MAX_ANCHORED_MARKDOWN_CHARS:
+        excerpt = excerpt[:MAX_ANCHORED_MARKDOWN_CHARS].rstrip() + "\n..."
+    return excerpt
+
+
+def build_excerpt(path: Path, *, anchors: list[str] | None = None) -> str:
     text = path.read_text(encoding="utf-8")
+    if anchors and path.suffix.lower() in {".md", ".markdown"}:
+        return build_markdown_section_excerpt(text, anchors)
+
     lines = text.splitlines()
     if path.suffix in {".py", ".json"}:
         clipped = "\n".join(lines[:80])
     else:
         clipped = "\n".join(lines[:120])
-    if len(clipped) > 2400:
-        clipped = clipped[:2400].rstrip() + "\n..."
+    if len(clipped) > MAX_EXCERPT_CHARS:
+        clipped = clipped[:MAX_EXCERPT_CHARS].rstrip() + "\n..."
     return clipped
 
 
@@ -243,6 +316,7 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
         case_id = case.get("id", "<missing-id>")
         matched_skills = case.get("matched_skills")
         expected_sets = case.get("expected_reference_sets")
+        excerpt_anchors = case.get("excerpt_anchors", {})
         concepts = case.get("concepts")
         required_concepts = case.get("required_concepts")
 
@@ -252,12 +326,13 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
                 isinstance(case.get("query"), str)
                 and isinstance(matched_skills, list)
                 and isinstance(expected_sets, list)
+                and isinstance(excerpt_anchors, dict)
                 and isinstance(concepts, list)
                 and isinstance(required_concepts, list)
                 and bool(expected_sets)
                 and bool(concepts)
             ),
-            "case has query, matched_skills, expected reference sets, and concepts",
+            "case has query, matched_skills, expected reference sets, excerpt anchors, and concepts",
             failures,
             passes,
         )
@@ -272,7 +347,8 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
             passes,
         )
 
-        candidate_paths = {path for path, _ in build_candidate_docs(case)}
+        candidate_docs = dict(build_candidate_docs(case))
+        candidate_paths = set(candidate_docs)
         for idx, expected in enumerate(expected_sets):
             check(
                 f"{case_id}_expected_set_{idx}",
@@ -281,6 +357,50 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
                 failures,
                 passes,
             )
+
+        anchors_shape_ok = isinstance(excerpt_anchors, dict) and all(
+            isinstance(path, str)
+            and bool(path)
+            and isinstance(anchors, list)
+            and bool(anchors)
+            and all(isinstance(anchor, str) and bool(anchor) for anchor in anchors)
+            and len(anchors) == len(set(anchors))
+            for path, anchors in excerpt_anchors.items()
+        )
+        check(
+            f"{case_id}_excerpt_anchors_shape",
+            anchors_shape_ok,
+            "excerpt anchors map candidate paths to unique non-empty strings",
+            failures,
+            passes,
+        )
+        if anchors_shape_ok:
+            for rel_path, anchors in excerpt_anchors.items():
+                path = ROOT / rel_path
+                anchor_path_ok = rel_path in candidate_paths and path.is_file()
+                check(
+                    f"{case_id}_{rel_path}_anchor_path",
+                    anchor_path_ok,
+                    "anchor path exists and belongs to the matched-skill candidates",
+                    failures,
+                    passes,
+                )
+                full_text = path.read_text(encoding="utf-8") if anchor_path_ok else ""
+                check(
+                    f"{case_id}_{rel_path}_anchors_in_source",
+                    all(anchor in full_text for anchor in anchors),
+                    "every declared excerpt anchor exists in the full source file",
+                    failures,
+                    passes,
+                )
+                excerpt = candidate_docs.get(rel_path, "")
+                check(
+                    f"{case_id}_{rel_path}_anchors_delivered",
+                    all(anchor in excerpt for anchor in anchors),
+                    "every declared excerpt anchor is present in the delivered candidate excerpt",
+                    failures,
+                    passes,
+                )
 
         concept_ids = [concept.get("id") for concept in concepts if isinstance(concept, dict)]
         check(
