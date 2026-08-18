@@ -34,7 +34,9 @@ summary alone.
    point-to-point, fan-out, join, stream, and terminal edges.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
    For a selection that can cross cache, queue, retry, persistence, or replay,
-   record the Host freshness/correlation boundary before canonical lookup;
+   bind it to a Host-owned request/execution revision or per-request opaque
+   keys, validate Host correlation before canonical lookup, and prefer
+   Host-bound lineage over asking the model to copy another request id;
    a strictly inline awaited response that cannot cross a request boundary has
    no extra model-returned correlation requirement.
 9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
