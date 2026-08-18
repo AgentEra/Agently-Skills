@@ -100,6 +100,14 @@ The key is an application-local projection: do not ask the model to reproduce UU
 identity-heavy objects. Validate it, then reconstruct UUIDs, metadata, and other identifiers deterministically
 in host code.
 
+A selection's offered-set membership proves membership, not freshness. If a
+selection can cross a cache, queue, retry, persistence, or replay boundary,
+bind it to a Host-owned request/execution revision or issue per-request opaque
+keys, and validate Host correlation before canonical lookup. Prefer Host-bound
+lineage over asking the model to copy another request id. A strictly inline
+awaited response that cannot cross a request boundary needs no extra
+model-returned correlation field.
+
 Evidence must have a source, state, bounded body/ref, and consumer. Search hits,
 snippets, candidate artifacts, model claims, and verifier prose are not
 automatically completion proof. Preserve raw facts cold and give model-hot

@@ -33,6 +33,10 @@ summary alone.
 7. Map output fields to same-response, next-pass, external, user-process,
    point-to-point, fan-out, join, stream, and terminal edges.
 8. Design information, evidence, and identity boundaries with fail-closed behavior.
+   For a selection that can cross cache, queue, retry, persistence, or replay,
+   record the Host freshness/correlation boundary before canonical lookup;
+   a strictly inline awaited response that cannot cross a request boundary has
+   no extra model-returned correlation requirement.
 9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
 10. Design observability and validation before implementation. Every
     model-satisfiable acceptance rule must reach the producer before its first
@@ -142,6 +146,9 @@ runtime extensions can inject later, observe the final ModelRequest
   those annotations is not a design justification or quality result.
 - Do not trigger irreversible actions from provisional `instant` updates.
 - Do not ask the model to copy canonical ids, UUIDs, or full metadata for joins.
+- Do not treat offered-set membership as freshness for a delayed, replayed, or
+  retried selection; bind it to Host-owned lineage or per-request opaque keys
+  and validate Host correlation before canonical lookup.
 - Do not diagnose from aggregate request counts without classifying logical
   requests, provider attempts, stages, and consumers.
 - Do not claim root cause from final output alone; verify the earliest divergent
@@ -158,6 +165,8 @@ model-produced field has an authorized same-response, next-pass, external, or
 user-process consumer with a declared consumption contract. Confirm that every
 provisional path has invalidation behavior, every loop has progress and terminal
 rules, every model-satisfiable validation rule is present before the first
-attempt, and every intentionally hidden gate has an explicit host-owned policy.
+attempt, every cross-boundary selection has a Host freshness/correlation
+binding before canonical lookup, and every intentionally hidden gate has an
+explicit host-owned policy.
 Then hand concrete work to the
 mechanism-owning Skills without copying their API instructions here.

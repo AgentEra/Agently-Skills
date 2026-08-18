@@ -45,6 +45,21 @@ The short key is an application-local projection, not a second canonical
 identity. Never ask the model to reproduce several opaque ids, unrelated
 `meta`, URLs, or complete records merely to join later.
 
+### Freshness Across Request Boundaries
+
+A decision's offered-set membership alone does not prove freshness. If a model
+decision can cross a cache, queue, retry, persistence, or replay boundary, use
+a request/execution revision binding owned by the Host or issue per-request
+opaque keys. Perform Host correlation validation before canonical lookup, then
+reconstruct the canonical record from Host state. Prefer Host-bound lineage over
+asking the model to copy another request id. A strictly inline response that
+cannot cross request boundaries needs no extra model-returned correlation field.
+
+For example, the model may return only `"selection_key": "c3"`; the Host pairs
+that output with the current revision or per-request opaque key before lookup.
+The key remains an offered-set membership check, while the Host-owned binding
+decides whether that membership belongs to the current request.
+
 ## Resource, Snapshot, and Ref Identity
 
 Distinguish:
