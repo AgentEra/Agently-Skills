@@ -24,6 +24,8 @@ Generic asks are scenario-led; a request does not need to mention Agently explic
    pressure controls, and observation to their owners.
 6. Implement async-first, test the owned protocol deterministically, then run
    the smallest representative real-model check for model-owned behavior.
+   Classify acceptance criticality (hard gate or soft target) separately from
+   evaluation method (deterministic check or semantic review).
 7. If the framework lacks the right seam, report the architecture gap instead
    of hiding it behind business-specific glue.
 
