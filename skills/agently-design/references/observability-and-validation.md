@@ -65,6 +65,32 @@ scores. Concrete model-judge patterns remain in
 Do not use keyword lists, substring checks, regex language rules, hidden target
 answers, or deterministic local substitutes as semantic proof.
 
+## Acceptance Criticality Is Separate From Evaluation Method
+
+Classify every acceptance item twice: first by **acceptance criticality**
+(`hard gate` or `soft target`), then by **evaluation method** (`deterministic
+check` or `semantic review`). Do not infer one axis from the other.
+
+- Use hard gates for declared invariants whose failure must block the result.
+  Exact schema/type/enum, authorization, identity, arithmetic, side-effect, and
+  safety invariants are normally deterministic. A mandatory semantic business
+  requirement may also be a hard gate, but its evidence must come from a
+  structured model judge or human review rather than keyword matching.
+- Use soft targets for preferred quality, aesthetics, clarity, completeness,
+  tone, or nice-to-have behavior where bounded imperfection or degradation is
+  acceptable. Record a level, evidence, and advice. Do not reject solely
+  because a soft target is imperfect; if a minimum level blocks acceptance,
+  declare that floor as a hard gate before the run.
+
+For semantic acceptance, define representative cases, conceptual rubric
+levels, a developer-approved minimum, and escalation policy. Compare repeated
+real runs rather than requiring exact text reproduction. Calibrate model judges
+and coding-agent human-like reviews against a human-labeled calibration sample,
+especially before high-risk use. When accurate, sufficient input and a clear
+request repeatedly fail the approved minimum, report a model capability or fit
+gap; do not silently lower the standard, hide the failure behind retries, or
+replace semantic judgment with hard-coded language proxies.
+
 ## Experiment and A/B Evidence
 
 Fix the question, source boundaries, provider/model, environment, and comparison

@@ -22,6 +22,70 @@ Use deterministic checks only for smoke-level facts:
 For meaning, quality, relevance, intent, scenario match, grading, or business
 classification, call a model and make the result structured.
 
+## Two-Axis Acceptance Matrix
+
+Do not treat every acceptance criterion as the same kind of gate. Classify it
+on two independent axes before writing tests:
+
+1. **Acceptance criticality**
+   - **Hard gate:** failure makes the result unsafe, invalid, unauthorized, or
+     unusable and must block acceptance.
+   - **Soft target:** a preferred quality direction. Record its level and
+     feedback, but tolerate declared imperfections or degradation unless a
+     predeclared unacceptable floor is crossed.
+2. **Evaluation method**
+   - **Deterministic check:** exact structure, type, enum membership, required
+     paths, offered-key membership, arithmetic, authorization, side-effect
+     evidence, or another reliably computable invariant.
+   - **Semantic review:** intent alignment, factual use of supplied evidence,
+     reasoning quality, usefulness, clarity, tone, visual quality, or another
+     open-ended judgment. Use a structured model judge, a coding-agent
+     human-like review during preflight, or a real human review according to
+     risk.
+
+These axes are not aliases. A mandatory semantic requirement can be a hard
+gate while still needing a calibrated model judge or human reviewer. A soft
+target can have deterministic diagnostics. If a soft target's lower bound
+blocks release, that lower bound is a hard gate and must be named as such.
+
+| Criterion | Typical criticality | Evaluation method | Acceptance behavior |
+|---|---|---|---|
+| schema, types, required fields, enum membership | hard gate | deterministic check | fail closed or bounded repair |
+| authorization, offered ids, exact calculations, committed side effects | hard gate | deterministic check | block on any violation |
+| mandatory semantic faithfulness or business-direction correctness | hard gate | semantic review with explicit rubric | block below the declared minimum; escalate uncertain/high-risk cases |
+| completeness, clarity, tone, layout aesthetics, nice-to-have strategy | soft target | semantic review | score and advise; do not block for ordinary imperfections |
+
+Structured output makes the result shape and bounded values controllable; it
+does not make open-ended model content byte-identical or exactly reproducible
+on every run. Do not test semantic content with one expected string, keyword
+hits, or a snapshot of one lucky response.
+
+## Calibrate Quality Across Repeated Runs
+
+- Define representative cases, rubric levels, hard minima, soft targets, and
+  escalation rules before tuning. The developer owns the final business-risk
+  tolerance.
+- Run representative cases across repeated real runs for each relevant
+  provider/model/configuration. Record individual results, judge evidence,
+  pass-rate or level distribution, disagreements, and variance; do not demand
+  identical prose.
+- Calibrate a model judge or coding-agent review against a small
+  human-labeled sample. Use human review directly for high-risk, ambiguous, or
+  disputed cases. A coding-agent simulation is useful preflight evidence, not
+  proof of target-model capability.
+- Adjust rubric wording, sampling, escalation, and operational thresholds when
+  repeated evidence shows the evaluator is poorly calibrated. The developer-
+  approved minimum business standard must not be silently lowered merely to
+  make a weaker model pass.
+- If task input is accurate and sufficient, the request is clear, and repeated
+  real runs still miss the minimum business direction, report a capability or model-fit gap.
+  Discuss a different model, context/request design, scoped
+  fallback, or human review with the developer instead of hiding the gap with
+  unlimited retries or keyword gates.
+
+Keep the test record model-specific and versioned. A threshold established for
+one model or configuration is not automatically evidence for another.
+
 ## Simulation-First Experiment Gate
 
 When problem discovery or strategy tuning is expected to require several model

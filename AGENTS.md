@@ -155,6 +155,21 @@ Use this file as installation-time guidance after the skills are added into anot
   substring, regex, or snapshot-style text checks as the primary correctness
   signal for model-owned semantic content; keep them only as deterministic
   smoke gates for structure, routing, or presence checks.
+- Define AI-application acceptance on two independent axes: hard gate versus
+  soft target, and deterministic check versus semantic review. Structured
+  shape/type/enum, authorization, identity, arithmetic, and side-effect facts
+  normally use deterministic hard gates. Open-ended intent alignment,
+  groundedness, usefulness, clarity, tone, aesthetics, and other qualitative
+  results use structured model, coding-agent, or human review. A mandatory
+  semantic rule may still be a hard gate, but keyword/regex proxies do not make
+  it deterministic. Score soft targets and advise on ordinary imperfections;
+  only a predeclared unacceptable floor may block acceptance.
+- Calibrate semantic rubrics on representative repeated real runs and compare
+  model/coding-agent judges with human-labeled samples. Do not require exact
+  prose reproducibility or silently lower the developer-approved business
+  minimum to fit a weak model. If sufficient, accurate input and a clear
+  request repeatedly miss that minimum, report a model capability/fit gap and
+  discuss model choice, request design, fallback, or human review.
 - Do not force example correctness by overfitted prompt wording that exists only to make the expected output pass. Prefer realistic business facts, typed output contracts, validation, deterministic non-model business checks, and clear frontend/backend result shaping.
 - Local functions may be used only as business capabilities, Actions, fake external systems, executor/provider smoke targets, or deterministic resources called by the model-driven flow.
 - Low-level infrastructure smoke examples may run without a model only when they are explicitly scoped to executor/provider behavior and are not presented as model-app patterns.

@@ -109,6 +109,15 @@ def main() -> None:
         / "references"
         / "model-request-topology.md"
     ).read_text(encoding="utf-8")
+    design_observability_text = (
+        SKILLS
+        / "agently-design"
+        / "references"
+        / "observability-and-validation.md"
+    ).read_text(encoding="utf-8")
+    model_quality_validation_text = (
+        SKILLS / "agently" / "references" / "model-quality-validation.md"
+    ).read_text(encoding="utf-8")
     request_text = (SKILLS / "agently-request" / "SKILL.md").read_text(encoding="utf-8")
     request_prompt_management_text = (
         SKILLS / "agently-request" / "references" / "prompt-management.md"
@@ -168,6 +177,35 @@ def main() -> None:
         "does not need to mention Agently explicitly" in playbook_text
         and "Generic asks" in playbook_text,
         "playbook explicitly allows scenario-led discovery without framework-name requirements",
+        failures,
+        passes,
+    )
+    check(
+        "hard_gate_soft_quality_acceptance_guidance",
+        all(
+            phrase in model_quality_validation_text
+            for phrase in (
+                "Two-Axis Acceptance Matrix",
+                "Hard gate",
+                "Soft target",
+                "Deterministic check",
+                "Semantic review",
+                "capability or model-fit gap",
+                "representative cases across repeated real runs",
+                "must not be silently lowered",
+            )
+        )
+        and all(
+            phrase in design_observability_text
+            for phrase in (
+                "acceptance criticality",
+                "evaluation method",
+                "hard gates",
+                "soft targets",
+                "human-labeled calibration sample",
+            )
+        ),
+        "AI application acceptance separates criticality from evaluation method, calibrates semantic review, and reports model capability gaps",
         failures,
         passes,
     )
@@ -914,6 +952,22 @@ def main() -> None:
         "reference_fixture_covers_model_quality_validation",
         any(case.get("id") == "model-quality-validation-routing-zh" for case in reference_cases),
         "reference retrieval fixtures cover model-request-based quality and routing guidance",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_hard_soft_acceptance",
+        any(
+            case.get("id") == "model-quality-hard-soft-acceptance-zh"
+            and {
+                "criticality_vs_method",
+                "soft_target_nonblocking",
+                "repeated_model_specific_calibration",
+                "capability_gap_escalation",
+            }.issubset(set(case.get("required_concepts", [])))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover hard gates, soft targets, semantic calibration, and model capability escalation",
         failures,
         passes,
     )

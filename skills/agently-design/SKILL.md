@@ -44,7 +44,9 @@ summary alone.
    a strictly inline awaited response that cannot cross a request boundary has
    no extra model-returned correlation requirement.
 9. Design lifecycle, retry/repair convergence, concurrency, and pressure controls.
-10. Design observability and validation before implementation. Every
+10. Design observability and validation before implementation. Classify each
+    criterion independently by acceptance criticality (hard gate or soft
+    target) and evaluation method (deterministic check or semantic review). Every
     model-satisfiable acceptance rule must reach the producer before its first
     attempt; classify deliberately hidden host gates separately.
 11. Route concrete implementation to the owning leaf Skills.

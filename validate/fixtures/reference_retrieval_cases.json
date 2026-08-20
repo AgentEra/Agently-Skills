@@ -313,6 +313,48 @@
       ]
     },
     {
+      "id": "model-quality-hard-soft-acceptance-zh",
+      "query": "我在验收一个 Agently AI 应用：结构、枚举和授权必须稳定通过，但自然语言内容不应按关键词或固定文本验收；绘图美观等要求有些只是尽量满足。应该怎样区分硬门槛、软质量、确定性检查和模型/人工评审，并在模型多次无法达到最低业务方向时处理？",
+      "matched_skills": [
+        "agently"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently/references/model-quality-validation.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently/references/model-quality-validation.md": [
+          "## Two-Axis Acceptance Matrix",
+          "## Calibrate Quality Across Repeated Runs"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "criticality_vs_method",
+          "description": "Acceptance criticality (hard gate or soft target) is independent from evaluation method (deterministic check or semantic review)."
+        },
+        {
+          "id": "soft_target_nonblocking",
+          "description": "Soft quality targets are scored and reviewed but ordinary imperfections do not block unless a predeclared unacceptable floor is crossed."
+        },
+        {
+          "id": "repeated_model_specific_calibration",
+          "description": "Semantic acceptance is calibrated on representative repeated real runs for the relevant model and compared with human-labeled samples."
+        },
+        {
+          "id": "capability_gap_escalation",
+          "description": "Repeated failure with sufficient input and a clear request is reported as a model capability or fit gap instead of hidden by keyword gates, unlimited retries, or silent standard reduction."
+        }
+      ],
+      "required_concepts": [
+        "criticality_vs_method",
+        "soft_target_nonblocking",
+        "repeated_model_specific_calibration",
+        "capability_gap_escalation"
+      ]
+    },
+    {
       "id": "execution-topology-validation-zh",
       "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
       "matched_skills": [
