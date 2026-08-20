@@ -210,6 +210,30 @@ def main() -> None:
         passes,
     )
     check(
+        "optional_replaceable_handoff_reference_guidance",
+        all(
+            phrase in design_model_request_topology_text
+            for phrase in (
+                "independent consumer, parallel development, or local validation",
+                "replaceable reference data",
+                "simulated or hypothetical",
+                "real producer output",
+                "Do not prescribe one packet type",
+                "Do not split an otherwise cohesive flow",
+                "scenario description plus topology data",
+            )
+        )
+        and "replaceable reference data" in design_text
+        and re.search(r"do\s+not\s+add\s+a\s+handoff\s+layer", design_text)
+        is not None
+        and "replaceable reference data" in project_framework_text
+        and re.search(r"form\s+project-defined", project_framework_text)
+        is not None,
+        "complex flows may use lightweight project-defined reference data at valuable handoff seams without forcing a universal packet or extra boundary",
+        failures,
+        passes,
+    )
+    check(
         "project_information_locality",
         "cross-file lookup count and nesting depth" in playbook_text
         and "actual reuse value" in project_framework_text
@@ -983,6 +1007,22 @@ def main() -> None:
         any(case.get("id") == "design-system-boundaries-zh" for case in reference_cases)
         and any(case.get("id") == "design-model-request-topology-en" for case in reference_cases),
         "reference retrieval fixtures cover system boundaries and ModelRequest topology design",
+        failures,
+        passes,
+    )
+    check(
+        "reference_fixture_covers_replaceable_handoff_reference",
+        any(
+            case.get("id") == "design-replaceable-handoff-reference-zh"
+            and {
+                "valuable_handoff_only",
+                "project_defined_form",
+                "simulated_draft_not_authority",
+                "real_output_replacement",
+            }.issubset(set(case.get("required_concepts", [])))
+            for case in reference_cases
+        ),
+        "reference retrieval fixtures cover optional project-defined handoff samples without universal packet constraints",
         failures,
         passes,
     )

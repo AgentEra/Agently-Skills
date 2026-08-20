@@ -314,6 +314,39 @@ those consumers, then decide field granularity and validation.
 Do not publish raw parser paths as the application protocol. Map them to stable
 business fields or events owned by the application or TriggerFlow layer.
 
+## Optional Reference Data At Valuable Handoffs
+
+For a small number of key edges with an independent consumer, parallel development, or local validation value, consider preparing compact, replaceable reference data before the real producer is complete. This lets downstream work exercise the actual information it depends on, gives the upstream producer a concrete consumer target, and makes a long workflow locally replayable instead of one final-output black box.
+
+Keep the reference data limited to the structure, semantics, evidence, and
+business boundary the downstream consumer actually needs. Use a project-defined
+form: a structured-output example, DTO, JSON fixture, event payload, file
+artifact, or a scenario description plus topology data may all be appropriate.
+Do not prescribe one packet type, fixed field list, new framework concept, or
+required file for every project.
+
+A model may simulate a domain expert to draft reference data, boundary cases,
+or handoff explanations. Treat that material as simulated or hypothetical
+until a developer, domain fact, interface contract, or observed run confirms
+it. Do not let one model-generated example become both the target and the only
+proof that the implementation is correct.
+
+When the producer is ready, verify that real producer output can replace the
+reference data across the consumer's declared dependency and acceptance scope.
+The consumer should test the contract and business meaning it relies on rather
+than overfit one sample's wording or incidental values.
+
+Do not split an otherwise cohesive flow merely to create such data. Skip the
+extra handoff when the intermediate result has no independent consumer,
+parallel-development benefit, replay/local-validation use, or meaningful
+fault-localization boundary.
+
+Example: while a topology producer is still being built, a schematic-layout
+consumer may develop against a reviewed case description plus topology data.
+Later, the producer's real output replaces that sample and passes the same
+consumer-facing checks. This is one possible form, not a required schema or
+stage decomposition.
+
 ## Instant Maturity and Invalidation
 
 `instant` updates can drive UI or explicitly cancelable/idempotent preparation.

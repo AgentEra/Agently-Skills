@@ -114,6 +114,13 @@ Add only the other artifacts needed for the task, usually a subset of:
 - an audit ledger with the first divergence and verified root cause;
 - an implementation handoff naming the leaf Skill for each mechanism.
 
+At a key handoff with an independent consumer, parallel-development benefit,
+or local-validation value, consider providing small replaceable reference data
+so downstream work can proceed before the real producer is complete and the
+producer has a concrete consumer target. Keep its form project-defined and do
+not add a handoff layer where no independent development, replay, validation,
+or fault-localization value exists.
+
 Use types and field-level constraints wherever a downstream system consumes
 model output. Treat `instant` values as provisional until the final parsed
 result and configured validation accept the originating attempt.
