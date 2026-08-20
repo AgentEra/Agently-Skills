@@ -32,6 +32,15 @@ Runtime Mermaid graphs, RuntimeEvents, traces, and artifacts validate the plan.
 They do not replace it: adjacency proves activation, not field-level value
 transfer or production necessity.
 
+For a key edge with an independent consumer, parallel-development benefit, or
+local-validation value, consider small replaceable reference data so downstream
+work can proceed before the real producer is complete. Keep the form
+project-defined: a DTO, structured example, JSON fixture, event payload, file
+artifact, or domain case plus topology data can all fit. Model-generated drafts
+remain simulated until confirmed, and the finished producer must prove its real
+output can replace the reference data. Do not add a universal packet, required
+field list, file, or handoff layer where no independent value exists.
+
 ## Choose Model Participation Before Request Count
 
 Use models for prose-derived intent, semantic routing, relevance, planning,

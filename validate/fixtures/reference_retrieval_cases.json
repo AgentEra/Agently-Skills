@@ -490,6 +490,47 @@
       ]
     },
     {
+      "id": "design-replaceable-handoff-reference-zh",
+      "query": "已经路由到 agently-design。复杂 AI 流程的上游还没完成，但下游希望围绕关键衔接数据先行开发，并让以后真实输出替换参考样例，同时避免把每个节点都做成固定数据包。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-design/references/model-request-topology.md": [
+          "## Optional Reference Data At Valuable Handoffs"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "valuable_handoff_only",
+          "description": "Replaceable reference data is considered only where independent consumers, parallel development, local validation, replay, or fault localization justify it."
+        },
+        {
+          "id": "project_defined_form",
+          "description": "The project chooses a suitable reference form instead of adopting a universal packet schema or fixed field list."
+        },
+        {
+          "id": "simulated_draft_not_authority",
+          "description": "A model may draft expert-like reference material, but it remains simulated until confirmed by authoritative evidence or people."
+        },
+        {
+          "id": "real_output_replacement",
+          "description": "The completed producer proves real output can replace the reference data, while the consumer avoids overfitting one sample."
+        }
+      ],
+      "required_concepts": [
+        "valuable_handoff_only",
+        "project_defined_form",
+        "simulated_draft_not_authority",
+        "real_output_replacement"
+      ]
+    },
+    {
       "id": "design-instant-overlap-reconcile-zh",
       "query": "已经路由到 agently-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
       "matched_skills": [
