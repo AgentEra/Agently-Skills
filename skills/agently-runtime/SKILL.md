@@ -53,6 +53,11 @@ package is not an executor or permission grant.
   same-id host registration.
 - Treat model-planned Action arguments as untrusted. Validate against the
   registered schema, authorization, and policy before dispatch.
+- Use `agent.set_action_loop(planning_protocol="programmatic")` only for one
+  bounded round of data-dependent read Actions. V1 exposes only visible
+  `side_effect_level="read"`, `replay_safe=True`, non-approval Actions with an
+  explicit lossless-JSON return contract; it dispatches nested calls serially
+  through the ordinary ActionRuntime/ActionDispatcher boundary.
 - Treat Action output and Action artifacts as evidence only after the host has
   recorded the actual call. Model prose claiming a side effect is not Action
   evidence.
@@ -179,6 +184,10 @@ package is not an executor or permission grant.
   ExecutionResources through host/plugin resolvers during load.
 - Use explicit execution handles for pause/resume, external emit, save/load,
   intervention, inspection, cancellation, or host-controlled close.
+- A programmatic Action run is live and non-durable while active. Save before
+  it starts or after it settles; never claim TriggerFlow can restore its Python
+  interpreter, provider IPC channel, or awaited Action binding. After durable
+  approval/resume, create a fresh program decision against current policy.
 - A local RecordStore can prove local restart behavior. Do not describe it as a
   production multi-worker Redis/Postgres/object-storage adapter without a real
   provider and operational evidence.

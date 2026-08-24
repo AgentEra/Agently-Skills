@@ -52,6 +52,14 @@ back-channel into R1.
 Represent repetition with a graph-visible back edge. Do not hide a `while True`
 lifecycle, retry, or revision loop inside a chunk handler.
 
+One bounded `planning_protocol="programmatic"` Action round may use ordinary
+Python branching or loops for ephemeral, read-only Action micro-orchestration.
+Keep the surrounding TriggerFlow/TaskDAG graph coarse and graph-visible for
+business milestones, approval, external wait, irreversible effects,
+compensation, persistence, and restart recovery. TriggerFlow may save before a
+program starts or after it settles; it cannot serialize and resume a live
+interpreter or awaited host binding.
+
 The built-in `.ensure_long_output()` execution policy is an example of this
 boundary: its first ModelRequest stays ordinary, while a normalized
 length/incomplete terminal activates TriggerFlow-visible continuation,
