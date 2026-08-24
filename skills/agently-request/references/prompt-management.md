@@ -1,6 +1,7 @@
 # Agently Prompt Management
 
-Use this skill when the core problem is how prompt state should be structured before one request or request family runs.
+Use this reference when the core problem is how prompt state should be
+structured before one request or request family runs.
 
 ## Native-First Rules
 
@@ -135,7 +136,3 @@ and references. Before dispatch, `execution.get_prompt_text()` audits the render
 - do not remove an effective upstream guarantee that changes the decision or
   allowed verdicts, and do not retain generic project narration under the
   user-visible-process role without a declared user or UI consumer.
-
-## Read Next
-
-- `references/overview.md`

@@ -3,7 +3,7 @@
 Use this reference before selecting APIs. Assign each decision, state, effect,
 and dependency to the smallest existing owner. Developer-owned stable execution
 topology belongs to TriggerFlow; model-generated or application-submitted DAG
-data belongs to TaskDAG / Dynamic Task. Per-execution state, task information,
+data belongs to TaskDAG, with DynamicTask only as a convenience facade. Per-execution state, task information,
 task files, durable records, external resources, and shared `flow_data` are
 different boundaries.
 
@@ -19,7 +19,7 @@ different boundaries.
 | TaskWorkspace | one task's files, file refs, containment, exact readback, and atomic file promotion | records, semantic retrieval, or task policy |
 | RecordStore | durable records, direct retrieval indexes, links, checkpoints, snapshots, leases, and durable refs | task file editing, model-hot context, or execution policy |
 | TriggerFlow | trusted, developer-owned executable signals, dependencies, state transitions, waits, and close | unvalidated runtime plan data |
-| TaskDAG / Dynamic Task | submitted or model-generated acyclic DAG data, validation, resolution, and execution | a second stable workflow framework |
+| TaskDAG | submitted or model-generated acyclic DAG data, validation, resolution, and execution; DynamicTask is its convenience facade | a second stable workflow framework or AgentExecution route |
 | host code | admission, authorization, canonical identity joins, UI/transport, and external integration | model-owned semantic judgment |
 | human/external system | approval or external response facts | hidden in-process blocking loops |
 
@@ -54,8 +54,8 @@ Do not maintain a second directory tree here.
 ## Stable Flow or Submitted DAG
 
 Use direct TriggerFlow when trusted source code owns a stable executable graph.
-Use TaskDAG / Dynamic Task when a model or application submits DAG-shaped plan
-data at runtime. Validate and resolve that data before its TriggerFlow substrate
+Use TaskDAG only for the low-frequency case where a model or application
+submits DAG-shaped plan data at runtime. Validate and resolve that data before its TriggerFlow substrate
 executes it; do not compile unvalidated plan data into ad hoc flow definitions.
 
 An analysis diagram may show both paths, but it is not executable source of

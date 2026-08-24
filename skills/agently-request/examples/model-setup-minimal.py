@@ -1,10 +1,10 @@
 from agently import Agently
 
 Agently.set_settings(
-    "OpenAICompatible",
+    "plugins.ModelRequester.OpenAICompatible",
     {
         "base_url": "https://api.example.com/v1",
         "model": "demo-model",
-        "auth": "YOUR_API_KEY",
+        "auth": "${ENV.DEMO_API_KEY}",
     },
 )

@@ -82,8 +82,9 @@ Use execution state (`get_state(...)`, `set_state(...)`, and async variants) for
 
 For service packaging, treat ordinary `TriggerFlow(...)` as the definition/planning surface and `create_execution(...)` / `start_execution(...)` as the boundary into one run. Prefer module-level named chunks and conditions. Put stable live dependencies such as `agent_factory`, clients, prompt paths, or loggers into flow-level `runtime_resources`; put request- or tenant-specific values into execution-level `runtime_resources`. Chunks should read required live dependencies with `data.require_resource(...)` and write per-request business values to execution state. Closures are acceptable for compact scripts, but they are not the recommended service shape because they reduce handler reuse, testing, and config/blueprint round-trip clarity.
 
-For model-app dynamic planning, route model-generated or app-submitted To-Do /
-DAG data through TaskDAG / DynamicTask so validation and resolver binding happen
+For low-frequency model-app dynamic planning, route model-generated or
+app-submitted DAG data through TaskDAG (optionally via the DynamicTask
+convenience facade) so validation and resolver binding happen
 before execution. Do not turn runtime plan data into new TriggerFlow definitions.
 Keep reusable developer-owned main flows and sub-flow templates module-safe;
 their looping behavior should remain graph-visible through emits and
@@ -91,10 +92,17 @@ their looping behavior should remain graph-visible through emits and
 prevents duplicate graph declarations; it must not dedupe runtime signals,
 because repeated emits are real business events.
 
-In Agently `v4.1.2.5`, TriggerFlow definitions, chunk signal metadata, origin-chunk payloads, resume context, and sub-flow interrupt projection are strong enough to support graph-oriented debugging and local DevTools visualization without duplicating the workflow description.
+TriggerFlow definitions, chunk signal metadata, origin-chunk payloads, resume context, and sub-flow interrupt projection support graph-oriented debugging and local DevTools visualization without duplicating the workflow description.
 
 For the concrete `instant -> runtime stream` pattern, read `references/stream-bridge.md`.
 For graph, export, and observation design, read `references/devtools-graph.md`.
+
+Local focused examples:
+
+- [`../examples/emit_nowait.py`](../examples/emit_nowait.py) for
+  execution-managed non-blocking emits;
+- [`../examples/active_sub_flow_control.py`](../examples/active_sub_flow_control.py)
+  for inspecting and cancelling a registered live child frame.
 
 ## Main Repository Examples
 

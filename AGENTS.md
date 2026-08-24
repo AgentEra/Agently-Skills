@@ -1,11 +1,11 @@
 ---
 name: agently-skills-catalog
-description: Central catalog and documentation for Agently Skills V2. Use when working with Agently skill installation, routing, and installed-skill usage guidance.
+description: Central catalog and documentation for Agently Skills V3. Use when working with Agently skill installation, routing, and installed-skill usage guidance.
 ---
 
 # Agently Skills Catalog
 
-This package publishes the current Agently Skills catalog generation `v2` under
+This package publishes the current Agently Skills catalog generation `v3` under
 `skills/`. Historical catalogs are preserved on frozen archive branches instead
 of the default branch so coding-agent retrieval only sees the current catalog.
 
@@ -33,7 +33,7 @@ Use this file as installation-time guidance after the skills are added into anot
 - For Agently framework internals, follow the core module style: class-owned
   runtime state, typed data contracts under `agently/types/data`, protocol or
   handler seams under `agently/types/plugins`, and retained implementation
-  owners for Action, ExecutionResource, TriggerFlow, and DynamicTask. A
+  owners for Action, ExecutionResource, TriggerFlow, and TaskDAG. A
   high-level capability can live outside `agently/core` when it composes
   several core systems; split large implementations by registry, planner,
   executor, adapter, facade, and contract boundaries rather than by arbitrary
@@ -87,7 +87,10 @@ Use this file as installation-time guidance after the skills are added into anot
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
 - Before creating or updating the main repository PR, run `pyright` and `python -m pytest` in the main repository, using the same Python environment that will validate the release.
-- Before considering this Skills repository aligned, run `python validate/validate_compatibility.py`, `python validate/validate_catalog.py`, `python validate/validate_bundle_manifest.py`, `python validate/validate_trigger_paths.py`, `python validate/validate_native_usage.py`, `python validate/validate_reference_retrieval.py`, and `python validate/validate_project_template.py`.
+- Before considering this Skills repository aligned, run `python validate/validate_compatibility.py`, `python validate/validate_catalog.py`, `python validate/validate_bundle_manifest.py`, `python validate/validate_trigger_paths.py`, `python validate/validate_native_usage.py`, `python validate/validate_reference_retrieval.py`, and `python validate/validate_full_stack_reference.py`.
+- Before publishing default-branch metadata that names frozen archive branches,
+  push those archive refs first and rerun
+  `python validate/validate_compatibility.py --require-remote-archives`.
 - `validate_reference_retrieval.py` is static-only by default. Its model-backed
   cases require separate explicit authorization through
   `--allow-model-calls`, a positive `--max-model-requests` budget that covers
@@ -317,17 +320,16 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Skill Routing Reminders
 
-- `agently`: unresolved owner layer, project shape, or broad product request
+- `agently`: unresolved owner layer, project shape, broad product request, or
+  low-frequency TaskDAG / DynamicTask guidance
 - `agently-design`: cross-owner architecture, ModelRequest/value/event topology,
   evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
-- `agently-runtime`: Action Runtime, tools, MCP, Execution Environment, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
+- `agently-runtime`: Action Runtime, tools, MCP, ExecutionResource, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration
 - `agently-stage`: Stage task lifetime, sync/async bridges, loop-neutral
   handles, settlement, StageStream, Tunnel, EventEmitter, pressure, and idle
   diagnostics
 - `agently-triggerflow`: explicit orchestration, branching, concurrency, runtime stream, workflow-owned business events, and execution-graph-friendly workflow definitions
-- `agently-dynamic-task`: submitted or model-generated TaskDAG planning,
-  validation, resolver binding, and execution through the TriggerFlow substrate
 - `agently-migration`: migration from LangChain, LangGraph, LlamaIndex, CrewAI, or similar systems into Agently-native layers
 
 ## Anti-Patterns
@@ -338,4 +340,4 @@ Use this file as installation-time guidance after the skills are added into anot
 - Do not expose raw model parser paths directly to the UI when the workflow can translate them into stable business events.
 - Do not keep provider auth, model name, or base URL in ad hoc Python literals when settings plus `${ENV.xxx}` placeholders fit.
 - Do not tell users to clone or editable-install the private DevTools source when the public package `pip install agently-devtools` already matches the supported integration path.
-- Do not make a goal-pursuit task use a required capability by leaning on a strong prompt instruction or a business-specific special case. When a task must use a particular Action, Skill, Skill pack, or DynamicTask, express it as framework contract: make capabilities visible to the planner (`planner_capabilities`), bound the step with structured `step_scope`, and declare a structured `capability_evidence_requirements` entry that the AgentTaskLoop host guard checks deterministically against execution evidence. The prompt is explanatory, not the guarantee; keep scenario-specific checks (visual fingerprints, domain names, source choices) in examples and tests, never in framework paths.
+- Do not make a goal-pursuit task use a required capability by leaning on a strong prompt instruction or a business-specific special case. When an AgentTask must use a particular Action, Skill, or Skill pack, express it as a framework capability contract: make capabilities visible to the planner (`planner_capabilities`), bound the step with structured `step_scope`, and declare `capability_evidence_requirements` that the host validates against execution evidence. TaskDAG is an independent submitted-graph capability, not an AgentTask requirement or route. The prompt is explanatory, not the guarantee; keep scenario-specific checks in examples and tests, never in framework paths.

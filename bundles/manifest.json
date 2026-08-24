@@ -1,11 +1,11 @@
 {
   "version": 3,
-  "catalog_generation": "v2",
+  "catalog_generation": "v3",
   "bundles": [
     {
       "id": "app",
       "kind": "core",
-      "purpose": "Build new Agently applications or services with cross-layer design guidance, request-side model behavior, Stage runtime bridging, runtime capabilities, Dynamic Task DAG execution, and TriggerFlow orchestration.",
+      "purpose": "Build new Agently applications or services with routing, cross-layer design, request-side model behavior, Stage runtime bridging, runtime capabilities, and TriggerFlow orchestration.",
       "entry_skill": "agently",
       "active_skills": [
         "agently",
@@ -13,7 +13,6 @@
         "agently-request",
         "agently-runtime",
         "agently-stage",
-        "agently-dynamic-task",
         "agently-triggerflow"
       ],
       "recommended_install_order": [
@@ -22,7 +21,6 @@
         "agently-request",
         "agently-runtime",
         "agently-stage",
-        "agently-dynamic-task",
         "agently-triggerflow"
       ]
     },
@@ -38,7 +36,6 @@
         "agently-request",
         "agently-runtime",
         "agently-stage",
-        "agently-dynamic-task",
         "agently-triggerflow",
         "agently-migration"
       ],
@@ -48,7 +45,6 @@
         "agently-request",
         "agently-runtime",
         "agently-stage",
-        "agently-dynamic-task",
         "agently-triggerflow",
         "agently-migration"
       ]

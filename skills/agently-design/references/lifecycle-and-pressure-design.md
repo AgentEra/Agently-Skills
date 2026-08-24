@@ -28,7 +28,8 @@ that ignores provider, external-system, memory, or side-effect capacity.
 Application-owned branching, fan-out, joins, loops, approvals, pause/resume,
 runtime streams, and close belong to TriggerFlow. A local async caller may
 overlap a small set of independent single requests when no graph-visible
-lifecycle is needed. Submitted acyclic plans belong to TaskDAG / Dynamic Task.
+lifecycle is needed. Explicit submitted acyclic plan data belongs to TaskDAG;
+DynamicTask is only its convenience facade.
 
 When one direct AgentExecution business result crosses model output windows,
 keep the public intent on the execution (`.ensure_long_output()`) and make every

@@ -1,6 +1,7 @@
 # Agently Output Control
 
-Use this skill when the question is what shape the model should return and how that shape should stay reliable.
+Use this reference when the question is what shape the model should return and
+how that shape should stay reliable.
 
 The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or `.validate(...)`. Requests for stable JSON-like fields, structured reports, or machine-readable sections should route here.
 
@@ -309,6 +310,9 @@ field.
   structure, routing, or required-field presence, not as the primary content
   correctness signal.
 
+For a compact rule-first business validator, see
+[`../examples/output-control-validate-runtime.py`](../examples/output-control-validate-runtime.py).
+
 ## Anti-Patterns
 
 - do not handwrite JSON post-processors when `.output(...)` already owns the contract
@@ -323,7 +327,3 @@ field.
 - do not treat offered-set membership as proof that a delayed, replayed, or
   retried selection belongs to the current Host request; correlate it before
   canonical lookup
-
-## Read Next
-
-- `references/overview.md`

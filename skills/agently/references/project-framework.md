@@ -4,10 +4,10 @@ Use this reference to initialize or refactor an Agently project without turning
 logical stages into a fixed directory tree. Plan the real owner and consumer
 topology first, then create the smallest physical layout that carries it.
 
-The runnable reference asset is
-[`../assets/project-template/`](../assets/project-template/). Copy it
+The runnable full-stack reference is
+[`../assets/full-stack-reference/`](../assets/full-stack-reference/). Copy it
 selectively: it demonstrates many optional boundaries at once and is not a
-mandatory scaffold for a small application.
+default template or mandatory scaffold for a small application.
 
 ## Topology Before Files
 
@@ -103,7 +103,8 @@ transformation or policy exists.
 
 ### Submitted or model-generated DAG
 
-Use TaskDAG / Dynamic Task when the plan is runtime data:
+TaskDAG is a low-frequency advanced option when the plan itself is runtime
+data. Read `task-dag.md` before adding it:
 
 ```text
 project/
@@ -116,11 +117,13 @@ project/
 └── tests/
 ```
 
-The directory name is optional; the ownership is not. Validate and resolve the
-DAG through TaskDAG, then let `TaskDAGExecutor.async_run(...)` use the
-TriggerFlow substrate. Do not compile unvalidated plan data into a new
-TriggerFlow definition. Blocks is opt-in only when Blocks lifecycle evidence or
-`ExecutionBlockGraph` output is explicitly required.
+The directory name is optional; the ownership is not. Do not introduce this
+shape for an ordinary Agent task or a stable developer-owned workflow. When it
+is justified, validate and resolve the submitted DAG through TaskDAG, then let
+`TaskDAGExecutor.async_run(...)` use the TriggerFlow substrate. Do not compile
+unvalidated plan data into a new TriggerFlow definition. Blocks is opt-in only
+when Blocks lifecycle evidence or `ExecutionBlockGraph` output is explicitly
+required.
 
 ### Inbound service delivery
 
@@ -177,7 +180,7 @@ async def analyze_with_mcp(
     return project_analysis_run(task_id, run).model_dump()
 ```
 
-The runnable asset includes the complete imports, settings lifespans, task-local
+The full-stack reference includes the complete imports, settings lifespans, task-local
 output paths, and in-process transport tests. The abbreviated code above shows
 only the ownership relationship.
 

@@ -30,15 +30,9 @@ async def main():
     try:
         await child_entered.wait()
 
-        async def wait_for_running_frame():
-            while not execution.get_sub_flow_frames():
-                await asyncio.sleep(0)
-            return next(iter(execution.get_sub_flow_frames().items()))
-
-        frame_id, running_frame = await asyncio.wait_for(
-            wait_for_running_frame(),
-            timeout=1,
-        )
+        frames = execution.get_sub_flow_frames()
+        assert frames, "the child frame is registered before child execution starts"
+        frame_id, running_frame = next(iter(frames.items()))
         assert running_frame["status"] == "running"
 
         won = await execution.async_cancel_sub_flow(

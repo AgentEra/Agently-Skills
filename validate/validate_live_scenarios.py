@@ -45,7 +45,7 @@ def check(name: str, condition: bool, details: str, failures: list[str], passes:
 
 
 async def run_model_smoke(failures: list[str], passes: list[str]) -> None:
-    agent = Agently.create_agent("v2-live-validator")
+    agent = Agently.create_agent("v3-live-validator")
     result = (
         agent.input("Return answer=ok and one checklist item.")
         .output({"answer": (str, None, True), "checklist": [(str, None, True)]})
@@ -147,11 +147,12 @@ async def judge_route_case(case: dict) -> dict:
         "- If the request explicitly says provider settings, model selection, or auth should stay in settings or env placeholders rather than workflow code, append agently-request when installed.\n"
         "- If the request is about initializing or scaffolding a new model-powered project and the owner layers are not decided yet, stop at agently.\n"
         "- If the request is about initializing or scaffolding a new project into separate settings, prompt, and workflow layers, keep agently first even when later leaf skills are explicit.\n"
+        "- If the request explicitly asks for TaskDAG, DynamicTask, or a submitted or model-generated DAG, start with agently because catalog v3 intentionally has no standalone TaskDAG skill. Add agently-design only for a cross-owner design boundary, or agently-triggerflow only when the execution substrate itself needs separate treatment.\n"
         "- If the request is mainly provider wiring or connectivity, continue with agently-request when installed.\n"
         f"- Every item in route_path must be exactly one of: {allowed}.\n"
     )
 
-    agent = Agently.create_agent(f"v2-route-live-{case['id']}")
+    agent = Agently.create_agent(f"v3-route-live-{case['id']}")
     result = (
         agent
         .input(prompt)
@@ -213,7 +214,7 @@ async def run_route_live_validation(
     concurrency: int,
 ) -> None:
     fixtures = json.loads(ROUTE_FIXTURES.read_text(encoding="utf-8"))["cases"]
-    flow = TriggerFlow(name="v2-live-route-validation")
+    flow = TriggerFlow(name="v3-live-route-validation")
 
     async def validate_in_flow(data):
         return await validate_route_case(data.value, timeout_seconds=timeout_seconds)
@@ -233,7 +234,7 @@ async def run_route_live_validation(
         check(result["name"], result["ok"], result["details"], failures, passes)
 
 async def main() -> None:
-    parser = argparse.ArgumentParser(description="Run V2 live validation scenarios.")
+    parser = argparse.ArgumentParser(description="Run V3 live validation scenarios.")
     parser.add_argument("--require-model", action="store_true", help="Fail if DeepSeek settings are missing.")
     parser.add_argument(
         "--allow-model-calls",
@@ -300,7 +301,7 @@ async def main() -> None:
             "--allow-model-calls and --max-model-requests are required"
         )
 
-    print("V2 live scenario validation")
+    print("V3 live scenario validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

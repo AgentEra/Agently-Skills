@@ -1,85 +1,55 @@
 # Agently Skills
 
-面向 coding agents 的 Agently 官方可安装 Skills 仓库。
+面向 coding agents 的 [Agently](https://github.com/AgentEra/Agently) 官方可安装
+Skills 仓库。
 
-主仓库：<https://github.com/AgentEra/Agently>  
-官方文档：<https://agently.tech/docs/en/> | <https://agently.cn/docs/>
+文档：[English](https://agently.tech/docs/en/) |
+[中文](https://agently.cn/docs/)
 
 ## 兼容性
 
-默认公开 catalog 是当前 Agently-Skills generation `v2`，已为 Agently 4.1.4.7
-开发线和新的 8-skill 结构完成准备。
+默认分支发布 catalog generation `v3`，对齐 Agently `4.1.4.7` 公开版本，只包含
+当前 7-skill catalog。
 
-机器可读兼容声明位于 `compatibility/support.json`。默认分支只保留当前公开
-catalog，避免 coding-agent 的 Skill 检索命中已退役的历史 Skills。
+历史 catalog 冻结在归档分支：
 
-历史 catalog generation 通过专门的归档分支保留，而不是放在默认分支文件树里。
-冻结的 V1 catalog 已归档在 `update/archive-legacy-v1-catalog`，最后支持 Agently
-`4.1.1`。
+- `v2`：`update/archive-v2-catalog`，最后支持 Agently `4.1.4.7`
+- `v1`：`update/archive-legacy-v1-catalog`，最后支持 Agently `4.1.1`
 
-## 什么是 Agently？
-
-Agently 是一个用于构建模型应用和工作流的框架。它提供模型请求、provider
-settings、Prompt 组合、结构化输出、Action Runtime、MCP、knowledge-base flow、
-TriggerFlow 编排、Dynamic Task DAG 执行等原生能力面。
-
-## 什么是 Agently-Skills？
-
-Agently-Skills 是面向 coding agents 的 Agently 官方 Skills 套件。
-
-它和 Agently 框架运行时里的 `SkillLibrary`、`TaskContext` 以及
-AgentExecution Skill 路径不是一回事：
-
-- `Agently-Skills` - 给 Codex、Claude Code 等 coding agent 用的指导型 skill 包
-- Agently `SkillLibrary` - 不可变 Skill revision 的安装与存储边界；
-  `TaskContext` 与 `ContextReader` 提供任务级上下文，AgentExecution 负责
-  Skill 绑定、路由选择与执行生命周期
-
-单个 skill 目录是标准 `SKILL.md` 包，可按需带 references、examples、outputs 和
-scripts。详细 API 指导应放在这些 skill 包和一层 reference 文件里，不应堆在仓库
-README 中。
+机器可读兼容契约见
+[`compatibility/support.json`](compatibility/support.json)。归档分支只用于回滚和
+历史检查，不用于新项目安装。
 
 ## 当前 Catalog
 
-默认 catalog 一共 8 个公开 skills：
+- `agently` - 当模型应用、助手、内部工具、自动化、评估器或工作流的正确 owner
+  layer 尚不明确时，负责入口路由与项目形态判断；低频 TaskDAG 需求也从这里开始。
+- `agently-design` - 跨 owner layer 设计和审计复杂系统，覆盖请求、值与事件拓扑、
+  证据、身份、生命周期、压力和可观测性。
+- `agently-request` - 模型请求、Prompt、结构化输出、响应消费、session memory、
+  embeddings 与检索。
+- `agently-runtime` - Action Runtime、MCP、ExecutionResource、TaskWorkspace、
+  RecordStore、服务适配和可选 DevTools。
+- `agently-stage` - 进程内任务生命周期、同步/异步桥接、loop-neutral handle、
+  stream、replay channel、事件与背压。
+- `agently-triggerflow` - 显式分支、并发、暂停恢复、可重启工作流，以及可检查的
+  runtime state 与事件。
+- `agently-migration` - 把 LangChain、LangGraph、LlamaIndex、CrewAI 或类似系统
+  映射到 Agently 原生 owner layer。
 
-- `agently` - 未定层级的模型应用、助手、内部工具、自动化、评估器、工作流、
-  项目结构重构请求的统一入口。
-- `agently-design` - 跨请求、runtime、工作流与证据边界的系统设计、评审、优化和
-  请求链审计，覆盖 ModelRequest 契约、身份与证据、生命周期、压力和可观测性。
-- `agently-request` - 请求侧模型接入、provider settings、Prompt 管理、结构化
-  输出、响应复用、streaming 消费、session memory、embeddings、knowledge-base
-  索引、检索与 retrieval-backed answers。
-- `agently-runtime` - Action Runtime、内置 action packages、tool 兼容入口、
-  MCP、ExecutionResource 生命周期、服务暴露、auto-function helpers、
-  以及 `KeyWaiter`。
-- `agently-stage` - 进程内任务生命周期、同步/异步调用桥接、loop-neutral handle、
-  settlement、StageStream、Tunnel、EventEmitter、背压与 idle 诊断。
-- `agently-dynamic-task` - Dynamic Task DAG 规划、`TaskDAG` 校验、resolver
-  handlers，以及通过 `Agently.create_dynamic_task(...)` 使用 `TaskDAGExecutor`
-  执行。
-- `agently-triggerflow` - 显式工作流编排、分支、并发、审批、等待和恢复、
-  runtime stream、可重启执行、混合同异步函数或模块编排，以及便于图调试的
-  工作流定义。
-- `agently-migration` - 从 LangChain、LangGraph、LlamaIndex、CrewAI 或类似系统
-  迁移到 Agently 原生 request/runtime 或 TriggerFlow 层。
-
-默认检索面应使用当前 `skills/` 目录。不要把归档 catalog 分支、历史目录或已退役
-Skill 文件夹加入 coding agent 的常规搜索路径。
+v3 不再提供独立 TaskDAG Skill。TaskDAG 是提交或模型生成的无环图数据所使用的
+低频基础能力；先从 `agently` 开始，仅在跨层边界或执行 substrate 需要独立处理时
+再加入 `agently-design` 或 `agently-triggerflow`。
 
 ## 安装
 
-先明确目标 agent。推荐把一个 bundle 安装到一个 agent 对应的 skills 目录里，例如
-Codex：
+先选择目标 coding agent，例如：
 
 ```bash
 export AGENT=codex
 ```
 
-如果目标是 Claude、Cursor 或其他受支持 agent，把 `AGENT` 换成对应名称。
-
-`app`
-开发新 Agently 应用的默认 bundle：
+开发新 Agently 应用时安装 `app` bundle：
 
 ```bash
 for skill in \
@@ -88,31 +58,26 @@ for skill in \
   agently-request \
   agently-runtime \
   agently-stage \
-  agently-dynamic-task \
   agently-triggerflow
 do
   npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill "$skill" -y
 done
 ```
 
-`migration`
-从 LangChain、LangGraph、LlamaIndex、CrewAI 或类似系统迁移到 Agently 的 bundle。
-先安装 `app` bundle，再补充迁移 skill：
+进行迁移时，先安装 `app` bundle，再补充：
 
 ```bash
 npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill agently-migration -y
 ```
 
-如果只想最小化安装入口 router：
+只需要最小入口时，仅安装 router：
 
 ```bash
 npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill agently -y
 ```
 
-查看默认公开 catalog：
+查看当前公开 catalog：
 
 ```bash
 npx skills add . --list
 ```
-
-默认列表和常规安装路径只暴露当前 8-skill catalog。

@@ -13,7 +13,9 @@ Route here when the user wants:
 - scenario evaluation runs that compare prompt, settings, or flow variants
 - a local observation API app through `create_local_observation_app(...)`
 
-If the user also needs to redesign the workflow stages, branch semantics, runtime stream contract, or chunk boundaries, continue with `agently-triggerflow` after this skill.
+If the user also needs to redesign the workflow stages, branch semantics,
+runtime stream contract, or chunk boundaries, continue with
+`agently-triggerflow` after this reference.
 
 ## Public Package Boundary
 

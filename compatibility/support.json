@@ -3,9 +3,9 @@
   "repository": "Agently-Skills",
   "framework": "agently",
   "aligned_framework_version": "4.1.4.7",
-  "catalog_generation": "v2",
+  "catalog_generation": "v3",
   "supported_catalog_generations": [
-    "v2"
+    "v3"
   ],
   "recommended_bundle": "app",
   "supported_runtime_dependencies": {
@@ -16,6 +16,12 @@
     }
   },
   "archived_catalog_generations": [
+    {
+      "generation": "v2",
+      "branch": "update/archive-v2-catalog",
+      "last_supported_framework_version": "4.1.4.7",
+      "status": "frozen"
+    },
     {
       "generation": "v1",
       "branch": "update/archive-legacy-v1-catalog",

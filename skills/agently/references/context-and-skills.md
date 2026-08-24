@@ -442,8 +442,13 @@ and integration calls:
   revisions;
 - discover/install/list/inspect local or source-provider-backed Skill packs;
 - build a compatibility context-pack projection through generic TaskContext and
-  ContextReader behavior;
-- expose the TaskDAG `kind="skill"` resolver.
+  ContextReader behavior.
+
+The facade also exposes a TaskDAG `kind="skill"` resolver helper, but the
+4.1.4.7 release implementation does not adapt the real executor's
+`TaskDAGContext` into the mapping shape that helper expects.
+Do not present it as an executor-ready integration until that framework seam and
+an end-to-end test are fixed; see `task-dag.md`.
 
 It does not select a route, execute a Skill strategy, infer/mount capabilities,
 own an AgentTask loop, or create `skill_activation` Blocks. The old
