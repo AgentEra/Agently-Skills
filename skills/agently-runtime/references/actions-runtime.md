@@ -116,6 +116,13 @@ Use it when one bounded Action round needs dependent read calls, a result-based
 branch, a bounded loop/fan-out, or local filtering and aggregation. Prefer
 structured/native planning for one or two small direct calls.
 
+Measure model rounds, input/output tokens, Action calls, and latency
+independently. A real DeepSeek comparison reduced PTC from four to three model
+requests but used more input tokens and elapsed time on a small three-user
+task because the deterministic SDK/program contract dominated the saved round.
+PTC is a runtime-control and intermediate-value boundary, not an automatic
+cost or latency optimization.
+
 V1 exposes only scoped, model-visible Actions with
 `side_effect_level="read"`, `replay_safe=True`, no static approval requirement,
 and an explicit lossless-JSON `returns` contract. A precise return annotation
