@@ -233,7 +233,7 @@ Record for every logical node:
 | canonical state and freshness | Which Host-owned canonical state is projected, and, if the decision can cross a request boundary, which semantic input/evidence/request revision must correlate before lookup? Does a caller-supplied logical ID have a Host-guaranteed unique association with that semantic revision? |
 | prompt slots | What enters `agent`, `input`, `info`, `instruct`, `output`, `attachment`, and `chat_history`? |
 | prompt relevance | For each item, what current-node input interpretation, authoritative fact/policy/schema/evidence, model-owned decision/transformation, output/consumer/tool/capability boundary, or useful user-visible process context/state/explanation with a declared user or UI consumer would change if it were absent? |
-| execution context | Which state, Workspace refs, settings, provider, and authorization apply? |
+| execution context | Which state, TaskWorkspace/RecordStore refs, settings, provider, and authorization apply? |
 | output schema | What are each field's type, meaning, requiredness, enum/format/range/nullability, and cross-field rules? |
 | consumers | Which same-response field, next pass, request, Action, UI, join, state transition, or terminal gate reads each field? |
 | maturity | Is the field final-only, provisionally streamable, or attempt-local? |
@@ -262,7 +262,7 @@ model-returned correlation field.
 - `output`: exact machine-consumable type and field-level contract;
 - `attachment`: rich content whose ordering or modality matters;
 - `chat_history`: relevant conversation continuity, not an unbounded transcript;
-- execution context: state, Workspace refs, attempt and lineage ids;
+- execution context: state, TaskWorkspace/RecordStore refs, attempt and lineage ids;
 - settings: provider/model/runtime configuration, kept outside business prompts.
 
 Do not add project history or an unexplained implementation name merely because

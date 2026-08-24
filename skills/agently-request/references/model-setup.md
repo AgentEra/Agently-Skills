@@ -1,6 +1,7 @@
 # Agently Model Setup
 
-Use this skill for provider wiring and transport setup before request logic is discussed.
+Use this reference for provider wiring and transport setup before request logic
+is discussed.
 
 ## Native-First Rules
 
@@ -74,7 +75,3 @@ Use this skill for provider wiring and transport setup before request logic is d
 - do not use stage names such as `reason` as the main example for user-facing
   model switching; reserve those for internal stage routing docs. Use concrete
   switchable aliases such as `ollama-qwen2.5` and `deepseek-v4`.
-
-## Read Next
-
-- `references/overview.md`

@@ -1,304 +1,131 @@
 ---
 name: agently-triggerflow
-description: Use when the user needs workflow orchestration such as branching, concurrency, approvals, waiting and resume, runtime stream, restart-safe execution, mixed sync/async orchestration, event-driven fan-out, visible multi-stage quality loops, or workflow definitions and chunk-level runtime metadata that must remain inspectable.
+description: Use when developer-owned execution needs inspectable branching, concurrency, joins, waits, approval, retry, runtime streams, pause/resume, recovery, or mixed sync/async orchestration. Use agently-stage instead when a provider-owned sync wrapper only bridges an async SDK.
 ---
 
 # Agently TriggerFlow
 
-Use TriggerFlow when the application or framework owns visible orchestration
+Use TriggerFlow when the application owns visible multi-stage execution
 semantics. Use ModelRequest/AgentExecution for one bounded request/run, and use
-AgentTask when one Agent owns a long task's planning, evidence, verification,
-and replan loop without application-authored stage topology.
-
-The request does not need to say TriggerFlow or Agently; route by lifecycle and
-topology needs.
+`agent.create_task(...)` when one Agent owns a long task's planning, evidence,
+verification, and repair without application-authored stage topology.
 
 ## Read by Need
 
-- Core graph/state/lifecycle: `references/overview.md`.
+- Graph construction, state, lifecycle, Stage bridging, and main-repo examples:
+  `references/overview.md`.
+- Pause/resume snapshots, resource restoration, retention, and restart claims:
+  `references/recovery.md`.
 - Optional runtime guidance versus required external wait:
   `references/runtime-intervention.md`.
-- Stable business stream projection: `references/stream-bridge.md`.
+- Stable application stream projection: `references/stream-bridge.md`.
 - DevTools graph/observation: `references/devtools-graph.md`.
-- Full value/event topology review:
-  `../agently/references/execution-topology-validation.md`.
-- RecordStore, TaskWorkspace, TaskContext, or Skills ownership:
-  `../agently/references/context-and-skills.md`.
-- Direct Stage scopes, handles, settlement, bridges, channels, or listeners:
-  use `agently-stage`.
+- Full value/signal topology review:
+  `../agently-design/references/execution-topology-validation.md`.
+- Direct Stage scopes, settlement, bridges, channels, or listeners use
+  `agently-stage`.
 
 ## Topology First
 
-Map the real dependencies before implementation:
+Before implementation, map:
 
 - required serial value edges;
-- independent branches and joins;
-- provisional structured progress safe for UI or cancelable/idempotent work;
-- request-time information boundaries: a later model stage that needs an
-  Action/system/readback result must start after that observed result is
-  validated, not remain a later field of the producing request;
-- side-effect ordering and external capacity constraints;
-- external waits, retries, repair, and terminal behavior.
+- independent branches and bounded joins;
+- request-time observation boundaries;
+- provisional work that is safe to cancel or discard;
+- side-effect ordering, external capacity, waits, repair, and terminal states.
 
-Use `batch(...)`, `for_each(...)`, `when(...)`, and managed emits for bounded
-concurrency and graph-visible joins. Do not default a complex flow to all-serial
-execution merely because it is easier to write.
+Use `batch(...)`, `for_each(...)`, `when(...)`, and managed emits to make
+fan-out and joins graph-visible. Represent repetition with an explicit back
+edge; do not hide lifecycle, retry, or revision loops inside `while True` chunk
+handlers.
 
-`instant` may trigger provisional work before its producing request completes.
-If a later ModelRequest needs the work's result, make the join visible as
-`R1 -> Action/system work -> validation -> R2`; do not treat `instant` as a
-back-channel into R1.
+A ModelRequest is a dispatch-time snapshot. `instant` output may update UI or
+start idempotent/cancelable preparation, but a later model request that needs
+the resulting observation must start after a visible join and validation
+barrier.
 
-Represent repetition with a graph-visible back edge. Do not hide a `while True`
-lifecycle, retry, or revision loop inside a chunk handler.
+Graph adjacency proves activation, not value transfer. For audits, trace exact
+values, signals, refs, and consumers through ModelRequest, Action, subflow,
+TaskWorkspace/RecordStore, wait/resume, repair, and terminal boundaries.
 
-The built-in `.ensure_long_output()` execution policy is an example of this
-boundary: its first ModelRequest stays ordinary, while a normalized
-length/incomplete terminal activates TriggerFlow-visible continuation,
-append-only commit, and final validation nodes. Treat each continuation as a
-new logical request, keep private envelopes out of the public business stream,
-close the revision/digest/anchor header before business updates, validate
-structured units locally before commit, and stop after the third consecutive
-no-progress occurrence. A provider length terminal before header closure is a
-recoverable graph-visible no-progress event that must not change the manifest;
-closed stale/mismatched headers remain terminal. Final schema or
-declared-validator repair uses a bounded graph back edge while retaining
-accepted units; manifest, readback, digest, and lineage failures stay terminal.
-Use execution-managed `async_emit_nowait(...)` for these back edges so segment
-count does not grow the Python call stack. Application code should use the
-execution method rather than rebuild that delivery loop.
+## Lifecycle and State
 
-For audits, trace exact values and signals through ModelRequest, Action,
-subflow, TaskWorkspace/RecordStore, wait/resume, repair, and terminal boundaries.
-Graph adjacency proves activation, not value transfer.
-
-## Lifecycle
-
-- Prefer async handlers, execution entrypoints, and stream consumers.
-- Do not force a provider-owned synchronous interface to become async merely
-  because its implementation calls an async SDK. With Agently-Stage 0.3.8+, a
-  sync chunk may call a sync wrapper that uses `with Stage()` and may then
-  continue through TriggerFlow sync facades. Stage detects the surrounding
-  physical carrier and excludes every upstream carrier in a transitive sync
-  wait chain; the provider does not need to discover TriggerFlow's private Stage
-  usage. This boundary still blocks its worker, so prefer native async APIs when
-  the caller owns the async interface. Automatic routing cannot move work that
-  owns the blocked caller loop: if an async chunk invokes a sync facade that
-  must dispatch loop-bound work on that same loop, use the async facade and
-  `await` it on the owner loop.
-- Use `flow.start(...)` / `flow.async_start(...)` only for finite, self-closing
+- Prefer async handlers and execution APIs when the caller owns the async
+  boundary. A synchronous provider facade may use Agently-Stage internally;
+  route direct bridge questions to `agently-stage`.
+- Use `flow.start(...)` / `flow.async_start(...)` only for finite self-closing
   runs whose caller needs no execution handle.
-- Use `flow.create_execution(auto_close=False)` when the host needs pause/resume,
-  external emit, save/load, intervention, inspection, cancellation, or
-  host-controlled close.
-- Start with a positional value: `await execution.async_start(value)`. The value
-  is not a custom event.
-- Close with `await execution.async_close()`. Close drains execution-managed
-  nowait tasks and returns the close snapshot. A finite `timeout=` is one
-  settlement deadline across wait and forced cancellation; unresolved
-  cancellation raises with owner diagnostics. A top-level managed task that
-  failed before close is still consumed once by close.
-- Pending interrupts make close fail by default. Choose cancellation deliberately
-  when abandoning waits.
-- Active non-paused children created by `to_sub_flow(...)` are visible through
-  `execution.get_sub_flow_frames()`. Use
-  `async_emit_to_sub_flow(frame_id, ...)` for best-effort child signaling and
-  `async_cancel_sub_flow(frame_id, reason=...)` to cancel/fence one child while
-  keeping the parent execution open. A cancelled child does not write back or
-  continue downstream. See `examples/active_sub_flow_control.py` for the
-  explicit execution shape.
+- Use `flow.create_execution(auto_close=False)` for external emit, pause/resume,
+  save/load, intervention, inspection, cancellation, or host-controlled close.
+- Start with a positional value and close with `await execution.async_close()`.
+  Close drains execution-managed nowait work and reports unresolved ownership.
+- Put post-resume behavior in a downstream chunk, an explicit resume event, or
+  a `data.is_resume` branch; a suspended Python frame is not the recovery
+  contract.
+- Execution state owns per-run chunk handoff. In async chunks, await async state,
+  emit, and stream methods. Setters replace the complete value; append only for
+  intentional list accumulation.
+- `flow_data` is shared across executions. Save/load serializes and replaces a
+  copy of that shared value; it does not provide isolation, CAS, merge, or
+  concurrency safety.
+- TaskWorkspace owns files, RecordStore owns durable records and recovery, and
+  host storage owns business persistence. Keep compact refs/status in execution
+  state and full bodies cold.
 
-Do not make code after `await data.async_pause_for(...)` the restart contract.
-Put post-resume behavior in a downstream chunk, `data.is_resume` branch, or
-explicit resume event handler.
+## Concurrency, Waits, and Streams
 
-## State and Storage
-
-- Execution state is the per-execution data store and chunk-to-chunk handoff contract.
-  Use `data.get_state(...)` / `data.set_state(...)` and async variants;
-  setters replace the complete value and `append_state(...)` is only for
-  intentional list accumulation. An async chunk must await
-  `data.async_set_state(...)`, `data.async_append_state(...)`,
-  `data.async_del_state(...)`, async emit, and async stream methods; sync
-  facades are compatibility paths that block the caller thread and are intended
-  for sync chunks and sync callers. A provider-owned sync wrapper may use
-  `with Stage()` around an async method and then call these facades; do not
-  require the provider to inspect the framework's private Stage environment or
-  rewrite its public method. Do not add a translation helper or shadow store;
-  put durable cross-run data in RecordStore or another explicit provider.
-- `flow_data` is shared across executions. The `execution.save()` snapshot includes a serialized copy
-  of `flow_data`; `load()` replaces the current
-  flow-shared value with that copy. This does not provide execution isolation,
-  CAS, merge, or concurrency safety.
-- Use `TaskWorkspace` for task files/artifacts and a business-owned database or
-  RecordStore record collection when deterministic domain state must outlive or
-  be shared across runs. Execution snapshots are for restart/disconnected-wait
-  recovery, not business audit or state archival. Use durable RuntimeEvents or
-  purpose-built audit records when durable history is actually required.
-- Keep compact refs/status in execution state and full bodies cold.
-- Bind RecordStore ports explicitly. Ordinary observation belongs in
-  logs/DevTools; `runtime_event_store` is only for requested durable audit/replay.
-
-```python
-from agently import TriggerFlow
-from agently.core import RecordStore
-
-flow = TriggerFlow(name="approval-flow")
-record_store = RecordStore("./flow-state", mode="read_write")
-execution = flow.create_execution(
-    record_store=record_store,
-    runtime_resources={"runtime_event_store": record_store},
-    auto_close=False,
-)
-```
-
-`record_store=False` opts out of the default RecordStore view for finite flows
-that need neither persistence nor record access.
-
-## Concurrency and Pressure
-
-- `create_execution(concurrency=N)` / `execution.set_concurrency(N)` bounds
-  execution-wide handler dispatch, including nested emits.
-- `batch(..., concurrency=N)` / `for_each(..., concurrency=N)` bounds local
+- `create_execution(concurrency=N)` bounds execution-wide handler dispatch;
+  `batch(..., concurrency=N)` and `for_each(..., concurrency=N)` bound local
   fan-out.
-- Host admission/in-flight limits, model scheduler rate/concurrency limits, and
-  worker/thread-pool limits belong to their own layers.
-- Use `emit_nowait(...)` / `async_emit_nowait(...)` for non-blocking fan-out;
-  do not default to untracked `asyncio.create_task(...)`.
-- Rely on execution close to drain registered work instead of polling a custom
-  status loop.
+- Host admission, provider/model rate limits, and blocking worker pools remain
+  separate pressure owners.
+- Use `emit_nowait(...)` / `async_emit_nowait(...)` instead of untracked
+  `asyncio.create_task(...)`; execution close settles registered work.
+- Use `pause_for(..., resume_to=...)` for required external input. Use runtime
+  intervention only for optional context at declared boundaries.
+- PolicyApproval owns framework policy gates; ExecutionExchange adapts host
+  UI/webhook/queue transport; TriggerFlow owns the interrupt/resume ledger.
+- Translate model parser events into stable application events. Do not expose
+  raw parser paths as the frontend protocol, and reconcile provisional items
+  against final validated output.
 
-## Waiting, Approval, and Exchange
+## Recovery and Dynamic-Graph Boundary
 
-- Use `pause_for(..., resume_to="next"|"self"|{"event": ...})` for required
-  external input. It is a durable graph interrupt, not a persisted coroutine
-  stack.
-- Use explicit pause chunks plus `when(...)` for prearranged gates. A
-  model-decided self-resume path must handle `data.is_resume` and keep a bounded
-  resume count.
-- Use global PolicyApproval for framework policy gates and represent pending
-  approval as a TriggerFlow interrupt.
-- Use ExecutionExchange providers for host UI/webhook/queue transport. The
-  provider publishes typed requests; TriggerFlow owns the interrupt/resume
-  ledger and `continue_with(...)` lifecycle.
-- Project host-facing exchange views through the public execution-exchange
-  helpers rather than raw interrupt internals.
-- Use runtime intervention for optional context at declared boundaries; use
-  pause/resume when the answer is required before continuing.
+Save/load owns TriggerFlow progress and declared recovery metadata, not live
+clients, callbacks, semaphores, coroutine frames, secrets, or external session
+state. Restore live ExecutionResources through host/plugin resolvers and verify
+external refs, versions, leases, and fence tokens before readiness. A local
+RecordStore proves local restart only; do not claim distributed recovery
+without a real shared provider and operational evidence.
 
-## Recovery Contract
-
-`execution.save()` serializes TriggerFlow progress, definition fingerprint,
-state, interrupt/resume ledgers, declared resource requirements, and eligible
-metadata. It does not serialize live clients, callbacks, semaphores, tasks,
-coroutine frames, secrets, or stateful external sessions.
-
-For payload-heavy terminal histories, use the typed snapshot projection policy
-instead of deleting raw snapshot fields:
-
-```python
-execution.set_snapshot_projection_policy(
-    terminal_value_mode="digest",
-    min_value_bytes=4096,
-)
-snapshot = execution.save(require_idle=True)
-```
-
-Digest projection is opt-in. It preserves pending interrupts and incomplete
-resume records, projects only eligible terminal interrupt values and completed
-SignalNet resume metadata, and keeps duplicate/conflicting
-`resume_request_id` checks through canonical digests. It intentionally gives up
-full historical body readback for projected values, defers while the execution
-is active, and does not bound current state or `last_signal`.
-
-Keep this separate from `set_compaction_policy(...)`: that policy compacts
-durable RuntimeEvent records into segments, anchors, and artifact refs. It does
-not project execution-snapshot `interrupts`, `resume_ledger`, or `signal_net`.
-Physical snapshot version retention remains provider-owned. The built-in local
-RecordStore keeps the latest three execution snapshots per `run_id` by default:
-
-```python
-record_store = RecordStore(
-    "./recovery",
-    mode="read_write",
-    snapshot_retention={"keep_last": 5},
-)
-execution.set_snapshot_retention_policy(keep_last=2)
-await execution.async_save(record_store)
-```
-
-`{"keep_last": None}` or the execution override with `keep_last=None` disables
-automatic pruning at that layer. The execution override has precedence and
-survives save/load. Generic `put_checkpoint(...)` writes are not automatically
-pruned.
-
-For active recovery hygiene, require the execution to be idle and preserve at
-least one latest point:
-
-```python
-report = await execution.async_prune_recovery_snapshots(keep_last=1)
-```
-
-This method resolves `execution.run_id`; low-level provider administration
-still requires `record_store.prune_snapshots(run_id, keep_last=...)`. Use
-`delete_snapshot(run_id)` only for explicit full cleanup. Do not combine
-snapshot projection, physical retention, RuntimeEvent compaction, and business
-data retention into one policy.
-
-Running sub-flow frame metadata may appear in a snapshot for audit, but the
-live child execution is not restart-resumable. Loading a snapshot with a
-`running` or `cancel_requested` frame fails closed. Settle or cancel active
-children before taking a restart-resumable snapshot; projected `waiting` child
-frames keep their normal root-interrupt resume contract.
-
-Declare resource requirements and restore live ExecutionResources through
-host/plugin resolvers. A stateful external system must persist its own ref,
-version, lease, or fence token and validate it before load is ready.
-
-Use `inspect_load(...)` / `async_load(...)`, stable `resume_request_id` values,
-snapshot-store CAS, and provider-owned lease/idempotency semantics. Treat
-pending or unhealthy required resources as not ready; fail closed according to
-the declared policy.
-
-A local RecordStore proves local restart behavior only. Do not claim production
-distributed-worker guarantees without real shared providers and operational
-evidence.
-
-## Stable Definitions and Dynamic DAGs
-
-- Define developer-owned stable topology directly with `flow.to(...)` and
-  `flow.when(...)` in importable modules with top-level handlers.
-- Use a builder only when multiple configured flow instances or test isolation
-  is actually required.
-- Route model-generated or application-submitted DAG data through
-  TaskDAG/DynamicTask validation and resolvers. Do not compile model-generated or app-submitted DAG data directly into new TriggerFlow definitions.
-- Ordinary `TaskDAGExecutor.async_run(...)` compiles validated DAG data directly
-  to TriggerFlow. Blocks is explicit opt-in only when the caller needs Blocks
-  lifecycle evidence or an `ExecutionBlockGraph`.
+Define developer-owned stable topology directly in importable TriggerFlow
+modules with top-level handlers. Explicit submitted or model-generated DAG
+data is a low-frequency TaskDAG case; read
+`../agently/references/task-dag.md`. Never compile unvalidated runtime plan data
+into ad hoc TriggerFlow definitions.
 
 ## API Shape
 
 ```python
-from agently import Agent, Agently, TriggerFlow, TriggerFlowRuntimeData
+from agently import Agently, TriggerFlow
 
-agent = Agent()
-factory_agent = Agently.create_agent()
 flow = TriggerFlow(name="workflow-name")
 factory_flow = Agently.create_trigger_flow("factory-workflow")
+execution = flow.create_execution(auto_close=False)
 ```
 
-`when`, `emit_nowait`, and `pause_for` are methods on flow/runtime objects, not
-top-level imports. Do not use `@flow.when(...)` as a decorator. Do not pass a
-flow name as the first positional TriggerFlow constructor argument.
+`when`, `emit_nowait`, and `pause_for` are flow/runtime methods, not top-level
+imports. Do not use `@flow.when(...)` as a decorator or pass a flow name as the
+first positional `TriggerFlow(...)` argument.
 
 ## Anti-Patterns
 
-- Custom event bus, state machine, DAG scheduler, or shadow per-execution store
-  before checking TriggerFlow/TaskDAG.
-- `while True` lifecycle/retry/revision loops hidden inside a chunk.
-- Sleeps/polling/local completed sets instead of signals and joins.
+- A custom event bus, state machine, DAG scheduler, or shadow execution store.
+- Sleeps, polling, local completed sets, or untracked tasks in place of signals,
+  joins, and execution-managed work.
 - Closure-captured live business resources instead of explicit runtime
-  resources/resolvers.
-- Flow data as normal task/execution state.
-- DevTools/manual diagrams as topology source of truth instead of the flow
-  definition and runtime metadata.
+  resources and resolvers.
+- `flow_data` as ordinary per-execution state.
+- DevTools diagrams as topology source of truth instead of the definition and
+  runtime metadata.

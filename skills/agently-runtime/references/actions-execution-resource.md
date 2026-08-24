@@ -206,17 +206,14 @@ Use install-capable shell only for explicitly trusted maintenance flows. There
 is no universal full-trust switch; broaden commands and network/file access at
 the owning provider while keeping isolation and roots explicit.
 
-External sandbox contributions must implement the provider-neutral
-`code_execution` contract and pass its conformance fixtures. A container-runtime
-variant should subclass or compose `DockerExecutionResourceProvider` and
-override `create_resource(...)`; this reuses the base provider's grant binding,
-image, health, cleanup, and Workspace lifecycle while
+An external sandbox provider must implement the provider-neutral
+`code_execution` contract and pass its conformance fixtures. A
+container-runtime variant can subclass or compose
+`DockerExecutionResourceProvider` and override `create_resource(...)`; this
+reuses TaskWorkspace grant binding, image, health, and cleanup lifecycle while
 `ExecutionResourceManager` retains ordered selection and ensure-time re-probe.
-The contribution owns its mechanism-specific probe and command construction. A
-host-policy sandbox implements an independent provider against the same grant,
-bundle, and result contracts. Keep community PR ownership intact: guide
-contributor branches to rebase and adapt; do not copy their provider
-implementations into the framework base branch.
+A host-policy sandbox implements an independent provider against the same
+grant, bundle, and result contracts.
 
 ## Failure Behavior
 

@@ -141,6 +141,10 @@ durable replay, backpressure, acknowledgement, or exactly-once delivery.
 
 A good bridge layer lets you change the model schema details without forcing the frontend to rewrite its event consumer, as long as the business event contract stays the same.
 
+See [`../examples/stream_bridge.py`](../examples/stream_bridge.py) for complete
+canonical list-item events mapped to stable provisional and final workflow
+events.
+
 ## Provisional Downstream Fan-Out
 
 The same bridge can start independent work before the full model result exists,
@@ -160,4 +164,4 @@ partial string delta as an external request. Repeated deltas, provider replay,
 and validation replacement attempts must converge on the same host key rather
 than repeat work. Only read-only or otherwise idempotent/cancelable preparation
 may start provisionally. See
-`examples/instant_retrieval_overlap.py`.
+[`../examples/instant_retrieval_overlap.py`](../examples/instant_retrieval_overlap.py).

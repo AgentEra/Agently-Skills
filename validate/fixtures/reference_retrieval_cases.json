@@ -358,12 +358,12 @@
       "id": "execution-topology-validation-zh",
       "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
       "matched_skills": [
-        "agently",
+        "agently-design",
         "agently-triggerflow"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently/references/execution-topology-validation.md"
+          "skills/agently-design/references/execution-topology-validation.md"
         ]
       ],
       "concepts": [
@@ -392,16 +392,22 @@
       ]
     },
     {
-      "id": "taskdag-foundation-dynamic-task-facade-en",
-      "query": "After routing to a DAG-shaped execution, which reference explains why TaskDAG is the foundation capability, how Dynamic Task is only the facade, and how TriggerFlow is the execution substrate?",
+      "id": "taskdag-low-frequency-foundation-en",
+      "query": "After routing a low-frequency submitted DAG request to agently, which reference explains TaskDAG ownership, the DynamicTask facade, the TriggerFlow substrate, and the current Skill-task integration gap?",
       "matched_skills": [
-        "agently-dynamic-task"
+        "agently"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-dynamic-task/references/overview.md"
+          "skills/agently/references/task-dag.md"
         ]
       ],
+      "excerpt_anchors": {
+        "skills/agently/references/task-dag.md": [
+          "## Current Ownership",
+          "## Known 4.1.4.7+ Integration Gap"
+        ]
+      },
       "concepts": [
         {
           "id": "taskdag_foundation",
@@ -412,14 +418,14 @@
           "description": "TriggerFlow is the executor substrate underneath Dynamic Task."
         },
         {
-          "id": "executor_independent",
-          "description": "TaskDAGExecutor does not require Agent directly."
+          "id": "skill_task_integration_gap",
+          "description": "The direct SkillsExecutor resolver integration is not presented as proven while its context contract is incompatible with TaskDAGExecutor."
         }
       ],
       "required_concepts": [
         "taskdag_foundation",
         "triggerflow_substrate",
-        "executor_independent"
+        "skill_task_integration_gap"
       ]
     },
     {

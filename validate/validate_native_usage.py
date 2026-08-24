@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 from pathlib import Path
 
@@ -10,7 +11,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "implementation_cases.json"
 TRIGGERFLOW_EXAMPLES = ROOT / "skills" / "agently-triggerflow" / "examples"
-AGENTLY_ROOT = ROOT.parent / "Agently"
+AGENTLY_ROOT = Path(
+    os.environ.get("AGENTLY_ROOT", str(ROOT.parent / "Agently"))
+).resolve()
 SUBMITTED_DAG_EXAMPLES = [
     AGENTLY_ROOT / "examples" / "cookbook" / "03_todo_concurrent_model.py",
     AGENTLY_ROOT / "examples" / "step_by_step" / "12-patterns-02_todo_concurrent.py",
@@ -177,7 +180,7 @@ def main() -> None:
                 passes,
             )
 
-    print("V2 native usage validation")
+    print("V3 native usage validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

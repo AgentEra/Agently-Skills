@@ -1,6 +1,7 @@
-# Agently Model Result
+# Agently ModelRequest Result
 
-Use this skill when the output contract is already chosen and the remaining issue is how the result facade should be consumed or reused.
+Use this reference when the output contract is already chosen and the remaining
+issue is how the result facade should be consumed or reused.
 
 The user does not need to say `get_result()`. Requests to reuse one result as text, parsed data, metadata, or progressive updates should route here.
 
@@ -35,6 +36,56 @@ R1 plan
 the result of that work is needed by model generation, it still crosses this
 boundary: reconcile and join first, then supply the observed result to R2.
 Streaming cannot inject later data into the already-running R1.
+
+## Exact Result Views
+
+`ModelRequestResult` exposes these views over the same accepted request result:
+
+| Need | Sync | Async |
+|---|---|---|
+| Parsed data | `get_data(...)` | `async_get_data(...)` |
+| Rendered text | `get_text()` | `async_get_text()` |
+| Provider/parser metadata | `get_meta()` | `async_get_meta()` |
+| Accepted Pydantic object, when configured | `get_data_object()` | `async_get_data_object()` |
+| Progressive events | — | `get_async_generator(type=...)` |
+
+Stream types are `delta`, `instant`, `specific`, and `all`. `delta` is the
+printable text stream; `instant` carries structured-field progress; `specific`
+selects a named source stream such as status or reasoning; `all` is the raw
+accepted-attempt audit view.
+
+When progress has a real consumer, consume the stream and then use final
+getters on the same result:
+
+```python
+from agently import Agently
+
+request = Agently.create_request()
+result = (
+    request
+    .input("Classify this ticket and explain the route.")
+    .output(
+        {
+            "route": (str, "billing | technical | other", True),
+            "explanation": (str, "Concise routing explanation", "not_null"),
+        },
+        format="json",
+    )
+    .get_result()
+)
+
+async for item in result.get_async_generator(type="instant"):
+    await publish_structured_patch(item)
+
+data = await result.async_get_data()
+text = await result.async_get_text()
+meta = await result.async_get_meta()
+```
+
+The final getters reuse the accepted attempt; they do not issue three new
+requests. If final validation replaced an earlier attempt, reopening a stream
+replays the accepted replacement, so clear or reconcile provisional UI state
+before applying it.
 
 ## Native-First Rules
 
@@ -109,6 +160,13 @@ Streaming cannot inject later data into the already-running R1.
   accepted items with provisional work. Validation retry can produce accepted
   data that was not observed on the original instant stream; start missing
   accepted work and cancel or discard provisional extras
+- after a final getter completes validation, reopening any generator on the same
+  `ModelRequestResult` replays the accepted attempt. If validation replaced the
+  original attempt, the reopened stream exposes the replacement attempt rather
+  than the rejected one; clear or replace provisional UI state before applying
+  it. An `AgentExecution` structured direct-model stream appends the accepted
+  replacement before closing and identifies it through `meta.response_id` and
+  `meta.attempt_index`
 - inspect JSON `StreamingData.completion_source` before using a done item as
   durable evidence: `observed_boundary` means the provider emitted its closing
   delimiter, `final_reconciliation` means the raw final JSON closed, and
@@ -166,7 +224,3 @@ Irreversible effects still wait for the final accepted result. See
 - do not open and discard a stream when a final getter is the only consumer
 - do not build ad hoc field-level stream parsers when `instant` or `streaming_parse` already fits
 - do not strip reasoning tags inside format-specific parsers
-
-## Read Next
-
-- `references/overview.md`

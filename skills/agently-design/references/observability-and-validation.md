@@ -60,7 +60,7 @@ Use an Agently ModelRequest with structured output for semantic quality, intent,
 relevance, groundedness, usefulness, or model-owned correctness. Ask for
 evidence, rule judgments, and conceptual levels rather than unsupported precise
 scores. Concrete model-judge patterns remain in
-`skills/agently/references/model-quality-validation.md`.
+[`../../agently/references/model-quality-validation.md`](../../agently/references/model-quality-validation.md).
 
 Do not use keyword lists, substring checks, regex language rules, hidden target
 answers, or deterministic local substitutes as semantic proof.
@@ -142,6 +142,7 @@ Do not upgrade an inference because the final output looks plausible or bad.
 - Does A/B evidence test the claimed owner and first divergence?
 - Are sensitive content, truncation, and retention handled explicitly?
 
-Use `agently-runtime` for concrete RuntimeEvent, telemetry, Workspace, Action,
+Use `agently-runtime` for concrete RuntimeEvent, telemetry, TaskWorkspace,
+RecordStore, Action,
 and DevTools mechanisms. Use the owning request or TriggerFlow Skill for any
 implementation change found by the audit.

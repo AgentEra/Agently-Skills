@@ -208,7 +208,7 @@ def record_framework_event(trace: TraceLog, event: RuntimeEvent) -> None:
 
 
 def register_framework_hook(trace: TraceLog) -> str:
-    hook_name = f"project-template.trace.{trace.execution_id}"
+    hook_name = f"full-stack-reference.trace.{trace.execution_id}"
 
     def capture(event: RuntimeEvent) -> None:
         record_framework_event(trace, event)
