@@ -109,6 +109,13 @@ Streaming cannot inject later data into the already-running R1.
   accepted items with provisional work. Validation retry can produce accepted
   data that was not observed on the original instant stream; start missing
   accepted work and cancel or discard provisional extras
+- after a final getter completes validation, reopening any generator on the same
+  `ModelRequestResult` replays the accepted attempt. If validation replaced the
+  original attempt, the reopened stream exposes the replacement attempt rather
+  than the rejected one; clear or replace provisional UI state before applying
+  it. An `AgentExecution` structured direct-model stream appends the accepted
+  replacement before closing and identifies it through `meta.response_id` and
+  `meta.attempt_index`
 - inspect JSON `StreamingData.completion_source` before using a done item as
   durable evidence: `observed_boundary` means the provider emitted its closing
   delimiter, `final_reconciliation` means the raw final JSON closed, and

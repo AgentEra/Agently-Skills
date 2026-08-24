@@ -112,6 +112,12 @@ observed results to the next semantic step.
 - Treat `instant` updates as provisional. Use them for UI or explicitly
   cancelable/idempotent preparation; irreversible work waits for final parsed
   output and host validation.
+- After a final getter completes validation, reopening any result generator on
+  the same `ModelRequestResult` replays the accepted attempt. If validation
+  replaced the original attempt, clear or replace provisional UI state before
+  applying the replacement stream. An `AgentExecution` structured direct-model
+  stream appends that accepted replacement before closing and identifies it
+  through `meta.response_id` and `meta.attempt_index`.
 - `instant` may start work before the response finishes, but its result is not
   new input to the same in-flight request. When later model output needs that
   result, join after final reconciliation and pass it to a later ModelRequest.
