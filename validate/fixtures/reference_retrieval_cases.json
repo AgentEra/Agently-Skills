@@ -531,6 +531,52 @@
       ]
     },
     {
+      "id": "design-stage-scoped-output-progress-zh",
+      "query": "已经路由到 agently-design。复杂任务中的每次模型输出是否都要一次解决整个任务？我希望每轮只推进一个当前职责，但本轮自身不能有实质逻辑或专业错误，并且最终输出仍要通过完整验收。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-design/references/model-request-topology.md": [
+          "## Stage-Scoped Output: Local Correctness, Global Progress"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "stage_scope_not_terminal_completeness",
+          "description": "A non-terminal stage output is judged against its declared current scope and consumer, not whole-task terminal completeness."
+        },
+        {
+          "id": "local_contract_correctness",
+          "description": "The stage still satisfies its own schema, hard invariants, supplied facts, and semantic or professional correctness boundary."
+        },
+        {
+          "id": "observable_task_progress",
+          "description": "The output advances a state, narrows uncertainty, selects one actionable next step, or creates information consumed downstream."
+        },
+        {
+          "id": "explicit_deferred_work",
+          "description": "Unknown, provisional, and deferred work is labeled instead of being presented as completed fact."
+        },
+        {
+          "id": "terminal_full_acceptance",
+          "description": "Terminal outputs, completion claims, and irreversible effects still require the full terminal acceptance contract."
+        }
+      ],
+      "required_concepts": [
+        "stage_scope_not_terminal_completeness",
+        "local_contract_correctness",
+        "observable_task_progress",
+        "explicit_deferred_work",
+        "terminal_full_acceptance"
+      ]
+    },
+    {
       "id": "design-instant-overlap-reconcile-zh",
       "query": "已经路由到 agently-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
       "matched_skills": [

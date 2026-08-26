@@ -234,6 +234,26 @@ def main() -> None:
         passes,
     )
     check(
+        "stage_scoped_output_progress_guidance",
+        all(
+            phrase in design_model_request_topology_text
+            for phrase in (
+                "Stage-Scoped Output",
+                "whole-task terminal completeness",
+                "observable progress",
+                "local contract",
+                "deferred work",
+                "Terminal output",
+            )
+        )
+        and "stage-scoped contribution" in design_text
+        and "whole-task completion" in design_text
+        and "locally correct contribution" in project_framework_text,
+        "non-terminal outputs remain locally correct and observably progressive without pretending to be terminal answers",
+        failures,
+        passes,
+    )
+    check(
         "project_information_locality",
         "cross-file lookup count and nesting depth" in playbook_text
         and "actual reuse value" in project_framework_text
