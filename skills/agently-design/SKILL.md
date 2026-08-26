@@ -44,6 +44,11 @@ independent consumer, parallel development, replay, local validation, or fault
 localization. Mark simulated data honestly and prove that real producer output
 can replace it. Do not invent a universal handoff packet.
 
+Treat a non-terminal model result as a stage-scoped contribution: it must
+satisfy its local contract and create observable progress, but it does not need
+to claim whole-task completion. Unknown or deferred work remains explicit;
+terminal results and irreversible effects still require full acceptance.
+
 ## Read by Design Question
 
 - Owner matrix, project layers, terminology, state/storage, and stable flow

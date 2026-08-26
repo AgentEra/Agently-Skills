@@ -179,6 +179,13 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
+- Treat non-terminal model output as a stage-scoped contribution. It must
+  satisfy its current schema, hard invariants, evidence boundary, and semantic
+  subject while observably advancing state, narrowing uncertainty, selecting a
+  useful next action, or producing a consumed handoff. It need not solve
+  unrelated future stages or claim whole-task completion. Label provisional,
+  unknown, and deferred work; terminal results and irreversible effects still
+  require the full terminal acceptance contract.
 - Plan owner/invariant, node, edge, and production-necessity ledgers before
   choosing files for every non-trivial model application. Planning nodes do not
   map one-to-one to modules. Start a one-request project from the composition

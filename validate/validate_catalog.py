@@ -75,6 +75,17 @@ OWNING_CONTRACTS: dict[str, tuple[Path, tuple[str, ...]]] = {
         SKILLS / "agently-request" / "references" / "output-control.md",
         ("input", "info", "instruct", "output", "blind gate discovery"),
     ),
+    "stage_scoped_progress": (
+        SKILLS / "agently-design" / "references" / "model-request-topology.md",
+        (
+            "Stage-Scoped Output",
+            "whole-task terminal completeness",
+            "observable progress",
+            "local contract",
+            "deferred work",
+            "Terminal output",
+        ),
+    ),
     "model_request_result_views": (
         SKILLS / "agently-request" / "references" / "model-request-result.md",
         (

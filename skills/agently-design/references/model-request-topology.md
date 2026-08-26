@@ -178,6 +178,35 @@ application-level deliberation field must still be task-specific, bounded, and
 consumed. A quality gain is a design hypothesis until representative evidence
 or A/B comparison supports it.
 
+## Stage-Scoped Output: Local Correctness, Global Progress
+
+Do not require every non-terminal model output or assistant turn to achieve
+whole-task terminal completeness. First declare the current stage, the subject
+it owns, and the next consumer. Judge that output against this bounded scope.
+
+A useful stage-scoped output:
+
+- satisfies its local contract, output schema, and applicable hard invariants;
+- remains grounded in the supplied facts and has no known material logical or
+  professional error within its declared subject;
+- creates observable progress by advancing one state, resolving or narrowing
+  an uncertainty, selecting one actionable next step, or producing information
+  that a later consumer actually uses;
+- labels assumptions, provisional conclusions, unknowns, and deferred work
+  instead of presenting them as completed facts.
+
+Progress does not excuse local incorrectness, a broken current-stage contract,
+or an unsafe action. Conversely, do not reject a sound bounded contribution
+merely because later stages or unrelated task requirements remain unfinished.
+Do not inflate one stage with speculative answers for future consumers only to
+make the output look globally complete.
+
+Terminal output, a whole-task completion claim, and any irreversible effect
+still require the full terminal acceptance contract. A schematic tutor, for
+example, may recommend one minimal action that moves the current circuit
+responsibility forward and define how to check that action; it need not finish
+or certify the entire schematic in the same turn.
+
 An Agent or Action loop may expose one high-level application execution while
 internally crossing several ModelRequest and Action stages. Count the logical
 topology rather than calling the whole loop one model request.
