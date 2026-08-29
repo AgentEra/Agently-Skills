@@ -116,6 +116,46 @@ Audit at two levels: first review each slot against its role and the removal
 counterfactual; then inspect the actual rendered request, including mappings
 and references. Before dispatch, `execution.get_prompt_text()` audits the rendered execution draft, not the final ModelRequest prompt. When TaskContext, Session, Skills, retrieval, Actions, or other runtime extensions can inject later, a bounded test must observe the final ModelRequest `prompt_text` emitted or built after injection. Do not treat the post-start execution snapshot as sufficient evidence for late injections. Redact secrets before retaining prompt evidence.
 
+## General Rules, Special Cases, and Examples
+
+Do not encode case-specific behavior as a normative instruction. A branch keyed
+to one customer, component/model name, page state, incident, fixture, or known
+answer is a prompt special case when its behavior cannot be derived from a
+general invariant or the current request contract.
+
+Do not misclassify required context as a special case. A current authoritative
+business rule, domain invariant, authorization rule, interface contract, or
+runtime fact that changes this request still belongs in `info`, `instruct`,
+`input`, or `output` according to its owner. State the general condition and
+required behavior without embedding incident-specific literals when those
+literals are not themselves authoritative input.
+
+When one observed failure exposes a prompt gap:
+
+1. identify the violated general invariant or missing decision boundary;
+2. write the smallest general conditional rule that covers that class of cases;
+3. test the original case plus contrasting valid, invalid, and boundary cases;
+4. remove customer, component, page, incident, and expected-answer literals
+   unless the current request supplies them as real facts.
+
+An illustrative example may clarify an already stated rule; it cannot introduce
+behavior, priority, an exception, or an expected answer that is absent from the
+normative instruction. Mark examples clearly, keep them generic or synthetic
+when possible, and include contrasting examples when one-sided demonstrations
+would imply a false default.
+
+As a repository authoring guard, the total illustrative example material in the
+final rendered model-visible prompt must remain smaller than the non-example
+normative prompt text. Measure both sides consistently by rendered characters
+or model tokens. This is a prompt-review policy, not a claim that attention has
+a universal 50 percent threshold.
+
+If a task appears to require a few-shot demonstration set large enough to break
+that guard, do not smuggle it in as “examples.” Treat demonstration selection
+as a separate evaluated design: keep the normative contract dominant, bound the
+selected demonstrations, and test selection and order, label/answer balance,
+zero-shot versus few-shot behavior, and model-specific regressions.
+
 ## Anti-Patterns
 
 - do not flatten business context into one opaque string unless the task is trivial
@@ -136,3 +176,7 @@ and references. Before dispatch, `execution.get_prompt_text()` audits the render
 - do not remove an effective upstream guarantee that changes the decision or
   allowed verdicts, and do not retain generic project narration under the
   user-visible-process role without a declared user or UI consumer.
+- do not turn a production incident, named customer, concrete component/model,
+  page state, fixture, or desired answer into normative case-specific behavior;
+  generalize the invariant and use bounded illustrative examples only after the
+  rule exists.

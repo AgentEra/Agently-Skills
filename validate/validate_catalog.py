@@ -75,6 +75,20 @@ OWNING_CONTRACTS: dict[str, tuple[Path, tuple[str, ...]]] = {
         SKILLS / "agently-request" / "references" / "output-control.md",
         ("input", "info", "instruct", "output", "blind gate discovery"),
     ),
+    "prompt_special_cases_and_examples": (
+        SKILLS / "agently-request" / "references" / "prompt-management.md",
+        (
+            "General Rules, Special Cases, and Examples",
+            "case-specific behavior",
+            "normative instruction",
+            "business rule",
+            "illustrative example",
+            "non-example",
+            "normative prompt",
+            "few-shot demonstration set",
+            "selection and order",
+        ),
+    ),
     "stage_scoped_progress": (
         SKILLS / "agently-design" / "references" / "model-request-topology.md",
         (

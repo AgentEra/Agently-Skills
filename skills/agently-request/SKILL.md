@@ -34,6 +34,10 @@ visible in the application lifecycle.
   `.info(...)`, `.instruct(...)`, `.output(...)`, then its result call. Split
   only for actual reuse, independently owned configuration, or dynamic
   composition.
+- Keep case-specific behavior out of normative prompt instructions. Derive a
+  general invariant and test contrasting cases; use illustrative examples only
+  to explain an already stated rule, and keep their total rendered content
+  smaller than the non-example normative prompt.
 - Put runtime facts in `input`, authoritative evidence/API/schema material in
   `info`, behavior and transformation rules in `instruct`, and the exact
   downstream-consumed shape in `output`.
@@ -82,3 +86,6 @@ exact content ordering.
 - Re-requesting the model separately for text, data, and metadata.
 - Treating retrieval hits, memory records, provisional stream fields, or model
   prose as deterministic proof of authorization or side effects.
+- Turning one customer, component/model, page state, incident, fixture, or
+  desired answer into a prompt branch, or letting illustrative examples create
+  behavior that the normative contract never states.
