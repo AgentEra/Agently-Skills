@@ -374,6 +374,34 @@ def validate_owning_contracts(failures: list[str], passes: list[str]) -> None:
             passes,
         )
 
+    prompt_surfaces = [
+        SKILLS / "agently-request" / "SKILL.md",
+        SKILLS / "agently-request" / "references" / "prompt-management.md",
+        ROOT / "AGENTS.md",
+        REFERENCE_FIXTURES,
+    ]
+    prompt_text = "\n".join(path.read_text(encoding="utf-8") for path in prompt_surfaces)
+    forbidden_case_anchors = (
+        "one customer, component/model, page state",
+        "one customer, component/model name, page state",
+        "remove customer, component, page, incident",
+        "named customer, concrete component/model",
+        "具体客户、器件型号和页面状态",
+    )
+    required_general_terms = (
+        "single observed instance",
+        "entity literals",
+        "one-time input or environment state",
+    )
+    check(
+        "prompt_special_case_guidance_is_domain_general",
+        all(term in prompt_text for term in required_general_terms)
+        and not any(term in prompt_text for term in forbidden_case_anchors),
+        "special-case guidance uses domain-general categories and contains no EDA-anchored checklist",
+        failures,
+        passes,
+    )
+
 
 def main() -> None:
     passes: list[str] = []

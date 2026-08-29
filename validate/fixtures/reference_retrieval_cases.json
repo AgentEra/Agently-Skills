@@ -729,7 +729,7 @@
     },
     {
       "id": "request-special-case-example-balance-zh",
-      "query": "已经路由到 agently-request。一次项目事故暴露了提示词缺口，开发者想把具体客户、器件型号和页面状态直接写成『特例』规则；如果改成示例，又担心示例过长压过通用正文。应该先读哪份参考？",
+      "query": "已经路由到 agently-request。一个观测实例暴露了提示词缺口，开发者想把其中的实体字面量、一次性输入状态和目标答案直接升级成『特例』规则；如果改成示例，又担心示例过长压过通用正文。应该先读哪份参考？",
       "matched_skills": [
         "agently-request"
       ],
@@ -746,7 +746,7 @@
       "concepts": [
         {
           "id": "case_specific_not_normative",
-          "description": "Customer-, model-, component-, page-, incident-, or known-answer-specific behavior is not encoded as a normative prompt branch."
+          "description": "Entity literals, one-time input or environment state, historical incidents, test fixtures, and expected answers from a single observed instance are not encoded as a normative prompt branch."
         },
         {
           "id": "authoritative_rule_not_special_case",
