@@ -1,6 +1,7 @@
 # Agently Model Setup
 
-Use this skill for provider wiring and transport setup before request logic is discussed.
+Use this reference for provider wiring and transport setup before request logic
+is discussed.
 
 ## Native-First Rules
 
@@ -18,7 +19,7 @@ Use this skill for provider wiring and transport setup before request logic is d
 - put provider settings under the namespace read by the owning plugin. For `OpenAICompatible`, prefer `plugins.ModelRequester.OpenAICompatible.*`; for `AnthropicCompatible`, prefer `plugins.ModelRequester.AnthropicCompatible.*`
 - call the matching settings loader with `auto_load_env=True` when the payload may rely on `.env`
 - if the app must fail fast, validate required env names in the integration layer before calling Agently
-- after loading, verify the effective provider activation, base URL, model, and auth presence instead of assuming the file shape was correct
+- after loading, verify the effective provider activation, base URL, model, and auth presence instead of assuming the file shape was correct; for a configured model alias, use `resolve_model_profile(model_key, agent.settings)` from `agently.utils`, which returns a non-secret read-only projection and does not advance API-key selection
 - keep provider setup outside business workflow logic and prompt files
 - when an Agent must switch among multiple configured models, use
   `agent.activate_model("ollama-qwen2.5")` for subsequent Agent-owned requests
@@ -30,6 +31,12 @@ Use this skill for provider wiring and transport setup before request logic is d
   optional provider-error failover policy. Keep legacy
   `key_pool_strategy` and `key_pool` examples only when explaining existing
   compatibility-line code.
+- when `model_pool` is non-empty, treat an explicit `model_key` as an offered-key
+  contract: unknown aliases fail before provider dispatch. Omitting the key, or
+  using an optional stage key when no model pool is configured, retains the
+  inherited single-model behavior. Use the later `model.requesting` RuntimeEvent
+  when the consumer needs the final requester-built URL and model rather than
+  the profile-level preflight projection.
 - explain API key pool behavior precisely: keys are selected at request time by
   `api_key_pools.<pool>.selection` (`fixed`, `random`, `round_robin`,
   `least_used`; legacy top-level `strategy` remains accepted). Provider-error
@@ -74,7 +81,3 @@ Use this skill for provider wiring and transport setup before request logic is d
 - do not use stage names such as `reason` as the main example for user-facing
   model switching; reserve those for internal stage routing docs. Use concrete
   switchable aliases such as `ollama-qwen2.5` and `deepseek-v4`.
-
-## Read Next
-
-- `references/overview.md`
