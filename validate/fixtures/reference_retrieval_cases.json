@@ -531,6 +531,52 @@
       ]
     },
     {
+      "id": "design-stage-scoped-output-progress-zh",
+      "query": "已经路由到 agently-design。复杂任务中的每次模型输出是否都要一次解决整个任务？我希望每轮只推进一个当前职责，但本轮自身不能有实质逻辑或专业错误，并且最终输出仍要通过完整验收。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-design/references/model-request-topology.md": [
+          "## Stage-Scoped Output: Local Correctness, Global Progress"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "stage_scope_not_terminal_completeness",
+          "description": "A non-terminal stage output is judged against its declared current scope and consumer, not whole-task terminal completeness."
+        },
+        {
+          "id": "local_contract_correctness",
+          "description": "The stage still satisfies its own schema, hard invariants, supplied facts, and semantic or professional correctness boundary."
+        },
+        {
+          "id": "observable_task_progress",
+          "description": "The output advances a state, narrows uncertainty, selects one actionable next step, or creates information consumed downstream."
+        },
+        {
+          "id": "explicit_deferred_work",
+          "description": "Unknown, provisional, and deferred work is labeled instead of being presented as completed fact."
+        },
+        {
+          "id": "terminal_full_acceptance",
+          "description": "Terminal outputs, completion claims, and irreversible effects still require the full terminal acceptance contract."
+        }
+      ],
+      "required_concepts": [
+        "stage_scope_not_terminal_completeness",
+        "local_contract_correctness",
+        "observable_task_progress",
+        "explicit_deferred_work",
+        "terminal_full_acceptance"
+      ]
+    },
+    {
       "id": "design-instant-overlap-reconcile-zh",
       "query": "已经路由到 agently-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
       "matched_skills": [
@@ -673,6 +719,57 @@
         "intentional_inheritance_allowlist",
         "post_prefix_prompt_audit",
         "fake_request_test_limit"
+      ]
+    },
+    {
+      "id": "request-special-case-example-balance-zh",
+      "query": "已经路由到 agently-request。一个观测实例暴露了提示词缺口，开发者想把其中的实体字面量、一次性输入状态和目标答案直接升级成『特例』规则；如果改成示例，又担心示例过长压过通用正文。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-management.md": [
+          "## General Rules, Special Cases, and Examples"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "case_specific_not_normative",
+          "description": "Entity literals, one-time input or environment state, historical incidents, test fixtures, and expected answers from a single observed instance are not encoded as a normative prompt branch."
+        },
+        {
+          "id": "authoritative_rule_not_special_case",
+          "description": "A current authoritative business policy, domain invariant, authorization rule, or interface contract that changes the request remains required prompt context rather than being mislabeled as a special case."
+        },
+        {
+          "id": "example_cannot_create_rule",
+          "description": "An illustrative example may explain an already stated general rule but cannot introduce behavior absent from the normative contract."
+        },
+        {
+          "id": "example_share_guard",
+          "description": "Illustrative example material remains smaller than the non-example normative prompt so examples do not dominate the instruction signal."
+        },
+        {
+          "id": "fewshot_evaluation_boundary",
+          "description": "A task that genuinely depends on a larger few-shot demonstration set is treated as an evaluated in-context-learning design with selection, order, and bias tests, not as a hidden special-case exception."
+        },
+        {
+          "id": "incident_to_general_rule",
+          "description": "An incident leads to a rule only after identifying the general invariant and testing contrasting cases without retaining incident literals."
+        }
+      ],
+      "required_concepts": [
+        "case_specific_not_normative",
+        "authoritative_rule_not_special_case",
+        "example_cannot_create_rule",
+        "example_share_guard",
+        "fewshot_evaluation_boundary",
+        "incident_to_general_rule"
       ]
     },
     {

@@ -121,6 +121,11 @@ producer has a concrete consumer target. Keep its form project-defined and do
 not add a handoff layer where no independent development, replay, validation,
 or fault-localization value exists.
 
+Treat a non-terminal model result as a stage-scoped contribution: it must
+satisfy its local contract and create observable progress, but it does not need
+to claim whole-task completion. Unknown or deferred work remains explicit;
+terminal results and irreversible effects still require full acceptance.
+
 Use types and field-level constraints wherever a downstream system consumes
 model output. Treat `instant` values as provisional until the final parsed
 result and configured validation accept the originating attempt.

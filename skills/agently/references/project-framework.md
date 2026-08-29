@@ -41,6 +41,13 @@ remain simulated until confirmed, and the finished producer must prove its real
 output can replace the reference data. Do not add a universal packet, required
 field list, file, or handoff layer where no independent value exists.
 
+For a non-terminal stage, optimize for a locally correct contribution that
+creates observable task progress rather than a response that pretends to
+complete the whole task. Define the current subject, consumer, and acceptance
+boundary; keep material logic/domain errors out of that scope and label
+uncertainty or deferred work. Full completeness remains the terminal owner's
+responsibility.
+
 ## Choose Model Participation Before Request Count
 
 Use models for prose-derived intent, semantic routing, relevance, planning,

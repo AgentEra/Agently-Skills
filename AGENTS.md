@@ -155,6 +155,20 @@ Use this file as installation-time guidance after the skills are added into anot
   substring, regex, or snapshot-style text checks as the primary correctness
   signal for model-owned semantic content; keep them only as deterministic
   smoke gates for structure, routing, or presence checks.
+- Never promote literals or behavior from a single observed instance into
+  normative prompt instruction. This includes entity literals, one-time input
+  or environment state, historical incidents, test fixtures, and expected
+  answers. Derive a general invariant and verify it against contrasting cases.
+  Current authoritative business policy, domain invariants, authorization,
+  interface contracts, and runtime facts remain required request context and
+  are not special cases merely because they are business-specific.
+- Illustrative examples may explain only rules already stated in the normative
+  prompt. They cannot introduce behavior, priority, exceptions, or expected
+  answers. Keep total rendered illustrative-example content smaller than the
+  non-example normative prompt. If a task appears to require a larger few-shot
+  set, treat selection as a separate evaluated design and test selection/order,
+  label balance, and model-specific regressions instead of smuggling special
+  cases into the ordinary prompt.
 - Define AI-application acceptance on two independent axes: hard gate versus
   soft target, and deterministic check versus semantic review. Structured
   shape/type/enum, authorization, identity, arithmetic, and side-effect facts
@@ -176,6 +190,13 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
+- Treat non-terminal model output as a stage-scoped contribution. It must
+  satisfy its current schema, hard invariants, evidence boundary, and semantic
+  subject while observably advancing state, narrowing uncertainty, selecting a
+  useful next action, or producing a consumed handoff. It need not solve
+  unrelated future stages or claim whole-task completion. Label provisional,
+  unknown, and deferred work; terminal results and irreversible effects still
+  require the full terminal acceptance contract.
 - Plan owner/invariant, node, edge, and production-necessity ledgers before
   choosing files for every non-trivial model application. Planning nodes do not
   map one-to-one to modules. Start a one-request project from the composition
