@@ -471,7 +471,8 @@ def main() -> None:
             phrase in request_prompt_management_text
             for phrase in (
                 "General Rules, Special Cases, and Examples",
-                "case-specific behavior",
+                "single observed instance",
+                "entity literals",
                 "normative instruction",
                 "business rule",
                 "illustrative example",
@@ -481,9 +482,41 @@ def main() -> None:
                 "selection and order",
             )
         )
-        and "case-specific behavior" in request_text
+        and "single observed instance" in request_text
         and "illustrative examples" in request_text,
         "prompt guidance keeps business incidents out of normative rules and examples subordinate to the general contract",
+        failures,
+        passes,
+    )
+    prompt_generalization_text = "\n".join(
+        (
+            request_text,
+            request_prompt_management_text,
+            catalog_guidance_text,
+            REFERENCE_FIXTURES.read_text(encoding="utf-8"),
+        )
+    )
+    check(
+        "prompt_special_case_guidance_is_domain_general",
+        all(
+            phrase in prompt_generalization_text
+            for phrase in (
+                "single observed instance",
+                "entity literals",
+                "one-time input or environment state",
+            )
+        )
+        and not any(
+            phrase in prompt_generalization_text
+            for phrase in (
+                "one customer, component/model, page state",
+                "one customer, component/model name, page state",
+                "remove customer, component, page, incident",
+                "named customer, concrete component/model",
+                "具体客户、器件型号和页面状态",
+            )
+        ),
+        "special-case guidance uses domain-general categories and contains no EDA-anchored checklist",
         failures,
         passes,
     )

@@ -117,10 +117,11 @@ and references. Before dispatch, `execution.get_prompt_text()` audits the render
 
 ## General Rules, Special Cases, and Examples
 
-Do not encode case-specific behavior as a normative instruction. A branch keyed
-to one customer, component/model name, page state, incident, fixture, or known
-answer is a prompt special case when its behavior cannot be derived from a
-general invariant or the current request contract.
+Do not promote literals or behavior from a single observed instance into a
+normative instruction. Entity literals, one-time input or environment state, a
+historical incident, test fixture, or expected answer become prompt special
+cases when their behavior cannot be derived from a general invariant or the
+current request contract.
 
 Do not misclassify required context as a special case. A current authoritative
 business rule, domain invariant, authorization rule, interface contract, or
@@ -134,8 +135,9 @@ When one observed failure exposes a prompt gap:
 1. identify the violated general invariant or missing decision boundary;
 2. write the smallest general conditional rule that covers that class of cases;
 3. test the original case plus contrasting valid, invalid, and boundary cases;
-4. remove customer, component, page, incident, and expected-answer literals
-   unless the current request supplies them as real facts.
+4. remove instance-specific entity, state, incident, fixture, and
+   expected-answer literals unless the current request supplies them as real
+   facts.
 
 An illustrative example may clarify an already stated rule; it cannot introduce
 behavior, priority, an exception, or an expected answer that is absent from the
@@ -175,10 +177,10 @@ zero-shot versus few-shot behavior, and model-specific regressions.
 - do not remove an effective upstream guarantee that changes the decision or
   allowed verdicts, and do not retain generic project narration under the
   user-visible-process role without a declared user or UI consumer.
-- do not turn a production incident, named customer, concrete component/model,
-  page state, fixture, or desired answer into normative case-specific behavior;
-  generalize the invariant and use bounded illustrative examples only after the
-  rule exists.
+- do not turn entity literals, one-time input or environment state, a
+  historical incident, test fixture, or expected answer from one observed
+  instance into normative case-specific behavior; generalize the invariant and
+  use bounded illustrative examples only after the rule exists.
 
 ## Read Next
 

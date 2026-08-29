@@ -155,12 +155,13 @@ Use this file as installation-time guidance after the skills are added into anot
   substring, regex, or snapshot-style text checks as the primary correctness
   signal for model-owned semantic content; keep them only as deterministic
   smoke gates for structure, routing, or presence checks.
-- Never encode case-specific behavior for one customer, component/model, page
-  state, incident, fixture, or known answer as normative prompt instruction.
-  Derive a general invariant and verify it against contrasting cases. Current
-  authoritative business policy, domain invariants, authorization, interface
-  contracts, and runtime facts remain required request context and are not
-  special cases merely because they are business-specific.
+- Never promote literals or behavior from a single observed instance into
+  normative prompt instruction. This includes entity literals, one-time input
+  or environment state, historical incidents, test fixtures, and expected
+  answers. Derive a general invariant and verify it against contrasting cases.
+  Current authoritative business policy, domain invariants, authorization,
+  interface contracts, and runtime facts remain required request context and
+  are not special cases merely because they are business-specific.
 - Illustrative examples may explain only rules already stated in the normative
   prompt. They cannot introduce behavior, priority, exceptions, or expected
   answers. Keep total rendered illustrative-example content smaller than the
