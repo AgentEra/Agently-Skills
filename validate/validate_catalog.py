@@ -466,6 +466,28 @@ def main() -> None:
         passes,
     )
     check(
+        "prompt_special_cases_and_examples_guidance",
+        all(
+            phrase in request_prompt_management_text
+            for phrase in (
+                "General Rules, Special Cases, and Examples",
+                "case-specific behavior",
+                "normative instruction",
+                "business rule",
+                "illustrative example",
+                "non-example",
+                "normative prompt",
+                "few-shot demonstration set",
+                "selection and order",
+            )
+        )
+        and "case-specific behavior" in request_text
+        and "illustrative examples" in request_text,
+        "prompt guidance keeps business incidents out of normative rules and examples subordinate to the general contract",
+        failures,
+        passes,
+    )
+    check(
         "cross_surface_prompt_context_locality_guidance",
         all(
             re.search(r"declared\s+user or UI consumer", text) is not None

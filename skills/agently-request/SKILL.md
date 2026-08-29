@@ -46,6 +46,10 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
   model-owned decision or the allowed verdict set. Do not assume the model can
   infer unexplained external project context; provide the compact facts it
   needs in this request.
+- Keep case-specific behavior out of normative prompt instructions. Derive a
+  general invariant and test contrasting cases; use illustrative examples only
+  to explain an already stated rule, and keep their total rendered content
+  smaller than the non-example normative prompt.
 - Before dispatch, use `execution.get_prompt_text()` only to audit the rendered
   execution draft. When TaskContext, Session, Skills, retrieval, Actions, or
   other runtime extensions can inject later, use a bounded test to observe the
@@ -208,3 +212,6 @@ inside the plugin.
   failures to teach the model one rule per retry. If a production gate cannot
   be safely stated, warn the developer with the risks and alternatives, then
   require explicit second confirmation before implementing that named gate.
+- Turning one customer, component/model, page state, incident, fixture, or
+  desired answer into a prompt branch, or letting illustrative examples create
+  behavior that the normative contract never states.

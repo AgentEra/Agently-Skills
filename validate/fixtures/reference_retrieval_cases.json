@@ -722,6 +722,57 @@
       ]
     },
     {
+      "id": "request-special-case-example-balance-zh",
+      "query": "已经路由到 agently-request。一次项目事故暴露了提示词缺口，开发者想把具体客户、器件型号和页面状态直接写成『特例』规则；如果改成示例，又担心示例过长压过通用正文。应该先读哪份参考？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-management.md": [
+          "## General Rules, Special Cases, and Examples"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "case_specific_not_normative",
+          "description": "Customer-, model-, component-, page-, incident-, or known-answer-specific behavior is not encoded as a normative prompt branch."
+        },
+        {
+          "id": "authoritative_rule_not_special_case",
+          "description": "A current authoritative business policy, domain invariant, authorization rule, or interface contract that changes the request remains required prompt context rather than being mislabeled as a special case."
+        },
+        {
+          "id": "example_cannot_create_rule",
+          "description": "An illustrative example may explain an already stated general rule but cannot introduce behavior absent from the normative contract."
+        },
+        {
+          "id": "example_share_guard",
+          "description": "Illustrative example material remains smaller than the non-example normative prompt so examples do not dominate the instruction signal."
+        },
+        {
+          "id": "fewshot_evaluation_boundary",
+          "description": "A task that genuinely depends on a larger few-shot demonstration set is treated as an evaluated in-context-learning design with selection, order, and bias tests, not as a hidden special-case exception."
+        },
+        {
+          "id": "incident_to_general_rule",
+          "description": "An incident leads to a rule only after identifying the general invariant and testing contrasting cases without retaining incident literals."
+        }
+      ],
+      "required_concepts": [
+        "case_specific_not_normative",
+        "authoritative_rule_not_special_case",
+        "example_cannot_create_rule",
+        "example_share_guard",
+        "fewshot_evaluation_boundary",
+        "incident_to_general_rule"
+      ]
+    },
+    {
       "id": "design-selection-key-freshness-correlation-en",
       "query": "Routing already selected agently-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response to the semantic input/evidence/request revision rather than only candidate state, and have the Host validate correlation before canonical lookup? A caller-supplied logical ID is insufficient unless Host storage guarantees its unique association with that semantic revision; the model must not copy correlation ids. The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
       "matched_skills": [
