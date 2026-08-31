@@ -30,6 +30,12 @@ visible in the application lifecycle.
 
 ## Request Contract
 
+- For business confirmation, offer a concise scenario/request-purpose explanation
+  and an adaptable Agently slot/output-constraint table; do not add a mandatory
+  approval ceremony. See `references/prompt-management.md`.
+- After measured schema/ensure/length failures, consider a shallower model-facing
+  projection or coherent request splits with Host reconstruction and unchanged
+  final validation. See `references/output-control.md`.
 - Keep a one-off fluent request readable as one chain: `.input(...)`,
   `.info(...)`, `.instruct(...)`, `.output(...)`, then its result call. Split
   only for actual reuse, independently owned configuration, or dynamic

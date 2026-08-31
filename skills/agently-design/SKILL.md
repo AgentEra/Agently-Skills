@@ -61,7 +61,8 @@ terminal results and irreversible effects still require full acceptance.
   keys, refs, citations, snapshots, and fail-closed joins:
   `references/information-and-evidence-design.md`.
 - Concurrency, retries, repair, replan, approval, pause/resume, cancellation,
-  close, and pressure: `references/lifecycle-and-pressure-design.md`.
+  close, pressure, and planned long-form section generation:
+  `references/lifecycle-and-pressure-design.md`.
 - RuntimeEvents, lineage, request telemetry, model-quality review, and
   experiment comparison: `references/observability-and-validation.md`.
 

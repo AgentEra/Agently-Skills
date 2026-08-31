@@ -50,6 +50,85 @@ Use async Agently APIs in services and workflows. Consume `instant` only when a
 real UI, observer, state update, or cancelable/idempotent preparation uses it;
 otherwise await final data directly.
 
+## Planned Long-Form Writing
+
+When a document naturally has several sections, or a model repeatedly finishes
+normally but writes less than the required useful coverage, consider planning
+sections and generating them separately. Diagnose first: provider output caps,
+normalized `length`/`incomplete`, timeouts, schema failures, insufficient
+instructions, and learned brevity are different causes. Training and alignment
+data, including SFT examples, can affect output-length tendencies; do not claim
+pretraining caused an individual model's short answer without evidence.
+
+This is application-level writing strategy, distinct from
+`.ensure_long_output()`: the latter continues one direct result after
+normalized truncation and does not expand an ordinary short `stop` response.
+Check support in the installed version before choosing any native delivery
+option. Neither technique guarantees semantic completeness or a requested
+length.
+
+Keep the three concerns separate:
+
+| Concern | Primary design decision |
+|---|---|
+| Long prose | Plan content coverage, develop sections, carry relevant continuity, and review coherence. |
+| Large structured data | Preserve fields, types, relationships, and collection completeness through suitable schemas, bounded parts, and Host reconstruction. |
+| Truncated delivery | Continue an incomplete result across provider output windows; supported native carriers include plain text and JSON. |
+
+Long prose and large structured data are different generation strategies.
+Truncation recovery is an orthogonal delivery mechanism that may support either
+one; it does not replace content planning or structured-data validation.
+
+Optional pattern, with no fixed section count or document genre:
+
+```text
+requirements + sources
+  -> section plan (purpose and scope per section)
+  -> write section -> validate/store accepted body
+       -> continuity note, only when a later section needs it
+  -> Host assembly in planned order
+  -> coverage and cross-section consistency review
+```
+
+The writer receives the original relevant requirements, the current section's
+title/brief, the necessary outline and source facts, and a compact continuity
+view. Keep full accepted bodies in Host storage or task artifacts. Summaries are
+lossy derived context, not a replacement for authoritative requirements,
+decisions, terminology, or evidence. Bound the rolling continuity view by actual
+need instead of appending every previous body or summary forever; read back an
+exact passage when detail matters.
+
+Choose dependencies and request count deliberately:
+
+- If later sections depend on earlier accepted content or summaries,
+  `for_each(concurrency=1)` is a justified sequential TriggerFlow pattern.
+  If sections are independent under a shared plan/source snapshot, use bounded
+  parallel generation and collect by Host-owned plan order; do not race on a
+  mutable shared summary list.
+- Do not require a separate summary request for every section. When a later
+  consumer needs a note and the same-response contract suffices, one shallow
+  output can place `body` before `continuity_note`. When a summary must
+  reflect validated, transformed, or read-back content, generate it after that
+  observation in a separate request. Omit unconsumed summaries, including a
+  final-section note with no later use.
+- Prefer plain text for a section that is one freeform artifact; add structured
+  fields only for actual consumers and choose a tested format. Keep one-off
+  Agently request chains together, use fresh per-request drafts, and await
+  `async_get_data()` when no progressive consumer exists. Per-run bodies,
+  continuity, and completion state belong to the execution, not mutable shared
+  Agent prompt state.
+- Host code assembles the accepted bodies without asking a model to recopy the
+  entire document. Check section coverage/order and use semantic review for
+  contradictions, repetition, factual grounding, and usefulness. Repair scoped
+  gaps; do not count extra words or padded repetition as success, or label a
+  failed/missing section complete.
+
+Expose pressure and retry limits where they are owned, and account for plan,
+writer, optional summary/review, and retry calls. Planning more sections is a
+tradeoff, not free length. This pattern is consistent with the plan/write
+approach studied in [LongWriter](https://arxiv.org/abs/2408.07055); the paper is
+method evidence, not an Agently or target-provider benchmark.
+
 ## Pressure-Control Owners
 
 | Layer | Control |

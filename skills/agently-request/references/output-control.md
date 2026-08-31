@@ -63,6 +63,40 @@ model to copy another request id. A strictly inline awaited response that
 cannot cross a request boundary needs no extra model-returned correlation
 field.
 
+## Restructure Complex Output After Measured Failures
+
+Deep nesting is not automatically a defect. Consider a simpler model-facing
+structure when representative runs show more schema violations, missing keys,
+ensure failures/retries, or output-length failures. First inspect the rendered
+prompt, supported schema/format, raw result, provider finish reason and actual
+output limit; separate input/contract gaps, provider truncation, and parser
+defects from model-generation complexity.
+
+- Flatten redundant hierarchy into a compact decision projection where useful.
+  For example, Host-owned groups need not be copied around each item decision:
+  the model can return an offered item key and the decision, and the Host can
+  restore group membership and the full object. Preserve all decision-relevant
+  context, relationships, types, and evidence; do not hide structure inside an
+  untyped string or rely on positional joins between unrelated arrays.
+- Split coherent business sections or bounded batches when their consumer,
+  evidence, output size, or independent validation/repair boundary justifies
+  it. Model-owned semantic decisions remain model-owned. Map serial dependencies
+  and bounded parallel work through TriggerFlow, then assemble in Host code.
+  Do not make every field a separate request or split a reliable contract only
+  because it looks nested.
+- Keep the external API/DTO contract and hard acceptance rules unchanged.
+  Declare the simpler intermediate contract, restore the required shape through
+  an explicit Host mapping, and validate both parts and the assembled result.
+  Missing required fields are not fixed by removing ensure or making them
+  optional merely to pass tests.
+- Compare the same representative cases before and after: format/key success,
+  ensure failures, retries, length failures, request count, latency, observed usage, and
+  semantic coverage. A structurally valid but information-losing flattening is
+  not an improvement.
+
+For planned section-by-section prose rather than one structured result, read
+[planned long-form writing](../../agently-design/references/lifecycle-and-pressure-design.md).
+
 ## Native-First Rules
 
 - default to async-first response consumption when structured output will be streamed, reused, or served over an async boundary
@@ -77,8 +111,10 @@ field.
   model-facing field requirements for every structured output format. The
   original class remains the typed acceptance authority for
   `get_data_object()` / `async_get_data_object()`
-- when parsed output feeds an API, SDK, module interface, or function, mirror
-  the consumed request/argument structure instead of returning an opaque dict.
+- when parsed output feeds an API, SDK, module interface, or function directly,
+  mirror the consumed request/argument structure instead of an opaque dict.
+  If a measured complexity problem justifies an intermediate projection, use
+  the explicit Host reconstruction and final validation described above.
   Describe every consumed field with its contract meaning, exact type,
   requiredness, and any applicable enum, format, range, unit, nullability, or
   cross-field dependency. Pair the schema with authoritative interface material

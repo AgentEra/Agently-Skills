@@ -728,6 +728,134 @@
       ]
     },
     {
+      "id": "request-business-prompt-review-zh",
+      "query": "已经路由到 agently-request。要向业务负责人确认一个模型请求究竟解决什么问题，怎样用 Agently 的 input/info/instruct/output 表格展示具体提示词和字段约束，而不是只让用户看代码？不希望每次小改动都强制走审批。",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-management.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-management.md": [
+          "## Show a Business Prompt for Review"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "scenario_and_request_job",
+          "description": "The review explains the business scenario, current model-owned task, scope, and downstream consumer."
+        },
+        {
+          "id": "agently_slot_review",
+          "description": "A small adaptable table shows concrete input/info/instruct/output content, field semantics, and applicable type/enum/nullability constraints."
+        },
+        {
+          "id": "review_not_new_protocol",
+          "description": "The view is an optional user-facing explanation, not a new runtime schema, mandatory approval ceremony, or duplicate prompt source."
+        }
+      ],
+      "required_concepts": [
+        "scenario_and_request_job",
+        "agently_slot_review",
+        "review_not_new_protocol"
+      ]
+    },
+    {
+      "id": "request-measured-schema-restructuring-zh",
+      "query": "已经路由到 agently-request。深层输出结构在同一模型的实测中频繁丢 key、触发 ensure/retry 或因长度失败。什么时候应扁平化模型侧结构、按业务边界拆分请求，再由宿主恢复下游需要的完整结构？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/output-control.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/output-control.md": [
+          "## Restructure Complex Output After Measured Failures"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "measure_failure_owner",
+          "description": "Inspect rendered prompt, schema support, raw result, finish reason, ensure/retry events, and representative failure rates before attributing a problem to nesting."
+        },
+        {
+          "id": "flatten_with_host_reconstruction",
+          "description": "A compact model-facing projection can remove redundant nesting while Host mappings restore identities, relationships, and the unchanged downstream contract."
+        },
+        {
+          "id": "business_boundary_split",
+          "description": "Split only coherent consumer or evidence units with explicit dependencies, then validate parts and the assembled result without weakening requirements."
+        },
+        {
+          "id": "compare_structure_and_semantics",
+          "description": "Compare format reliability, retry cost, latency, and semantic coverage rather than assuming every nested structure is bad."
+        }
+      ],
+      "required_concepts": [
+        "measure_failure_owner",
+        "flatten_with_host_reconstruction",
+        "business_boundary_split",
+        "compare_structure_and_semantics"
+      ]
+    },
+    {
+      "id": "design-planned-long-form-writing-zh",
+      "query": "已经路由到 agently-design。模型正常 stop 但文档明显短于需要，我想先规划章节再逐段生成和组装。是否每段都要单独摘要？摘要累积如何控制？什么时候串行、什么时候并发，与 ensure_long_output 的截断续写有何区别？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/lifecycle-and-pressure-design.md"
+        ]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-design/references/lifecycle-and-pressure-design.md": [
+          "## Planned Long-Form Writing"
+        ]
+      },
+      "concepts": [
+        {
+          "id": "length_cause_boundary",
+          "description": "Separate provider truncation, timeout, schema issues, and learned brevity; training-data effects are possible but not proven for an untested model."
+        },
+        {
+          "id": "generation_vs_delivery",
+          "description": "Long-prose content generation and large structured-data generation are different strategies; native truncation continuation is an orthogonal delivery mechanism for supported text and JSON carriers."
+        },
+        {
+          "id": "plan_write_assemble",
+          "description": "Plan coherent sections, write each from requirements and relevant continuity, and deterministically assemble accepted bodies in planned order."
+        },
+        {
+          "id": "summary_consumer_and_call_boundary",
+          "description": "Create bounded continuity notes only for later consumers; combine body and note when the same response suffices, and split when the summary needs validated/read-back text."
+        },
+        {
+          "id": "dependency_driven_concurrency",
+          "description": "Serial order is justified when later sections consume earlier results; independent sections may run concurrently with bounds and ordered collection."
+        },
+        {
+          "id": "completion_is_not_length",
+          "description": "Keep full bodies and source facts authoritative, check coverage and consistency, and distinguish semantic expansion from length-triggered native continuation."
+        }
+      ],
+      "required_concepts": [
+        "length_cause_boundary",
+        "generation_vs_delivery",
+        "plan_write_assemble",
+        "summary_consumer_and_call_boundary",
+        "dependency_driven_concurrency",
+        "completion_is_not_length"
+      ]
+    },
+    {
       "id": "request-special-case-example-balance-zh",
       "query": "已经路由到 agently-request。一个观测实例暴露了提示词缺口，开发者想把其中的实体字面量、一次性输入状态和目标答案直接升级成『特例』规则；如果改成示例，又担心示例过长压过通用正文。应该先读哪份参考？",
       "matched_skills": [
