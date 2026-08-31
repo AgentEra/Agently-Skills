@@ -96,6 +96,13 @@ After design ownership is clear, route exact mechanisms as follows:
 
 ## Required Design Artifacts
 
+For collaborative business-flow design or review, ask the user to confirm the
+scoped ModelRequest inventory and each request's responsibility before detailed
+Prompt review. Use the existing topology plan, not another ledger. Route selected
+request reviews to the one-design-then-confirm process in
+`../agently-request/references/prompt-management.md`; revisit only affected
+responsibilities and handoffs after a revision.
+
 Every non-trivial linear, branching, concurrent, or looped system requires one
 planning-topology contract containing all four ledgers:
 

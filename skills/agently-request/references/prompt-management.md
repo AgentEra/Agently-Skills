@@ -58,6 +58,35 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Collaborative Prompt Design and Review
+
+For collaborative design or review of a complex business workflow or one scoped
+block, first explain the overall scenario and ask the user to confirm the
+logical ModelRequest inventory and each request's responsibility. Use a concise
+view of the existing node/edge plan: role, relevant input, output consumer, and
+important dependencies. Separate Host work from model work, and distinguish a
+request family repeated across items from provider retry attempts.
+
+After that inventory is confirmed:
+
+1. Select detailed reviews according to the user's needs or explain why a
+   request needs confirmation, such as an unresolved business choice, important
+   policy boundary, or consequential downstream contract change. Do not require
+   detailed approval of every routine request.
+2. By default, present one selected request's design at a time and wait for
+   confirmation or revision. Do not advance to the next selected design or
+   treat this one as approved without the user's response. Follow an explicit
+   request for batch review or delegated decisions instead when given.
+3. Apply revisions to the actual request/config, show the changed topics, and
+   check affected producer/consumer contracts and workflow responsibilities.
+   Reconfirm changed scope or handoffs; keep unchanged confirmations rather
+   than restarting the entire review.
+
+Inventory confirmation is not approval of every selected Prompt. Make the
+current subject and pending/confirmed/revising state legible in ordinary review
+notes, without creating a new protocol or mandatory tracking schema. Reuse a
+previously confirmed, unchanged inventory.
+
 ## Show a Business Prompt for Review
 
 When a user needs to confirm business intent or a consequential prompt choice,
@@ -65,26 +94,42 @@ offer a readable review view: explain the scenario, what this ModelRequest owns
 and does not own, and who consumes its result. Then show concrete prompt content
 using Agently's `input`, `info`, `instruct`, and `output` slots, with
 field-level type, meaning, requiredness, enum/range/format/nullability where
-relevant. A small table or one fluent chain is often easier to confirm than
-scattered code.
+relevant. Prefer a table-first presentation: a request overview, then a main
+`Slot | Topic | Actual prompt content` table for the current request, a visible
+examples table when used, and an output-field constraint table. Keep cells
+short enough to scan; expand long topics into named sections rather than one
+giant cell. Show real proposed wording, not merely “put rules here.”
 
-Optional illustration: a product-document planner for meeting follow-up work
-plans section coverage and order; it does not write the full document or create
-real tasks.
-
-| Agently surface | Example content to review |
-|---|---|
-| `input` | The supplied product requirements and current unresolved questions. |
-| `info` | Intended readers, agreed scope, and authoritative business facts. |
-| `instruct` | Plan non-overlapping sections that cover the requirement; describe each section's purpose and flag missing facts instead of inventing them. |
-| `output` | `parts: list[{title: str, brief: str}]` and `open_questions: list[str]`; parts and both text fields are required and non-empty, questions may be empty. |
-| Consumer | Section writers consume the plan; the user reviews open questions; Host code owns ordering and assembly identity. |
-
-Adapt or omit rows for the actual decision. This is an optional review view,
-not a mandatory approval gate, new runtime schema, separate prompt source, or
-fixed business template. Use redacted representative inputs and label examples.
+Adapt or omit tables for the decision. The layout is not a mandatory business
+template or new runtime schema; selected collaborative reviews still follow
+the confirmation sequence above. Use redacted representative inputs.
 Keep the view aligned with the real request chain/config and the rendered-prompt
 audit below; a design table alone does not prove what was dispatched.
+
+### Long Slots and Visible Examples
+
+Organize a long slot by paragraphs, topics, or sections in both the source
+Prompt and its review view. Keep related content together; this does not justify
+extra files, wrappers, or ModelRequests. For each block, check current-request
+relevance, the authority of facts/rules, redundancy or contradiction, and
+whether a single instance has become a non-generalizable rule.
+
+Show every model-visible example's content, the existing rule it illustrates,
+its actual slot/config location, and whether it is synthetic or a redacted
+source example. Keep examples non-normative and within the example-volume guard
+below. Clearly separate reviewer-only illustrations or notes that are not sent
+to the model; do not inject review labels/approval history into the Prompt by
+default. “Examples” is a presentation section, not a new Agently slot or API.
+Do not manufacture examples when none are needed.
+
+Collapsed sections may aid navigation, but make full permitted content
+accessible and mark omissions/redactions; do not imply a truncated view was a
+complete audit.
+
+For a concrete optional presentation, read the
+[table-first collaboration example](prompt-collaboration-example.md). Its
+business facts, request inventory, and output fields are illustrative, not a
+required application template.
 
 ## Reusable Agent Request Isolation
 

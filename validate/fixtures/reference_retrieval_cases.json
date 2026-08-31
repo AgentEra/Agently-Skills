@@ -723,7 +723,7 @@
     },
     {
       "id": "request-business-prompt-review-zh",
-      "query": "已经路由到 agently-request。要向业务负责人确认一个模型请求究竟解决什么问题，怎样用 Agently 的 input/info/instruct/output 表格展示具体提示词和字段约束，而不是只让用户看代码？不希望每次小改动都强制走审批。",
+      "query": "已经路由到 agently-request。复杂流程协同设计时，如何先确认模型请求清单和职责，再对关键请求一次展示一个 Prompt 设计、等待确认或修订？长 slot 要按主题分块，并显式展示会发送给模型的 examples；不希望所有小改动都强制审批。",
       "matched_skills": [
         "agently-request"
       ],
@@ -734,7 +734,9 @@
       ],
       "excerpt_anchors": {
         "skills/agently-request/references/prompt-management.md": [
-          "## Show a Business Prompt for Review"
+          "## Collaborative Prompt Design and Review",
+          "## Show a Business Prompt for Review",
+          "### Long Slots and Visible Examples"
         ]
       },
       "concepts": [
@@ -748,14 +750,54 @@
         },
         {
           "id": "review_not_new_protocol",
-          "description": "The view is an optional user-facing explanation, not a new runtime schema, mandatory approval ceremony, or duplicate prompt source."
+          "description": "The review uses existing request/config sources and does not impose all-request approval or a new runtime schema; selected collaborative reviews still wait for explicit confirmation."
+        },
+        {
+          "id": "inventory_before_detail",
+          "description": "Confirm the workflow or block scenario and logical request inventory with roles and consumers before detailed collaborative design; inventory approval is not approval of each selected prompt."
+        },
+        {
+          "id": "one_design_then_wait",
+          "description": "For requests selected by the user or justified as critical, show one design at a time by default and wait for confirmation or revision before advancing or treating that design as approved."
+        },
+        {
+          "id": "block_and_example_visibility",
+          "description": "Long slots use topic rows or sections; model-visible examples show actual content, purpose and placement, and are distinguished from reviewer-only material without inventing an examples API."
+        },
+        {
+          "id": "scoped_revision_review",
+          "description": "A revision checks affected upstream/downstream contracts and re-confirms only changed scope, retaining unchanged approvals."
         }
       ],
       "required_concepts": [
         "scenario_and_request_job",
         "agently_slot_review",
-        "review_not_new_protocol"
+        "review_not_new_protocol",
+        "inventory_before_detail",
+        "one_design_then_wait",
+        "block_and_example_visibility",
+        "scoped_revision_review"
       ]
+    },
+    {
+      "id": "request-table-first-collaboration-example-zh",
+      "query": "已经路由到 agently-request。给我一个以表格为主体的 Prompt 协同审校样例，包含请求清单、一个请求的 slot/主题/实际内容主表、可见示例、输出字段约束和等待确认点，不要把它变成强制业务模板。",
+      "matched_skills": ["agently-request"],
+      "expected_reference_sets": [
+        ["skills/agently-request/references/prompt-collaboration-example.md"]
+      ],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-collaboration-example.md": [
+          "## 1. Confirm the Request Inventory",
+          "## 2. Review One Request"
+        ]
+      },
+      "concepts": [
+        {"id": "table_first_example", "description": "An illustrative request inventory and one-request detail are presented primarily as readable tables with topic-sized rows."},
+        {"id": "visible_examples_and_output", "description": "The sample includes model-visible examples, actual slot placement, output field types and constraints, and reviewer-only boundaries."},
+        {"id": "sample_not_fixed_workflow", "description": "The sample distinguishes the two confirmation stages and is an optional presentation reference, not a mandatory request inventory, schema, or observed model run."}
+      ],
+      "required_concepts": ["table_first_example", "visible_examples_and_output", "sample_not_fixed_workflow"]
     },
     {
       "id": "request-measured-schema-restructuring-zh",

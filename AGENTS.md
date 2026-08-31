@@ -190,10 +190,19 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- When a business prompt needs user confirmation, offer the scenario, the
-  request's owned task, concrete Agently slot content, and field-level output
-  constraints in a small readable table or chain. This is a review aid, not a
-  new mandatory approval workflow or duplicate prompt source.
+- For collaborative Prompt design/review of a complex workflow or scoped block,
+  first ask the user to confirm the scenario, logical request inventory, and
+  each request's responsibility. Then review user-selected or justified
+  critical requests one design at a time by default, waiting for confirmation
+  or revision before advancing. Inventory approval is not detailed Prompt
+  approval. Follow explicit batch/delegation preferences and retain unchanged
+  confirmations; review only affected handoffs when scope changes.
+- Use a table-first review with topic-sized slot rows, visible model examples,
+  and output-field constraints. Organize long slots into meaningful source and
+  display sections, audit case-specific/non-generalizable rules, distinguish
+  reviewer-only material from model-visible content, and keep the view aligned
+  with the actual chain/config. No new slot/API, mandatory packet, or approval
+  requirement for every routine request is implied.
 - If representative runs show complex output causing schema/key/ensure/retry
   or length failures, diagnose the owner first; then consider flattening the
   model-facing projection or splitting coherent business units. Host code

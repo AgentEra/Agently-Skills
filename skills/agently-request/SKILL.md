@@ -27,9 +27,12 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
 ## Prompt and Output Contract
 
-- For business confirmation, offer a concise scenario/request-purpose explanation
-  and an adaptable Agently slot/output-constraint table; do not add a mandatory
-  approval ceremony. See `references/prompt-management.md`.
+- In collaborative design/review, confirm the scoped request inventory and
+  responsibilities first. For user-selected or justified critical requests,
+  default to one table-first Prompt design, then wait for confirmation/revision.
+  Group long slots by topic and expose model-visible examples separately from
+  reviewer-only notes. See `references/prompt-management.md`; routine unselected
+  requests do not need a new approval ceremony.
 - After measured schema/ensure/length failures, consider a shallower model-facing
   projection or coherent request splits with Host reconstruction and unchanged
   final validation. See `references/output-control.md`.
