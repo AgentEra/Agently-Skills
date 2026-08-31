@@ -58,6 +58,34 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Show a Business Prompt for Review
+
+When a user needs to confirm business intent or a consequential prompt choice,
+offer a readable review view: explain the scenario, what this ModelRequest owns
+and does not own, and who consumes its result. Then show concrete prompt content
+using Agently's `input`, `info`, `instruct`, and `output` slots, with
+field-level type, meaning, requiredness, enum/range/format/nullability where
+relevant. A small table or one fluent chain is often easier to confirm than
+scattered code.
+
+Optional illustration: a product-document planner for meeting follow-up work
+plans section coverage and order; it does not write the full document or create
+real tasks.
+
+| Agently surface | Example content to review |
+|---|---|
+| `input` | The supplied product requirements and current unresolved questions. |
+| `info` | Intended readers, agreed scope, and authoritative business facts. |
+| `instruct` | Plan non-overlapping sections that cover the requirement; describe each section's purpose and flag missing facts instead of inventing them. |
+| `output` | `parts: list[{title: str, brief: str}]` and `open_questions: list[str]`; parts and both text fields are required and non-empty, questions may be empty. |
+| Consumer | Section writers consume the plan; the user reviews open questions; Host code owns ordering and assembly identity. |
+
+Adapt or omit rows for the actual decision. This is an optional review view,
+not a mandatory approval gate, new runtime schema, separate prompt source, or
+fixed business template. Use redacted representative inputs and label examples.
+Keep the view aligned with the real request chain/config and the rendered-prompt
+audit below; a design table alone does not prove what was dispatched.
+
 ## Reusable Agent Request Isolation
 
 When a reusable configured Agent must create a strict hot-only request, use a

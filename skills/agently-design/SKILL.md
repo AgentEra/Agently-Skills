@@ -75,7 +75,8 @@ runtime event protocol.
   refs, citations, snapshots, or evidence fail-closed rules ->
   `references/information-and-evidence-design.md`
 - serial/parallel dependencies, concurrency limits, retries, repair, replan,
-  approvals, pause/resume, cancellation, close, or terminal status ->
+  approvals, pause/resume, cancellation, close, terminal status, or planned
+  long-form section generation ->
   `references/lifecycle-and-pressure-design.md`
 - lineage, RuntimeEvents, request telemetry, topology reconstruction, model
   judges, experiment comparison, or request-chain audit ->

@@ -27,6 +27,12 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
 ## Prompt and Output Contract
 
+- For business confirmation, offer a concise scenario/request-purpose explanation
+  and an adaptable Agently slot/output-constraint table; do not add a mandatory
+  approval ceremony. See `references/prompt-management.md`.
+- After measured schema/ensure/length failures, consider a shallower model-facing
+  projection or coherent request splits with Host reconstruction and unchanged
+  final validation. See `references/output-control.md`.
 - Keep provider settings outside prompt/workflow code. Prefer settings files
   with `${ENV.xxx}` placeholders for environment-specific values.
 - Keep a one-off Agently fluent request readable as one chain: show

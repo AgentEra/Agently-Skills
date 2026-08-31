@@ -190,6 +190,22 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
+- When a business prompt needs user confirmation, offer the scenario, the
+  request's owned task, concrete Agently slot content, and field-level output
+  constraints in a small readable table or chain. This is a review aid, not a
+  new mandatory approval workflow or duplicate prompt source.
+- If representative runs show complex output causing schema/key/ensure/retry
+  or length failures, diagnose the owner first; then consider flattening the
+  model-facing projection or splitting coherent business units. Host code
+  reconstructs the unchanged downstream contract and validates parts and final
+  assembly; do not remove required fields or hard gates to improve pass rate.
+- For long prose, consider a section plan, dependency-aware writing, bounded
+  continuity context, and Host assembly. Summaries need actual consumers and
+  may share the writer request unless they need validated/read-back text. Full
+  bodies and source facts remain authoritative. Distinguish clean short output
+  from truncation and possible learned brevity; do not assume pretraining is the
+  cause. Sequential writing is justified only by real dependencies, while
+  independent sections may run with bounded concurrency and ordered collection.
 - Treat non-terminal model output as a stage-scoped contribution. It must
   satisfy its current schema, hard invariants, evidence boundary, and semantic
   subject while observably advancing state, narrowing uncertainty, selecting a
