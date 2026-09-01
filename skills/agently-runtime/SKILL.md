@@ -56,8 +56,9 @@ package is not an executor or permission grant.
 - Use `agent.set_action_loop(planning_protocol="programmatic")` only for one
   bounded round of data-dependent read Actions. V1 exposes only visible
   `side_effect_level="read"`, `replay_safe=True`, non-approval Actions with an
-  explicit lossless-JSON return contract; it dispatches nested calls serially
-  through the ordinary ActionRuntime/ActionDispatcher boundary.
+  explicit lossless-JSON return contract. Nested calls default to exclusive;
+  explicitly parallel Actions overlap under the bounded ordinary
+  ActionRuntime/ActionDispatcher boundary, and exclusive calls form barriers.
 - Treat Action output and Action artifacts as evidence only after the host has
   recorded the actual call. Model prose claiming a side effect is not Action
   evidence.
