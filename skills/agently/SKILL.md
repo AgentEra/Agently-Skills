@@ -9,6 +9,11 @@ Start here when the request is expressed as product behavior rather than an
 Agently API. Choose the smallest native owner before choosing files or
 mechanisms. The request does not need to mention Agently.
 
+When Agently use is explicit and the user is designing, optimizing, or reviewing
+a solution, workflow/block, or Prompt, route through `agently-design` for the
+request inventory and `agently-request` for selected Prompt details, using the
+collaborative confirm-and-revise method by default.
+
 ## Workflow
 
 1. Reduce the request to goals, inputs, outputs, side effects, evidence, and

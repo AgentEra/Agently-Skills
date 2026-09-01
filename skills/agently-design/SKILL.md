@@ -1,6 +1,6 @@
 ---
 name: agently-design
-description: Use when a non-trivial Agently system needs cross-owner architecture, ModelRequest handoffs, evidence and identity boundaries, lifecycle, pressure, observability, or request-chain audit designed before mechanism APIs.
+description: Use when a non-trivial Agently system needs cross-owner architecture, collaborative request-inventory or Prompt review, ModelRequest handoffs, workflow optimization, evidence and identity boundaries, lifecycle, pressure, observability, or request-chain audit designed before mechanism APIs.
 ---
 
 # Agently Design
@@ -31,7 +31,8 @@ TaskDAG, retry engine, or RuntimeEvent protocol.
 
 ## Required Topology Contract
 
-For collaborative business-flow design or review, ask the user to confirm the
+When Agently use and solution/process/Prompt design-review work are both known,
+apply collaborative review by default. Ask the user to confirm the
 scoped ModelRequest inventory and each request's responsibility before detailed
 Prompt review. Use the existing topology plan, not another ledger. Route selected
 request reviews to the one-design-then-confirm process in

@@ -1,6 +1,6 @@
 ---
 name: agently-request
-description: "Use when shaping one Agently request family: model/settings setup, prompt contracts, structured output and validation, result or stream consumption, Session memory, embeddings, RecordStore retrieval, or retrieval-backed answers."
+description: "Use when shaping or collaboratively reviewing one Agently request family: model/settings setup, business Prompt contracts, structured output and validation, result or stream consumption, Session memory, embeddings, RecordStore retrieval, or retrieval-backed answers."
 ---
 
 # Agently Request
@@ -30,7 +30,9 @@ visible in the application lifecycle.
 
 ## Request Contract
 
-- In collaborative design/review, confirm the scoped request inventory and
+- When it is known that the user is developing with Agently and is doing
+  solution design, process optimization, or Prompt review, use the collaborative
+  method by default without waiting for the user to request a table. Confirm the scoped request inventory and
   responsibilities first. For user-selected or justified critical requests,
   default to one table-first Prompt design, then wait for confirmation/revision.
   Group long slots by topic and expose model-visible examples separately from
