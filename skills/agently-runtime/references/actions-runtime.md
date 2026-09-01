@@ -128,8 +128,12 @@ V1 exposes only scoped, model-visible Actions with
 and an explicit lossless-JSON `returns` contract. A precise return annotation
 on `@agent.action_func` supplies that contract; executor-backed registrations
 must declare `returns=`. Missing returns exclude the Action with diagnostics,
-not implicit `Any` eligibility. Nested dispatch is serial even when generated
-code attempts concurrency.
+not implicit `Any` eligibility. Nested dispatch is exclusive by default. A host
+may register an independently safe Action with `concurrency_mode="parallel"`;
+programs may use `asyncio.gather(...)`, while the runtime overlaps only those
+explicit parallel Actions up to `action.programmatic.max_parallel_subcalls`.
+Exclusive Actions form ordering barriers. Read-only and replay-safe labels do
+not imply parallel safety.
 
 The model produces one bounded Python 3.10+ async-function body whose return is
 lossless JSON. ActionRuntime wraps it in the
