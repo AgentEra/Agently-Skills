@@ -190,7 +190,11 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- For collaborative Prompt design/review of a complex workflow or scoped block,
+- When both facts are known—development uses Agently, and the user is doing
+  solution design, workflow/block optimization, or Prompt review—apply the
+  collaborative Prompt method by default even when the user did not ask for a
+  table. Ordinary implementation, bug fixing, provider setup, or unrelated
+  configuration is not enough to trigger it. For a complex workflow or scoped block,
   first ask the user to confirm the scenario, logical request inventory, and
   each request's responsibility. Then review user-selected or justified
   critical requests one design at a time by default, waiting for confirmation

@@ -574,6 +574,50 @@
       ]
     },
     {
+      "id": "prompt-collaboration-workflow-zh",
+      "scenario_id": "prompt-collaboration-review",
+      "locale": "zh",
+      "intent_style": "agently-workflow-review-explicit",
+      "query": "我正在用 Agently 设计并优化一个包含多个模型请求的业务流程，请检查请求职责和 Prompt 方案；我没有特别要求审阅格式。",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design",
+          "agently-request"
+        ],
+        [
+          "agently-request",
+          "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "prompt-collaboration-single-request-en",
+      "scenario_id": "prompt-collaboration-review",
+      "locale": "en",
+      "intent_style": "agently-prompt-review-direct",
+      "query": "Review and optimize the business Prompt for this Agently request family, including long slots, model-visible examples, and output constraints. I did not ask for a particular review format.",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-request"
+        ],
+        [
+          "agently-design",
+          "agently-request"
+        ]
+      ]
+    },
+    {
       "id": "provider-setup",
       "scenario_id": "provider-setup",
       "locale": "en",

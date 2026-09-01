@@ -60,6 +60,14 @@ Use this skill when the core problem is how prompt state should be structured be
 
 ## Collaborative Prompt Design and Review
 
+Use this method by default when both are known: the user is developing with
+Agently, and the current work is solution design, workflow/block optimization,
+or Prompt review. Do not wait for the user to ask for a table or an audit
+format. Ordinary implementation, bug fixing, provider setup, and unrelated
+configuration do not trigger this ceremony merely because the project uses
+Agently. Follow an explicit user request to batch reviews, skip a detail, or
+delegate a decision.
+
 For collaborative design or review of a complex business workflow or one scoped
 block, first explain the overall scenario and ask the user to confirm the
 logical ModelRequest inventory and each request's responsibility. Use a concise

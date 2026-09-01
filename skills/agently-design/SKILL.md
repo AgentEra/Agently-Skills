@@ -1,6 +1,6 @@
 ---
 name: agently-design
-description: "Use when the user is designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including execution-layer selection, ModelRequest prompt/output schema handoffs, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
+description: "Use when the user is collaboratively designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including the ModelRequest inventory and Prompt handoffs, execution-layer selection, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
 ---
 
 # Agently Design
@@ -96,7 +96,8 @@ After design ownership is clear, route exact mechanisms as follows:
 
 ## Required Design Artifacts
 
-For collaborative business-flow design or review, ask the user to confirm the
+When Agently use and solution/process/Prompt design-review work are both known,
+apply collaborative review by default. Ask the user to confirm the
 scoped ModelRequest inventory and each request's responsibility before detailed
 Prompt review. Use the existing topology plan, not another ledger. Route selected
 request reviews to the one-design-then-confirm process in

@@ -723,7 +723,7 @@
     },
     {
       "id": "request-business-prompt-review-zh",
-      "query": "已经路由到 agently-request。复杂流程协同设计时，如何先确认模型请求清单和职责，再对关键请求一次展示一个 Prompt 设计、等待确认或修订？长 slot 要按主题分块，并显式展示会发送给模型的 examples；不希望所有小改动都强制审批。",
+      "query": "我明确使用 Agently，正在做复杂流程优化和 Prompt 审查，但没有主动要求表格。Coding Agent 是否应该自动先确认模型请求清单和职责，再对关键请求一次展示一个设计并等待确认或修订？",
       "matched_skills": [
         "agently-request"
       ],
@@ -734,19 +734,13 @@
       ],
       "excerpt_anchors": {
         "skills/agently-request/references/prompt-management.md": [
-          "## Collaborative Prompt Design and Review",
-          "## Show a Business Prompt for Review",
-          "### Long Slots and Visible Examples"
+          "## Collaborative Prompt Design and Review"
         ]
       },
       "concepts": [
         {
           "id": "scenario_and_request_job",
           "description": "The review explains the business scenario, current model-owned task, scope, and downstream consumer."
-        },
-        {
-          "id": "agently_slot_review",
-          "description": "A small adaptable table shows concrete input/info/instruct/output content, field semantics, and applicable type/enum/nullability constraints."
         },
         {
           "id": "review_not_new_protocol",
@@ -761,22 +755,21 @@
           "description": "For requests selected by the user or justified as critical, show one design at a time by default and wait for confirmation or revision before advancing or treating that design as approved."
         },
         {
-          "id": "block_and_example_visibility",
-          "description": "Long slots use topic rows or sections; model-visible examples show actual content, purpose and placement, and are distinguished from reviewer-only material without inventing an examples API."
-        },
-        {
           "id": "scoped_revision_review",
           "description": "A revision checks affected upstream/downstream contracts and re-confirms only changed scope, retaining unchanged approvals."
+        },
+        {
+          "id": "known_agently_review_auto_trigger",
+          "description": "When Agently use and solution/process/Prompt design-review work are both known, the collaboration method activates without a separate table request, while ordinary implementation and debugging remain outside the trigger."
         }
       ],
       "required_concepts": [
         "scenario_and_request_job",
-        "agently_slot_review",
         "review_not_new_protocol",
         "inventory_before_detail",
         "one_design_then_wait",
-        "block_and_example_visibility",
-        "scoped_revision_review"
+        "scoped_revision_review",
+        "known_agently_review_auto_trigger"
       ]
     },
     {
