@@ -79,6 +79,78 @@ card or repair-support card uses the ordinary/auto carrier and must not be
 relabeled as an Action card. Use `actions` only when a mounted Action or real
 TaskWorkspace side effect is required.
 
+## Programmatic Action Calling
+
+Select Programmatic Action Calling (PTC) through the existing Action loop:
+
+```python
+agent.set_action_loop(planning_protocol="programmatic")
+```
+
+`programmatic` is an ActionRuntime planning protocol, not an AgentExecution
+strategy, a new workflow engine, or a TaskDAG kind. `structured_plan` remains
+the default, and a per-call `planning_protocol=...` on
+`get_action_result(...)` / `async_get_action_result(...)` overrides the Agent
+setting.
+
+Low-level callers that generate a program decision only for inspection must
+release discarded calls so their host-bound catalog leases do not accumulate:
+
+```python
+turn = agent.input("Inspect one program decision without executing it.")
+calls = await agent.async_generate_action_call(
+    prompt=turn.request.prompt,
+    planning_protocol="programmatic",
+)
+try:
+    print(calls)
+finally:
+    agent.release_programmatic_action_calls(calls)
+```
+
+Do this only when the generated calls will not be executed. The ordinary
+`get_action_result(...)` / `async_get_action_result(...)` and AgentExecution
+paths settle the lease automatically.
+
+Use it when one bounded Action round needs dependent read calls, a result-based
+branch, a bounded loop/fan-out, or local filtering and aggregation. Prefer
+structured/native planning for one or two small direct calls.
+
+Measure business completion, model rounds, input/output tokens, Action calls,
+and latency independently. In a bounded DSv4-Flash sample with thinking
+disabled, PTC was exact in all three dynamic workloads versus one exact
+structured route and reduced fan-out requests from four to three and recovery
+requests from five to three. It also used more tokens and elapsed time in every
+pair because the deterministic SDK/program carrier dominated the saved rounds.
+PTC is a workload-specific runtime-control and exact local-computation boundary,
+not an automatic cost or latency optimization.
+
+V1 exposes only scoped, model-visible Actions with
+`side_effect_level="read"`, `replay_safe=True`, no static approval requirement,
+and an explicit lossless-JSON `returns` contract. A precise return annotation
+on `@agent.action_func` supplies that contract; executor-backed registrations
+must declare `returns=`. Missing returns exclude the Action with diagnostics,
+not implicit `Any` eligibility. Nested dispatch is exclusive by default. A host
+may register an independently safe Action with `concurrency_mode="parallel"`;
+programs may use `asyncio.gather(...)`, while the runtime overlaps only those
+explicit parallel Actions up to `action.programmatic.max_parallel_subcalls`.
+Exclusive Actions form ordering barriers. Read-only and replay-safe labels do
+not imply parallel safety.
+
+The model produces one bounded Python 3.10+ async-function body whose return is
+lossless JSON. ActionRuntime wraps it in the
+reserved `run_action_program` transport, and every nested call re-enters the
+ordinary ActionDispatcher for schema filtering, policy, resources, result
+normalization, and Action evidence. The next model round receives only bounded
+program logs/return; nested complete values remain cold unless the program
+returns a deliberate projection.
+
+PTC may replace only ephemeral Action micro-DAGs. Keep stable business stages,
+approval, external wait, irreversible effects, compensation, partial rerun,
+and restart-safe recovery in TaskDAG/TriggerFlow. A live interpreter or awaited
+binding cannot be snapshotted. `DAGActionFlow` remains supported and is not
+deprecated by programmatic mode.
+
 ## Artifact and Evidence Boundaries
 
 Instruction-heavy or large Action values cross hot boundaries as bounded

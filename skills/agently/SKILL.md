@@ -151,7 +151,12 @@ not an execution engine.
 - Use ModelRequest for one model interaction without application-owned
   lifecycle orchestration.
 - Use ActionRuntime for model-callable operations; use ExecutionResource for
-  live dependency lifecycle.
+  live dependency lifecycle. Select
+  `agent.set_action_loop(planning_protocol="programmatic")` when one bounded
+  Action round needs data-dependent read calls, local loops, or aggregation.
+  Programmatic V1 is read-only, replay-safe, returns-contract-required,
+  isolated, and serial; it is not a durable workflow or AgentExecution
+  strategy.
 - Use Agently-Stage for process-local task lifetime and call-shape bridging.
   Do not treat it as a workflow, event, persistence, or policy owner.
 - Use a fresh `agent.create_execution()` for one bounded Agent run with
@@ -167,6 +172,12 @@ not an execution engine.
   retry, approval, pause/resume, intervention, or signal-network behavior.
 - Use TaskDAG/DynamicTask for untrusted model-generated or app-submitted DAG
   data. Validate and resolve it before it reaches TriggerFlow.
+
+Programmatic Action calling may replace only ephemeral Action micro-DAG work
+inside one settled boundary. Keep business milestones, approval, external wait,
+side-effect ordering, compensation, persistence, partial rerun, and restart
+recovery in TaskDAG/TriggerFlow. A running program interpreter or awaited host
+binding cannot be saved and resumed.
 
 Blocks are an internal lowering bridge, not a public task lifecycle or semantic
 owner. Ordinary TaskDAG execution compiles directly to TriggerFlow unless the

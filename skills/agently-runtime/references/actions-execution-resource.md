@@ -202,6 +202,31 @@ declared output fails the Action. Providers bound retained stdout/stderr, stop
 their owned process or container on timeout/cancellation, and surface cleanup
 failure instead of allowing false success.
 
+### Programmatic host bindings
+
+The `programmatic` Action planning protocol requires a `code_execution`
+provider that reports both required isolation and host async-binding support.
+Provider identity, Python support, and isolation labels do not imply binding
+support. Selection fails closed when the concrete capability facts do not
+match, and it never uses `trusted_local` as a production fallback.
+
+On POSIX hosts, the built-in Docker provider and its gVisor variant implement
+the bridge with container networking disabled. They remain eligible only when
+the probe observes `host_async_bindings=True` and every requested hard
+isolation axis.
+
+The generic bridge accepts bounded lossless-JSON calls and values only. It does
+not import ActionRuntime into the provider or serialize credentials, callbacks,
+Action objects, policies, or live clients. Host code reconstructs each offered
+Action id and sends the request through the ordinary ActionDispatcher. The
+program process has no direct network or host-environment access; any network
+or managed-resource work belongs to an explicitly authorized Action executor.
+
+The program, provider IPC, and awaited bindings are live resources. TriggerFlow
+snapshots may cover settled boundaries around the program, not the active
+interpreter stack. After approval or restart recovery, start a new program
+decision against current catalog and policy facts.
+
 Use install-capable shell only for explicitly trusted maintenance flows. There
 is no universal full-trust switch; broaden commands and network/file access at
 the owning provider while keeping isolation and roots explicit.
