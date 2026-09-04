@@ -45,7 +45,13 @@ def main() -> None:
 
     check("schema_version", support.get("schema_version") == 1, "support manifest schema is 1", failures, passes)
     check("framework", support.get("framework") == "agently", "framework is agently", failures, passes)
-    check("aligned_framework_version", isinstance(aligned_version, str), "aligned framework version exists", failures, passes)
+    check(
+        "aligned_framework_version",
+        aligned_version == "4.1.4.8",
+        "catalog is aligned with Agently 4.1.4.8 development",
+        failures,
+        passes,
+    )
     check("catalog_generation", catalog_generation == "v2", "current support manifest declares catalog generation v2", failures, passes)
     check(
         "supported_catalog_generations",

@@ -138,6 +138,50 @@ optional `gvisor` provider uses Docker's registered `runsc` runtime. An explicit
 with `unsafe_fallback=True` and non-required isolation. Never describe it as a
 sandbox.
 
+If Docker is unavailable and the source is trusted, make the fallback explicit:
+
+```python
+agent.enable_code_runtime(
+    language="nodejs",
+    providers=["trusted_local"],
+    unsafe_fallback=True,
+    isolation="none",
+)
+```
+
+Never silently select this path for model-generated code. Environment checking,
+selected-provider facts, authorized Docker image-pull progress, readiness, and
+actionable failure are `execution_resource.*` RuntimeEvents. `debug=True` shows
+their concise human-readable narrative: it uses environment/image stages and
+compact translated Docker layer lines instead of `provider=`/`phase=` field
+dumps. `debug="detail"` leads with the same explanation and then labels bounded
+sanitized probe and preparation facts as diagnostics. A missing image is
+downloaded only when the host chose an authorizing policy such as the
+`developer` profile or `image_pull_policy="if_missing"`.
+
+Keep complete Action metadata in the host registry, but give structured action
+planning only the action id, description, callable kwargs, required inputs, and
+non-default planning constraints. Do not repeat `execution_resources`, provider
+configuration, executor mechanics, empty defaults, or the latest result twice
+inside the planner Prompt.
+Derive every default planning round from the complete execution-local Prompt;
+preserve input, info, instructions, Session context, language policy,
+attachments, and the original output contract while appending compact Action
+state. The round contract is Action-or-Response: `execute` has non-empty calls
+and no response; `response` has no calls and a non-empty final carrier. Deliver
+an accepted response through the existing outer Request/AgentExecution parser,
+stream, result, validation, and Session lifecycle instead of adding another
+generation request. Keep the final-request path only for legacy/custom handlers
+or ActionFlow plugins without terminal response delivery and for independent
+delivery policies such as `ensure_long_output`.
+When configuring Actions after a quick Prompt, keep one fluent execution:
+`agent.input(...).info(...).use_action(...)`. Do not call another
+`create_execution()` or otherwise discard the request-local Prompt.
+Replan a corrected Action call when the recorded failure is a repairable
+argument/code/runtime error. For provider or environment unavailability, select
+another eligible Action or report the blocker and remedy; never present an
+unavailable execution as a successful result.
+
 Treat `sandbox=` on the Python and Node.js convenience helpers as a compatibility
 shortcut limited to `auto`, `docker`, and `trusted_local`. Optional mechanisms
 are plugins. Select them only through the provider-neutral `providers=` and

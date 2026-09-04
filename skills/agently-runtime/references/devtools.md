@@ -24,6 +24,38 @@ If the user also needs to redesign the workflow stages, branch semantics, runtim
 
 `agently-devtools` is optional. The Agently app should still run when DevTools is absent.
 
+## Local Console Profiles
+
+Keep the built-in console and complete observation surfaces distinct:
+
+- `debug=True` is exactly the `simple` profile. It shows a readable Prompt,
+  compact provider/model request summary, one useful response or AgentTask
+  progress stream, Action purpose/target/result previews, semantic phases,
+  warnings, and terminal state. It does not expand provider request JSON.
+- `debug="detail"` is a selected high-information diagnostic view. It adds the
+  full readable Prompt, sanitized provider request JSON, attempt/validation/
+  telemetry facts, full Action details, selected route/stage metadata, and
+  final materialization.
+- Neither profile means every RuntimeEvent. Compatibility aliases,
+  `runtime.progress.*` mirrors, heartbeats, nested structured-field leaves, and
+  already displayed character projections are suppressed only in the console.
+  EventCenter hooks and DevTools remain the complete audit, storage, query, and
+  replay surfaces.
+- In both profiles, the normalized `model.streaming` event owns direct response
+  characters so they remain before `model.completed`; delayed AgentExecution
+  projections of the same characters stay available to observation consumers
+  but do not repeat or reopen the console stream after Done.
+- Both profiles expose the `execution_resource.*` environment self-check,
+  selected provider, authorized image preparation progress, readiness, and
+  actionable failure. Simple mode uses human-readable environment/image stages
+  and compact translated Docker layer lines, without exposing internal
+  `provider=`/`phase=` fields. Detail leads with the same explanation and then
+  shows the bounded sanitized payload under `Diagnostics`.
+
+Agent-scoped debug settings apply across the complete AgentExecution lifecycle;
+do not require a duplicate global setting. Debug output remains diagnostic and
+does not replace the public `type="delta"` business/process stream.
+
 ## Minimal Observation Path
 
 ```python
