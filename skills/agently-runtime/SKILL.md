@@ -1,6 +1,6 @@
 ---
 name: agently-runtime
-description: "Use when the user wants Agently runtime extension capabilities: Action Runtime, built-in Action packages, MCP access, ExecutionResource lifecycle, TaskWorkspace file Actions, RecordStore durability, FastAPIHelper or streaming API exposure, or optional agently-devtools observation and evaluation."
+description: "Use when the user wants Agently runtime extension capabilities: AgentExecution Patterns or terminal review/artifact policies, Action Runtime, built-in Action packages, MCP access, ExecutionResource lifecycle, TaskWorkspace file Actions, RecordStore durability, FastAPIHelper or streaming API exposure, or optional agently-devtools observation and evaluation."
 ---
 
 # Agently Runtime
@@ -22,6 +22,8 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 - TaskContext, ContextReader, TaskWorkspace, RecordStore, SkillLibrary, or the
   SkillsExecutor compatibility facade: read
   `../agently/references/context-and-skills.md`.
+- AgentExecution Pattern, review, verification, or artifact delivery: use the
+  `AgentExecution and AgentTask` section below.
 
 ## Owner Boundaries
 
@@ -35,6 +37,7 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 | `ContextReader` | TaskContext-created intent-driven, budgeted progressive-disclosure handle for one consumer and phase. |
 | `SkillLibrary` | Installed immutable real-world Skill revisions and resource reads. |
 | `AgentExecution` | Task-scoped Skill binding, TaskContext preparation, route selection, execution, and result/stream APIs. |
+| `AgentPattern` | One reusable whole-request behavior using the carrying AgentExecution's existing input, output, capabilities, policy, and result lifecycle. |
 
 Do not merge these owners into a generic Workspace or runtime manager. File
 space is not record storage; record storage is not model-hot context; a Skill
@@ -152,6 +155,25 @@ package is not an executor or permission grant.
 - Use a fresh `agent.create_execution()` for multi-statement setup. A completed
   execution is an immutable run record; create another execution for another
   run.
+- Select one whole-request behavior with `.pattern(name_or_handler)`. The
+  Pattern consumes the existing AgentExecution draft and returns its business
+  value; a later `.pattern(...)` replaces rather than chains the selection.
+  Its `run_default()` continuation may invoke the ordinary route once. Put
+  Pattern-specific tuning in plugin settings or an instance instead of growing
+  fluent kwargs. `.output(...)` remains the external result contract; a Pattern
+  that bypasses `run_default()` must consume and honor it itself rather than
+  creating a second Pattern-local input/output API.
+- `.goal(...)` is the built-in goal Pattern switch. It preserves AgentTask as
+  the current planning, evidence, verification, and replan implementation;
+  `.strategy(...)` remains its lower-level mechanism override.
+- `.artifact(path, handler=None)` transforms the accepted result to text or
+  bytes, then leaves containment, write, complete digest readback, trusted ref,
+  and retention to TaskWorkspace. The handler must not write arbitrary host
+  paths or replace the business result.
+- `.review(handler=None)` performs one advisory quality judgment;
+  `.verify(handler=None)` uses the same handler shape as a hard terminal gate.
+  Both run after artifact materialization and neither hides retry, reflection,
+  revision, or replan behavior.
 - Use `agent.create_task(...)` / `agent.create_task_loop(...)` only when the
   model should own planning, bounded execution, evidence, verification, and
   replan. They return AgentExecution drafts, not public AgentTask handles.
@@ -167,6 +189,9 @@ package is not an executor or permission grant.
 - Add non-blocking operator context to a running task with
   `execution.async_add_guidance(...)`. Use TriggerFlow pause/resume when an
   answer is required before work can continue.
+- A complex Pattern uses TriggerFlow for branches, joins, loops, required HITL,
+  pause/resume, and recovery. ExecutionExchange remains the interaction routing
+  and provider seam; do not add a second Pattern-local interaction handler.
 - Require actual Action evidence for required side effects. TaskWorkspace
   readback proves a file fact; it does not prove an unrelated Action call.
 - When a sufficient completed TaskBoard control result provides a draftable

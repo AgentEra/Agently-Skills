@@ -33,8 +33,9 @@ Generic asks are scenario-led; a request does not need to mention Agently explic
 
 - One request family: model setup, prompt, structured output, response,
   session memory, embeddings, knowledge retrieval -> `agently-request`.
-- Actions, MCP, ExecutionResource, task files, durable records, service APIs,
-  RuntimeEvent, or DevTools -> `agently-runtime`.
+- Actions, MCP, ExecutionResource, task files, durable records, AgentExecution
+  terminal policies or Patterns, service APIs, RuntimeEvent, or DevTools ->
+  `agently-runtime`.
 - Stage task lifetime, sync/async call bridging, loop-neutral handles,
   settlement, replay channels, or local listeners -> `agently-stage`.
 - Multi-owner architecture, topology, evidence/identity boundaries, lifecycle,
@@ -138,6 +139,8 @@ keep raw URLs and metadata out of model transcription.
 - `SkillLibrary` owns immutable installed real-world Skill revisions.
 - `AgentExecution` binds Skills, builds/reads TaskContext, selects the route,
   executes, and exposes results/streams.
+- `AgentPattern` owns one reusable whole-request behavior carried by the same
+  AgentExecution; it does not own another input, result, or lifecycle facade.
 - `AgentTask` owns long-task planning, evidence, verification, repair, and
   terminal acceptance.
 
@@ -161,6 +164,15 @@ not an execution engine.
   Do not treat it as a workflow, event, persistence, or policy owner.
 - Use a fresh `agent.create_execution()` for one bounded Agent run with
   reusable result/text/meta/stream readers.
+- Use `.pattern(...)` when one reusable whole-request behavior should consume
+  the existing AgentExecution draft and return its business value. Select one
+  Pattern only; use TriggerFlow inside a complex Pattern for branching, loops,
+  required HITL, or recovery. `.goal(...)` selects the built-in goal Pattern
+  while retaining AgentTask as its planning/execution implementation.
+- Use `.artifact(path, handler=None)` for verified TaskWorkspace-backed result
+  delivery, `.review(handler=None)` for one advisory judgment, and
+  `.verify(handler=None)` for the same judgment boundary as a hard terminal
+  gate. These declarations do not create revision or retry loops.
 - Use `agent.create_task(...)` when the model should own a long task's planning,
   bounded work, evidence, verification, and replan loop. It returns an
   AgentExecution draft, not a public AgentTask handle.
@@ -272,5 +284,7 @@ replayed/unavailable/observed values precisely.
 - Duplicating full source, Skill, record, or artifact bodies into every prompt.
 - Treating Workspace, SkillsExecutor, Blocks, DevTools, or transport as a broad
   application policy owner.
+- Treating Pattern as a DAG synonym, giving it a second input/result lifecycle,
+  or hiding iterative repair inside `.review()` / `.verify()`.
 - Copying a full scaffold into a one-request project, retaining empty packages,
   or creating one file per planned topology node.

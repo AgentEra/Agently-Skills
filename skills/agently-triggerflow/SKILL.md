@@ -10,6 +10,11 @@ semantics. Use ModelRequest/AgentExecution for one bounded request/run, and use
 AgentTask when one Agent owns a long task's planning, evidence, verification,
 and replan loop without application-authored stage topology.
 
+An AgentPattern is a reusable whole-request behavior carried by one
+AgentExecution. A complex Pattern may use TriggerFlow for its internal topology,
+but Pattern is not a graph runtime and TriggerFlow does not become a second
+Agent input, result, or terminal lifecycle owner.
+
 The request does not need to say TriggerFlow or Agently; route by lifecycle and
 topology needs.
 
@@ -189,6 +194,8 @@ that need neither persistence nor record access.
 - Use ExecutionExchange providers for host UI/webhook/queue transport. The
   provider publishes typed requests; TriggerFlow owns the interrupt/resume
   ledger and `continue_with(...)` lifecycle.
+- Pattern-owned clarification uses this same ExecutionExchange plus TriggerFlow
+  wait/resume boundary; it does not add a Pattern-specific input callback.
 - Project host-facing exchange views through the public execution-exchange
   helpers rather than raw interrupt internals.
 - Use runtime intervention for optional context at declared boundaries; use
@@ -276,6 +283,9 @@ evidence.
 
 - Define developer-owned stable topology directly with `flow.to(...)` and
   `flow.when(...)` in importable modules with top-level handlers.
+- When that topology implements an AgentPattern, return its final business value
+  to the carrying AgentExecution and leave terminal result/status ownership
+  there.
 - Use a builder only when multiple configured flow instances or test isolation
   is actually required.
 - Route model-generated or application-submitted DAG data through
