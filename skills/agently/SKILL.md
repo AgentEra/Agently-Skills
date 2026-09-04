@@ -180,6 +180,12 @@ not an execution engine.
   delivery, `.review(handler=None)` for one advisory judgment, and
   `.verify(handler=None)` for the same judgment boundary as a hard terminal
   gate. These declarations do not create revision or retry loops.
+- Keep ordinary Agent fluent code free of type imports. Built-in Pattern,
+  effort, and strategy names should be suggested at the call site; Pattern and
+  alternate-orchestrator strategy namespaces remain open to extension. Import
+  only the relevant handler context from `agently.types.data` or Pattern
+  protocol types from `agently.types.plugins` when authoring a named extension,
+  never as boilerplate for an ordinary request.
 - Use `agent.create_task(...)` when the model should own a long task's planning,
   bounded work, evidence, verification, and replan loop. It returns an
   AgentExecution draft, not a public AgentTask handle.
