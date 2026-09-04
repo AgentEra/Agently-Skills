@@ -32,6 +32,10 @@ Keep the built-in console and complete observation surfaces distinct:
   compact provider/model request summary, one useful response or AgentTask
   progress stream, Action purpose/target/result previews, semantic phases,
   warnings, and terminal state. It does not expand provider request JSON.
+  Every successful model response retains at least one complete console
+  projection: its complete rendered stream, or its complete authoritative
+  materialized result when no full stream was rendered. Diagnostic and Action
+  previews may remain bounded.
 - `debug="detail"` is a selected high-information diagnostic view. It adds the
   full readable Prompt, sanitized provider request JSON, attempt/validation/
   telemetry facts, full Action details, selected route/stage metadata, and
@@ -45,6 +49,23 @@ Keep the built-in console and complete observation surfaces distinct:
   characters so they remain before `model.completed`; delayed AgentExecution
   projections of the same characters stay available to observation consumers
   but do not repeat or reopen the console stream after Done.
+- Overlapping ModelRequests keep their execution concurrency. ConsoleSink gives
+  the first response that emits a delta the foreground display, emits one
+  background notice for each later response, keeps only a bounded
+  response-local presentation buffer, and promotes responses in first-delta
+  FIFO order. A queued response that is still running loads its buffer and
+  continues live; one that already completed prints its final materialized
+  result. If the replay buffer overflows, ConsoleSink does not present the
+  partial replay as complete; it waits and prints the complete authoritative
+  terminal result instead. While a foreground stream is active, ordinary
+  Prompt, provider request, process, and successful lifecycle diagnostics use
+  a separate bounded console-only queue and appear under a labeled deferred
+  section after every FIFO response display finishes. Only the compact
+  background notice normally interrupts response text; warnings, failures,
+  cancellation, blocked/unhealthy, interrupt, and approval-required events
+  remain immediate. This display policy never blocks, throttles, cancels,
+  retries, serializes, or reorders ModelRequest, AgentExecution, EventCenter,
+  or DevTools facts.
 - Both profiles expose the `execution_resource.*` environment self-check,
   selected provider, authorized image preparation progress, readiness, and
   actionable failure. Simple mode uses human-readable environment/image stages
