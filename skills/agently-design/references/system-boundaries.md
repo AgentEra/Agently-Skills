@@ -63,6 +63,10 @@ Use AgentPattern when callers need to select one reusable whole-request
 behavior through the ordinary AgentExecution entry. A Pattern may implement a
 single request or use TriggerFlow internally, but it is not a third graph
 protocol and must return its business value to the carrying AgentExecution.
+Bundled implementations belong under the singular plugin-category directory
+`agently/builtins/plugins/AgentPattern/`; AgentOrchestrator may resolve and
+invoke them but must not absorb their readiness, section-plan, loop, or
+assembly policy. The current bundled examples are `plan` and `long_content`.
 
 An analysis diagram may show both paths, but it is not executable source of
 truth and must not introduce a second graph protocol.

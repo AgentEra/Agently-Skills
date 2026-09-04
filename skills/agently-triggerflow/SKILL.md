@@ -15,6 +15,13 @@ AgentExecution. A complex Pattern may use TriggerFlow for its internal topology,
 but Pattern is not a graph runtime and TriggerFlow does not become a second
 Agent input, result, or terminal lifecycle owner.
 
+The bundled `plan` Pattern uses TriggerFlow for readiness/clarification back
+edges and ExecutionExchange pause/resume. The bundled `long_content` Pattern
+uses a validated section plan plus `for_each(concurrency=1)` so predecessor
+continuity has an explicit serial value edge; host code assembles the terminal
+text without a final model recopy. Keep these flows behind the AgentPattern
+plugin boundary rather than moving their graph into AgentOrchestrator.
+
 The request does not need to say TriggerFlow or Agently; route by lifecycle and
 topology needs.
 

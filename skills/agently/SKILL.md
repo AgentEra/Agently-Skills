@@ -169,6 +169,13 @@ not an execution engine.
   Pattern only; use TriggerFlow inside a complex Pattern for branching, loops,
   required HITL, or recovery. `.goal(...)` selects the built-in goal Pattern
   while retaining AgentTask as its planning/execution implementation.
+- Use `.pattern("plan")` for a terminal plan: it performs structured readiness,
+  uses connected ExecutionExchange clarification when facts are materially
+  missing, and then returns the plan in the caller's existing output contract.
+  Use `.pattern("long_content")` for text composition through a validated
+  section plan, sequential writers with bounded continuity, and host-ordered
+  assembly. It is distinct from `ensure_long_output()` transport continuation
+  and rejects structured output or simultaneous continuation selection.
 - Use `.artifact(path, handler=None)` for verified TaskWorkspace-backed result
   delivery, `.review(handler=None)` for one advisory judgment, and
   `.verify(handler=None)` for the same judgment boundary as a hard terminal

@@ -166,6 +166,14 @@ package is not an executor or permission grant.
 - `.goal(...)` is the built-in goal Pattern switch. It preserves AgentTask as
   the current planning, evidence, verification, and replan implementation;
   `.strategy(...)` remains its lower-level mechanism override.
+- The default plugin registry distributes `plan` and `long_content` from
+  `agently.builtins.plugins.AgentPattern`. `plan` owns readiness -> optional
+  connected clarification -> final-plan topology and preserves the caller's
+  external `.output(...)`. `long_content` owns section planning -> sequential
+  section writing -> host text assembly; use `.artifact(...)` afterward for
+  file delivery. Keep tuning under `plugins.AgentPattern.<name>` instead of
+  adding Pattern method parameters. Durable plan pause/result resumption is not
+  supported until AgentExecution owns a resumable Pattern handle.
 - `.artifact(path, handler=None)` transforms the accepted result to text or
   bytes, then leaves containment, write, complete digest readback, trusted ref,
   and retention to TaskWorkspace. The handler must not write arbitrary host
