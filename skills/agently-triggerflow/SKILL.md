@@ -10,16 +10,22 @@ semantics. Use ModelRequest/AgentExecution for one bounded request/run, and use
 AgentTask when one Agent owns a long task's planning, evidence, verification,
 and replan loop without application-authored stage topology.
 
-An AgentPattern is a reusable whole-request behavior carried by one
-AgentExecution. A complex Pattern may use TriggerFlow for its internal topology,
-but Pattern is not a graph runtime and TriggerFlow does not become a second
-Agent input, result, or terminal lifecycle owner.
+A beta AgentPattern is a reusable whole-request behavior explicitly selected
+and carried by one AgentExecution. Registration alone does not select it. A
+complex Pattern may use TriggerFlow for its internal topology, but Pattern is
+not a graph runtime and TriggerFlow does not become a second Agent input,
+result, or terminal lifecycle owner. `.goal(...)` may use the internal goal
+Pattern transparently without requiring caller-side Pattern setup.
 
-The bundled `plan` Pattern uses TriggerFlow for readiness/clarification back
-edges and ExecutionExchange pause/resume. The bundled `long_content` Pattern
-uses a validated section plan plus `for_each(concurrency=1)` so predecessor
+The bundled beta `plan` Pattern uses TriggerFlow for readiness/clarification
+back edges and ExecutionExchange pause/resume. Its connected response may come
+from the carrying AgentExecution's standard `.interact(handler)` declaration or
+another configured provider. `.interact(...)` only adapts one request-local
+handler; it does not decide when to wait or become another pause/resume owner.
+The bundled `long_content` Pattern uses a validated section plan plus
+`for_each(concurrency=1)` so predecessor
 continuity has an explicit serial value edge; host code assembles the terminal
-text without a final model recopy. Keep these flows behind the AgentPattern
+text without a final model recopy. Keep these beta flows behind the AgentPattern
 plugin boundary rather than moving their graph into AgentOrchestrator.
 
 The request does not need to say TriggerFlow or Agently; route by lifecycle and
@@ -290,9 +296,9 @@ evidence.
 
 - Define developer-owned stable topology directly with `flow.to(...)` and
   `flow.when(...)` in importable modules with top-level handlers.
-- When that topology implements an AgentPattern, return its final business value
-  to the carrying AgentExecution and leave terminal result/status ownership
-  there.
+- When that topology implements a beta AgentPattern, return its final business
+  value to the carrying AgentExecution and leave terminal result/status
+  ownership there.
 - Use a builder only when multiple configured flow instances or test isolation
   is actually required.
 - Route model-generated or application-submitted DAG data through

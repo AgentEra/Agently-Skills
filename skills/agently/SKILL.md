@@ -139,8 +139,9 @@ keep raw URLs and metadata out of model transcription.
 - `SkillLibrary` owns immutable installed real-world Skill revisions.
 - `AgentExecution` binds Skills, builds/reads TaskContext, selects the route,
   executes, and exposes results/streams.
-- `AgentPattern` owns one reusable whole-request behavior carried by the same
-  AgentExecution; it does not own another input, result, or lifecycle facade.
+- `AgentPattern` (beta) owns one reusable whole-request behavior carried by the
+  same AgentExecution; it does not own another input, result, or lifecycle
+  facade.
 - `AgentTask` owns long-task planning, evidence, verification, repair, and
   terminal acceptance.
 
@@ -164,28 +165,42 @@ not an execution engine.
   Do not treat it as a workflow, event, persistence, or policy owner.
 - Use a fresh `agent.create_execution()` for one bounded Agent run with
   reusable result/text/meta/stream readers.
-- Use `.pattern(...)` when one reusable whole-request behavior should consume
-  the existing AgentExecution draft and return its business value. Select one
-  Pattern only; use TriggerFlow inside a complex Pattern for branching, loops,
-  required HITL, or recovery. `.goal(...)` selects the built-in goal Pattern
-  while retaining AgentTask as its planning/execution implementation.
-- Use `.pattern("plan")` for a terminal plan: it performs structured readiness,
-  uses connected ExecutionExchange clarification when facts are materially
-  missing, and then returns the plan in the caller's existing output contract.
-  Use `.pattern("long_content")` for text composition through a validated
-  section plan, sequential writers with bounded continuity, and host-ordered
-  assembly. It is distinct from `ensure_long_output()` transport continuation
-  and rejects structured output or simultaneous continuation selection.
+- Use the standard `.interact(handler)` method to bind one synchronous or
+  asynchronous connected response callback to the current AgentExecution. The
+  handler receives a normalized `ExecutionExchangeView` only when an existing
+  behavior opens an exchange; it does not force HITL, register a global
+  provider, or own pause/resume. Keep durable or application-wide interaction
+  on ExecutionExchange providers, routing handlers, and `interaction.*`
+  settings.
+- Treat `.pattern(...)` and the `AgentPattern` extension protocol as beta. Use
+  `.pattern(...)` when one reusable whole-request behavior should consume the
+  existing AgentExecution draft and return its business value. Registration
+  alone never selects a Pattern, and Pattern names do not replace Agent method
+  names. Select one Pattern only; use TriggerFlow inside a complex Pattern for
+  branching, loops, required HITL, or recovery. Agently may transparently carry
+  `.goal(...)` through the built-in goal Pattern while retaining the existing
+  AgentTask planning/execution behavior; callers do not need Pattern setup.
+- Use the beta `.pattern("plan")` for a terminal plan: it performs structured
+  readiness, uses connected ExecutionExchange clarification when facts are
+  materially missing, and then returns the plan in the caller's existing output
+  contract. Use the beta `.pattern("long_content")` for text composition through
+  a validated section plan, sequential writers with bounded continuity, and
+  host-ordered assembly. It is distinct from `ensure_long_output()` transport
+  continuation and rejects structured output or simultaneous continuation
+  selection.
 - Use `.artifact(path, handler=None)` for verified TaskWorkspace-backed result
   delivery, `.review(handler=None)` for one advisory judgment, and
   `.verify(handler=None)` for the same judgment boundary as a hard terminal
-  gate. These declarations do not create revision or retry loops.
+  gate. Together with `.interact(...)`, these are standard AgentExecution
+  methods; only Pattern is beta. These declarations do not create revision or
+  retry loops.
 - Keep ordinary Agent fluent code free of type imports. Built-in Pattern,
   effort, and strategy names should be suggested at the call site; Pattern and
   alternate-orchestrator strategy namespaces remain open to extension. Import
-  only the relevant handler context from `agently.types.data` or Pattern
-  protocol types from `agently.types.plugins` when authoring a named extension,
-  never as boilerplate for an ordinary request.
+  only `ExecutionExchangeView` or the relevant handler context from
+  `agently.types.data`, or Pattern protocol types from `agently.types.plugins`,
+  when authoring a named extension; never require them as boilerplate for an
+  ordinary request.
 - Use `agent.create_task(...)` when the model should own a long task's planning,
   bounded work, evidence, verification, and replan loop. It returns an
   AgentExecution draft, not a public AgentTask handle.

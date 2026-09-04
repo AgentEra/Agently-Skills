@@ -13,7 +13,8 @@ different boundaries.
 |---|---|---|
 | ModelRequest | one prompt/output contract and provider response | multi-stage lifecycle or business workflow |
 | AgentExecution / AgentTask | one Agent-owned execution or bounded task strategy | application-wide orchestration |
-| AgentPattern | one reusable whole-request behavior carried by an AgentExecution | another input/result/lifecycle facade or graph runtime |
+| Agent interaction handler | one AgentExecution's connected response adapter | deciding when HITL occurs, durable routing, or pause/resume |
+| AgentPattern (beta) | one reusable whole-request behavior carried by an AgentExecution | another input/result/lifecycle facade or graph runtime |
 | Action | a model-callable capability and its evidence | resource lifetime or workflow policy |
 | ExecutionResource | managed live dependency lifecycle | business decisions or state transitions |
 | TaskContext | one task's bound information and internal derived ContextIndex | source truth, files, persistence, or execution |
@@ -59,14 +60,25 @@ Use TaskDAG / Dynamic Task when a model or application submits DAG-shaped plan
 data at runtime. Validate and resolve that data before its TriggerFlow substrate
 executes it; do not compile unvalidated plan data into ad hoc flow definitions.
 
-Use AgentPattern when callers need to select one reusable whole-request
-behavior through the ordinary AgentExecution entry. A Pattern may implement a
-single request or use TriggerFlow internally, but it is not a third graph
-protocol and must return its business value to the carrying AgentExecution.
+Use beta AgentPattern when callers need to select one reusable whole-request
+behavior explicitly through the ordinary AgentExecution entry. Registration
+does not select a Pattern, and Pattern names remain isolated from Agent method
+names. A Pattern may implement a single request or use TriggerFlow internally,
+but it is not a third graph protocol and must return its business value to the
+carrying AgentExecution.
 Bundled implementations belong under the singular plugin-category directory
 `agently/builtins/plugins/AgentPattern/`; AgentOrchestrator may resolve and
 invoke them but must not absorb their readiness, section-plan, loop, or
-assembly policy. The current bundled examples are `plan` and `long_content`.
+assembly policy. The current beta bundled examples are `plan` and
+`long_content`. `.goal(...)` may use an internal goal Pattern transparently
+without requiring callers to adopt the beta extension API.
+
+`.interact(handler)`, `.artifact(...)`, `.review(...)`, and `.verify(...)` are
+stable AgentExecution declarations, not Pattern extensions. The interaction
+handler adapts one request-local connected response into ExecutionExchange;
+ExecutionExchange still owns the envelope/provider seam and TriggerFlow still
+owns wait/pause/resume. Durable or application-wide interaction remains on
+registered providers, routing handlers, and settings.
 
 An analysis diagram may show both paths, but it is not executable source of
 truth and must not introduce a second graph protocol.
@@ -110,8 +122,8 @@ when it carries the behavior. If a new term is unavoidable, document:
 - Does every decision, state, effect, and wait have one primary owner?
 - Are policy layers independent from provider, storage, transport, and UI?
 - Is stable source topology separated from submitted DAG data?
-- Does each AgentPattern retain one AgentExecution input/result/lifecycle owner
-  while delegating graph mechanics to TriggerFlow?
+- Does each beta AgentPattern retain one AgentExecution input/result/lifecycle
+  owner while delegating graph mechanics to TriggerFlow?
 - Are execution state, TaskContext, TaskWorkspace, RecordStore, `flow_data`,
   resources, and domain storage used according to their real lifecycles?
 - Was terminology overlap checked before adding a concept?

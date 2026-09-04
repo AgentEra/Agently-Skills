@@ -37,7 +37,7 @@ branching, concurrency, pause/resume, retry, or multi-stage orchestration.
 | `ContextReader` | TaskContext-created intent-driven, budgeted progressive-disclosure handle for one consumer and phase. |
 | `SkillLibrary` | Installed immutable real-world Skill revisions and resource reads. |
 | `AgentExecution` | Task-scoped Skill binding, TaskContext preparation, route selection, execution, and result/stream APIs. |
-| `AgentPattern` | One reusable whole-request behavior using the carrying AgentExecution's existing input, output, capabilities, policy, and result lifecycle. |
+| `AgentPattern` (beta) | One reusable whole-request behavior using the carrying AgentExecution's existing input, output, capabilities, policy, and result lifecycle. |
 
 Do not merge these owners into a generic Workspace or runtime manager. File
 space is not record storage; record storage is not model-hot context; a Skill
@@ -155,19 +155,32 @@ package is not an executor or permission grant.
 - Use a fresh `agent.create_execution()` for multi-statement setup. A completed
   execution is an immutable run record; create another execution for another
   run.
-- Select one whole-request behavior with `.pattern(name_or_handler)`. The
-  Pattern consumes the existing AgentExecution draft and returns its business
-  value; a later `.pattern(...)` replaces rather than chains the selection.
+- `.interact(handler)` is a standard AgentExecution method for one request-local
+  connected response mechanism. The synchronous or asynchronous handler
+  receives the complete normalized `ExecutionExchangeView` and returns the
+  response payload expected by the existing exchange consumer. It is called
+  only if an exchange opens, is replaced by a later pre-start declaration, and
+  never mutates the global provider registry. Keep durable queues, webhooks,
+  cross-process hosts, and application-wide routing on registered
+  ExecutionExchange providers, routing handlers, and `interaction.*` settings.
+- Treat `.pattern(...)` and the `AgentPattern` protocol as beta. Select one
+  whole-request behavior with `.pattern(name_or_handler)`. Registering a
+  Pattern does not select or instantiate it for an ordinary execution, and its
+  name never replaces an Agent or AgentExecution method. The Pattern consumes
+  the existing AgentExecution draft and returns its business value; a later
+  `.pattern(...)` replaces rather than chains the selection.
   Its `run_default()` continuation may invoke the ordinary route once. Put
   Pattern-specific tuning in plugin settings or an instance instead of growing
   fluent kwargs. `.output(...)` remains the external result contract; a Pattern
   that bypasses `run_default()` must consume and honor it itself rather than
   creating a second Pattern-local input/output API.
-- `.goal(...)` is the built-in goal Pattern switch. It preserves AgentTask as
-  the current planning, evidence, verification, and replan implementation;
-  `.strategy(...)` remains its lower-level mechanism override.
-- The default plugin registry distributes `plan` and `long_content` from
-  `agently.builtins.plugins.AgentPattern`. `plan` owns readiness -> optional
+- `.goal(...)` remains the public goal-pursuit switch. Agently may carry it
+  transparently through the internal goal Pattern while preserving AgentTask's
+  planning, evidence, verification, replan, result, and failure behavior;
+  callers do not need to configure the beta Pattern API. `.strategy(...)`
+  remains the lower-level mechanism override.
+- The default plugin registry distributes the beta `plan` and `long_content`
+  from `agently.builtins.plugins.AgentPattern`. `plan` owns readiness -> optional
   connected clarification -> final-plan topology and preserves the caller's
   external `.output(...)`. `long_content` owns section planning -> sequential
   section writing -> host text assembly; use `.artifact(...)` afterward for
@@ -181,7 +194,9 @@ package is not an executor or permission grant.
 - `.review(handler=None)` performs one advisory quality judgment;
   `.verify(handler=None)` uses the same handler shape as a hard terminal gate.
   Both run after artifact materialization and neither hides retry, reflection,
-  revision, or replan behavior.
+  revision, or replan behavior. `.interact(...)`, `.artifact(...)`,
+  `.review(...)`, and `.verify(...)` are standard methods; only Pattern is
+  beta.
 - Use `agent.create_task(...)` / `agent.create_task_loop(...)` only when the
   model should own planning, bounded execution, evidence, verification, and
   replan. They return AgentExecution drafts, not public AgentTask handles.
@@ -199,7 +214,9 @@ package is not an executor or permission grant.
   answer is required before work can continue.
 - A complex Pattern uses TriggerFlow for branches, joins, loops, required HITL,
   pause/resume, and recovery. ExecutionExchange remains the interaction routing
-  and provider seam; do not add a second Pattern-local interaction handler.
+  and provider seam. A Pattern may consume the carrying AgentExecution's
+  standard `.interact(...)` declaration, but must not add a second Pattern-local
+  interaction API.
 - Require actual Action evidence for required side effects. TaskWorkspace
   readback proves a file fact; it does not prove an unrelated Action call.
 - When a sufficient completed TaskBoard control result provides a draftable
