@@ -120,23 +120,39 @@ package is not an executor or permission grant.
   `SkillSourceProvider` implementations for authorized local or Git sources;
   pin a Git `ref` and optional `subpath` rather than inventing a host checkout
   helper.
-- Bind optional or required Skills on an `AgentExecution` with
+- Use the same composition grammar as Actions. Declare reusable Agent defaults
+  with `agent.use_skills(..., always=True)` and one-run additions with
   `execution.use_skills(...)`, `execution.require_skills(...)`, or
-  `execution.use_skills_packs(...)`.
+  `execution.use_skills_packs(...)`. Do not introduce a second public
+  collection manager for Skills.
+- Treat only those declarations as the current execution's Skill scope.
+  `AgentExecution` resolves and freezes exact revision refs before semantic
+  selection; an empty declaration set does not expose the global SkillLibrary.
+- Treat every later user request as a fresh AgentExecution. Agent defaults are
+  reconsidered against the new task; execution-local Skill/Action declarations
+  are not inherited. Session carries conversation and memory, never executable
+  scope or permission.
 - Let `AgentExecution` prepare the shared TaskContext and read it for the
   actual consumer/phase with `async_prepare_task_context()` and
   `async_read_task_context(...)`.
+- When a complete root `SKILL.md` is already disclosed, do not also deliver or
+  offer its indexed child sections. Use child sections only for a lossy parent
+  projection or a later bounded read.
 - Provide Actions/MCP/ExecutionResources explicitly. Reading a Skill may inform
   the model that an operation exists; it never creates or authorizes that
   operation.
-- When a trusted, exactly bound Skill revision contains an executable script,
-  call `agent.bind_skill_script_action(...)` only after
-  `execution.async_prepare_task_context()`. Pass the host-issued `binding_id`,
-  exact resource path, and `SkillScriptAuthorization`; the binding registers an
-  ordinary Action and never makes every script automatically callable. For a
-  host-directed run, dispatch `bound_action.action_id` through
-  `agent.action.async_execute_action(...)`, then read its published artifact
-  path through the same execution's TaskWorkspace.
+- When trusted, exactly bound Skill revisions contain executable scripts, call
+  `agent.enable_skill_script_exec(...)` only after
+  `execution.async_prepare_task_context()`. Pass an explicit
+  `SkillScriptAuthorization`; the helper reuses one stable restricted ordinary
+  Action definition per Agent/language and binds authorization only to the
+  current execution. Enabling it must preserve the already prepared Skill
+  selection. The model
+  supplies only a relative `script_path` and bounded `args`; the host resolves
+  one unique resource from the frozen bindings. Narrow the Skill declarations
+  when paths collide. The released `agent.bind_skill_script_action(...)`
+  remains available when host code intentionally needs one exact-path binding.
+  Read published artifacts through the same execution's TaskWorkspace.
 - `Agently.skills_executor` is a compatibility facade for source-backed or
   local install, configure, inspect, list, resource read, context-pack
   projection, and the TaskDAG Skill resolver. It is not a plugin route,
@@ -197,6 +213,9 @@ package is not an executor or permission grant.
   revision, or replan behavior. `.interact(...)`, `.artifact(...)`,
   `.review(...)`, and `.verify(...)` are standard methods; only Pattern is
   beta.
+- A dispatched ModelRequest cannot receive a new Skill or Action retroactively.
+  When a later message introduces a new need, build a fresh execution so its
+  Skill applicability and Action scope are derived from that message.
 - Use `agent.create_task(...)` / `agent.create_task_loop(...)` only when the
   model should own planning, bounded execution, evidence, verification, and
   replan. They return AgentExecution drafts, not public AgentTask handles.

@@ -328,6 +328,22 @@ trust or script authorization.
 
 ## AgentExecution Skill Binding
 
+Skills follow the same public composition grammar as Actions. Use
+`agent.use_skills(..., always=True)` for reusable Agent defaults and
+`execution.use_skills(...)` for additions that apply only to the current run.
+Do not invent a separate public collection manager. `SkillLibrary` is the
+immutable revision catalog; it is not automatically exposed to the model.
+`AgentExecution` resolves only the Agent defaults plus current declarations to
+an exact-revision snapshot before selection. No declarations means no Skill
+candidates, and later library installs or Agent-default changes do not widen an
+already prepared execution.
+
+For multiple user messages, keep the Session for conversation/memory but create
+a fresh AgentExecution for every request. Agent-default Skill candidates are
+evaluated again against the new task, so a Skill that was irrelevant earlier
+may be selected later. The earlier execution remains an immutable run record;
+its exact bindings, Action scope, and permissions never become Session state.
+
 Bind Skills to a fresh execution, then let the execution build/read the shared
 TaskContext:
 
@@ -352,6 +368,14 @@ availability contract, and `use_skills_packs(...)` for installed pack scope.
 Required Skills fail closed before business work when the requested revision is
 missing or unreadable.
 
+Repeated unchanged preparation reuses the frozen snapshot. Applicability
+selection and later semantic context selection run inside the current
+AgentExecution runtime context so request counts, events, and diagnostics keep
+the same execution lineage. When a complete root `SKILL.md` is delivered, its
+indexed child sections are not offered or delivered again; child reads remain
+available when the parent representation is lossy or a later consumer asks for
+a bounded section.
+
 Keep three facts separate:
 
 - a revision bound into TaskContext is available to the task;
@@ -370,22 +394,16 @@ Skill reading and side effects are separate:
 - A script inside a Skill is an addressable resource, not an automatically
   callable Action.
 
-When the host intentionally authorizes one exact trusted script, bind it after
-TaskContext preparation:
+When the host authorizes scripts from the current exact Skill bindings, enable
+one restricted execution Action for the required language after TaskContext
+preparation:
 
 ```python
 from agently.types.data import SkillScriptAuthorization
 
 await execution.async_prepare_task_context()
-binding = next(
-    item
-    for item in execution.skill_bindings
-    if item.revision_ref == revision.revision_ref  # use target_revision_ref for a pack
-)
-bound_action = agent.bind_skill_script_action(
+exec_action_id = agent.enable_skill_script_exec(
     execution,
-    binding_id=binding.binding_id,
-    resource_path="scripts/check.py",
     authorization=SkillScriptAuthorization(
         auto_allow=True,
         expected_outputs=("output/report.json",),
@@ -393,8 +411,8 @@ bound_action = agent.bind_skill_script_action(
 )
 
 action_result = await agent.action.async_execute_action(
-    bound_action.action_id,
-    {"args": []},
+    exec_action_id,
+    {"script_path": "scripts/check.py", "args": []},
 )
 if action_result["status"] != "success":
     raise RuntimeError(action_result.get("error") or "Skill script failed")
@@ -413,24 +431,37 @@ if readback.truncated:
 report_json = readback.content
 ```
 
-This verifies the exact revision, resource descriptor, and digest, then
-registers an ordinary code-execution Action. At call time the script bytes are
-copied into a scoped TaskWorkspace execution area before the selected provider
-runs them. The installed Skill directory is never executed in place. Trust is
-package provenance policy, not blanket permission; the explicit authorization
-and ordinary Action evidence remain required.
+This reuses one stable ordinary code-execution Action definition per
+Agent/language and adds only an authorization binding to the current execution.
+Enabling it after TaskContext preparation does not repeat Skill applicability
+selection. At call time the Action obtains only the current execution's grant,
+resolves `script_path` uniquely from its frozen bindings, then verifies the
+exact revision, resource descriptor, and digest. Ambiguous
+paths fail closed; narrow the execution's Skill declarations or use the
+released `agent.bind_skill_script_action(...)` compatibility API when host code
+intentionally needs one exact-path binding. The script bytes are copied into a
+scoped TaskWorkspace execution area before the selected provider runs them. The
+installed Skill directory is never executed in place. Trust is package
+provenance policy, not blanket permission; explicit authorization and ordinary
+Action evidence remain required.
 
-`BoundSkillAction.action_id` is the exact Action dispatch key. The bound script
-Action accepts only bounded `args`; stdin, environment, arbitrary source files,
-runtime commands, and package-manager commands are not model inputs. The
-binder supplies its own provider requirement from the ordered
+The restricted Action accepts only a relative `script_path` and bounded
+`args`; binding ids, revision refs, stdin, environment, arbitrary source files,
+runtime commands, and package-manager commands are not model inputs. It
+supplies its own provider requirement from the ordered
 `code_execution.providers` setting, so `enable_code_runtime(...)` is not a
-prerequisite. Its successful Action result publishes declared artifacts as
+prerequisite. Its successful result publishes declared artifacts as
 TaskWorkspace-relative private paths such as
 `.agently/files/<execution>/code_execution/<call>/output/report.json`; physical
 readback through
 `execution.task_workspace.read_file(...)` proves the bytes that were actually
 collected.
+
+If prompt or Skill declarations change after this authorization but before
+start, the prepared TaskContext is invalidated and Agently removes the dependent
+script Action from that execution's scope. Prepare and authorize again. Once an
+execution or ModelRequest has started, do not hot-add a Skill or Action; create
+a fresh execution for a later user request.
 
 ## SkillsExecutor Compatibility Facade
 
@@ -455,6 +486,11 @@ SkillsExecutor plugin, `SkillsManager`, Skills route, `single_shot`, `staged`,
 compatibility adapters that construct an ordinary AgentExecution. New code
 should configure the execution directly so its TaskContext, route, Actions,
 limits, and result lifecycle remain explicit.
+
+The compatibility facade's `actionize_scripts=True` option is retained only as
+an ignored projection flag. Selected scripts remain ordinary resource
+descriptors and the facade emits `skills.compat.actionize_scripts_ignored`; it
+does not discover, generate, mount, or authorize Actions.
 
 ## Review Checklist
 

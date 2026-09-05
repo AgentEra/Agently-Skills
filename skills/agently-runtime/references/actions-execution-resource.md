@@ -23,12 +23,16 @@ Browse follows the same rule unless it explicitly consumes a managed browser.
 Downloaded bytes may be materialized into TaskWorkspace; file handlers own
 format parsing/rendering.
 
-Real-world Skill scripts are resources, not trusted runtime handlers. After the
-host binds an exact trusted revision into an `AgentExecution`, it may call
-`agent.bind_skill_script_action(...)` with an explicit
-`SkillScriptAuthorization`. That creates an ordinary Action which still uses
-Action policy, a TaskWorkspace grant, and an ExecutionResource. Skill reading
-itself never mounts or authorizes a script.
+Real-world Skill scripts are resources, not trusted runtime handlers or a
+second Action-discovery pool. After the host binds exact trusted revisions into
+an `AgentExecution`, it may call `agent.enable_skill_script_exec(...)` with an
+explicit `SkillScriptAuthorization`. The helper reuses one stable restricted
+ordinary Action definition per Agent/language while binding the exact Skill
+scope and output permission only in the current execution. It still uses Action
+policy, a TaskWorkspace grant, and an ExecutionResource. Skill reading itself
+never mounts or authorizes a script. The released
+`agent.bind_skill_script_action(...)` remains the compatibility path for an
+intentional exact-script binding.
 
 ## Application Surface
 
@@ -196,10 +200,13 @@ restriction. Do not accept provider names or legacy strings such as
 `"required"` as safety evidence. Preferred isolation searches all ordered
 candidates for a full match before recording an explicit eligible fallback.
 
-`agent.bind_skill_script_action(...)` registers its own narrow
-`code_execution` requirement using the ordered
-`code_execution.providers` setting. Do not call `enable_code_runtime(...)`
-solely to execute that bound Skill script: doing so would expose an additional
+`agent.enable_skill_script_exec(...)` registers its own narrow
+`code_execution` requirement using the ordered `code_execution.providers`
+setting and adds the resulting Action through the ordinary execution Action
+scope. Its model-visible input is only the unique relative `script_path` plus
+bounded `args`; revision and binding identities stay host-side and are emitted
+as evidence after resolution. Do not call `enable_code_runtime(...)` solely to
+execute a bound Skill script: doing so would expose an additional
 general-purpose code Action. Use `enable_code_runtime(...)` only when the
 application independently needs that broader capability.
 
