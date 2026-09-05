@@ -13,7 +13,8 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
 - Provider, endpoint, env, settings namespace, or connectivity:
   `references/model-setup.md`.
-- Prompt slots/config, YAML/JSON prompt files, mappings, reusable contracts:
+- Prompt slots/config, YAML/JSON prompt files, mappings, literal references,
+  non-redundant instructions, or descriptive evaluation levels:
   `references/prompt-management.md`.
 - Required fields, `.output(...)`, parsing, validation, or structured output:
   `references/output-control.md`.
@@ -38,6 +39,11 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 - Put runtime values in `input`, authoritative source/API/schema facts in
   `info`, transformation/call rules in `instruct`, and the exact
   machine-consumable shape in `output`.
+- Do not repeat facts, rubric definitions, or field constraints in `instruct`.
+  Point the model to their owning slots with literal `[info.rules]` /
+  `[output.verdict]` references in ordinary strings. Keep these mentions
+  unchanged; no f-strings, substitution, rendering, or content copying is needed.
+  Read `references/prompt-management.md` for syntax and evaluation guidance.
 - Keep request-local cohesion: retain prompt context only when it changes the
   current request's task, contract, evidence, permission, restriction, or
   required result, or provides useful user-visible process context, state, or
@@ -95,9 +101,10 @@ classification, relevance, grading, quality, and acceptance. Do not make
 tokenization, word segmentation, keyword tables, substring matching, regex, or
 snapshot comparison the semantic owner.
 
-Prefer defined conceptual levels over model-generated numeric scores. If the
-host needs thresholds or statistics, map validated labels to numbers after the
-model response.
+Use explicitly defined descriptive levels for model-owned quality judgments,
+not invented numeric scores. Host mappings of levels are ordinal policy codes,
+not measured quality or calibrated probabilities. Reserve numeric metrics for
+defined calculations over recorded facts.
 
 Use executable code/Actions for complex arithmetic, aggregation, and data
 transformation. Let the model propose or review a calculation plan, then feed

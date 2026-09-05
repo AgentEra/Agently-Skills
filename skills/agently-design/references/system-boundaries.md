@@ -12,9 +12,9 @@ different boundaries.
 | Owner | Owns | Does not own |
 |---|---|---|
 | ModelRequest | one prompt/output contract and provider response | multi-stage lifecycle or business workflow |
-| AgentExecution / AgentTask | one Agent-owned execution or bounded task strategy | application-wide orchestration |
+| Agent | reusable configuration and module capabilities | one run's mutable state |
+| AgentExecution plugin | one draft, production lifecycle, final policies and result; typed nested components | application-wide orchestration |
 | Agent interaction handler | one AgentExecution's connected response adapter | deciding when HITL occurs, durable routing, or pause/resume |
-| AgentPattern (beta) | one reusable whole-request behavior carried by an AgentExecution | another input/result/lifecycle facade or graph runtime |
 | Action | a model-callable capability and its evidence | resource lifetime or workflow policy |
 | ExecutionResource | managed live dependency lifecycle | business decisions or state transitions |
 | TaskContext | one task's bound information and internal derived ContextIndex | source truth, files, persistence, or execution |
@@ -60,21 +60,24 @@ Use TaskDAG / Dynamic Task when a model or application submits DAG-shaped plan
 data at runtime. Validate and resolve that data before its TriggerFlow substrate
 executes it; do not compile unvalidated plan data into ad hoc flow definitions.
 
-Use beta AgentPattern when callers need to select one reusable whole-request
-behavior explicitly through the ordinary AgentExecution entry. Registration
-does not select a Pattern, and Pattern names remain isolated from Agent method
-names. A Pattern may implement a single request or use TriggerFlow internally,
-but it is not a third graph protocol and must return its business value to the
-carrying AgentExecution.
-Bundled implementations belong under the singular plugin-category directory
-`agently/builtins/plugins/AgentPattern/`; AgentOrchestrator may resolve and
-invoke them but must not absorb their readiness, section-plan, loop, or
-assembly policy. The current beta bundled examples are `plan` and
-`long_content`. `.goal(...)` may use an internal goal Pattern transparently
-without requiring callers to adopt the beta extension API.
+Use AgentExecution plugins for reusable per-run production. The Agent factory
+returns the actual registered class, not another orchestrator or wrapper.
+Built-ins share a once-only lifecycle and specialize production on the same
+instance; request, long_task, plan and long_content are producer choices.
+AgentPattern is replaced; released Orchestrator/AgentTask names are compatibility
+paths over the new owner. Branching and back edges still use TriggerFlow.
 
-`.interact(handler)`, `.artifact(...)`, `.review(...)`, and `.verify(...)` are
-stable AgentExecution declarations, not Pattern extensions. The interaction
+Goals and success criteria are Prompt semantics, not an execution algorithm.
+goal(..., turn_on_long_task=True) additionally enables the ordinary long-task
+convenience path; False leaves independent producer choices intact. A producer
+may derive missing fields only when needed, preferably in existing planning.
+Keep inferred provenance and original declarations distinct; no blanket
+preflight or model-invented business gate. Read the concrete runtime contract
+in `../../agently-runtime/references/agent-execution.md`.
+
+`.interact(handler)`, `.artifact(...)`, `.review(...)`, and `.validate(...)` are
+AgentExecution declarations. Validate is final-output hard checking; review
+has injectable rules/evaluator and host warn/block policy. The interaction
 handler adapts one request-local connected response into ExecutionExchange;
 ExecutionExchange still owns the envelope/provider seam and TriggerFlow still
 owns wait/pause/resume. Durable or application-wide interaction remains on
@@ -122,8 +125,8 @@ when it carries the behavior. If a new term is unavoidable, document:
 - Does every decision, state, effect, and wait have one primary owner?
 - Are policy layers independent from provider, storage, transport, and UI?
 - Is stable source topology separated from submitted DAG data?
-- Does each beta AgentPattern retain one AgentExecution input/result/lifecycle
-  owner while delegating graph mechanics to TriggerFlow?
+- Does each execution plugin retain one draft/result/lifecycle owner while
+  delegating graph mechanics to TriggerFlow?
 - Are execution state, TaskContext, TaskWorkspace, RecordStore, `flow_data`,
   resources, and domain storage used according to their real lifecycles?
 - Was terminology overlap checked before adding a concept?

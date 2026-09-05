@@ -85,7 +85,7 @@ After design ownership is clear, route exact mechanisms as follows:
 
 - single-request provider, prompt, output, response, Session, or retrieval APIs
   -> `agently-request`;
-- Action, MCP, ExecutionResource, Workspace, AgentExecution Pattern or terminal
+- Action, MCP, ExecutionResource, Workspace, AgentExecution plugin or terminal
   policy, service, or telemetry mechanics -> `agently-runtime`;
 - model-generated or application-submitted DAG validation and execution ->
   `agently-dynamic-task`;
