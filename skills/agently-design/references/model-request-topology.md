@@ -64,6 +64,36 @@ flowchart LR
   J --> T["Terminal transition"]
 ```
 
+## Collaborative Flow and Handoff Review
+
+Use this view when the developer asks whether model nodes are well defined,
+why effects are poor, whether data reaches the right consumers, whether context
+is redundant, or whether a duty belongs to the model or engineering/workflow.
+An explicit "Prompt review" request is unnecessary. Match the question to a
+check this method can actually perform:
+
+| Developer question | Contract/flow check | Evidence boundary |
+|---|---|---|
+| Is each model node correctly defined? | Compare its decision, required facts, output and consumer; justify every split. | A planned role is not proof the dispatched request implements it. |
+| Can execution effects improve? | Locate the first deficient input, transformation or handoff; compare targeted changes. | Use actual prompts, outputs, semantic review and observed latency/usage; tables alone do not prove improvement. |
+| Is data flow complete and correct? | Trace each required consumer field back to its source, transformation and validation. | Check actual delivery and scope/freshness; a drawn edge or unread ref is insufficient. |
+| Is information redundant? | Apply the removal counterfactual to context, duplicate transforms and unconsumed outputs. | Repeated context can be necessary across independent request snapshots; do not delete required facts just to reduce bytes. |
+| Is model/Host/workflow ownership sound? | Separate semantic decisions from deterministic checks, scheduling and effects. | Route a mechanical/runtime defect to its owner instead of disguising it as Prompt tuning. |
+
+First show the complete in-scope flow, highlighting model duties and key
+input/output handoffs against Host/tool/human stages. Keep branches, waits,
+joins and loops visible and separate observed from proposed behavior. Prefer a
+clear verified visual when an image-generation or diagram tool is available;
+use Mermaid/SVG/ASCII when appropriate. Do not make a generated image the only
+source of exact contracts.
+
+Then compare related Prompt tables using the flow-first, flexible-group method
+in `../../agently-request/references/prompt-management.md`. Up to three logical
+nodes can be shown together; tightly coupled larger groups are allowed. Choose
+boundaries for developer understanding, not a fixed count. The overview and
+details may share a reply when scope is clear. Preserve confirmation of
+consequential proposed changes; grouping is not runtime node consolidation.
+
 ## Minimum Planning Topology Contract
 
 Planning topology is a design contract, not a slogan or a diagram added after

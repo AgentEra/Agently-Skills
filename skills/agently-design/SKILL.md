@@ -1,6 +1,6 @@
 ---
 name: agently-design
-description: "Use when the user is collaboratively designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including the ModelRequest inventory and Prompt handoffs, execution-layer selection, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
+description: "Use to design, understand, tune, or audit a non-trivial Agently model workflow: model-node responsibilities, input/output completeness, data-flow correctness or redundancy, model-versus-Host/workflow ownership, topology, evidence, lifecycle, concurrency, or observed execution effects. The user need not say Prompt review or name Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
 ---
 
 # Agently Design
@@ -68,8 +68,9 @@ runtime event protocol.
 - owner layers, project boundaries, stable flow versus submitted DAG, state,
   storage, terminology, or architecture review ->
   `references/system-boundaries.md`
-- ModelRequest nodes, prompt/output contracts, schema edges, `instant` fan-out,
-  joins, request ledgers, or planned-versus-observed topology ->
+- Model-node definitions, effect tuning, data-flow correctness/redundancy,
+  flow-first collaborative review, prompt/output contracts, schema edges,
+  `instant` fan-out, joins, or planned-versus-observed topology ->
   `references/model-request-topology.md`
 - ContextPackage, Workspace evidence, trusted selection keys, identity joins,
   refs, citations, snapshots, or evidence fail-closed rules ->
@@ -96,13 +97,18 @@ After design ownership is clear, route exact mechanisms as follows:
 
 ## Required Design Artifacts
 
-When Agently use and solution/process/Prompt design-review work are both known,
-apply collaborative review by default. Ask the user to confirm the
-scoped ModelRequest inventory and each request's responsibility before detailed
-Prompt review. Use the existing topology plan, not another ledger. Route selected
-request reviews to the one-design-then-confirm process in
-`../agently-request/references/prompt-management.md`; revisit only affected
-responsibilities and handoffs after a revision.
+Use collaborative review when it can answer the developer's question about
+model-node definitions, execution effects, data completeness/redundancy, or
+model/Host division of work; do not require the phrase "Prompt review".
+First show the whole in-scope flow, highlighting model nodes, their duties and
+input/output handoffs alongside Host work. Read `references/model-request-topology.md`
+for the question-to-evidence checks. Use the existing topology, not another
+ledger; a drawing alone does not prove runtime correctness or quality.
+Group related node tables for comparison under
+`../agently-request/references/prompt-management.md`: up to three logical nodes
+may share a reply, and tightly coupled larger groups are allowed. Clear scope
+can be shown with its details in the same reply. Preserve consequential-change
+confirmation and revisit only affected responsibilities/handoffs after revision.
 
 Every non-trivial linear, branching, concurrent, or looped system requires one
 planning-topology contract containing all four ledgers:
