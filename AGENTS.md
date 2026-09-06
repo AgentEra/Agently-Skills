@@ -83,6 +83,21 @@ Use this file as installation-time guidance after the skills are added into anot
   Examples that only explain already-released behavior may follow the exception.
   Before pushing, inspect the complete outgoing commit range and exclude unrelated
   implementation or version-dependent changes.
+- Maintainer standing authorization applies across Agently-Skills branches,
+  workspaces and worktrees: methodology, solution-design, architecture-design
+  and collaboration guidance may be cherry-picked directly to `main` and pushed
+  without waiting for a framework release or another publication approval when
+  it changes no framework functionality/code and has no dependency on framework
+  versions, concrete implementations, method usage, parameters or configuration.
+  Inspect full diffs and dependencies; isolate mixed commits without rewriting
+  unrelated source history. Use a clean, freshly fetched target, preserve its
+  public catalog/API/compatibility line, retain cherry-pick provenance, skip
+  equivalent already-published changes, and run the target's required checks.
+  Push only the reviewed outgoing range without force or bypassing protections;
+  stop for unresolved dependencies, validation failures or remote rejection.
+  Sync affected installed guidance without overwriting unrelated development
+  work. This does not authorize a whole-branch merge, version bump or private
+  spec publication; implementation-dependent guidance keeps its release gates.
 - The main repository release commit must update `pyproject.toml`, `agently/compatibility.py`, `compatibility/index.json`, and the matching `compatibility/releases/<version>.json`; keep `compatibility/in-development.json` aligned until the release line moves on.
 - If the release recommends a new `agently-devtools` build, update the DevTools package version in `../Agently-Devtools/packages/python/pyproject.toml` during the same release-prep pass; changing only docs, tests, or compatibility text does not trigger the DevTools publish workflow.
 - Keep the Agently DevTools `recommended_version_specifier` in the current release manifest aligned with the version that will be published to PyPI.
