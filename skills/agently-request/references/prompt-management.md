@@ -59,6 +59,49 @@ structured before one request or request family runs.
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Reference Rules Without Repeating Them
+
+Keep facts and review rubrics in `info`, field definitions and constraints in
+`output`, and evaluation/transformation behavior in `instruct`. When behavior
+uses another slot, point the model to it with a literal mention such as
+`[info.rules]` or `[output.verdict]` instead of copying or paraphrasing its
+content. Square brackets avoid confusion with interpolation. Backticks around
+a field path, or literal braces when unambiguous, are also acceptable; the
+requirement is a clear referent, not a particular delimiter.
+
+Use an ordinary Python string, not an f-string, `.format(...)`, or a mapping
+that substitutes the referenced body. For example, an instruction fragment is
+`"Assess [input.candidate] using [info.rules]; return [output]."`
+The reference stays unchanged in the model-visible text: this is a writing
+convention directing model attention, not a runtime variable, parser feature,
+or request for framework rendering. Do not change these mentions to
+`${...}` merely because that separate renderer feature exists.
+
+The referenced facts, rubric, and schema must actually be present and
+identifiable in the request. Literal mentions do not load files, trigger
+progressive disclosure, validate path existence, or supply missing evidence.
+Keep each rule in one authoritative place; behavior instructions explain how
+to apply it, not repeat its definition.
+
+## Descriptive Evaluation Levels
+
+For semantic quality judgments, define descriptive levels and their boundaries
+in the supplied rubric; use a constrained label in the output schema.
+Do not ask the model to invent a precise quality score, percentage, or
+probability without a defined calculation and observed inputs.
+
+Keep mandatory acceptance separate from qualitative levels. A flattering
+label must not override a failed mandatory rule; missing evidence must not be
+misrepresented as observed poor quality. Calibrate the rubric with
+representative reviewed cases rather than treating labels as objective facts.
+Do not force every application to use the same level names or scale.
+
+Host-side label-to-number mappings may serve explicit ordering or routing
+policy. They remain ordinal codes, not measured distances, calibrated
+probabilities, or evidence that averaging them yields a meaningful quality
+metric. Compute real numeric metrics deterministically from recorded inputs
+using a defined formula, unit, and missing-data policy.
+
 ## Collaborative Prompt Design and Review
 
 Use this method for Agently model-node responsibilities, execution-effect
