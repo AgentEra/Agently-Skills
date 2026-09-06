@@ -11,6 +11,11 @@ Choose the owner layer before selecting APIs.
 
 Generic asks are scenario-led; a request does not need to mention Agently explicitly.
 
+When Agently use is explicit and the user is designing, optimizing, or reviewing
+a solution, workflow/block, or Prompt, route through `agently-design` for the
+request inventory and `agently-request` for selected Prompt details, using the
+collaborative confirm-and-revise method by default.
+
 ## Workflow
 
 1. Reduce the request to scenario, atomic goals, inputs, outputs, side effects,

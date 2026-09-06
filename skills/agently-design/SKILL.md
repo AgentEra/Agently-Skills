@@ -1,6 +1,6 @@
 ---
 name: agently-design
-description: "Use when the user is designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including execution-layer selection, ModelRequest prompt/output schema handoffs, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
+description: "Use when the user is collaboratively designing, reviewing, optimizing, or auditing a non-trivial Agently system across multiple owner layers, including the ModelRequest inventory and Prompt handoffs, execution-layer selection, point-to-point/fan-out/join topology, instant structured streams, context/evidence/identity boundaries, lifecycle/retry/repair/terminal behavior, concurrency/pressure, observability, or locating where information was lost between requests. The user may describe a multi-model-request application without naming Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
 ---
 
 # Agently Design
@@ -75,7 +75,8 @@ runtime event protocol.
   refs, citations, snapshots, or evidence fail-closed rules ->
   `references/information-and-evidence-design.md`
 - serial/parallel dependencies, concurrency limits, retries, repair, replan,
-  approvals, pause/resume, cancellation, close, or terminal status ->
+  approvals, pause/resume, cancellation, close, terminal status, or planned
+  long-form section generation ->
   `references/lifecycle-and-pressure-design.md`
 - lineage, RuntimeEvents, request telemetry, topology reconstruction, model
   judges, experiment comparison, or request-chain audit ->
@@ -94,6 +95,14 @@ After design ownership is clear, route exact mechanisms as follows:
 - source-framework mapping and migration sequencing -> `agently-migration`.
 
 ## Required Design Artifacts
+
+When Agently use and solution/process/Prompt design-review work are both known,
+apply collaborative review by default. Ask the user to confirm the
+scoped ModelRequest inventory and each request's responsibility before detailed
+Prompt review. Use the existing topology plan, not another ledger. Route selected
+request reviews to the one-design-then-confirm process in
+`../agently-request/references/prompt-management.md`; revisit only affected
+responsibilities and handoffs after a revision.
 
 Every non-trivial linear, branching, concurrent, or looped system requires one
 planning-topology contract containing all four ledgers:

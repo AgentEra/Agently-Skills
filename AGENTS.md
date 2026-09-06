@@ -190,6 +190,35 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
+- When both facts are known—development uses Agently, and the user is doing
+  solution design, workflow/block optimization, or Prompt review—apply the
+  collaborative Prompt method by default even when the user did not ask for a
+  table. Ordinary implementation, bug fixing, provider setup, or unrelated
+  configuration is not enough to trigger it. For a complex workflow or scoped block,
+  first ask the user to confirm the scenario, logical request inventory, and
+  each request's responsibility. Then review user-selected or justified
+  critical requests one design at a time by default, waiting for confirmation
+  or revision before advancing. Inventory approval is not detailed Prompt
+  approval. Follow explicit batch/delegation preferences and retain unchanged
+  confirmations; review only affected handoffs when scope changes.
+- Use a table-first review with topic-sized slot rows, visible model examples,
+  and output-field constraints. Organize long slots into meaningful source and
+  display sections, audit case-specific/non-generalizable rules, distinguish
+  reviewer-only material from model-visible content, and keep the view aligned
+  with the actual chain/config. No new slot/API, mandatory packet, or approval
+  requirement for every routine request is implied.
+- If representative runs show complex output causing schema/key/ensure/retry
+  or length failures, diagnose the owner first; then consider flattening the
+  model-facing projection or splitting coherent business units. Host code
+  reconstructs the unchanged downstream contract and validates parts and final
+  assembly; do not remove required fields or hard gates to improve pass rate.
+- For long prose, consider a section plan, dependency-aware writing, bounded
+  continuity context, and Host assembly. Summaries need actual consumers and
+  may share the writer request unless they need validated/read-back text. Full
+  bodies and source facts remain authoritative. Distinguish clean short output
+  from truncation and possible learned brevity; do not assume pretraining is the
+  cause. Sequential writing is justified only by real dependencies, while
+  independent sections may run with bounded concurrency and ordered collection.
 - Treat non-terminal model output as a stage-scoped contribution. It must
   satisfy its current schema, hard invariants, evidence boundary, and semantic
   subject while observably advancing state, narrowing uncertainty, selecting a

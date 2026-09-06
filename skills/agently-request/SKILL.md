@@ -1,6 +1,6 @@
 ---
 name: agently-request
-description: "Use when the user is shaping Agently request-side behavior: model setup, settings files, prompt management, structured output, response reuse, streaming consumption, session memory, embeddings, RecordStore retrieval, or retrieval-backed answers within one request family."
+description: "Use when the user is shaping or collaboratively reviewing Agently request-side behavior: model setup, settings files, business Prompt contracts, structured output, response reuse, streaming consumption, session memory, embeddings, RecordStore retrieval, or retrieval-backed answers within one request family."
 ---
 
 # Agently Request
@@ -28,6 +28,17 @@ waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
 ## Prompt and Output Contract
 
+- When it is known that the user is developing with Agently and is doing
+  solution design, process optimization, or Prompt review, use the collaborative
+  method by default without waiting for the user to request a table. Confirm the scoped request inventory and
+  responsibilities first. For user-selected or justified critical requests,
+  default to one table-first Prompt design, then wait for confirmation/revision.
+  Group long slots by topic and expose model-visible examples separately from
+  reviewer-only notes. See `references/prompt-management.md`; routine unselected
+  requests do not need a new approval ceremony.
+- After measured schema/ensure/length failures, consider a shallower model-facing
+  projection or coherent request splits with Host reconstruction and unchanged
+  final validation. See `references/output-control.md`.
 - Keep provider settings outside prompt/workflow code. Prefer settings files
   with `${ENV.xxx}` placeholders for environment-specific values.
 - Keep a one-off Agently fluent request readable as one chain: show
