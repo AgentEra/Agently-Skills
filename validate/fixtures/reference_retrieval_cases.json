@@ -729,7 +729,7 @@
     },
     {
       "id": "request-business-prompt-review-zh",
-      "query": "我明确使用 Agently，正在做复杂流程优化和 Prompt 审查，但没有主动要求表格。Coding Agent 是否应该自动先确认模型请求清单和职责，再对关键请求一次展示一个设计并等待确认或修订？",
+      "query": "我用 Agently 开发，想了解复杂流程中的模型节点是否定义合理、上下游有没有漏传或重复传数据。请先给整体处理流程，突出模型职责；几个关联节点能否在同一回复中分块比较，而不是每次只能看一个？",
       "matched_skills": [
         "agently-request"
       ],
@@ -750,15 +750,15 @@
         },
         {
           "id": "review_not_new_protocol",
-          "description": "The review uses existing request/config sources and does not impose all-request approval or a new runtime schema; selected collaborative reviews still wait for explicit confirmation."
+          "description": "The review uses existing request/config sources without a new runtime schema or all-request approval ceremony; consequential proposed changes are confirmed at a useful group boundary unless delegated."
         },
         {
           "id": "inventory_before_detail",
-          "description": "Confirm the workflow or block scenario and logical request inventory with roles and consumers before detailed collaborative design; inventory approval is not approval of each selected prompt."
+          "description": "Show the whole in-scope flow before detailed tables, highlighting model duties against Host/tool/human work and key input/output edges; clear scope may share a reply with detail, while inventory approval alone does not approve new wording."
         },
         {
-          "id": "one_design_then_wait",
-          "description": "For requests selected by the user or justified as critical, show one design at a time by default and wait for confirmation or revision before advancing or treating that design as approved."
+          "id": "dependency_grouped_review",
+          "description": "Up to three logical nodes may have separate Prompt tables in one reply; tightly coupled larger groups are allowed. Choose by understanding, coupling, information volume, risk and preference, not a rigid count or runtime-node merger."
         },
         {
           "id": "scoped_revision_review",
@@ -766,37 +766,75 @@
         },
         {
           "id": "known_agently_review_auto_trigger",
-          "description": "When Agently use and solution/process/Prompt design-review work are both known, the collaboration method activates without a separate table request, while ordinary implementation and debugging remain outside the trigger."
+          "description": "Node definitions, execution-effect tuning, data-flow correctness, missing/redundant context and model/Host ownership can activate the method without Prompt-review keywords; unrelated mechanical fixes do not."
+        },
+        {
+          "id": "optional_verified_visual",
+          "description": "Prefer available image-generation or diagram tools when useful, verify labels and edges, and allow Mermaid/SVG/ASCII without blocking on tool availability; exact contracts remain in tables."
         }
       ],
       "required_concepts": [
         "scenario_and_request_job",
         "review_not_new_protocol",
         "inventory_before_detail",
-        "one_design_then_wait",
+        "dependency_grouped_review",
         "scoped_revision_review",
-        "known_agently_review_auto_trigger"
+        "known_agently_review_auto_trigger",
+        "optional_verified_visual"
       ]
     },
     {
       "id": "request-table-first-collaboration-example-zh",
-      "query": "已经路由到 agently-request。给我一个以表格为主体的 Prompt 协同审校样例，包含请求清单、一个请求的 slot/主题/实际内容主表、可见示例、输出字段约束和等待确认点，不要把它变成强制业务模板。",
+      "query": "已经路由到 agently-request。给我一个协同审校样例中的模型可见示例、字段约束和分组确认点；说明示例与审阅备注的边界，不要把展示样例当成固定业务模板或真实运行证据。",
       "matched_skills": ["agently-request"],
       "expected_reference_sets": [
         ["skills/agently-request/references/prompt-collaboration-example.md"]
       ],
       "excerpt_anchors": {
         "skills/agently-request/references/prompt-collaboration-example.md": [
-          "## 1. Confirm the Request Inventory",
-          "## 2. Review One Request"
+          "### Model-Visible Example",
+          "### Output Contract",
+          "### Confirmation Point"
         ]
       },
       "concepts": [
-        {"id": "table_first_example", "description": "An illustrative request inventory and one-request detail are presented primarily as readable tables with topic-sized rows."},
-        {"id": "visible_examples_and_output", "description": "The sample includes model-visible examples, actual slot placement, output field types and constraints, and reviewer-only boundaries."},
-        {"id": "sample_not_fixed_workflow", "description": "The sample distinguishes the two confirmation stages and is an optional presentation reference, not a mandatory request inventory, schema, or observed model run."}
+        {"id": "table_first_example", "description": "Readable tables show example behavior, output field constraints and the related-node group's confirmation focus."},
+        {"id": "visible_examples_and_output", "description": "The sample distinguishes synthetic model-visible examples, their actual slot placement, field contracts and reviewer-only content."},
+        {"id": "sample_not_fixed_workflow", "description": "The synthetic presentation groups related nodes without imposing a fixed count, runtime topology or observed-result claim; consequential changes still need confirmation."}
       ],
       "required_concepts": ["table_first_example", "visible_examples_and_output", "sample_not_fixed_workflow"]
+    },
+    {
+      "id": "request-related-node-handoff-example-en",
+      "query": "After selecting agently-request, show a presentation specimen for comparing a writer's actual input bindings to its planner's outputs in the same review group, without inventing observed results or treating shared display context as omitted runtime input.",
+      "matched_skills": ["agently-request"],
+      "expected_reference_sets": [["skills/agently-request/references/prompt-collaboration-example.md"]],
+      "excerpt_anchors": {
+        "skills/agently-request/references/prompt-collaboration-example.md": ["### R2: Section Writer — Reviewed With R1", "### Confirmation Point"]
+      },
+      "concepts": [
+        {"id": "explicit_handoff_bindings", "description": "Show the accepted current section and full plan alongside authoritative source facts and bounded predecessor continuity, with their actual producer/Host bindings."},
+        {"id": "display_not_runtime_omission", "description": "Sharing context in the review display does not remove it from the consumer's runtime inputs or make unobserved producer output real."},
+        {"id": "group_confirmation", "description": "Confirm consequential planner/writer changes as a useful group and recheck affected handoffs without reopening unchanged approvals."}
+      ],
+      "required_concepts": ["explicit_handoff_bindings", "display_not_runtime_omission", "group_confirmation"]
+    },
+    {
+      "id": "design-flow-review-fit-zh",
+      "query": "这个 Agently 复杂流程的效果不稳定，我想判断是模型节点职责没定义清楚、输入漏传或重复，还是把确定性校验和工作流控制错交给了模型。先看整体流程和节点职责，再检查数据交接；这套方法能回答哪些问题，哪些结论还需要实际运行证据？",
+      "matched_skills": ["agently-design"],
+      "expected_reference_sets": [["skills/agently-design/references/model-request-topology.md"]],
+      "excerpt_anchors": {
+        "skills/agently-design/references/model-request-topology.md": ["## Collaborative Flow and Handoff Review"]
+      },
+      "concepts": [
+        {"id": "node_contract_fit", "description": "Review duties, required facts, output consumers and split reasons before declaring model nodes well defined."},
+        {"id": "effect_evidence_limit", "description": "Use actual post-injection requests, outputs, semantic evaluation and observed performance to support effect or root-cause claims; diagrams do not establish those claims."},
+        {"id": "consumer_delivery_trace", "description": "Trace required consumer fields to source, transformation, actual delivery and validation; a drawn edge or unread reference is insufficient."},
+        {"id": "necessary_repetition_preserved", "description": "Apply removal counterfactuals without deleting authoritative facts required by independent request snapshots merely to reduce repetition."},
+        {"id": "model_host_boundary", "description": "Distinguish semantic duties from deterministic checks, scheduling and side effects, and route mechanical defects to their owners."}
+      ],
+      "required_concepts": ["node_contract_fit", "effect_evidence_limit", "consumer_delivery_trace", "necessary_repetition_preserved", "model_host_boundary"]
     },
     {
       "id": "request-measured-schema-restructuring-zh",

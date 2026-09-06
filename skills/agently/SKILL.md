@@ -9,10 +9,12 @@ Start here when the request is expressed as product behavior rather than an
 Agently API. Choose the smallest native owner before choosing files or
 mechanisms. The request does not need to mention Agently.
 
-When Agently use is explicit and the user is designing, optimizing, or reviewing
-a solution, workflow/block, or Prompt, route through `agently-design` for the
-request inventory and `agently-request` for selected Prompt details, using the
-collaborative confirm-and-revise method by default.
+When an Agently developer needs to understand model-node duties, tune execution
+effects, check data flow or redundant context, or judge model/Host ownership,
+use collaborative review without waiting for the phrase "Prompt review".
+Route through `agently-design` for the highlighted flow and handoffs, and
+`agently-request` for related Prompt tables grouped by readability and dependency.
+Keep unrelated mechanical work outside this review method.
 
 ## Workflow
 

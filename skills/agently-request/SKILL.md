@@ -1,6 +1,6 @@
 ---
 name: agently-request
-description: "Use when shaping or collaboratively reviewing one Agently request family: model/settings setup, business Prompt contracts, structured output and validation, result or stream consumption, Session memory, embeddings, RecordStore retrieval, or retrieval-backed answers."
+description: "Use for Agently request-side setup and contracts: model settings, Prompt/input/output design, effect tuning, missing or redundant context, structured output, response reuse, streaming, session memory, embeddings, and retrieval within one request family. Review can be triggered by a developer's need to understand node behavior, not only by naming Prompt review. Use agently-design for cross-node data flow and model/Host ownership."
 ---
 
 # Agently Request
@@ -15,7 +15,8 @@ visible in the application lifecycle.
 
 - Provider, endpoint, environment, settings namespace, or connectivity:
   [model-setup.md](references/model-setup.md).
-- Prompt slots/config, mappings, reusable contracts, or Agent inheritance:
+- Request responsibility, effect tuning, input/output sufficiency or redundancy,
+  collaborative review, Prompt config/references, reusable contracts or inheritance:
   [prompt-management.md](references/prompt-management.md).
 - Structured output, Pydantic, ensure/validation, streaming formats, or direct
   long-output delivery: [output-control.md](references/output-control.md).
@@ -30,14 +31,16 @@ visible in the application lifecycle.
 
 ## Request Contract
 
-- When it is known that the user is developing with Agently and is doing
-  solution design, process optimization, or Prompt review, use the collaborative
-  method by default without waiting for the user to request a table. Confirm the scoped request inventory and
-  responsibilities first. For user-selected or justified critical requests,
-  default to one table-first Prompt design, then wait for confirmation/revision.
-  Group long slots by topic and expose model-visible examples separately from
-  reviewer-only notes. See `references/prompt-management.md`; routine unselected
-  requests do not need a new approval ceremony.
+- Use collaborative review when request contracts can clarify model duties,
+  improve execution effects, or reveal missing/redundant data; an explicit
+  "Prompt review" request is unnecessary. Start complex reviews with a flow
+  overview highlighting model nodes and Host handoffs, then group related
+  Prompt tables for comparison. Up to three logical nodes may share a reply;
+  tightly coupled larger groups are allowed. Prioritize developer understanding,
+  not fixed counts or one-node approval turns. Preserve confirmation of
+  consequential changes and distinguish design findings from measured effects.
+  See `references/prompt-management.md`; use `agently-design` for cross-node
+  flow/ownership analysis, not for unrelated mechanical work.
 - After measured schema/ensure/length failures, consider a shallower model-facing
   projection or coherent request splits with Host reconstruction and unchanged
   final validation. See `references/output-control.md`.

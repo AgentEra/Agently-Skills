@@ -208,18 +208,19 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- When both facts are known—development uses Agently, and the user is doing
-  solution design, workflow/block optimization, or Prompt review—apply the
-  collaborative Prompt method by default even when the user did not ask for a
-  table. Ordinary implementation, bug fixing, provider setup, or unrelated
-  configuration is not enough to trigger it. For a complex workflow or scoped block,
-  first ask the user to confirm the scenario, logical request inventory, and
-  each request's responsibility. Then review user-selected or justified
-  critical requests one design at a time by default, waiting for confirmation
-  or revision before advancing. Inventory approval is not detailed Prompt
-  approval. Follow explicit batch/delegation preferences and retain unchanged
-  confirmations; review only affected handoffs when scope changes.
-- Use a table-first review with topic-sized slot rows, visible model examples,
+- Use collaborative review for Agently model-node definitions, execution-effect
+  tuning, data-flow completeness/redundancy and model/Host/workflow ownership,
+  not only explicit Prompt review. Select it when contracts and handoffs can
+  answer the developer's question; unrelated mechanical fixes do not trigger it.
+  Start complex reviews with a flow overview highlighting model duties and key
+  input/output edges, then group related Prompt tables by readability and
+  dependency. Up to three logical nodes may share a reply; tightly coupled
+  larger groups are allowed. Do not impose a one-node rule or an inventory-only
+  turn when scope is clear. Preserve consequential-change confirmation and
+  distinguish design findings from measured effects. The maintained procedure
+  is `skills/agently-request/references/prompt-management.md`; cross-node audit
+  checks live in `skills/agently-design/references/model-request-topology.md`.
+- After the flow overview, use table-first node details with topic-sized slot rows, visible model examples,
   and output-field constraints. Organize long slots into meaningful source and
   display sections, audit case-specific/non-generalizable rules, distinguish
   reviewer-only material from model-visible content, and keep the view aligned

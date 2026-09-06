@@ -61,40 +61,57 @@ structured before one request or request family runs.
 
 ## Collaborative Prompt Design and Review
 
-Use this method by default when both are known: the user is developing with
-Agently, and the current work is solution design, workflow/block optimization,
-or Prompt review. Do not wait for the user to ask for a table or an audit
-format. Ordinary implementation, bug fixing, provider setup, and unrelated
-configuration do not trigger this ceremony merely because the project uses
-Agently. Follow an explicit user request to batch reviews, skip a detail, or
-delegate a decision.
+Use this method for Agently model-node responsibilities, execution-effect
+tuning, data-flow correctness, missing/redundant information, and
+model-versus-Host/workflow ownership, as well as explicit Prompt/solution review.
+Select it because contracts and handoffs answer the question, not by keywords
+or a table request. Unrelated mechanical fixes do not need it. Use
+`agently-design` alongside this reference for cross-node questions.
 
-For collaborative design or review of a complex business workflow or one scoped
-block, first explain the overall scenario and ask the user to confirm the
-logical ModelRequest inventory and each request's responsibility. Use a concise
-view of the existing node/edge plan: role, relevant input, output consumer, and
-important dependencies. Separate Host work from model work, and distinguish a
-request family repeated across items from provider retry attempts.
+### Flow First
 
-After that inventory is confirmed:
+Before Prompt tables for a complex flow, show the entire in-scope flow from
+inputs to final consumers. Highlight model nodes with labels plus color/shape
+where supported; describe model duties and distinguish Host, Action/tool and
+human work. Label key input/output edges, branches, joins, waits and loops.
+Reuse existing topology; distinguish observed/proposed behavior and unknown edges.
 
-1. Select detailed reviews according to the user's needs or explain why a
-   request needs confirmation, such as an unresolved business choice, important
-   policy boundary, or consequential downstream contract change. Do not require
-   detailed approval of every routine request.
-2. By default, present one selected request's design at a time and wait for
-   confirmation or revision. Do not advance to the next selected design or
-   treat this one as approved without the user's response. Follow an explicit
-   request for batch review or delegated decisions instead when given.
-3. Apply revisions to the actual request/config, show the changed topics, and
-   check affected producer/consumer contracts and workflow responsibilities.
-   Reconfirm changed scope or handoffs; keep unchanged confirmations rather
-   than restarting the entire review.
+Prefer available image-generation tools such as imagegen or diagram renderers
+when they improve clarity. Verify generated labels, edges and duties against
+the source. Mermaid/SVG/ASCII is a valid fallback; unavailable image tools must
+not block review. Keep exact contracts in tables, not only inside an image.
 
-Inventory confirmation is not approval of every selected Prompt. Make the
-current subject and pending/confirmed/revising state legible in ordinary review
-notes, without creating a new protocol or mandatory tracking schema. Reuse a
-previously confirmed, unchanged inventory.
+Invite inventory/responsibility corrections. With clear scope, the flow and
+grouped Prompt details may share a reply; do not force an inventory-only turn.
+Resolve consequential ownership ambiguity before dependent design.
+
+### Group for Understanding, Not a Fixed Count
+
+- With up to three logical model nodes/request families, consider showing all
+  their Prompt tables in separately titled blocks in one reply.
+- Tightly coupled nodes may exceed three when joint review makes their
+  producer/consumer contracts, shared context or feedback loop easier to judge.
+- Split larger or dense flows by meaningful dependency/decision boundaries;
+  keep the whole-flow overview visible. A single-node focus remains useful for
+  a large or disputed contract, not as a universal default.
+- Show repeated families once with varying inputs and repetition explicit;
+  do not hide distinct contracts, loop behavior or actual call counts. Provider
+  retries are attempts, not new business responsibilities.
+
+Choose the group by developer preference, coupling, information volume and
+decision risk. Grouping the review does not merge runtime requests. Shared
+context may be displayed once with explicit per-node references; do not omit
+decision-relevant content or imply it reaches a node without checking delivery.
+
+Inventory approval alone does not approve new Prompt wording. Mark existing
+versus proposed content and pending/confirmed decisions clearly. Seek
+confirmation or revision of consequential changes at a useful group boundary
+before implementation unless the developer delegates that decision. Apply
+approved revisions to the actual request/config and recheck affected handoffs;
+do not restart unchanged reviews or add a new approval protocol.
+
+Diagrams/tables expose design gaps, not proven execution quality or root cause.
+Check actual post-injection requests, outputs and run evidence for those claims.
 
 ## Show a Business Prompt for Review
 
@@ -103,15 +120,15 @@ offer a readable review view: explain the scenario, what this ModelRequest owns
 and does not own, and who consumes its result. Then show concrete prompt content
 using Agently's `input`, `info`, `instruct`, and `output` slots, with
 field-level type, meaning, requiredness, enum/range/format/nullability where
-relevant. Prefer a table-first presentation: a request overview, then a main
-`Slot | Topic | Actual prompt content` table for the current request, a visible
+relevant. After the flow overview, prefer table-first node details: a request overview, then a main
+`Slot | Topic | Actual prompt content` table for each request in the group, a visible
 examples table when used, and an output-field constraint table. Keep cells
 short enough to scan; expand long topics into named sections rather than one
 giant cell. Show real proposed wording, not merely “put rules here.”
 
 Adapt or omit tables for the decision. The layout is not a mandatory business
-template or new runtime schema; selected collaborative reviews still follow
-the confirmation sequence above. Use redacted representative inputs.
+template or new runtime schema; use the flexible grouping and confirmation
+boundaries above. Use redacted representative inputs.
 Keep the view aligned with the real request chain/config and the rendered-prompt
 audit below; a design table alone does not prove what was dispatched.
 
@@ -136,7 +153,7 @@ accessible and mark omissions/redactions; do not imply a truncated view was a
 complete audit.
 
 For a concrete optional presentation, read the
-[table-first collaboration example](prompt-collaboration-example.md). Its
+[flow-first collaboration example](prompt-collaboration-example.md). Its
 business facts, request inventory, and output fields are illustrative, not a
 required application template.
 

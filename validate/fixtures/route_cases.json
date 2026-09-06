@@ -912,6 +912,42 @@
       ]
     },
     {
+      "id": "model-node-definition-and-data-flow-zh",
+      "scenario_id": "agently-system-design",
+      "locale": "zh",
+      "intent_style": "model-contract-understanding",
+      "query": "这个 Agently 长流程里有几个模型节点，我想确认每个节点到底负责什么、输入是否齐全、结果有没有交给正确的下游，以及是否传了无用资料。",
+      "installed_skills": ["agently", "agently-design", "agently-request", "agently-triggerflow"],
+      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request"]]
+    },
+    {
+      "id": "model-workflow-effect-tuning-en",
+      "scenario_id": "agently-system-design",
+      "locale": "en",
+      "intent_style": "observed-effect-tuning",
+      "query": "This Agently document pipeline runs but its results are inconsistent. Help me understand the model stages and compare their inputs, outputs and observed behavior before deciding what to tune.",
+      "installed_skills": ["agently", "agently-design", "agently-request", "agently-runtime"],
+      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request"]]
+    },
+    {
+      "id": "model-host-division-and-redundancy-zh",
+      "scenario_id": "agently-system-design",
+      "locale": "zh",
+      "intent_style": "ownership-and-redundancy-check",
+      "query": "Agently 流程把每一步的完整结果都传给后续模型，还让模型检查 ID 和控制重试。我想知道哪些信息是必要的，哪些判断应该交给模型，哪些应由工程或工作流承担。",
+      "installed_skills": ["agently", "agently-design", "agently-request", "agently-triggerflow"],
+      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request", "agently-triggerflow"]]
+    },
+    {
+      "id": "provider-setting-only-no-flow-review-en",
+      "scenario_id": "request-provider-setup",
+      "locale": "en",
+      "intent_style": "mechanical-settings-only",
+      "query": "Only correct the environment-variable name used for this Agently provider's base URL; the request contracts and workflow are unchanged and do not need review.",
+      "installed_skills": ["agently", "agently-design", "agently-request"],
+      "expected_route_paths": [["agently-request"]]
+    },
+    {
       "id": "cross-layer-system-design-explicit-en",
       "scenario_id": "agently-system-design",
       "locale": "en",
