@@ -9,6 +9,11 @@ Use this Skill for cross-owner design and audit. It produces ownership and
 handoff contracts; it does not become a scheduler, TriggerFlow definition,
 TaskDAG, retry engine, or RuntimeEvent protocol.
 
+For iterative design or review, show current items and a timestamped,
+versioned change log at the response head; distinguish decisions from applied
+and verified changes. Read
+[Multi-Round Collaboration](../agently/references/multi-round-collaboration.md).
+
 ## Core Workflow
 
 1. State the business decisions and completion invariants.

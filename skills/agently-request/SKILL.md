@@ -11,6 +11,11 @@ lookup, approval, artifact readback, or host computation produced after the
 first request, or when branching, concurrency, retry, or pause/resume must stay
 visible in the application lifecycle.
 
+For multi-round Prompt collaboration, start each substantive round with current
+items (status first) and a timestamped, versioned change-log table. Use
+[Multi-Round Collaboration](../agently/references/multi-round-collaboration.md)
+to preserve pending decisions, modifications and abandonment.
+
 ## Read by Need
 
 - Provider, endpoint, environment, settings namespace, or connectivity:
