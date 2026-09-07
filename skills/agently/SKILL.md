@@ -16,6 +16,11 @@ a solution, workflow/block, or Prompt, route through `agently-design` for the
 request inventory and `agently-request` for selected Prompt details, using the
 collaborative confirm-and-revise method by default.
 
+For multi-round design, Prompt revision or experiment evaluation, begin each
+substantive round with a status-left/item-right table and a timestamped,
+versioned change-log table. Follow
+[the collaboration record guidance](references/multi-round-collaboration.md).
+
 ## Workflow
 
 1. Reduce the request to scenario, atomic goals, inputs, outputs, side effects,

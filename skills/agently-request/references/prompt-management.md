@@ -58,6 +58,15 @@ Use this skill when the core problem is how prompt state should be structured be
 - keep prompt composition separate from transport and orchestration
 - use config files as an editable bridge when UI or product teams need to adjust prompt-driven behavior without rewriting workflow code
 
+## Multi-Round Progress
+
+For iterative Prompt design or review, begin each substantive round's response
+with the status-left/item-right table and change-log table in
+[Multi-Round Collaboration](../../agently/references/multi-round-collaboration.md).
+Record time, discussion version, reasons and whether a change is proposed,
+confirmed, applied, verified or abandoned. Keep this collaboration view outside
+the model prompt; preserve existing approvals and review only affected scope.
+
 ## Collaborative Prompt Design and Review
 
 Use this method by default when both are known: the user is developing with

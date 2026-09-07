@@ -9,6 +9,11 @@ Use this Skill for one request family. Start with `agently` when the owner layer
 is unclear; use `agently-triggerflow` when the application owns branching,
 waiting/resume, concurrency, retry, or durable multi-stage lifecycle.
 
+For multi-round Prompt collaboration, start each substantive round with current
+items (status first) and a timestamped, versioned change-log table. Use
+[Multi-Round Collaboration](../agently/references/multi-round-collaboration.md)
+to preserve pending decisions, modifications and abandonment.
+
 ## Read by Need
 
 - Provider, endpoint, env, settings namespace, or connectivity:

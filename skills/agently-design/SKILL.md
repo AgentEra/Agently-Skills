@@ -15,6 +15,11 @@ owner matrix, project-layer separation, or the stable-versus-submitted topology
 boundary, read `references/system-boundaries.md` rather than answering from this
 summary alone.
 
+For iterative design or review, show current items and a timestamped,
+versioned change log at the response head; distinguish decisions from applied
+and verified changes. Read
+[Multi-Round Collaboration](../agently/references/multi-round-collaboration.md).
+
 ## Core Workflow
 
 1. Reduce the system into business decisions and completion invariants.
