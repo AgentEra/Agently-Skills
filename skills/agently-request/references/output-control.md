@@ -159,7 +159,21 @@ For planned section-by-section prose rather than one structured result, read
   generators; do not hide it in one getter or overload `.output(...)` with
   execution policy
   - the first ModelRequest keeps the original contract. Only normalized
-    `length` / `incomplete` starts the TriggerFlow-visible continuation loop
+    `length` / `incomplete` starts the TriggerFlow-visible continuation loop.
+    Ordinary completion does not start semantic expansion. Do not lower the
+    output limit just to force continuation in a normal example; zero
+    continuations can be the correct result
+  - inspect provider status, finish reason, and incomplete details together.
+    Explicit failure, cancellation, filtering, or unknown/conflicting terminal
+    facts must not be masked by a positive sibling field. The Responses adapter
+    retains `incomplete_details`; incomplete transport is not semantic proof
+    that more business content is needed. The current normalizer still treats
+    bare `status="incomplete"`, without finish reason or incomplete reason, as
+    length; inspect that ambiguity rather than claiming a proven token limit
+  - continue only the current request deliverable, not later chapters or stages
+    of the surrounding business task. Retain request-local model selection and
+    settings. Original instructions are reference context; even for a rewrite,
+    the accepted prefix belongs to that rewrite and must not be generated again
   - current lossless carriers are plain text and resolved `json`; other
     structured formats fail before dispatch when the option is enabled
   - continuation is append-only, uses TaskWorkspace write/readback/digest
@@ -167,7 +181,9 @@ For planned section-by-section prose rather than one structured result, read
     to the replayed final candidate
   - carry each slot's value contract in the private continuation input and
     project it from the original Agently declaration so nested array/object
-    shapes and nested Pydantic constraints survive. Validate every structured
+    shapes and nested Pydantic constraints survive. Retain the list-level
+    description separately from its item contract and total list bounds.
+    Validate every structured
     unit with the independent local slot model before commit. Enforce exact
     list bounds incrementally and hold later dependent slots behind an
     incomplete exact list. Keep a valid contiguous prefix when a later
@@ -195,7 +211,12 @@ For planned section-by-section prose rather than one structured result, read
     business text in the header or estimate prior length. Commit exactly one plain-text
     update per logical continuation so every next join is generated from a
     refreshed accepted suffix; retain the first valid update and regenerate a
-    response-supplied tail. A provider `length` terminal
+    response-supplied tail. Preserve exact text joins in the private JSON input
+    carrier. Do not impose a fixed target or minimum block length: finish the
+    remaining deliverable when it fits the unit bound and response window;
+    recovery from an incomplete envelope or rejected update asks for a smaller
+    closable update. Do not add filler or another conclusion to create progress.
+    A provider `length` terminal
     before header closure is bounded observable no progress: preserve the
     manifest, retry with header-first/one-update guidance, and terminate after
     the third consecutive no-progress continuation
@@ -216,8 +237,12 @@ For planned section-by-section prose rather than one structured result, read
     immediately rather than enter model repair
   - the private envelope must not enter the business stream, and continuation
     requests must not inherit Action/tool handlers
-  - treat a zero-update `is_final` assertion after provider `length` as
-    no-progress evidence, not completion proof
+  - the current Host guard does not accept a zero-update final acknowledgement
+    immediately after initial truncation, before any continuation unit has
+    been committed, even if that acknowledgement stops normally. Once a
+    continuation unit exists, a later zero-update final envelope can proceed
+    under the other acceptance gates. This is a conservative delivery policy,
+    not proof that more prose is needed; do not work around it by adding filler
   - use bounded `long_output_no_progress` diagnostics to inspect reason,
     observed header fields, manifest revision, and accepted-unit count without
     recording raw provider bodies
@@ -344,6 +369,31 @@ For planned section-by-section prose rather than one structured result, read
   deterministic keyword/substring/regex checks only as smoke gates for
   structure, routing, or required-field presence, not as the primary content
   correctness signal.
+
+## Diagnose Zero-Update Continuation
+
+Separate why continuation started from why it was retried. The initial trigger
+comes from normalized provider metadata, not a generic semantic quality review.
+A length signal does not identify what remains: business content might be
+missing, or content might already be present while normal termination or the
+private envelope's closing fields were not delivered. Confirm the case from
+the raw final response, accepted manifest, offered slots, and diagnostics; do
+not infer semantic completeness from either length or a model finality claim.
+
+Zero committed units also does not necessarily mean the model returned no
+content. An incomplete header, malformed envelope, stale identity, invalid
+update, or missing required path has a different cause from a valid
+`updates=[]`, `is_final=true` response. Integrity failures are not content
+repair. Check these causes before attributing the problem to model capability
+or stricter business requirements.
+
+When the prompt permits an empty completion acknowledgement but the Host still
+requires a new unit, report a finality-policy mismatch rather than tightening
+the writing prompt. Changing that guard requires an explicit contract decision
+and matching runtime/tests/docs; do not advertise relaxed finality as supported
+before it is implemented. Original declared validation remains authoritative,
+and accepting a completion acknowledgement would not prove general semantic
+exhaustiveness.
 
 ## Anti-Patterns
 
