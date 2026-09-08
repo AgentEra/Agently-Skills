@@ -84,6 +84,11 @@ to apply it, not repeat its definition.
 
 ## Descriptive Evaluation Levels
 
+For content review or experiment tuning, first read
+[Ground Each Review Criterion](../../agently/references/model-quality-validation.md#ground-each-review-criterion).
+Trace criticisms to the delivered producer contract or task meaning; distinguish
+soft preferences and unverified consumer risks before adding Prompt constraints.
+
 For semantic quality judgments, define descriptive levels and their boundaries
 in the supplied rubric; use a constrained label in the output schema.
 Do not ask the model to invent a precise quality score, percentage, or

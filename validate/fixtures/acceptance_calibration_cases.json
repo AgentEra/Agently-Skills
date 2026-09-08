@@ -1,0 +1,13 @@
+{
+  "purpose": "Behavioral review cases; inspect reasons against the delivered task, not exact wording. Do not send case outputs as examples to generation nodes.",
+  "cases": [
+    {"id": "summary-abstraction", "task": "Summarize the source concisely without adding conclusions.", "source": "The proposal allows a configurable wait, such as two days, before a reminder.", "output": "The proposal uses a configurable waiting period before reminders."},
+    {"id": "summary-modality", "task": "Summarize the source faithfully; preserve the scope and certainty of retained claims.", "source": "The proposal allows a configurable wait, such as two days, before a reminder.", "output": "A two-day waiting period is mandatory before reminders."},
+    {"id": "explicit-retention", "task": "Summarize the policy and retain all escalation deadlines.", "source": "Escalate unresolved requests after three business days.", "output": "The policy escalates unresolved requests."},
+    {"id": "implicit-faithfulness", "task": "Summarize this decision.", "source": "The committee rejected automatic deletion and approved manual review instead.", "output": "The committee approved automatic deletion."},
+    {"id": "proposal-number", "task": "Suggest a pilot plan. No baseline metrics are available.", "source": "The team wants faster handoffs.", "output": "Consider an initial target of one business day per handoff, to be adjusted after pilot measurement."},
+    {"id": "invented-baseline", "task": "Suggest a pilot plan. No baseline metrics are available.", "source": "The team wants faster handoffs.", "output": "Current handoffs take six days on average; the pilot will reduce that measured baseline."},
+    {"id": "consumer-hypothesis", "task": "Summarize this chapter for continuity. No parameter retention requirement is given; no downstream run has been observed.", "source": "The chapter proposes configurable reminders and illustrates a two-day wait.", "output": "The chapter proposes configurable reminders.", "review_question": "Does omission of the example prove the next chapter will contradict this chapter?"},
+    {"id": "ambiguous-quality", "task": "Draft a readable overview for team members.", "source": "The feature groups notifications by project.", "output": "Notifications are organized by project so team members can browse related updates together.", "review_question": "Should this fail because it does not use a three-column table?"}
+  ]
+}
