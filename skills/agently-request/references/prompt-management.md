@@ -83,39 +83,6 @@ progressive disclosure, validate path existence, or supply missing evidence.
 Keep each rule in one authoritative place; behavior instructions explain how
 to apply it, not repeat its definition.
 
-## Emphasize Critical Instructions Selectively
-
-Use emphatic markers such as `!!!` and uppercase English cues such as
-`IMPORTANT`, `YOU MUST`, or `YOU MUST NOT` to draw attention to a small number
-of explicit requirements or prohibitions whose omission would matter. This is
-an optional prompting technique to test, not a guarantee of compliance.
-
-Keep the obligation concrete: state its scope, condition, required or forbidden
-behavior, and a useful reason when needed. Strengthen the rule where it already
-belongs instead of copying it across slots or repeating it in several forms.
-Keep references literal and point to the supplied source of truth. Do not turn
-an optional preference into a mandatory gate merely by capitalizing it, shout
-every instruction, or use stronger tone to mask conflicting duties or missing
-information. After `YOU MUST NOT`, name the forbidden action directly; avoid a
-second negation that could reverse the meaning.
-
-For example, given an existing obligation to use supplied evidence and not
-invent measurements, an emphasized form is:
-
-```text
-IMPORTANT!!! YOU MUST base factual claims on [info.evidence].
-YOU MUST NOT present an unmeasured result as an observed measurement.
-```
-
-Compare ordinary and emphasized wording on the same inputs, output contract,
-and model settings across repeated runs. Check the targeted rule and collateral
-effects on completeness, consistency, and other requirements. If punctuation,
-capitalization, language, or wording change together, attribute any observed
-effect to that combination, not to an isolated marker. Retain demonstrated
-benefits and report inconclusive or adverse results without claiming universal
-effectiveness. Emphasis does not change instruction authority or replace
-Host-enforced authorization, schema checks, or side-effect controls.
-
 ## Descriptive Evaluation Levels
 
 For content review or experiment tuning, first read
