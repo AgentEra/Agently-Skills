@@ -117,7 +117,10 @@ LongContent invalidates dependent sections, and LongTask uses model-selected wor
 plus Host-validated dependency closure. Selecting final candidate delivery alone
 preserves completed work. It never substitutes terminal task resume.
 Model/time budgets, Flat iterations and TaskBoard ticks remain cumulative, and
-an established revision cap cannot be raised. Previously dispatched Actions,
+an established revision cap cannot be raised. Set overall model budgets on
+`create_execution("long_task", limits=...)`; legacy `create_task(limits=...)`
+retains per-step request caps but shares its wall-clock bound across rework.
+Previously dispatched Actions,
 including uncertain effects, need `replay_safe` or explicit Host `allow_replay=True`;
 children cannot weaken ancestor protection. Artifact callbacks require that same
 explicit replay choice. Historical references are not backups or transactions.
