@@ -36,6 +36,13 @@ and verified changes. Read
 
 ## Required Topology Contract
 
+For experiment reports and design documents, when the task instructions are
+not in English, prefer a complete document in that instruction language;
+a bilingual version is also acceptable. An explicit requested output language
+takes precedence. Apply this to the document itself, not only the chat summary.
+Preserve code, identifiers, raw prompts and evidence as needed; their language
+does not determine the surrounding report language.
+
 Use collaborative review when it can answer the developer's question about
 model-node definitions, execution effects, data completeness/redundancy, or
 model/Host division of work; do not require the phrase "Prompt review".
