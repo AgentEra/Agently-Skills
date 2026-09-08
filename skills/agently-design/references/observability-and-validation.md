@@ -93,6 +93,11 @@ replace semantic judgment with hard-coded language proxies.
 
 ## Experiment and A/B Evidence
 
+Before judging content or proposing a Prompt fix, read
+[Ground Each Review Criterion](../../agently/references/model-quality-validation.md#ground-each-review-criterion).
+Apply it to instruction compliance, task semantics, lossy summaries, and
+open-ended quality; do not turn an undeclared preference into a failed gate.
+
 Fix the question, source boundaries, provider/model, environment, and comparison
 criteria. Preserve raw bounded facts before summaries. Record command, branch,
 commit, date, cases, selected routes, request/tool/external counts, input/output

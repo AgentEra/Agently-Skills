@@ -24,8 +24,10 @@ Use deterministic checks only for smoke-level facts:
 - numeric values are inside a deterministic range
 - files or API calls were created
 
-For meaning, quality, relevance, intent, scenario match, grading, or business
-classification, call a model and make the result structured.
+For production application decisions about meaning, quality, relevance, intent,
+scenario match, grading, or business classification, use a model with structured
+results. Development-time experiment review may instead use direct coding-agent
+or human inspection as described below; do not add a judge request by default.
 
 ## Two-Axis Acceptance Matrix
 
@@ -64,6 +66,54 @@ Structured output makes the result shape and bounded values controllable; it
 does not make open-ended model content byte-identical or exactly reproducible
 on every run. Do not test semantic content with one expected string, keyword
 hits, or a snapshot of one lucky response.
+
+## Ground Each Review Criterion
+
+When reviewing generated content or comparing experiments, identify the basis
+of a negative judgment before proposing a fix: the producer's actual delivered
+instruction/input contract, a necessary meaning of the task, a declared consumer
+need, or a reviewer preference. Explain the affected claim and consequence.
+Use the existing review/report, not an extra runtime field or ledger.
+
+Separate instruction violations, task-semantic defects, soft quality preferences,
+and unverified downstream risks. A task need not enumerate every ordinary
+semantic obligation: a summary must represent its source and a calculation must
+answer the requested quantity. But do not smuggle preferred detail, phrasing,
+domain thresholds, or an ideal answer into those obligations. An ambiguous
+requirement is an uncertainty to resolve, not an exact hidden rejection rule.
+
+State additional or specialized model-satisfiable gates before generation;
+ordinary task meaning does not require an exhaustive list of obvious rules.
+
+If a desirable new requirement was absent, label it a proposed contract change;
+do not retroactively fail the old run against it. Verify actual downstream use
+before claiming an omission caused failure. Safety and authorization gates keep
+their independently owned policies; this is not permission to waive them.
+
+### Summaries and Open-Ended Generation
+
+A summary is lossy. Judge faithfulness of retained claims separately from
+coverage: preserve their scope, conditions, modality, and evidence status, but
+do not demand every number, rule, heading, or detail unless the task/consumer
+explicitly requires it. Equivalent paraphrases are valid; literal qualifier
+copying is not the acceptance test. If compression changes the central meaning,
+explain that change rather than counting missing details. Source bodies remain
+authoritative; a continuity summary is not automatically a complete rule store.
+
+For example, given "A configurable wait, such as two days, is proposed", a
+summary may say "A configurable wait is proposed". "A two-day wait is required"
+changes both status and scope. These examples illustrate faithfulness, not a
+requirement to keep this particular setting.
+
+In open-ended design, a suggested target or explicitly hypothetical value is
+not an invented observation. Do not reject it merely because the reviewer
+prefers a different undeclared domain threshold. Conversely, claiming an
+unsupported current measurement is not justified by permission to propose a
+design. Classify the claim's actual wording and supplied source boundary.
+
+When guidance is tuned, test contrasting review cases: permitted abstraction,
+changed meaning, explicit retention requirements, and proposal versus observed
+fact. Inspect reasons and judgments, not just rule keywords or fixed prose.
 
 ## Calibrate Quality Across Repeated Runs
 
