@@ -125,6 +125,22 @@ pair because the deterministic SDK/program carrier dominated the saved rounds.
 PTC is a workload-specific runtime-control and exact local-computation boundary,
 not an automatic cost or latency optimization.
 
+The 4.1.4.8 SDK renderer v3 keeps one canonical exact JSON contract per
+eligible Action, retains callable/return typing, and removes the duplicate
+expanded input `TypedDict`. The JSON contract remains authoritative for every
+schema constraint. Deterministic validation observed SDK reduction from 1,527
+to 1,399 bytes for one representative Action and from 31,287 to 26,292 bytes
+for 32 Actions. This is a prompt-size fact, not model-quality evidence.
+
+For diagnostics, `action.plan_ready` may expose primitive-only
+`decision.planning_observation` facts, and a settled outer Action may expose
+`meta.programmatic_observation`. These include renderer/action counts,
+SDK/contract/program/wrapper bytes, binding outcomes, and observed peak active
+binding calls when reported; unavailable provider facts remain absent rather
+than being inferred as zero. They never authorize Actions, drive routing/retry/acceptance, or
+enter the next model-facing Action record. Exact SDK, catalog, source, and
+binding values remain cold.
+
 V1 exposes only scoped, model-visible Actions with
 `side_effect_level="read"`, `replay_safe=True`, no static approval requirement,
 and an explicit lossless-JSON `returns` contract. A precise return annotation
