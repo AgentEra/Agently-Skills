@@ -107,9 +107,42 @@ not only the compatibility resume draft's goal declaration.
 
 run/async_run and compatible start/async_start/readers share once-only
 production. Ordinary draft mutation cannot turn a started record into a new
-request. Rework is not terminal resume or repeated review. Unified rework,
-interrupt/pause/resume/save/load controls are still under implementation;
-do not claim them from method names or implement silent successful no-ops.
+request. Check `execution.control_capabilities` for implemented boundaries.
+`previous = execution.get_result()` captures the current revision. After a settled
+candidate, `await execution.async_rework(feedback, max_reworks=3)` advances the same
+execution object/ID and returns a newly produced full result; old readers remain
+bound to their original revision, also available via `get_result(revision=0)`.
+Request, Plan, LongContent and LongTask own re-entry; Plan keeps accepted answers,
+LongContent invalidates dependent sections, and LongTask uses model-selected work
+plus Host-validated dependency closure. Selecting final candidate delivery alone
+preserves completed work. It never substitutes terminal task resume.
+Model/time budgets, Flat iterations and TaskBoard ticks remain cumulative, and
+an established revision cap cannot be raised. Previously dispatched Actions,
+including uncertain effects, need `replay_safe` or explicit Host `allow_replay=True`;
+children cannot weaken ancestor protection. Artifact callbacks require that same
+explicit replay choice. Historical references are not backups or transactions.
+
+Pause requests settle before production or at candidate-ready before final policies.
+At the actual TriggerFlow wait, run/readers raise `AgentExecutionPaused`;
+`async_resume()` explicitly continues it. `async_interrupt(content)` supplies future
+TaskContext information and reports consumption separately from insertion.
+`async_cancel(timeout=...)` waits for owned cleanup; timeout is not settlement.
+`async_close(pending="error")` drains and seals; use `pending="cancel"` to abandon a
+pending wait. Draft close prevents production, completed close preserves readers.
+Every control also has a sync wrapper.
+
+`save()` returns a JSON snapshot only at a settled outer pause. Configure a fresh
+execution with matching original draft, limits, Actions/Skills, callbacks, Workspace,
+RecordStore and ContextSources, then `load(snapshot)` without dispatch. For task
+creation, rebind the original task_id. Retire the original paused handle before
+resuming the rebound one. Revision history, settled producer state, replay gates,
+model counts and elapsed/offline time survive restoration. No settings, credentials,
+live provider objects or executable code are restored. Missing/changed required
+bindings fail; Skill catalog changes are conservatively rejected. Live
+ExecutionResource state without a checkpoint contract prevents save; terminal
+cleanup releases only owned execution scopes. Active children,
+inner task checkpoints, disconnected clarification and nested-budget restoration
+remain unsupported. Custom producers must declare safe rework explicitly.
 
 Use TriggerFlow for visible branches, back edges and required waits;
 ExecutionExchange owns the interaction envelope/provider seam. Plan currently
