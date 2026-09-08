@@ -167,6 +167,13 @@ bounded projection. DevTools must not reconstruct the full business result from
 those events; resolve `terminal_retained_refs` when durable content is needed.
 Optional diagnostics such as `action_artifact_release` are additive payload
 fields and should remain fail-open for older DevTools consumers.
+Programmatic Action planning may add
+`action.plan_ready.payload.decision.planning_observation`; settled outer Action
+records may add `meta.programmatic_observation`. Treat their primitive size,
+count, outcome, and peak-active fields as observation-only accounting. Do not
+turn them into route, retry, policy, budget, or acceptance controls, and do not
+require older DevTools consumers to know every additive field. Display missing
+provider facts as unavailable, not zero.
 Cancellation is a distinct `agent_execution.cancelled` terminal event. Treat it
 as an additive terminal type, keep the payload fail-open, and do not collapse it
 into `agent_execution.failed`; its bounded close snapshot reports cancellation,
