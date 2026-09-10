@@ -91,6 +91,11 @@ request repeatedly fail the approved minimum, report a model capability or fit
 gap; do not silently lower the standard, hide the failure behind retries, or
 replace semantic judgment with hard-coded language proxies.
 
+For the repair-versus-strategy decision, stopping repeated tuning, human Prompt
+review and authorized model comparison, read
+[Bounded Optimization and Model Escalation](../../agently/references/model-quality-validation.md#bounded-optimization-and-model-escalation).
+This prevents soft imperfections from becoming an endless design blocker.
+
 ## Experiment and A/B Evidence
 
 Before judging content or proposing a Prompt fix, read
