@@ -141,6 +141,48 @@ fact. Inspect reasons and judgments, not just rule keywords or fixed prose.
 Keep the test record model-specific and versioned. A threshold established for
 one model or configuration is not automatically evidence for another.
 
+## Bounded Optimization and Model Escalation
+
+Separate the owner of a defect from how imperfect the output looks. Fix
+confirmed, in-scope engineering defects directly and add regression coverage;
+do not use Prompt wording to compensate for lost data, broken parsing, state,
+or lifecycle behavior. Routine engineering repairs do not require a new human
+Prompt approval.
+
+For strategy work, target explicit instruction compliance and justified task
+semantics, not an ideal answer or undeclared standard of prose. First inspect
+the actual delivered request, source evidence and consumer contract, and
+correct mistaken judgments. Ordinary imperfect phrasing, coverage or style
+does not block acceptance unless it crosses a declared hard minimum.
+
+For a supported compliance problem, test the smallest general instruction or
+necessary structural change with bounded, representative comparisons. Record
+actual behavior and repeated-run variation. Do not keep adding constraints,
+case-specific patches, requests or retries merely to chase perfect output.
+Stop autonomous tuning when repeated attempts show no material improvement or
+there is no new testable hypothesis. A single failure does not establish a
+model capability limit.
+
+At that stopping point, initiate collaborative human Prompt review: show the
+actual request, representative failures and successes, attempted changes,
+remaining impact and attribution uncertainty. Ask whether meaningful Prompt
+or workflow optimization remains. If none is identified, acknowledge the
+current model's capability/fit limitation instead of repeatedly reopening soft
+imperfections. An unmet declared hard gate still fails; ask the developer to
+choose another model, human handling or an explicit requirement change rather
+than silently lowering it.
+
+A model comparison is an optional next experiment, not an automatic escalation
+or a presumption that a remote model is better. Before moving local work to an
+online provider or expanding existing authorization, obtain approval for the
+model, outbound data scope and bounded request/spend budget; available
+credentials alone are not permission. Keep task inputs, Prompt, workflow and
+rubric fixed as far as practical, disclose unavoidable provider differences,
+and repeat representative cases. Report whether the original behavior is
+resolved, improved, unchanged or regressed, alongside remaining imperfections
+and cost/latency tradeoffs. One better result does not prove stable resolution
+or uniquely establish the previous model as the cause.
+
 ## Simulation-First Experiment Gate
 
 When problem discovery or strategy tuning is expected to require several model

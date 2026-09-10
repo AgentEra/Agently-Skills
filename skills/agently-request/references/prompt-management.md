@@ -107,6 +107,12 @@ probabilities, or evidence that averaging them yields a meaningful quality
 metric. Compute real numeric metrics deterministically from recorded inputs
 using a defined formula, unit, and missing-data policy.
 
+For repeated tuning without material improvement or a new testable hypothesis,
+apply [Bounded Optimization and Model Escalation](../../agently/references/model-quality-validation.md#bounded-optimization-and-model-escalation):
+bring the remaining problem to human Prompt review, accept acknowledged model
+limits without waiving hard gates, and seek authorization before an online
+model comparison. Do not add Prompt constraints solely to perfect soft targets.
+
 ## Multi-Round Progress
 
 For iterative Prompt design or review, begin each substantive round's response
