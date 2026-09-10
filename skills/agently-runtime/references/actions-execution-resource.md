@@ -177,7 +177,8 @@ an accepted response through the existing outer Request/AgentExecution parser,
 stream, result, validation, and Session lifecycle instead of adding another
 generation request. Keep the final-request path only for legacy/custom handlers
 or ActionFlow plugins without terminal response delivery and for independent
-delivery policies such as `ensure_long_output`.
+delivery policies such as `auto_continue` (4.1.4.8 development spelling;
+released `ensure_long_output` remains the compatibility alias).
 When configuring Actions after a quick Prompt, keep one fluent execution:
 `agent.input(...).info(...).use_action(...)`. Do not call another
 `create_execution()` or otherwise discard the request-local Prompt.

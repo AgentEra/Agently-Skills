@@ -70,6 +70,10 @@ package is not an executor or permission grant.
 
 ## File and Storage Rules
 
+On the 4.1.4.8 development line, `.auto_continue()` replaces the recommended
+spelling `.ensure_long_output()`; the released spelling remains an alias.
+This is conditional request delivery, not long-form production or task resume.
+
 - Select a task file root with `agent.use_task_workspace(path, mode=...)`.
   Enable model-callable file work with
   `agent.enable_task_workspace_file_actions(...)` or
@@ -77,7 +81,7 @@ package is not an executor or permission grant.
 - `TaskWorkspace` is a file boundary only. Use its read/write/edit/glob/grep/
   patch/export methods for task files and artifacts; do not store arbitrary
   durable records inside it through a hidden database API.
-- Direct `.ensure_long_output()` delivery uses execution-private TaskWorkspace
+- Direct `.auto_continue()` delivery uses execution-private TaskWorkspace
   files for raw segments, immutable accepted units, manifests, and final
   candidate readback. Those refs are staging evidence, not automatically
   durable public artifacts. Every accepted write must be completely read back

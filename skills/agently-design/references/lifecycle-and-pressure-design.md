@@ -25,13 +25,17 @@ that ignores provider, external-system, memory, or side-effect capacity.
 
 ## Execution Ownership
 
+In the 4.1.4.8 development line, `auto_continue` is the preferred spelling;
+released `ensure_long_output` remains an alias (use it on earlier versions).
+It continues unfinished request output, not task lifecycle or semantic scope.
+
 Application-owned branching, fan-out, joins, loops, approvals, pause/resume,
 runtime streams, and close belong to TriggerFlow. A local async caller may
 overlap a small set of independent single requests when no graph-visible
 lifecycle is needed. Submitted acyclic plans belong to TaskDAG / Dynamic Task.
 
 When one direct AgentExecution business result crosses model output windows,
-keep the public intent on the execution (`.ensure_long_output()`) and make every
+keep the public intent on the execution (`.auto_continue()`) and make every
 continuation/commit/validate back edge visible in TriggerFlow. One continuation
 segment is a new logical ModelRequest, not a retry attempt. Keep complete units
 behind TaskWorkspace refs and digests, validate each unit against its slot
@@ -60,7 +64,7 @@ data, including SFT examples, can affect output-length tendencies; do not claim
 pretraining caused an individual model's short answer without evidence.
 
 This is application-level writing strategy, distinct from
-`.ensure_long_output()`: the latter continues one direct result after
+`.auto_continue()`: the latter continues one direct result after
 normalized truncation and does not expand an ordinary short `stop` response.
 Check support in the installed version before choosing any native delivery
 option. Neither technique guarantees semantic completeness or a requested

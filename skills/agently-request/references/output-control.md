@@ -1,5 +1,22 @@
 # Agently Output Control
 
+Continuation naming: on the 4.1.4.8 development line prefer
+`.auto_continue(enabled=True)`. Released `.ensure_long_output(...)` remains a
+compatibility alias to the same implementation and is the spelling to use on
+earlier versions. This configures conditional request-output continuation,
+not a target length, task resume, semantic expansion or rework. `str` remains
+the data type; `long_content` is proactive long-form production. On this development
+line use `from agently import LongContent` and `(LongContent, "writing requirements")`
+for a field or root output. `("long_content", "writing requirements")` is the
+compatible string declaration; both normalize to one contract. Pydantic supports
+`body: LongContent = Field(description="writing requirements")`, retaining field
+constraints and returning an ordinary str. Place dependent summaries after their
+body fields so they consume actual completed content. This is not
+`format="long_content"`; carrier formats and auto_continue stay independent.
+Do not interpret field-description keywords as an automatic strategy switch.
+Existing `long_output` metadata/events and the historical
+`selected_by="ensure_long_output"` route marker remain unchanged.
+
 Use this skill when the question is what shape the model should return and how that shape should stay reliable.
 
 The user does not need to say `.output(...)`, tuple `ensure`, `ensure_keys`, or `.validate(...)`. Requests for stable JSON-like fields, structured reports, or machine-readable sections should route here.
@@ -110,6 +127,12 @@ For planned section-by-section prose rather than one structured result, read
   model-facing field requirements for every structured output format. The
   original class remains the typed acceptance authority for
   `get_data_object()` / `async_get_data_object()`
+- on the 4.1.4.8 development line, `.output(RootModel[str], format="json")`
+  preserves a JSON root string, not a `{root: ...}` wrapper. Data readers return
+  the decoded string; typed readers retain the original RootModel. A missing
+  validated Pydantic result is a failure/retry, not successful `None`. This root
+  projection fix does not imply acceptance of the separate experimental
+  arbitrary-string continuation design
 - when parsed output feeds an API, SDK, module interface, or function directly,
   mirror the consumed request/argument structure instead of an opaque dict.
   If a measured complexity problem justifies an intermediate projection, use
@@ -153,29 +176,43 @@ For planned section-by-section prose rather than one structured result, read
     single multi-paragraph document; read it with `start()` / `async_start()` or
     `response.result.get_text()`
 - when one direct business result may exceed the provider output window, put
-  `.ensure_long_output()` on the unstarted `AgentExecution`, after the prompt
+  `.auto_continue()` on the unstarted `AgentExecution`, after the prompt
   and output contract and before any result reader. It defaults off and applies
   equally to `get_data`, `get_text`, `get_data_object`, result facades, and
   generators; do not hide it in one getter or overload `.output(...)` with
   execution policy
-  - the first ModelRequest keeps the original contract. Only normalized
-    `length` / `incomplete` starts the TriggerFlow-visible continuation loop.
-    Ordinary completion does not start semantic expansion. Do not lower the
+  - the first ModelRequest keeps the original contract. Explicit length starts
+    continuation; after a clean stream with missing terminal evidence, complete
+    unique JSON can validate directly, while plain text or a trustworthy open
+    prefix uses one combined tail-check/continuation request. Ordinary normal
+    completion does not start semantic expansion. Do not lower the
     output limit just to force continuation in a normal example; zero
     continuations can be the correct result
+  - on the 4.1.4.8 development line, a normal stop still requires one complete
+    JSON carrier, including accepted validation replacements. Multiple roots,
+    duplicate keys, trailing material and unfinished JSON fail explicitly;
+    do not merge them or discard a tail. This integrity failure does not start
+    semantic expansion or manufacture a length-continuation request
+    Replacement responses use their own terminal and complete-carrier evidence;
+    a length-limited or unsafe replacement fails rather than borrowing the
+    initial response's stop or creating a nested validation-continuation loop
   - inspect provider status, finish reason, and incomplete details together.
     Explicit failure, cancellation, filtering, or unknown/conflicting terminal
-    facts must not be masked by a positive sibling field. The Responses adapter
-    retains `incomplete_details`; incomplete transport is not semantic proof
-    that more business content is needed. The current normalizer still treats
-    bare `status="incomplete"`, without finish reason or incomplete reason, as
-    length; inspect that ambiguity rather than claiming a proven token limit
+    facts must not be masked by a positive sibling field. Missing metadata is
+    different from an unsupported nonempty terminal reason. The Responses
+    adapter retains `incomplete_details`; bare `status="incomplete"` is ambiguous,
+    not an observed length limit or proof of missing business content
   - continue only the current request deliverable, not later chapters or stages
     of the surrounding business task. Retain request-local model selection and
     settings. Original instructions are reference context; even for a rewrite,
     the accepted prefix belongs to that rewrite and must not be generated again
   - current lossless carriers are plain text and resolved `json`; other
     structured formats fail before dispatch when the option is enabled
+  - an initially open JSON string uses field increments with retained decoded
+    prefix, pending escape and nested/array position, then original-schema
+    assembly. No chunk-list contract is required. Correlation stays Host-owned;
+    closed fields remain immutable. The header, unit_index and atomic slot
+    limits below apply to plain-text and legacy-slot packets, not this adapter
   - continuation is append-only, uses TaskWorkspace write/readback/digest
     evidence, and applies the original schema/Pydantic/ensure/custom validators
     to the replayed final candidate
@@ -196,7 +233,7 @@ For planned section-by-section prose rather than one structured result, read
     do not synthesize missing list paths as empty or accept an empty declaration
     after any item/prior declaration
   - retain trusted explicitly empty text as a text-presence fact. Before
-    accepting continuation `is_final`, require declared ensure paths to have
+    accepting `completion=complete`, require declared ensure paths to have
     manifest facts and continue missing delivery without spending the caller's
     final-validation retry allowance
   - treat a closed structured string as one immutable atomic schema value:
@@ -237,12 +274,13 @@ For planned section-by-section prose rather than one structured result, read
     immediately rather than enter model repair
   - the private envelope must not enter the business stream, and continuation
     requests must not inherit Action/tool handlers
-  - the current Host guard does not accept a zero-update final acknowledgement
-    immediately after initial truncation, before any continuation unit has
-    been committed, even if that acknowledgement stops normally. Once a
-    continuation unit exists, a later zero-update final envelope can proceed
-    under the other acceptance gates. This is a conservative delivery policy,
-    not proof that more prose is needed; do not work around it by adding filler
+  - the private packet has one completion enum: complete, incomplete or
+    undetermined. A full, correlated complete packet permits original-result
+    replay/validation even with zero updates and missing/length terminal
+    metadata; unsafe facts still fail. Partial packets cannot confirm completion.
+    Undetermined stops explicitly with the evidence gap and prior trusted
+    progress, not a format retry or partial success. No filler or separate
+    judge is required; failed original validation still prevents delivery
   - use bounded `long_output_no_progress` diagnostics to inspect reason,
     observed header fields, manifest revision, and accepted-unit count without
     recording raw provider bodies
@@ -373,8 +411,9 @@ For planned section-by-section prose rather than one structured result, read
 ## Diagnose Zero-Update Continuation
 
 Separate why continuation started from why it was retried. The initial trigger
-comes from normalized provider metadata, not a generic semantic quality review.
-A length signal does not identify what remains: business content might be
+uses provider metadata and strict raw-carrier evidence, not a generic quality review.
+When terminal evidence is missing, use complete-carrier evidence or the combined
+request described above. A length signal does not identify what remains: content might be
 missing, or content might already be present while normal termination or the
 private envelope's closing fields were not delivered. Confirm the case from
 the raw final response, accepted manifest, offered slots, and diagnostics; do
@@ -383,17 +422,16 @@ not infer semantic completeness from either length or a model finality claim.
 Zero committed units also does not necessarily mean the model returned no
 content. An incomplete header, malformed envelope, stale identity, invalid
 update, or missing required path has a different cause from a valid
-`updates=[]`, `is_final=true` response. Integrity failures are not content
+`updates=[]`, `completion=complete` response. Integrity failures are not content
 repair. Check these causes before attributing the problem to model capability
 or stricter business requirements.
 
-When the prompt permits an empty completion acknowledgement but the Host still
-requires a new unit, report a finality-policy mismatch rather than tightening
-the writing prompt. Changing that guard requires an explicit contract decision
-and matching runtime/tests/docs; do not advertise relaxed finality as supported
-before it is implemented. Original declared validation remains authoritative,
-and accepting a completion acknowledgement would not prove general semantic
-exhaustiveness.
+Check the installed version's finality policy before changing the writing
+prompt. The development-line guard accepts the valid full empty acknowledgement
+described above; older versions may still require a new unit.
+That older mismatch does not justify filler. Original declared validation
+remains authoritative, and completion confirmation does not prove general
+semantic exhaustiveness.
 
 ## Anti-Patterns
 

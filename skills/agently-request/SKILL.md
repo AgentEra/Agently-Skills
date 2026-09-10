@@ -125,6 +125,12 @@ observed results to the next semantic step.
 
 ## Result Consumption
 
+On the 4.1.4.8 development line, `.auto_continue()` is the preferred name for
+conditional output continuation; `.ensure_long_output()` remains the released
+compatibility spelling for the same policy. It is not task resume/rework or
+proactive `long_content` generation. See `references/output-control.md` for
+version scope and current capability limits.
+
 - Agent quick chains return `AgentExecutionResult`; direct ModelRequest calls
   return `ModelRequestResult`.
 - Use `get_data()` for the business value, `get_text()` for user-facing text,
@@ -146,33 +152,16 @@ observed results to the next semantic step.
 - `instant` may start work before the response finishes, but its result is not
   new input to the same in-flight request. When later model output needs that
   result, join after final reconciliation and pass it to a later ModelRequest.
-- When one direct business result may exceed a provider output window, put
-  `.ensure_long_output()` on the unstarted AgentExecution. It keeps the first
-  request ordinary and activates TriggerFlow-backed, TaskWorkspace-verified
-  continuation only after normalized length/incomplete termination. Use plain
-  text or JSON, preserve nested containers when projecting each model-visible
-  slot contract, preserve nested Pydantic constraints, validate each value
-  independently before append-only commit, enforce exact list bounds/order,
-  expose one exact mnemonic `path_key` per slot,
-  close the revision/digest/anchor header before business updates, retain valid
-  prefixes across rejected tails, keep the exact anchor as a short accepted-unit
-  digest, pass the bounded document start, exact accepted tail, and host-counted
-  character total as one read-only plain-text continuity context, commit one
-  plain-text block per logical continuation so every next join sees the
-  refreshed accepted suffix, and keep declared coverage validators
-  explicit. Preserve trusted explicit
-  empty-list/empty-text facts, treat each closed structured string as an
-  immutable atomic value (use a chunk list beyond the per-unit bound), and require
-  declared ensure paths before accepting continuation finality. A length
-  terminal before header closure preserves the manifest as bounded no progress;
-  the third consecutive no-progress continuation terminates. The delivery flow
-  owns one-physical-request continuation recovery; do not hide another
-  ModelRequest retry loop inside it. A malformed provider-complete envelope is
-  bounded observable no progress, while an authoritative complete final parse
-  must not be replaced by an older instant snapshot. Final
-  schema/declared-validator repair retains accepted units and remains bounded;
-  storage/digest/lineage integrity failures fail immediately. Do not mix this
-  delivery policy with an explicit AgentTask strategy.
+- When one direct result may exceed a model window, configure `.auto_continue()`
+  before starting. The first request stays ordinary. Provider facts and strict
+  raw-carrier evidence select normal validation or one combined tail-check and
+  append request; no separate judge or forced semantic expansion is added.
+  Complete/incomplete/undetermined is a private delivery decision, not an
+  Execution mode. Reuse LongOutputDelivery, TriggerFlow, cumulative bounds and
+  TaskWorkspace readback; preserve the original schema and validators.
+  Both plaintext and initially open structured strings retain trusted prefixes.
+  Read `references/output-control.md` for packet boundaries, per-path limits,
+  empty completion, no-progress and fail-closed rules.
 
 ## Context and Retrieval
 

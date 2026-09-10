@@ -78,7 +78,8 @@ compensation, persistence, and restart recovery. TriggerFlow may save before a
 program starts or after it settles; it cannot serialize and resume a live
 interpreter or awaited host binding.
 
-The built-in `.ensure_long_output()` execution policy is an example of this
+The built-in `.auto_continue()` execution policy (4.1.4.8 development spelling;
+released `.ensure_long_output()` remains an alias) is an example of this
 boundary: its first ModelRequest stays ordinary, while a normalized
 length/incomplete terminal activates TriggerFlow-visible continuation,
 append-only commit, and final validation nodes. Treat each continuation as a

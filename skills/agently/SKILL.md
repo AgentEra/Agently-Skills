@@ -41,7 +41,7 @@ Keep unrelated mechanical work outside this review method.
 - One request family: model setup, prompt, structured output, response,
   session memory, embeddings, knowledge retrieval -> `agently-request`.
 - Actions, MCP, ExecutionResource, task files, durable records, AgentExecution
-  terminal policies or Patterns, service APIs, RuntimeEvent, or DevTools ->
+  plugins or terminal policies, service APIs, RuntimeEvent, or DevTools ->
   `agently-runtime`.
 - Stage task lifetime, sync/async call bridging, loop-neutral handles,
   settlement, replay channels, or local listeners -> `agently-stage`.
@@ -146,11 +146,10 @@ keep raw URLs and metadata out of model transcription.
 - `SkillLibrary` owns immutable installed real-world Skill revisions.
 - `AgentExecution` binds Skills, builds/reads TaskContext, selects the route,
   executes, and exposes results/streams.
-- `AgentPattern` (beta) owns one reusable whole-request behavior carried by the
-  same AgentExecution; it does not own another input, result, or lifecycle
-  facade.
-- `AgentTask` owns long-task planning, evidence, verification, repair, and
-  terminal acceptance.
+- On the 4.1.4.8 development line, AgentExecution plugins own replaceable
+  whole-request production. The long_task producer owns retained planning,
+  evidence and execution; released AgentTask imports remain compatible.
+  The unreleased AgentPattern selector is replaced, not another owner.
 
 Do not recreate the removed generic Workspace, ContextBuilder, SkillsManager,
 Skills route/strategy owner, `skill_activation`, or `workspace_operation`.
@@ -179,33 +178,27 @@ not an execution engine.
   provider, or own pause/resume. Keep durable or application-wide interaction
   on ExecutionExchange providers, routing handlers, and `interaction.*`
   settings.
-- Treat `.pattern(...)` and the `AgentPattern` extension protocol as beta. Use
-  `.pattern(...)` when one reusable whole-request behavior should consume the
-  existing AgentExecution draft and return its business value. Registration
-  alone never selects a Pattern, and Pattern names do not replace Agent method
-  names. Select one Pattern only; use TriggerFlow inside a complex Pattern for
-  branching, loops, required HITL, or recovery. Agently may transparently carry
-  `.goal(...)` through the built-in goal Pattern while retaining the existing
-  AgentTask planning/execution behavior; callers do not need Pattern setup.
-- Use the beta `.pattern("plan")` for a terminal plan: it performs structured
-  readiness, uses connected ExecutionExchange clarification when facts are
-  materially missing, and then returns the plan in the caller's existing output
-  contract. Use the beta `.pattern("long_content")` for text composition through
-  a validated section plan, sequential writers with bounded continuity, and
-  host-ordered assembly. It is distinct from `ensure_long_output()` transport
-  continuation and rejects structured output or simultaneous continuation
-  selection.
+- On the 4.1.4.8 development line, select whole-request production through
+  `create_execution("request" | "plan" | "long_content" | "long_task")`.
+  Use plan for readiness, necessary connected clarification and a final plan;
+  use long_content for planned chapters, chapter-level actual summaries and
+  Host-ordered assembly. This is distinct from `.auto_continue()` conditional
+  request delivery (released `.ensure_long_output()` remains its alias).
+  `LongContent` output declarations also support field-level long-form
+  production. See `agently-runtime/references/agent-execution.md` and
+  `agently-request/references/output-control.md` for version-scoped contracts.
+  Registration alone does not select a producer or introduce a new lifecycle.
 - Use `.artifact(path, handler=None)` for verified TaskWorkspace-backed result
-  delivery, `.review(handler=None)` for one advisory judgment, and
-  `.verify(handler=None)` for the same judgment boundary as a hard terminal
-  gate. Together with `.interact(...)`, these are standard AgentExecution
-  methods; only Pattern is beta. These declarations do not create revision or
-  retry loops.
-- Keep ordinary Agent fluent code free of type imports. Built-in Pattern,
-  effort, and strategy names should be suggested at the call site; Pattern and
-  alternate-orchestrator strategy namespaces remain open to extension. Import
+  delivery, `.review(handler=None, rules=..., on_fail="warn" | "block")` for
+  soft quality assessment with a configurable terminal policy, and
+  `.validate(handler)` for hard final-output checks. There is no separate
+  public verify() on this development line. Review does not silently rework
+  production; explicit rework belongs to its producer.
+- Keep ordinary Agent fluent code free of type imports. Built-in plugin,
+  effort, and strategy names should be suggested at the call site; plugin
+  names remain open to extension. Import
   only `ExecutionExchangeView` or the relevant handler context from
-  `agently.types.data`, or Pattern protocol types from `agently.types.plugins`,
+  `agently.types.data`, or execution protocol types from `agently.types.plugins`,
   when authoring a named extension; never require them as boilerplate for an
   ordinary request.
 - Use `agent.create_task(...)` when the model should own a long task's planning,
@@ -319,7 +312,7 @@ replayed/unavailable/observed values precisely.
 - Duplicating full source, Skill, record, or artifact bodies into every prompt.
 - Treating Workspace, SkillsExecutor, Blocks, DevTools, or transport as a broad
   application policy owner.
-- Treating Pattern as a DAG synonym, giving it a second input/result lifecycle,
-  or hiding iterative repair inside `.review()` / `.verify()`.
+- Giving a producer a second input/result lifecycle, treating it as a DAG
+  synonym, or hiding iterative repair inside `.review()`.
 - Copying a full scaffold into a one-request project, retaining empty packages,
   or creating one file per planned topology node.

@@ -873,7 +873,7 @@
     },
     {
       "id": "design-planned-long-form-writing-zh",
-      "query": "已经路由到 agently-design。模型正常 stop 但文档明显短于需要，我想先规划章节再逐段生成和组装。是否每段都要单独摘要？摘要累积如何控制？什么时候串行、什么时候并发，与 ensure_long_output 的截断续写有何区别？",
+      "query": "已经路由到 agently-design。模型正常 stop 但文档明显短于需要，我想先规划章节再逐段生成和组装。是否每段都要单独摘要？摘要累积如何控制？什么时候串行、什么时候并发，与 auto_continue（兼容名 ensure_long_output）的截断续写有何区别？",
       "matched_skills": [
         "agently-design"
       ],

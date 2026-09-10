@@ -8,6 +8,19 @@ TaskContext, Actions, or other plugins are typed components, not extra owners.
 
 ## Selection
 
+`auto_continue(enabled=True)` configures conditional model-output continuation
+on an unstarted execution; it defaults off and all readers share the policy.
+The released `ensure_long_output` spelling delegates to the same implementation.
+Normal completion adds no continuation request. This does not select
+`long_content`, expand short answers, resume a task or replace rework. Existing
+`long_output` metadata/events and snapshot compatibility remain unchanged.
+`long_content` produces whole text. The development line also supports explicit
+`(LongContent, "writing requirements")` output declarations, with the compatible
+`("long_content", "writing requirements")` string form; import LongContent from
+agently. The final value remains str, and field production reuses the existing
+long-content producer under the parent Execution. See the request skill's
+output-control reference for declaration and dependency guidance.
+
 `agent.create_execution(name=None)` uses the configured `AgentExecution`
 plugin or bundled `auto`. Explicit names override that default.
 
@@ -77,7 +90,7 @@ not only the compatibility resume draft's goal declaration.
   section, or task-step outputs. Scalar callbacks use the existing
   `{"value": ...}` convention. For long_task, policies use the same parsed
   final_result as get_data; get_full_data retains the task envelope.
-  Direct request/ensure_long_output repair stays request-owned. Other producers
+  Direct request/auto_continue repair stays request-owned. Other producers
   validate once without replaying successful side effects.
 - `artifact(path, handler=None)` converts the final business result to text or
   bytes. TaskWorkspace owns containment, write, complete digest readback,
@@ -138,7 +151,12 @@ Every control also has a sync wrapper.
 execution with matching original draft, limits, Actions/Skills, callbacks, Workspace,
 RecordStore and ContextSources, then `load(snapshot)` without dispatch. For task
 creation, rebind the original task_id. Retire the original paused handle before
-resuming the rebound one. Revision history, settled producer state, replay gates,
+resuming the rebound one. The first restored typed reader validates the retained
+candidate locally against the rebound original schema and caches it, including
+nested/root Pydantic and LongContent declarations. Load does not run output-model
+validators, and typed reads do not repeat production or final policies. Historical
+typed readers use their own revision's candidate. Reconstruction errors raise.
+Revision history, settled producer state, replay gates,
 model counts and elapsed/offline time survive restoration. No settings, credentials,
 live provider objects or executable code are restored. Missing/changed required
 bindings fail; Skill catalog changes are conservatively rejected. Live
