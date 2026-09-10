@@ -205,6 +205,14 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
+- For multi-round tasks, including Prompt collaboration, Flow design and
+  experiment evaluation, begin each substantive round with current items
+  (status left, item right) and a change-log table recording time/timezone,
+  discussion version, change/reason and implementation or abandonment state.
+  Preserve stable item numbers and history; distinguish confirmed from applied
+  and verified. Reuse existing records and follow
+  `skills/agently/references/multi-round-collaboration.md`.
+
 - Use collaborative review for Agently model-node definitions, execution-effect
   tuning, data-flow completeness/redundancy and model/Host/workflow ownership,
   not only explicit Prompt review. Select it when contracts and handoffs can

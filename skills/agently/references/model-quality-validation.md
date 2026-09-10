@@ -4,6 +4,11 @@ Use this reference when an Agently project needs to classify intent, choose a
 business scenario, evaluate model output quality, grade a response, or test
 semantic behavior.
 
+For repeated experiment evaluation, use
+[Multi-Round Collaboration](multi-round-collaboration.md) at each round's
+response head. Keep proposed experiments, completed runs and accepted findings
+distinct; link actual evidence without presenting simulation as observation.
+
 ## Rule
 
 Agently projects are AI application projects. Semantic decisions should normally

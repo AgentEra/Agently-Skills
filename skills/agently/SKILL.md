@@ -18,6 +18,11 @@ Route through `agently-design` for the highlighted flow and handoffs, and
 `agently-request` for related Prompt tables grouped by readability and dependency.
 Keep unrelated mechanical work outside this review method.
 
+For multi-round design, Prompt revision or experiment evaluation, begin each
+substantive round with a status-left/item-right table and a timestamped,
+versioned change-log table. Follow
+[the collaboration record guidance](references/multi-round-collaboration.md).
+
 ## Workflow
 
 1. Reduce the request to scenario, atomic goals, inputs, outputs, side effects,

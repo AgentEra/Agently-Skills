@@ -112,6 +112,15 @@ bring the remaining problem to human Prompt review, accept acknowledged model
 limits without waiving hard gates, and seek authorization before an online
 model comparison. Do not add Prompt constraints solely to perfect soft targets.
 
+## Multi-Round Progress
+
+For iterative Prompt design or review, begin each substantive round's response
+with the status-left/item-right table and change-log table in
+[Multi-Round Collaboration](../../agently/references/multi-round-collaboration.md).
+Record time, discussion version, reasons and whether a change is proposed,
+confirmed, applied, verified or abandoned. Keep this collaboration view outside
+the model prompt; preserve existing approvals and review only affected scope.
+
 ## Collaborative Prompt Design and Review
 
 Use this method for Agently model-node responsibilities, execution-effect
