@@ -31,15 +31,23 @@ brief; they do not each create a new discussion version.
   invalidates it; retain the prior completion and the reopening reason.
 - Highlight this round's differences. In later rounds, use readable current
   wording in the item table while retaining previous wording in the log.
-  Show this round's log delta with access to earlier history; if nothing changed,
-  say so without inventing a change.
+- While the same work item remains active, every status/history presentation
+  must include its complete item list and complete change history, including
+  unchanged, completed, pending, removed and abandoned items. Highlight this
+  round's differences within that full view; delta-only tables and links to
+  earlier records do not replace it. If nothing changed, retain the full view
+  and say so without inventing a change.
+- Continuing, resuming or focusing on a subtopic does not by itself start a new
+  work item. Reset the list only for genuinely different work, explicitly
+  naming the scope change. Recover prior records after a handoff or context
+  loss; label missing history rather than silently dropping or inventing it.
 - Reuse the existing plan, review notes or experiment record. A short task can
   keep both tables in the conversation; use an existing durable project record
   when long work needs recovery or handoff. Do not require another tracking
   system, file format, model output schema, or runtime ledger.
-- For large lists, group by phase and summarize settled items with a link or
-  pointer to the full record. Keep unresolved, changed, removed and abandoned
-  items visible at the relevant round. These records do not add approval gates
+- For large lists, group by phase and keep individual rows concise without
+  omitting items or history entries. Links may supply supporting detail, not
+  replace the full same-work-item view. These records do not add approval gates
   or reset existing authorization.
 
 ## Presentation Example
