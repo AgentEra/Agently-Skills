@@ -186,3 +186,16 @@ Metadata names the selected plugin; stage events are
 execution.stage.started/completed, with diagnostics.execution_run.
 Retained task/route metadata remains available; these events are additive
 observations, not a new execution scheduler.
+
+## Extra Agent dependencies (4.1.4.8 development)
+
+An Execution plugin declares `required_agent_capabilities = ("audio",)` when
+its producer depends on an explicitly mounted capability. Use
+`execution.require_agent_capability("audio")` to obtain the captured object;
+dynamic dependencies use that same check before dependent work. This is not
+an Action-use requirement, permission, model-support or health check. Shared
+Execution instances retain captured bindings across Agent reconfiguration;
+fully replaced implementations must preserve the contract. Extra-capability
+snapshots currently fail explicitly rather than serializing live clients.
+For audio setup and supported streams, read
+`../../agently-request/references/audio.md`.

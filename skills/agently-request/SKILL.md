@@ -1,6 +1,6 @@
 ---
 name: agently-request
-description: "Use for Agently request-side setup and contracts: model settings, Prompt/input/output design, effect tuning, missing or redundant context, structured output, response reuse, streaming, session memory, embeddings, and retrieval within one request family. Review can be triggered by a developer's need to understand node behavior, not only by naming Prompt review. Use agently-design for cross-node data flow and model/Host ownership."
+description: "Use for Agently request-side setup and contracts: model settings, Prompt/input/output design, effect tuning, missing or redundant context, structured output, response reuse, streaming, TTS/STT audio, session memory, embeddings, and retrieval within one request family. Review can be triggered by a developer's need to understand node behavior, not only by naming Prompt review. Use agently-design for cross-node data flow and model/Host ownership."
 ---
 
 # Agently Request
@@ -15,6 +15,9 @@ items (status first) and a timestamped, versioned change-log table. Use
 to preserve pending decisions, modifications and abandonment.
 
 ## Read by Need
+
+- Independent TTS/STT, audio model drivers, Agent audio binding, or audio streaming:
+  `references/audio.md` (4.1.4.8 development; not the text Prompt pipeline).
 
 - Provider, endpoint, env, settings namespace, or connectivity:
   `references/model-setup.md`.
