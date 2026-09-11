@@ -232,10 +232,13 @@ Apply the same value/event audit to Flat AgentTask action steps:
 ```text
 Flat planner.required_action_ids
   -> host lookup of only those authoritative Action schemas
-  -> one narrow ModelRequest(action_commands only)
+  -> one narrow ModelRequest(requires_observation + action_commands)
      OR zero requests when a trusted internal plan already carries complete commands
-  -> host command/schema validation
-  -> dependency-ordered serial ActionRuntime dispatch
+  -> host readiness/command validation
+  -> ready: dependency-ordered serial ActionRuntime dispatch
+     OR needs observation + empty commands: existing bounded child ActionLoop
+        -> preserve batch-required ids in the child's require_actions evidence gate
+        -> observe Action result -> next request plans later arguments
   -> canonical action.started/completed/failed evidence
   -> Flat observation / terminal evidence edge
 ```
@@ -243,11 +246,15 @@ Flat planner.required_action_ids
 The compact planner capability list is selection context, not an authoritative
 kwargs contract. Do not ask the planner to reproduce strict Action inputs from
 that compact projection. Unknown or unavailable required Actions fail closed
-before the narrow command request. A Flat step may retain ActionLoop only when
-required Action ids are genuinely unresolved and later selection depends on
-earlier Action results. Draw the command-order edges inside the Flat batch when
-write/read or other intra-step dependencies exist; do not represent a dependent
-batch as parallel fan-out.
+before the narrow command request. Known Action ids do not prove argument
+readiness. Later arguments may require a fresh Action result, including from a
+previous call to the same Action. The narrow request returns no commands before
+that handoff; its one request is retained in `execution_meta.action_command_planning`.
+Draw order-only edges separately from new-result value edges. A write/read pair
+with an already known path can remain a fixed batch; result-dependent kwargs
+need a later request after observation. Explicit preplanned commands do not
+perform implicit result substitution. Do not represent a dependent batch as
+parallel fan-out or mark a child step's success as final task acceptance.
 
 ## TriggerFlow Coverage
 

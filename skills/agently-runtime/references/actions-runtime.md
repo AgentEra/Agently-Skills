@@ -49,7 +49,7 @@ facts instead of model prose or stdout path guesses.
 
 ## Action Planning and AgentTask
 
-For a TaskBoard Action card or Flat step with known required Actions:
+For a TaskBoard Action card or Flat step with complete, grounded arguments:
 
 1. give the model only the selected Actions' authoritative schemas;
 2. ask for dependency-ordered `action_commands` with canonical `action_id` and
@@ -59,9 +59,18 @@ For a TaskBoard Action card or Flat step with known required Actions:
 5. record Action results/evidence.
 
 Do not wrap a fixed command contract in a generic multi-round Action loop.
-Reserve ActionLoop for open-ended behavior where later Action choice depends on
-observed results. Unknown/unavailable required Actions fail closed before model
-execution.
+Use stepwise ActionLoop when later Action choice **or arguments** need newly
+observed results; known ids alone do not establish argument readiness. On the
+4.1.4.8 development line, Flat's existing narrow request may return
+`requires_observation=true` with an empty command list to select its bounded
+child loop. It dispatches no partial batch before handoff. Otherwise the batch
+must be complete; malformed or contradictory readiness fails closed.
+The child retains batch-required ids through `require_actions`, not visibility
+alone. Successful-call evidence does not prove argument semantics or repetition counts.
+This adaptive handoff removes the generic child's implicit two-round cap while
+retaining explicit task `action_loop_max_rounds`, deadlines and request budgets.
+An explicitly preplanned batch is fixed kwargs, not implicit result substitution.
+Unknown/unavailable required Actions fail closed before the narrow request.
 
 An authored `action_succeeded` requirement is a deterministic evidence gate.
 Only a real successful call of the exact mounted Action satisfies it.
