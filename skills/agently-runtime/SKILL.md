@@ -115,6 +115,13 @@ This is conditional request delivery, not long-form production or task resume.
 
 ## Real-World Skills
 
+For general authorized Skill-script execution, one `agent.enable_shell(...)`
+with explicit environment, approval and resource paths avoids per-script
+Actions. Read [Shell environments](references/actions-execution-resource.md#general-shell-4148-development)
+for the 4.1.4.8 development contract and platform limitations. The narrower
+exact-revision script helpers below remain available; they are not a prerequisite
+for the general Shell path.
+
 - Treat standard `SKILL.md` packages as guidance plus addressable resources.
   They do not own execution strategy, routing, Action mounting, permissions, or
   side-effect proof.

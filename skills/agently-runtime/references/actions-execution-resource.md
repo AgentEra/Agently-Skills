@@ -95,7 +95,60 @@ Use TaskWorkspace Actions for read/glob/grep/edit/patch/write. Use shell for
 tests, builds, git inspection, and bounded diagnostics. Keep command roots and
 allowlists narrow.
 
-### Read-Only Shell
+### General Shell (4.1.4.8 development)
+
+Use one Shell Action for arbitrary Bash/PowerShell source or authorized Skill
+scripts; per-script registration is not required. The Host chooses environment,
+approval, interpreter and resource directories; the model supplies only
+`command` and optional `workdir`.
+
+```python
+agent.enable_shell(
+    root=repo_root,
+    environment="offline",
+    approval="all",
+    read_paths={"release": skill_root},
+)
+```
+
+Directories must already exist. `offline` (default) and `online` retain isolation;
+only networking differs. macOS/Linux use Docker; Windows uses the installed
+Windows Sandbox CLI (`wsb.exe`, Windows 11 24H2+). Missing mechanisms/interpreters
+fail closed without Host fallback or automatic system-feature installation.
+Docker exposes `/workspace` and `/skills/release`; Windows Sandbox exposes
+`C:\workspace` and `C:\skills\release`. Tell the model the actual projected paths,
+not inaccessible Host installation paths. Host-supplied Skill context and
+resource mounts are distinct: reading guidance never grants execution rights.
+
+`host` explicitly runs with the Host account's privileges. Its cwd/read_paths
+are locations, not enforced filesystem restrictions. Windows defaults to
+PowerShell, other hosts to Bash; a custom `binary` must be available in the
+selected environment, not merely installed on the Host.
+
+Approval is independent: `all` asks every time; `write`/`delete` use advisory
+effect classification; `none` skips interactive approval but not explicit deny
+rules or hard policies. Selective analysis failures/uncertainty require approval.
+`risk_handler` may replace the isolated model request; its `ShellRisk` result has
+`effects`, `uncertainties` and `reason`. Do not describe models or substring deny
+rules as a security proof. Configure the existing PolicyApproval handler, not
+a second Shell approval protocol. Changed command/configuration/policy needs a
+fresh call; never replay possibly completed effects automatically.
+
+Output is `ShellResult`: exit code, bounded stdout/stderr, truncation and timeout
+facts. Limits default to 20 seconds and 20,000 bytes per channel, configurable by
+the Host and tightened by parent policy. Excess output is not archived. No PTY,
+interactive stdin, persistent session or detached background work is promised.
+Resource ownership includes cancellation and process-tree/container cleanup.
+CrossOver tests cover Windows Python/PowerShell 7 and the controller, not native
+Windows Sandbox isolation or PowerShell 5.1; advise Windows users to test and
+report versions plus a minimal reproduction in an issue.
+
+### Legacy argv-limited Shell
+
+Explicit `commands` or `sandbox` retains the released argv interface and emits
+a migration warning; it is not a parser for general shell source. Do not mix
+these options with the general Shell parameters. `Cmd` delegates to the shared
+process owner and is scheduled for cleanup in 4.2.
 
 ```python
 agent.enable_shell(
@@ -104,7 +157,7 @@ agent.enable_shell(
 )
 ```
 
-Do not include package managers, network commands, unsafe escape hatches, or
+For this restricted argv use case, do not include package managers, network commands, unsafe escape hatches, or
 secret-bearing environment values in model-visible schemas. Visible metadata
 may show env key names but must redact values.
 
