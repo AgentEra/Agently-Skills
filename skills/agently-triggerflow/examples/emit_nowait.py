@@ -6,7 +6,7 @@ flow = TriggerFlow(name="nowait-emit-demo")
 
 
 async def kick(data):
-    data.emit_nowait(
+    await data.async_emit_nowait(
         "AUDIT",
         {
             "input": data.input,

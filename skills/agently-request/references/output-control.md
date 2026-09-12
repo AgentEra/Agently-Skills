@@ -433,6 +433,9 @@ That older mismatch does not justify filler. Original declared validation
 remains authoritative, and completion confirmation does not prove general
 semantic exhaustiveness.
 
+For a compact rule-first business validator, see
+[`../examples/output-control-validate-runtime.py`](../examples/output-control-validate-runtime.py).
+
 ## Anti-Patterns
 
 - do not handwrite JSON post-processors when `.output(...)` already owns the contract
@@ -447,7 +450,3 @@ semantic exhaustiveness.
 - do not treat offered-set membership as proof that a delayed, replayed, or
   retried selection belongs to the current Host request; correlate it before
   canonical lookup
-
-## Read Next
-
-- `references/overview.md`

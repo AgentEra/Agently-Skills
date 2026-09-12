@@ -1,6 +1,7 @@
 # Agently Prompt Management
 
-Use this skill when the core problem is how prompt state should be structured before one request or request family runs.
+Use this reference when the core problem is how prompt state should be
+structured before one request or request family runs.
 
 ## Native-First Rules
 
@@ -342,7 +343,3 @@ zero-shot versus few-shot behavior, and model-specific regressions.
   historical incident, test fixture, or expected answer from one observed
   instance into normative case-specific behavior; generalize the invariant and
   use bounded illustrative examples only after the rule exists.
-
-## Read Next
-
-- `references/overview.md`

@@ -358,12 +358,12 @@
       "id": "execution-topology-validation-zh",
       "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
       "matched_skills": [
-        "agently",
+        "agently-design",
         "agently-triggerflow"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently/references/execution-topology-validation.md"
+          "skills/agently-design/references/execution-topology-validation.md"
         ]
       ],
       "concepts": [
@@ -392,16 +392,22 @@
       ]
     },
     {
-      "id": "taskdag-foundation-dynamic-task-facade-en",
-      "query": "After routing to a DAG-shaped execution, which reference explains why TaskDAG is the foundation capability, how Dynamic Task is only the facade, and how TriggerFlow is the execution substrate?",
+      "id": "taskdag-low-frequency-foundation-en",
+      "query": "After routing a low-frequency submitted DAG request to agently, which reference explains TaskDAG ownership, the DynamicTask facade, the TriggerFlow substrate, and the current Skill-task integration gap?",
       "matched_skills": [
-        "agently-dynamic-task"
+        "agently"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-dynamic-task/references/overview.md"
+          "skills/agently/references/task-dag.md"
         ]
       ],
+      "excerpt_anchors": {
+        "skills/agently/references/task-dag.md": [
+          "## Current Ownership",
+          "## Known 4.1.4.7+ Integration Gap"
+        ]
+      },
       "concepts": [
         {
           "id": "taskdag_foundation",
@@ -412,14 +418,14 @@
           "description": "TriggerFlow is the executor substrate underneath Dynamic Task."
         },
         {
-          "id": "executor_independent",
-          "description": "TaskDAGExecutor does not require Agent directly."
+          "id": "skill_task_integration_gap",
+          "description": "The direct SkillsExecutor resolver integration is not presented as proven while its context contract is incompatible with TaskDAGExecutor."
         }
       ],
       "required_concepts": [
         "taskdag_foundation",
         "triggerflow_substrate",
-        "executor_independent"
+        "skill_task_integration_gap"
       ]
     },
     {
@@ -780,9 +786,13 @@
     {
       "id": "request-table-first-collaboration-example-zh",
       "query": "已经路由到 agently-request。给我一个协同审校样例中的模型可见示例、字段约束和分组确认点；说明示例与审阅备注的边界，不要把展示样例当成固定业务模板或真实运行证据。",
-      "matched_skills": ["agently-request"],
+      "matched_skills": [
+        "agently-request"
+      ],
       "expected_reference_sets": [
-        ["skills/agently-request/references/prompt-collaboration-example.md"]
+        [
+          "skills/agently-request/references/prompt-collaboration-example.md"
+        ]
       ],
       "excerpt_anchors": {
         "skills/agently-request/references/prompt-collaboration-example.md": [
@@ -792,43 +802,107 @@
         ]
       },
       "concepts": [
-        {"id": "table_first_example", "description": "Readable tables show example behavior, output field constraints and the related-node group's confirmation focus."},
-        {"id": "visible_examples_and_output", "description": "The sample distinguishes synthetic model-visible examples, their actual slot placement, field contracts and reviewer-only content."},
-        {"id": "sample_not_fixed_workflow", "description": "The synthetic presentation groups related nodes without imposing a fixed count, runtime topology or observed-result claim; consequential changes still need confirmation."}
+        {
+          "id": "table_first_example",
+          "description": "Readable tables show example behavior, output field constraints and the related-node group's confirmation focus."
+        },
+        {
+          "id": "visible_examples_and_output",
+          "description": "The sample distinguishes synthetic model-visible examples, their actual slot placement, field contracts and reviewer-only content."
+        },
+        {
+          "id": "sample_not_fixed_workflow",
+          "description": "The synthetic presentation groups related nodes without imposing a fixed count, runtime topology or observed-result claim; consequential changes still need confirmation."
+        }
       ],
-      "required_concepts": ["table_first_example", "visible_examples_and_output", "sample_not_fixed_workflow"]
+      "required_concepts": [
+        "table_first_example",
+        "visible_examples_and_output",
+        "sample_not_fixed_workflow"
+      ]
     },
     {
       "id": "request-related-node-handoff-example-en",
       "query": "After selecting agently-request, show a presentation specimen for comparing a writer's actual input bindings to its planner's outputs in the same review group, without inventing observed results or treating shared display context as omitted runtime input.",
-      "matched_skills": ["agently-request"],
-      "expected_reference_sets": [["skills/agently-request/references/prompt-collaboration-example.md"]],
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/prompt-collaboration-example.md"
+        ]
+      ],
       "excerpt_anchors": {
-        "skills/agently-request/references/prompt-collaboration-example.md": ["### R2: Section Writer — Reviewed With R1", "### Confirmation Point"]
+        "skills/agently-request/references/prompt-collaboration-example.md": [
+          "### R2: Section Writer — Reviewed With R1",
+          "### Confirmation Point"
+        ]
       },
       "concepts": [
-        {"id": "explicit_handoff_bindings", "description": "Show the accepted current section and full plan alongside authoritative source facts and bounded predecessor continuity, with their actual producer/Host bindings."},
-        {"id": "display_not_runtime_omission", "description": "Sharing context in the review display does not remove it from the consumer's runtime inputs or make unobserved producer output real."},
-        {"id": "group_confirmation", "description": "Confirm consequential planner/writer changes as a useful group and recheck affected handoffs without reopening unchanged approvals."}
+        {
+          "id": "explicit_handoff_bindings",
+          "description": "Show the accepted current section and full plan alongside authoritative source facts and bounded predecessor continuity, with their actual producer/Host bindings."
+        },
+        {
+          "id": "display_not_runtime_omission",
+          "description": "Sharing context in the review display does not remove it from the consumer's runtime inputs or make unobserved producer output real."
+        },
+        {
+          "id": "group_confirmation",
+          "description": "Confirm consequential planner/writer changes as a useful group and recheck affected handoffs without reopening unchanged approvals."
+        }
       ],
-      "required_concepts": ["explicit_handoff_bindings", "display_not_runtime_omission", "group_confirmation"]
+      "required_concepts": [
+        "explicit_handoff_bindings",
+        "display_not_runtime_omission",
+        "group_confirmation"
+      ]
     },
     {
       "id": "design-flow-review-fit-zh",
       "query": "这个 Agently 复杂流程的效果不稳定，我想判断是模型节点职责没定义清楚、输入漏传或重复，还是把确定性校验和工作流控制错交给了模型。先看整体流程和节点职责，再检查数据交接；这套方法能回答哪些问题，哪些结论还需要实际运行证据？",
-      "matched_skills": ["agently-design"],
-      "expected_reference_sets": [["skills/agently-design/references/model-request-topology.md"]],
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/model-request-topology.md"
+        ]
+      ],
       "excerpt_anchors": {
-        "skills/agently-design/references/model-request-topology.md": ["## Collaborative Flow and Handoff Review"]
+        "skills/agently-design/references/model-request-topology.md": [
+          "## Collaborative Flow and Handoff Review"
+        ]
       },
       "concepts": [
-        {"id": "node_contract_fit", "description": "Review duties, required facts, output consumers and split reasons before declaring model nodes well defined."},
-        {"id": "effect_evidence_limit", "description": "Use actual post-injection requests, outputs, semantic evaluation and observed performance to support effect or root-cause claims; diagrams do not establish those claims."},
-        {"id": "consumer_delivery_trace", "description": "Trace required consumer fields to source, transformation, actual delivery and validation; a drawn edge or unread reference is insufficient."},
-        {"id": "necessary_repetition_preserved", "description": "Apply removal counterfactuals without deleting authoritative facts required by independent request snapshots merely to reduce repetition."},
-        {"id": "model_host_boundary", "description": "Distinguish semantic duties from deterministic checks, scheduling and side effects, and route mechanical defects to their owners."}
+        {
+          "id": "node_contract_fit",
+          "description": "Review duties, required facts, output consumers and split reasons before declaring model nodes well defined."
+        },
+        {
+          "id": "effect_evidence_limit",
+          "description": "Use actual post-injection requests, outputs, semantic evaluation and observed performance to support effect or root-cause claims; diagrams do not establish those claims."
+        },
+        {
+          "id": "consumer_delivery_trace",
+          "description": "Trace required consumer fields to source, transformation, actual delivery and validation; a drawn edge or unread reference is insufficient."
+        },
+        {
+          "id": "necessary_repetition_preserved",
+          "description": "Apply removal counterfactuals without deleting authoritative facts required by independent request snapshots merely to reduce repetition."
+        },
+        {
+          "id": "model_host_boundary",
+          "description": "Distinguish semantic duties from deterministic checks, scheduling and side effects, and route mechanical defects to their owners."
+        }
       ],
-      "required_concepts": ["node_contract_fit", "effect_evidence_limit", "consumer_delivery_trace", "necessary_repetition_preserved", "model_host_boundary"]
+      "required_concepts": [
+        "node_contract_fit",
+        "effect_evidence_limit",
+        "consumer_delivery_trace",
+        "necessary_repetition_preserved",
+        "model_host_boundary"
+      ]
     },
     {
       "id": "request-measured-schema-restructuring-zh",
@@ -1105,6 +1179,110 @@
         "independent_tunnel",
         "independent_event_emitter",
         "non_durable_boundary"
+      ]
+    },
+    {
+      "id": "audio-streams-v3-zh",
+      "query": "我要给 Agent 接入 TTS/STT：连续 PCM 和自动分段音频怎样消费，识别后断句如何处理？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/audio.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "independent_audio",
+          "description": "AudioModelRequest is independently bound to Agent, not the text Prompt pipeline."
+        },
+        {
+          "id": "output_modes",
+          "description": "TTS yields continuous PCM or complete audio blocks; STT yields finalized recognition windows or post-recognition text segments."
+        }
+      ],
+      "required_concepts": [
+        "independent_audio",
+        "output_modes"
+      ]
+    },
+    {
+      "id": "output-delivery-v3-zh",
+      "query": "LongContent 字段生成和 auto_continue 截断续写有何区别？字符串和结构化字符串是否都支持？",
+      "matched_skills": [
+        "agently-request"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-request/references/output-control.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "delivery_policy",
+          "description": "auto_continue is conditional output delivery independent from Execution selection and output readers."
+        },
+        {
+          "id": "long_content_declaration",
+          "description": "LongContent and the compatible long_content string declaration select proactive generation; ordinary str is not a keyword-triggered strategy."
+        }
+      ],
+      "required_concepts": [
+        "delivery_policy",
+        "long_content_declaration"
+      ]
+    },
+    {
+      "id": "execution-plugins-v3-zh",
+      "query": "怎样选择和嵌套 AgentExecution，声明 audio 依赖，并组合 rework、validate、artifact 和 review？",
+      "matched_skills": [
+        "agently-runtime"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-runtime/references/agent-execution.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "producer_owner",
+          "description": "Execution plugins own production and rework; review is a final soft assessment, not an implicit repair loop."
+        },
+        {
+          "id": "capability_dependency",
+          "description": "required_agent_capabilities declares audio dependencies and missing bindings fail before production."
+        }
+      ],
+      "required_concepts": [
+        "producer_owner",
+        "capability_dependency"
+      ]
+    },
+    {
+      "id": "shell-policy-v3-zh",
+      "query": "用 Shell 执行 Bash 或 PowerShell，offline、online、host 的隔离、审批和风险检查边界是什么？",
+      "matched_skills": [
+        "agently-runtime"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-runtime/references/actions-execution-resource.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "shell_permission",
+          "description": "Shell capability, sandbox profile and approval remain host-owned; Skill content grants no permission."
+        },
+        {
+          "id": "windows_limit",
+          "description": "CrossOver evidence is not native Windows Sandbox certification."
+        }
+      ],
+      "required_concepts": [
+        "shell_permission",
+        "windows_limit"
       ]
     }
   ]

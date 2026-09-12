@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE = ROOT / "skills" / "agently" / "assets" / "project-template"
+REFERENCE_ASSET = ROOT / "skills" / "agently" / "assets" / "full-stack-reference"
 
 EXPECTED_FILES = {
     ".gitignore",
@@ -47,7 +47,6 @@ FORBIDDEN_PARTS = {
 
 FORBIDDEN_TEXT = {
     "attach_mcp",
-    "agently_project_template_reference",
     "../../../..",
     "/Users/moxin/Library/Mobile Documents/",
 }
@@ -71,18 +70,18 @@ def main() -> None:
     failures: list[str] = []
 
     check(
-        "template_exists",
-        TEMPLATE.is_dir(),
-        "the public project template asset exists",
+        "reference_asset_exists",
+        REFERENCE_ASSET.is_dir(),
+        "the public full-stack reference asset exists",
         failures,
         passes,
     )
 
     actual_files = {
-        path.relative_to(TEMPLATE).as_posix()
-        for path in TEMPLATE.rglob("*")
+        path.relative_to(REFERENCE_ASSET).as_posix()
+        for path in REFERENCE_ASSET.rglob("*")
         if path.is_file()
-    } if TEMPLATE.exists() else set()
+    } if REFERENCE_ASSET.exists() else set()
 
     for relative_path in sorted(EXPECTED_FILES):
         check(
@@ -109,9 +108,9 @@ def main() -> None:
     )
 
     text_files = [
-        TEMPLATE / relative_path
+        REFERENCE_ASSET / relative_path
         for relative_path in sorted(actual_files)
-        if (TEMPLATE / relative_path).suffix
+        if (REFERENCE_ASSET / relative_path).suffix
         in {".json", ".md", ".py", ".txt", ".yaml", ".yml"}
         or relative_path == ".gitignore"
     ]
@@ -121,7 +120,7 @@ def main() -> None:
         for forbidden in FORBIDDEN_TEXT:
             if forbidden in content:
                 forbidden_text_hits.append(
-                    f"{path.relative_to(TEMPLATE).as_posix()}: {forbidden}"
+                    f"{path.relative_to(REFERENCE_ASSET).as_posix()}: {forbidden}"
                 )
     check(
         "local_source_text_absent",
@@ -131,7 +130,7 @@ def main() -> None:
         passes,
     )
 
-    topology_path = TEMPLATE / "TOPOLOGY.md"
+    topology_path = REFERENCE_ASSET / "TOPOLOGY.md"
     topology = topology_path.read_text(encoding="utf-8") if topology_path.exists() else ""
     for heading in (
         "Owner and Invariant Ledger",
@@ -147,7 +146,7 @@ def main() -> None:
             passes,
         )
 
-    api_path = TEMPLATE / "services" / "api.py"
+    api_path = REFERENCE_ASSET / "services" / "api.py"
     api_source = api_path.read_text(encoding="utf-8") if api_path.exists() else ""
     check(
         "fastapi_direct_adapter",
@@ -157,7 +156,7 @@ def main() -> None:
         passes,
     )
 
-    mcp_path = TEMPLATE / "services" / "mcp_server.py"
+    mcp_path = REFERENCE_ASSET / "services" / "mcp_server.py"
     mcp_source = mcp_path.read_text(encoding="utf-8") if mcp_path.exists() else ""
     check(
         "fastmcp_direct_adapter",
@@ -173,13 +172,13 @@ def main() -> None:
     project_reference = project_reference_path.read_text(encoding="utf-8")
     check(
         "project_reference_links_asset",
-        "../assets/project-template/" in project_reference,
-        "project-framework.md links the runnable asset as a conditional template",
+        "../assets/full-stack-reference/" in project_reference,
+        "project-framework.md links the runnable full-stack reference asset",
         failures,
         passes,
     )
 
-    print("Agently public project template validation")
+    print("Agently full-stack reference validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

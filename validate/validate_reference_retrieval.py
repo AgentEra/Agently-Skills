@@ -211,7 +211,7 @@ async def judge_case(case: dict, *, max_retries: int) -> dict:
         f"Every covered concept must be exactly one of: {allowed_concepts}.\n"
     )
 
-    agent = Agently.create_agent(f"v2-reference-retrieval-{case['id']}")
+    agent = Agently.create_agent(f"v3-reference-retrieval-{case['id']}")
     result = (
         agent.input(prompt)
         .output(
@@ -286,7 +286,7 @@ async def run_live_validation(
     concurrency: int,
     max_retries: int,
 ) -> None:
-    flow = TriggerFlow(name="v2-reference-retrieval-validation")
+    flow = TriggerFlow(name="v3-reference-retrieval-validation")
 
     async def validate_in_flow(data):
         return await validate_live_case(
@@ -420,7 +420,7 @@ def run_static_checks(failures: list[str], passes: list[str]) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run V2 post-route reference retrieval validation.")
+    parser = argparse.ArgumentParser(description="Run V3 post-route reference retrieval validation.")
     parser.add_argument(
         "--allow-model-calls",
         action="store_true",
@@ -510,7 +510,7 @@ async def main(argv: list[str] | None = None) -> None:
             "--allow-model-calls and --max-model-requests are required"
         )
 
-    print("V2 reference retrieval validation")
+    print("V3 reference retrieval validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

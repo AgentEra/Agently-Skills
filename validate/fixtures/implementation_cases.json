@@ -16,9 +16,10 @@
       "live_smoke_profile": "deepseek"
     },
     {
-      "id": "response-reuse-native",
-      "reference_example": "skills/agently-request/examples/model-response-minimal.py",
+      "id": "model-request-result-native",
+      "reference_example": "skills/agently-request/examples/model-request-result-minimal.py",
       "required_primitives": [
+        "Agently.create_request()",
         "get_result()",
         "result.get_data("
       ],
@@ -51,6 +52,7 @@
         "TriggerFlow",
         ".output(",
         "get_result()",
+        ".batch(",
         "async_close"
       ],
       "forbidden_antipatterns": [
@@ -65,7 +67,7 @@
       "reference_example": "skills/agently-request/examples/model-setup-minimal.py",
       "required_primitives": [
         "Agently.set_settings(",
-        "\"OpenAICompatible\""
+        "\"plugins.ModelRequester.OpenAICompatible\""
       ],
       "forbidden_antipatterns": [
         "httpx.post(",
@@ -75,24 +77,8 @@
       "live_smoke_profile": "deepseek"
     },
     {
-      "id": "dynamic-task-native",
-      "reference_example": "skills/agently-dynamic-task/examples/minimal.py",
-      "required_primitives": [
-        "Agently.create_dynamic_task(",
-        "\"task_schema_version\"",
-        "\"semantic_outputs\"",
-        "handlers={"
-      ],
-      "forbidden_antipatterns": [
-        "json.loads(",
-        "re.search(",
-        "custom_scheduler"
-      ],
-      "live_smoke_profile": "local"
-    },
-    {
-      "id": "project-template-triggerflow-native",
-      "reference_example": "skills/agently/assets/project-template/workflows/main_flow.py",
+      "id": "full-stack-reference-triggerflow-native",
+      "reference_example": "skills/agently/assets/full-stack-reference/workflows/main_flow.py",
       "required_primitives": [
         "TriggerFlow",
         ".for_each(concurrency=4)",
@@ -107,8 +93,8 @@
       "live_smoke_profile": "local"
     },
     {
-      "id": "project-template-fastapi-native",
-      "reference_example": "skills/agently/assets/project-template/services/api.py",
+      "id": "full-stack-reference-fastapi-native",
+      "reference_example": "skills/agently/assets/full-stack-reference/services/api.py",
       "required_primitives": [
         "FastAPI",
         "@app.post(",
@@ -123,8 +109,8 @@
       "live_smoke_profile": "local"
     },
     {
-      "id": "project-template-fastmcp-native",
-      "reference_example": "skills/agently/assets/project-template/services/mcp_server.py",
+      "id": "full-stack-reference-fastmcp-native",
+      "reference_example": "skills/agently/assets/full-stack-reference/services/mcp_server.py",
       "required_primitives": [
         "FastMCP",
         "@mcp.tool",

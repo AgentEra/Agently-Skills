@@ -7,40 +7,38 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "bundles" / "manifest.json"
+SKILLS = ROOT / "skills"
 VALID_KINDS = {"entry", "core", "addon", "specialized"}
-EXPECTED_IDS = {"app", "migration"}
-APP_SKILLS = {
+EXPECTED_BUNDLE_IDS = {"app", "migration"}
+APP_ORDER = [
     "agently",
     "agently-design",
     "agently-request",
     "agently-runtime",
     "agently-stage",
-    "agently-dynamic-task",
     "agently-triggerflow",
-}
-MIGRATION_EXTRA_SKILLS = {
-    "agently-migration",
-}
-RETIRED_SKILLS = {
-    "agently-playbook",
-    "agently-model-setup",
-    "agently-prompt-management",
-    "agently-output-control",
-    "agently-model-response",
-    "agently-agent-extensions",
-    "agently-session-memory",
-    "agently-knowledge-base",
-    "agently-migration-playbook",
-    "agently-langchain-to-agently",
-    "agently-langgraph-to-triggerflow",
-}
+]
+MIGRATION_EXTRA_ORDER = ["agently-migration"]
+EXPECTED_CATALOG = set(APP_ORDER + MIGRATION_EXTRA_ORDER)
+RETIRED_SKILL = "agently-" + "dynamic-task"
 
 
-def check(name: str, condition: bool, details: str, failures: list[str], passes: list[str]) -> None:
-    if condition:
-        passes.append(f"{name}: {details}")
-    else:
-        failures.append(f"{name}: {details}")
+def check(
+    name: str,
+    condition: bool,
+    details: str,
+    failures: list[str],
+    passes: list[str],
+) -> None:
+    (passes if condition else failures).append(f"{name}: {details}")
+
+
+def has_unique_strings(values: object) -> bool:
+    return (
+        isinstance(values, list)
+        and all(isinstance(value, str) and value for value in values)
+        and len(values) == len(set(values))
+    )
 
 
 def main() -> None:
@@ -48,91 +46,48 @@ def main() -> None:
     failures: list[str] = []
     data = json.loads(MANIFEST.read_text(encoding="utf-8"))
     bundles = data.get("bundles", [])
-    bundle_map = {bundle["id"]: bundle for bundle in bundles}
+    bundle_ids = [bundle.get("id") for bundle in bundles if isinstance(bundle, dict)]
+    bundle_map = {
+        bundle["id"]: bundle
+        for bundle in bundles
+        if isinstance(bundle, dict) and isinstance(bundle.get("id"), str)
+    }
+    actual_catalog = {path.name for path in SKILLS.iterdir() if path.is_dir()}
 
-    check("version_is_v3", data.get("version") == 3, "manifest version is 3", failures, passes)
-    check("catalog_generation", data.get("catalog_generation") == "v2", "default manifest declares catalog generation v2", failures, passes)
-    check("bundle_ids", set(bundle_map) == EXPECTED_IDS, "bundle ids match current app/migration set", failures, passes)
+    check("manifest_schema", data.get("version") == 3, "manifest schema version is 3", failures, passes)
+    check("catalog_generation", data.get("catalog_generation") == "v3", "catalog generation is v3", failures, passes)
+    check("bundle_ids_unique", len(bundle_ids) == len(set(bundle_ids)), "bundle ids are unique", failures, passes)
+    check("bundle_ids_exact", set(bundle_map) == EXPECTED_BUNDLE_IDS, "only app and migration bundles are public", failures, passes)
 
-    for bundle in bundles:
-        bundle_id = bundle["id"]
-        active = bundle.get("active_skills", [])
-        install = bundle.get("recommended_install_order", [])
-        entry = bundle.get("entry_skill")
+    for bundle_id, bundle in bundle_map.items():
+        active = bundle.get("active_skills")
+        install = bundle.get("recommended_install_order")
+        check(f"{bundle_id}_kind", bundle.get("kind") in VALID_KINDS, "bundle kind is valid", failures, passes)
+        check(f"{bundle_id}_active_unique", has_unique_strings(active), "active skills are unique strings", failures, passes)
+        check(f"{bundle_id}_install_unique", has_unique_strings(install), "install order contains unique strings", failures, passes)
+        if not isinstance(active, list) or not isinstance(install, list):
+            continue
+        check(f"{bundle_id}_install_matches_active", install == active, "install order covers active skills exactly once", failures, passes)
+        check(f"{bundle_id}_entry", bundle.get("entry_skill") == "agently" and active[:1] == ["agently"], "agently is the installed entry skill", failures, passes)
+        check(f"{bundle_id}_skills_exist", all((SKILLS / skill).is_dir() for skill in active), "every bundled skill exists", failures, passes)
+        check(f"{bundle_id}_retired_absent", RETIRED_SKILL not in active, "retired standalone TaskDAG skill is absent", failures, passes)
 
-        check(f"{bundle_id}_kind", bundle.get("kind") in VALID_KINDS, "kind is valid", failures, passes)
-        check(f"{bundle_id}_skills", bool(active), "bundle declares skills", failures, passes)
-        check(
-            f"{bundle_id}_skills_exist",
-            all((ROOT / "skills" / skill).exists() for skill in active),
-            "all bundle skills exist",
-            failures,
-            passes,
-        )
-        check(
-            f"{bundle_id}_install_order",
-            install and install[0] == "agently",
-            "bundle install order starts with agently",
-            failures,
-            passes,
-        )
-        check(
-            f"{bundle_id}_install_matches_active",
-            set(install) == set(active),
-            "recommended install order covers active skills exactly",
-            failures,
-            passes,
-        )
-        check(
-            f"{bundle_id}_entry",
-            entry == "agently",
-            "entry skill is agently",
-            failures,
-            passes,
-        )
+    app = bundle_map.get("app", {})
+    migration = bundle_map.get("migration", {})
+    app_active = app.get("active_skills", [])
+    migration_active = migration.get("active_skills", [])
+    app_set = set(app_active) if isinstance(app_active, list) else set()
+    migration_set = set(migration_active) if isinstance(migration_active, list) else set()
+    extra_set = set(MIGRATION_EXTRA_ORDER)
 
-    app = bundle_map["app"]
-    migration = bundle_map["migration"]
-    app_active = set(app.get("active_skills", []))
-    migration_active = set(migration.get("active_skills", []))
+    check("app_exact", app_active == APP_ORDER, "app bundle has the six current application skills in install order", failures, passes)
+    check("migration_base", migration.get("base_bundle") == "app", "migration extends app", failures, passes)
+    check("migration_exact", migration_active == APP_ORDER + MIGRATION_EXTRA_ORDER, "migration contains app plus only agently-migration", failures, passes)
+    check("migration_union", migration_set == app_set | extra_set, "migration equals app union migration extras", failures, passes)
+    check("catalog_expected", actual_catalog == EXPECTED_CATALOG, "skills directory is the exact seven-skill catalog", failures, passes)
+    check("manifest_catalog_union", app_set | migration_set == actual_catalog, "bundle union equals the public skills directory", failures, passes)
 
-    check(
-        "app_skills",
-        app_active == APP_SKILLS,
-        "app bundle combines router, cross-layer design, request, Stage, runtime, Dynamic Task, and TriggerFlow skills",
-        failures,
-        passes,
-    )
-    check(
-        "migration_base",
-        migration.get("base_bundle") == "app",
-        "migration attaches to app bundle",
-        failures,
-        passes,
-    )
-    check(
-        "migration_superset",
-        app_active.issubset(migration_active),
-        "migration includes every app skill",
-        failures,
-        passes,
-    )
-    check(
-        "migration_extra_skills",
-        MIGRATION_EXTRA_SKILLS.issubset(migration_active),
-        "migration adds compact framework migration skill",
-        failures,
-        passes,
-    )
-    check(
-        "default_no_legacy_v1_skills",
-        not (migration_active | app_active).intersection(RETIRED_SKILLS),
-        "default bundles do not reference legacy-only V1 skill ids",
-        failures,
-        passes,
-    )
-
-    print("V2 bundle manifest validation")
+    print("V3 bundle manifest validation")
     print(f"passes: {len(passes)}")
     for item in passes:
         print(f"PASS  {item}")

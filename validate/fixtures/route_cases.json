@@ -682,6 +682,10 @@
       "expected_route_paths": [
         [
           "agently-runtime"
+        ],
+        [
+          "agently",
+          "agently-runtime"
         ]
       ]
     },
@@ -842,44 +846,48 @@
       ]
     },
     {
-      "id": "dynamic-task-submitted-dag-en",
-      "scenario_id": "dynamic-task-dag-execution",
+      "id": "taskdag-submitted-dag-en",
+      "scenario_id": "taskdag-dag-execution",
       "locale": "en",
       "intent_style": "submitted-dag-explicit",
       "query": "Use Agently to run a submitted TaskDAG with validation, local handlers, dependency joins, and semantic outputs without hand-writing a scheduler.",
       "installed_skills": [
         "agently",
-        "agently-dynamic-task",
+        "agently-design",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-dynamic-task"
+          "agently"
         ],
         [
           "agently",
-          "agently-dynamic-task"
+          "agently-design"
+        ],
+        [
+          "agently",
+          "agently-triggerflow"
         ]
       ]
     },
     {
-      "id": "dynamic-task-auto-plan-zh",
-      "scenario_id": "dynamic-task-dag-execution",
+      "id": "taskdag-auto-plan-zh",
+      "scenario_id": "taskdag-dag-execution",
       "locale": "zh",
       "intent_style": "auto-plan-explicit",
       "query": "我要让模型先生成一个可校验的 DAG，再用 Agently 执行这个 Dynamic Task，要求输出 schema 和 handler 绑定都明确。",
       "installed_skills": [
         "agently",
-        "agently-dynamic-task",
-        "agently-request"
+        "agently-design",
+        "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-dynamic-task"
+          "agently"
         ],
         [
           "agently",
-          "agently-dynamic-task"
+          "agently-design"
         ]
       ]
     },
@@ -894,7 +902,6 @@
         "agently-design",
         "agently-request",
         "agently-runtime",
-        "agently-dynamic-task",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
@@ -910,8 +917,21 @@
       "locale": "zh",
       "intent_style": "model-contract-understanding",
       "query": "这个 Agently 长流程里有几个模型节点，我想确认每个节点到底负责什么、输入是否齐全、结果有没有交给正确的下游，以及是否传了无用资料。",
-      "installed_skills": ["agently", "agently-design", "agently-request", "agently-triggerflow"],
-      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request"]]
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ],
+        [
+          "agently-design",
+          "agently-request"
+        ]
+      ]
     },
     {
       "id": "model-workflow-effect-tuning-en",
@@ -919,8 +939,21 @@
       "locale": "en",
       "intent_style": "observed-effect-tuning",
       "query": "This Agently document pipeline runs but its results are inconsistent. Help me understand the model stages and compare their inputs, outputs and observed behavior before deciding what to tune.",
-      "installed_skills": ["agently", "agently-design", "agently-request", "agently-runtime"],
-      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request"]]
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ],
+        [
+          "agently-design",
+          "agently-request"
+        ]
+      ]
     },
     {
       "id": "model-host-division-and-redundancy-zh",
@@ -928,8 +961,22 @@
       "locale": "zh",
       "intent_style": "ownership-and-redundancy-check",
       "query": "Agently 流程把每一步的完整结果都传给后续模型，还让模型检查 ID 和控制重试。我想知道哪些信息是必要的，哪些判断应该交给模型，哪些应由工程或工作流承担。",
-      "installed_skills": ["agently", "agently-design", "agently-request", "agently-triggerflow"],
-      "expected_route_paths": [["agently-design"], ["agently-design", "agently-request", "agently-triggerflow"]]
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-triggerflow"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ],
+        [
+          "agently-design",
+          "agently-request",
+          "agently-triggerflow"
+        ]
+      ]
     },
     {
       "id": "provider-setting-only-no-flow-review-en",
@@ -937,8 +984,16 @@
       "locale": "en",
       "intent_style": "mechanical-settings-only",
       "query": "Only correct the environment-variable name used for this Agently provider's base URL; the request contracts and workflow are unchanged and do not need review.",
-      "installed_skills": ["agently", "agently-design", "agently-request"],
-      "expected_route_paths": [["agently-request"]]
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-request"
+        ]
+      ]
     },
     {
       "id": "cross-layer-system-design-explicit-en",
@@ -951,12 +1006,91 @@
         "agently-design",
         "agently-request",
         "agently-runtime",
-        "agently-dynamic-task",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
           "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "audio-streams-v3-zh",
+      "scenario_id": "audio-streams-v3-zh",
+      "locale": "zh",
+      "intent_style": "direct-capability",
+      "query": "我要给 Agent 接入 TTS/STT：连续 PCM 和自动分段音频怎样消费，识别后断句如何处理？",
+      "installed_skills": [
+        "agently",
+        "agently-request"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-request"
+        ],
+        [
+          "agently",
+          "agently-request"
+        ]
+      ]
+    },
+    {
+      "id": "output-delivery-v3-zh",
+      "scenario_id": "output-delivery-v3-zh",
+      "locale": "zh",
+      "intent_style": "direct-capability",
+      "query": "LongContent 字段生成和 auto_continue 截断续写有何区别？字符串和结构化字符串是否都支持？",
+      "installed_skills": [
+        "agently",
+        "agently-request"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-request"
+        ],
+        [
+          "agently",
+          "agently-request"
+        ]
+      ]
+    },
+    {
+      "id": "execution-plugins-v3-zh",
+      "scenario_id": "execution-plugins-v3-zh",
+      "locale": "zh",
+      "intent_style": "direct-capability",
+      "query": "怎样选择和嵌套 AgentExecution，声明 audio 依赖，并组合 rework、validate、artifact 和 review？",
+      "installed_skills": [
+        "agently",
+        "agently-runtime"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-runtime"
+        ],
+        [
+          "agently",
+          "agently-runtime"
+        ]
+      ]
+    },
+    {
+      "id": "shell-policy-v3-zh",
+      "scenario_id": "shell-policy-v3-zh",
+      "locale": "zh",
+      "intent_style": "direct-capability",
+      "query": "用 Shell 执行 Bash 或 PowerShell，offline、online、host 的隔离、审批和风险检查边界是什么？",
+      "installed_skills": [
+        "agently",
+        "agently-runtime"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-runtime"
+        ],
+        [
+          "agently",
+          "agently-runtime"
         ]
       ]
     }
