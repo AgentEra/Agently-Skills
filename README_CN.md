@@ -8,7 +8,7 @@ Skills 仓库。
 
 ## 兼容性
 
-当前开发 catalog 为 generation `v3`，对齐 Agently `4.1.4.8`，保留公开
+当前开发 catalog 为 generation `v3`，对齐 Agently `4.1.4.9`，保留公开
 V3 catalog 的七个 Skill 结构。
 
 历史 catalog 冻结在归档分支：

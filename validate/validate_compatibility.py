@@ -78,7 +78,7 @@ def main(*, require_remote_archives: bool = False) -> None:
 
     check("schema_version", support.get("schema_version") == 1, "support manifest schema is 1", failures, passes)
     check("framework", support.get("framework") == "agently", "framework is agently", failures, passes)
-    check("aligned_framework_version", aligned_version == "4.1.4.8", "catalog is aligned with Agently 4.1.4.8", failures, passes)
+    check("aligned_framework_version", aligned_version == "4.1.4.9", "catalog is aligned with Agently 4.1.4.9", failures, passes)
     check("catalog_generation", catalog_generation == "v3", "current catalog generation is v3", failures, passes)
     check("supported_generations", support.get("supported_catalog_generations") == ["v3"], "only the default v3 catalog is actively supported", failures, passes)
     check("recommended_bundle", recommended_bundle == "app", "app is the recommended bundle", failures, passes)

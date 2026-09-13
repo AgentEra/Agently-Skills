@@ -126,3 +126,77 @@ custom Execution implementations must honor the same contract. Presence is not
 authorization, health, backend operation support or required-Action call evidence.
 Extra-capability snapshots/rebinding and text-model budget/telemetry integration
 are not supported by this initial slice. Do not invent those guarantees.
+
+## Optional STT input processing (4.1.4.9 development only)
+
+Pass `TranscriptionOptions(input_options=AudioInputOptions(detector=...))` to
+standalone or bound-Agent stt/async_stt and either stream_stt output mode.
+Default None keeps the released path. Input processing is local and stripped
+before driver dispatch; it is not a provider extra or a text Prompt.
+
+```python
+from agently import AudioInputOptions, TranscriptionOptions
+from agently.integrations.silero import SileroVAD
+
+# Explicitly install numpy>=1.24,<3 and onnxruntime>=1.16,<2 first.
+# Supply a trusted local upstream v5/v6 ONNX file; nothing downloads implicitly.
+detector = SileroVAD(os.environ["SILERO_VAD_MODEL_PATH"])
+options = TranscriptionOptions(input_options=AudioInputOptions(
+    detector=detector, threshold=0.5, min_speech_seconds=0,
+    end_silence_seconds=0.5, pre_speech_seconds=0.15,
+    post_speech_seconds=0.15, max_segment_seconds=15,
+))
+async with audio.stream_stt(pcm_chunks, audio_format=PCMFormat(), options=options) as stream:
+    async for block in stream:
+        print(block.text, block.start_seconds, block.end_seconds, block.reason)
+```
+
+Construct SileroVAD before a latency-sensitive loop: model loading is synchronous.
+Its optional module requires NumPy/ONNX Runtime, never Torch. Ordinary Agently
+imports need neither; missing optional dependencies fail explicitly without
+installation. Silero supports mono s16le at 8/16 kHz; custom SpeechDetector.open
+contexts can support other declared formats, with independent per-call state.
+
+Keep acoustic speech probability separate from duration. Non-speech microphone
+noise may be skipped while short detected replies remain eligible at the default
+minimum zero. Increasing min_speech_seconds can remove meaningful replies; do not
+use it to hide VAD noise errors. VAD cannot guarantee all cough/music/noise
+rejection or low-volume recall. Test idle microphone noise and quiet short
+answers independently; synthetic noise is not microphone-recording evidence.
+
+Input times use original samples, including retained protection and silence gaps.
+TranscriptBlock adds speech_index and reason (pause/limit/input_end); unfiltered
+blocks retain None/window. max_segment_seconds replaces window_seconds only
+when detection is enabled. max_input_bytes still bounds source packets;
+max_transcript_chars and max_pending_chars retain text limits. max_buffer_bytes
+(default 1048576) must fit the maximum segment plus two detector frames;
+max_file_bytes (33554432) bounds single-file input. Smaller segments can increase
+requests, so compare request counts alongside submitted audio seconds.
+
+AudioInputOptions.on_event is an optional awaited async AudioInputEvent callback,
+not a second iterator or background event bus. speech_start is a candidate;
+transcript carries a raw finalized block before its yield; pause follows all
+associated block callbacks and identifies last_block. It advances with continued
+pulling. Silence continues consumption without STT; input_end means normal EOF
+and completed valid tail, never cancellation. Explicit minimum-duration rejection
+is observable as rejected. Callback errors terminate; callbacks must not re-enter
+the stream. No automatic retry, failed-stream resurrection or cancellation flush.
+
+For text processing at pauses, consume callback event.transcript then pause;
+stream_stt_with_auto_break may still buffer punctuation-free text segments.
+Acoustic pause is neither sentence/idea completion nor a business cleanup timer.
+Preserve raw transcription; the framework does not remove filler words or add a
+semantic completion request, recording device manager or persistent audio store.
+
+Single-file preprocessing supports complete PCM s16le WAV only. Multi-block
+stt results join raw texts with newlines and duration=None; all-silent input
+returns empty text with zero STT calls. Use streams/events for raw blocks/times.
+Decode compressed files explicitly into PCM before preprocessing. Bare stream
+bytes must obey the declared fixed format; a hidden sample-rate switch cannot be
+reliably inferred. Incomplete EOF sample frames fail without padding. CPU-score
+cancellation settles the started local frame; it does not acknowledge remote
+provider cancellation. Capture overflow remains application-owned.
+
+Preprocessing is owned by AudioModelRequest. Native driver calls reject nonempty
+input_options. A custom AudioCapability must implement this contract itself;
+Agent forwarding does not supply preprocessing to third-party capabilities.

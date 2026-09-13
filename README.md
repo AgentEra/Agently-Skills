@@ -9,7 +9,7 @@ Documentation: [English](https://agently.tech/docs/en/) |
 ## Compatibility
 
 The current development catalog is generation `v3`, aligned with Agently
-`4.1.4.8`. It preserves the seven-skill structure of the public V3 catalog.
+`4.1.4.9`. It preserves the seven-skill structure of the public V3 catalog.
 
 Historical catalogs are frozen on archive branches:
 
