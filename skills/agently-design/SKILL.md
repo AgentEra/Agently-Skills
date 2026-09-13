@@ -32,6 +32,9 @@ and verified changes. Read
    and observation before implementation.
 8. For an audit, reconstruct the observed topology and identify the earliest
    divergent node or edge rather than inferring root cause from final output.
+   When DevTools evidence or reviewer comments are available, read them through
+   the [review workflow](../agently-runtime/references/devtools-review.md),
+   verify the source evidence, and return rerun findings to the original review.
 9. Hand concrete implementation to the mechanism-owning Skill.
 
 ## Required Topology Contract

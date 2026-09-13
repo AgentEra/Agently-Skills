@@ -247,6 +247,10 @@ agently-devtools init my_project
 
 ## Scenario Evaluations
 
+For reviewer comments tied to runs, programmatic evidence reads, and returning
+Coding Agent rerun results to the reviewer, read [devtools-review.md](devtools-review.md).
+That writeback API is experimental and must be capability-checked separately.
+
 Use `EvaluationBridge` and `EvaluationRunner` when the user wants repeated scenario runs with DevTools-backed reports.
 
 The public variant helpers align with Agently capability boundaries:
