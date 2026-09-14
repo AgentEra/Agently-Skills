@@ -32,8 +32,8 @@ to preserve pending decisions, modifications and abandonment.
   [model-request-result.md](references/model-request-result.md).
 - Session continuity and durable memory:
   [session-memory.md](references/session-memory.md).
-- Embeddings, RecordStore, ContextSource, retrieval, and grounded citations:
-  [knowledge-base.md](references/knowledge-base.md).
+- Embeddings, rerank models, RecordStore, ContextSource, retrieval, and grounded
+  citations: [knowledge-base.md](references/knowledge-base.md).
 - Cross-source progressive disclosure and real-world Skills:
   [context-and-skills.md](../agently/references/context-and-skills.md).
 

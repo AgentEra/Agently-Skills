@@ -19,6 +19,9 @@ retrieval-backed answers are the main capability surface.
   disclosure and budgeting.
 - The model owns prose relevance, rerank judgment, citation choice, and answer
   synthesis; host code owns offered-key validation and canonical rejoin.
+- A dedicated reranker model (a cross-encoder) owns relevance *scoring* only.
+  Scoring is not a usefulness verdict, so it does not replace the semantic
+  rerank judgment above and never decides evidence acceptance.
 
 ## RecordStore Retrieval
 
@@ -56,10 +59,38 @@ rerank mandatory. If required embedding/vector providers are unavailable,
 surface diagnostics and use the documented deterministic fallback rather than
 silently claiming vector retrieval.
 
+`retrieve(...)` keeps rerank policy: the structural gate, candidate window,
+drops, refill, and packaging. Only the ordering engine is replaceable, in this
+precedence: an explicit `rerank_handler=`, then a bound rerank provider, then
+the default ModelRequest usefulness judgment. Bind a reranker model the same way
+an embedding model is bound, through a component provider:
+
+```python
+record_store = record_store_registry.create(
+    "./knowledge-state",
+    mode="read_write",
+    rerank_provider="agent",          # or "callable", a callable, or a RerankProvider
+    rerank_options={"agent": rerank_agent},  # rerank_agent uses model_type="rerank"
+)
+
+package = await record_store.retrieve(query, rerank=True)
+package["diagnostics"]["rerank"]  # engine, provider, scored, unscored, dropped
+```
+
+Because a reranker reports relevance rather than usefulness, the provider engine
+reorders without dropping; downstream packaging still applies `top_n` and the
+length budget. Drops require an explicit `budget={"rerank_score_floor": ...}` and
+are reported as `rerank_drop`. Candidates the provider did not score keep their
+relative order behind scored ones instead of being discarded on absent evidence.
+Provider failure degrades to deterministic order with diagnostics and must not
+silently switch to the model engine; engine choice is configuration, not a
+failure path.
+
 The local default uses SQLite for records. `vector_store_provider="auto"` uses
 Chroma when available and initialized, otherwise the SQLite vector table.
-`DBStoreProvider`, `EmbeddingProvider`, and `VectorStoreProvider` are separate
-replaceable seams.
+`DBStoreProvider`, `EmbeddingProvider`, `RerankProvider`, and
+`VectorStoreProvider` are separate replaceable seams. Each owns one mechanism
+and none of them owns retrieval policy.
 
 Use `get_data(...)` for raw record readback, `links(...)` for record lineage,
 and bounded retrieval packages for later model/context consumers. Keep full
@@ -140,6 +171,9 @@ consumer-specific result.
 
 - Hiding retrieval inside unrelated prompt formatting.
 - Treating vector hits or keyword matches as final semantic relevance.
+- Comparing rerank scores across models or hardcoding an absolute score
+  threshold; a reranker's scale is its own and is comparable within one response
+  only.
 - Asking the model to copy canonical ids, URLs, or full retrieval metadata.
 - Mixing task file editing with record/vector persistence.
 - Recreating ContextBuilder or a generic Workspace instead of composing

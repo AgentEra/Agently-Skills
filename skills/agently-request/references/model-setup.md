@@ -17,6 +17,14 @@ is discussed.
   constructor/validator over the same durable dict settings contract
 - prefer settings files with `${ENV.xxx}` placeholders for base URL, model, and auth
 - put provider settings under the namespace read by the owning plugin. For `OpenAICompatible`, prefer `plugins.ModelRequester.OpenAICompatible.*`; for `AnthropicCompatible`, prefer `plugins.ModelRequester.AnthropicCompatible.*`
+- select the endpoint family with `OpenAICompatible.model_type`: `chat` (default),
+  `completions`, `embeddings`, or `rerank`. `rerank` posts the Cohere/Jina-shaped
+  `/rerank` body that reranker services expose, requires an explicit `model`
+  because there is no vendor-neutral default, and is never streamed. Do not
+  describe `/rerank` or `/embeddings` as official OpenAI chat endpoints, and do
+  not look for them on `AnthropicCompatible`: the Anthropic Messages API defines
+  no embeddings, rerank, or audio endpoint, so those capabilities are reached
+  through their own surfaces
 - call the matching settings loader with `auto_load_env=True` when the payload may rely on `.env`
 - if the app must fail fast, validate required env names in the integration layer before calling Agently
 - after loading, verify the effective provider activation, base URL, model, and auth presence instead of assuming the file shape was correct; for a configured model alias, use `resolve_model_profile(model_key, agent.settings)` from `agently.utils`, which returns a non-secret read-only projection and does not advance API-key selection
