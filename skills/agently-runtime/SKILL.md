@@ -26,7 +26,7 @@ multi-stage progression must remain visible in the execution graph. Use
 - RuntimeEvent, logs, traces, evaluation, playground, or DevTools:
   [devtools.md](references/devtools.md).
 - Evidence-backed reviewer comments, Coding Agent responses and rerun comparison:
-  [devtools-review.md](references/devtools-review.md). Check the experimental API
+  [devtools-review.md](references/devtools-review.md). Requires DevTools 0.2; check the API
   capability before using its writeback steps.
 - TaskContext, ContextReader, SkillLibrary, and real-world Skill packages:
   [context-and-skills.md](../agently/references/context-and-skills.md).

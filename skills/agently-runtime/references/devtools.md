@@ -249,7 +249,7 @@ agently-devtools init my_project
 
 For reviewer comments tied to runs, programmatic evidence reads, and returning
 Coding Agent rerun results to the reviewer, read [devtools-review.md](devtools-review.md).
-That writeback API is experimental and must be capability-checked separately.
+That writeback API requires DevTools >=0.2.0,<0.3.0 and must be capability-checked separately.
 
 Use `EvaluationBridge` and `EvaluationRunner` when the user wants repeated scenario runs with DevTools-backed reports.
 

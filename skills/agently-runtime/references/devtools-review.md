@@ -1,9 +1,9 @@
 # Evidence-backed review with DevTools
 
 This reference applies when the developer asks to inspect actual effects, handle
-DevTools review comments, or compare a change. It is experimental: the review
-API below requires the matching DevTools review-loop build. Do not claim it is
-available in the released package merely because tracing works. A 404 on
+DevTools review comments, or compare a change. The review API below requires
+`agently-devtools >=0.2.0,<0.3.0` (review schema 3). Check the installed version
+and endpoint capability; tracing support alone does not imply review support. A 404 on
 `/reviews` is a tooling gap; retain a local review report and say which part
 could not be written back. Do not silently upgrade or publish the project.
 
@@ -38,7 +38,7 @@ could not be written back. Do not silently upgrade or publish the project.
    delegates that role. Stop at agreed success or resource bounds; report
    unresolved gaps instead of hiding them with repeated tuning.
 
-## HTTP contract (experimental)
+## HTTP contract (DevTools 0.2)
 
 Use JSON HTTP through the Coding Agent's existing shell/Python tools. No new MCP
 server or source-repository checkout is required by the consumer. Authenticate
