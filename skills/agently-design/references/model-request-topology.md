@@ -82,10 +82,9 @@ check this method can actually perform:
 
 First show the complete in-scope flow, highlighting model duties and key
 input/output handoffs against Host/tool/human stages. Keep branches, waits,
-joins and loops visible and separate observed from proposed behavior. Prefer a
-clear verified visual when an image-generation or diagram tool is available;
-use Mermaid/SVG/ASCII when appropriate. Do not make a generated image the only
-source of exact contracts.
+joins and loops visible and separate observed from proposed behavior. Choose a clear, verified visual using the
+[flow presentation guidance](#flow-presentation) below. Do not make a generated
+image the only source of exact contracts.
 
 Then compare related Prompt tables using the flow-first, flexible-group method
 in `../../agently-request/references/prompt-management.md`. Up to three logical
@@ -93,6 +92,23 @@ nodes can be shown together; tightly coupled larger groups are allowed. Choose
 boundaries for developer understanding, not a fixed count. The overview and
 details may share a reply when scope is clear. Preserve confirmation of
 consequential proposed changes; grouping is not runtime node consolidation.
+
+## Flow Presentation
+
+Choose a medium for the reader and the available delivery tools. A small static
+flow usually fits Mermaid or a deterministic diagram renderer. Use interactive
+HTML when inspecting node details materially helps; use an image when a visual
+summary serves the report or presentation. Tool availability alone is not a
+reason to generate a bitmap, and an unavailable renderer must not block review.
+
+Keep node names consistent with the contract tables. Label model, deterministic,
+tool, data/state and human roles where present; show important inputs/outputs,
+branch conditions, waits, joins, loop limits, terminal and recovery paths. Use
+labels or shapes as well as color. Split an overcrowded flow into an overview
+and focused details. Add a short text walkthrough and exact node contracts;
+for exported artifacts provide the real file/link and inspect labels and edges
+before claiming delivery. Never claim an image or HTML artifact was produced
+when only its description exists.
 
 ## Minimum Planning Topology Contract
 

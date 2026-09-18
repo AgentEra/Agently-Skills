@@ -1093,6 +1093,69 @@
           "agently-runtime"
         ]
       ]
+    },
+    {
+      "id": "workflow-new-design-framework-undecided-zh",
+      "scenario_id": "workflow-project-stages",
+      "locale": "zh",
+      "intent_style": "new-design",
+      "query": "我们还没有选模型或框架，请设计一个带资料检索和人工复核的客服工作流，说明最小闭环、节点输入输出和实施顺序。",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-stage",
+        "agently-triggerflow",
+        "agently-migration"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "workflow-partial-review-zh",
+      "scenario_id": "workflow-project-stages",
+      "locale": "zh",
+      "intent_style": "partial-implementation",
+      "query": "已有检索、回答和写工单三个节点的脚本，但检索失败后仍然写工单。请审查当前流程，区分应保留和调整的部分，并给出迁移步骤。",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-stage",
+        "agently-triggerflow",
+        "agently-migration"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ]
+      ]
+    },
+    {
+      "id": "workflow-production-review-en",
+      "scenario_id": "workflow-project-stages",
+      "locale": "en",
+      "intent_style": "production-review",
+      "query": "Review our production assistant workflow using its traces and latency/cost metrics. Prioritize evidence-backed findings and propose verification and safe migration steps without changing our current framework.",
+      "installed_skills": [
+        "agently",
+        "agently-design",
+        "agently-request",
+        "agently-runtime",
+        "agently-stage",
+        "agently-triggerflow",
+        "agently-migration"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design"
+        ]
+      ]
     }
   ]
 }

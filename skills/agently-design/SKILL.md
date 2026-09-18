@@ -1,6 +1,6 @@
 ---
 name: agently-design
-description: "Use to design, understand, tune, or audit a non-trivial Agently model workflow: model-node responsibilities, input/output completeness, data-flow correctness or redundancy, model-versus-Host/workflow ownership, topology, evidence, lifecycle, concurrency, or observed execution effects. The user need not say Prompt review or name Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
+description: "Use to design, understand, tune, or audit a non-trivial model workflow, including framework-undecided designs, partial implementations, and production reviews: model-node responsibilities, input/output completeness, data-flow correctness or redundancy, model-versus-Host/workflow ownership, topology, evidence, lifecycle, concurrency, or observed execution effects. The user need not say Prompt review or name Agently. Use agently-request for one request family and agently-triggerflow for already-decided executable orchestration details."
 ---
 
 # Agently Design
@@ -13,6 +13,24 @@ For iterative design or review, show current items and a timestamped,
 versioned change log at the response head; distinguish decisions from applied
 and verified changes. Read
 [Multi-Round Collaboration](../agently/references/multi-round-collaboration.md).
+
+## Project Stage and Scope
+
+Infer whether the task is a new design, a partial implementation, or a production
+review from the available assets and evidence. Explain the basis briefly and
+read [Project Stages](references/project-stages.md) for the matching questions
+and deliverable. Ask only for missing facts that materially change the design.
+Start with the business goal, constraints, and simplest sufficient solution;
+do not introduce a model where an exact query or deterministic program suffices.
+This does not permit substituting keyword rules for semantic judgment.
+
+Do not assume a model, SDK, or framework has already been selected. For an
+unselected or explicitly different stack, express contracts in neutral roles
+first and respect that stack; apply Agently owner/API mappings only when Agently
+is in scope. This design review alone does not authorize a framework migration.
+Unresolved product/project shape still routes through `agently`; cross-owner
+design belongs here, while a resolved single-request or runtime question stays
+with its existing mechanism owner.
 
 ## Core Workflow
 
