@@ -114,6 +114,20 @@ deliberately versioned experiment and compare topology, first divergence,
 quality, cost, and timing. A runner records facts; the agent inspects artifacts
 and owns the judgment.
 
+## Evaluation Coverage and Operating Budgets
+
+Choose representative normal, boundary, adversarial and failure cases according
+to the actual risk. Relate task completion, correctness, user experience and
+safety criteria to their declared hard gates or soft targets. Do not create
+universal numeric targets or rely on uncalibrated model confidence scores.
+
+Where operation is in scope, declare end-to-end cost, latency and capacity
+budgets, then attribute them to model attempts, tools, queues, joins and retries.
+Identify the signal, threshold and owner for alerts, rollback, fallback or human
+handoff when required. Mark an unknown budget as unresolved; do not turn a design
+estimate into observed telemetry. Reuse current lineage and metrics rather than
+adding a parallel observation protocol.
+
 ## Claim Labels
 
 Label report statements:

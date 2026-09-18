@@ -1284,6 +1284,37 @@
         "shell_permission",
         "windows_limit"
       ]
+    },
+    {
+      "id": "design-project-stages-zh",
+      "query": "已确定由 agently-design 做设计审查。手上只有半成品脚本和失败输出，模型与框架还未定。我需要知道先收集哪些证据、如何决定保留或修改，以及交付哪些当前/目标流程和迁移内容。应读取什么参考？",
+      "matched_skills": [
+        "agently-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-design/references/project-stages.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "stage_from_evidence",
+          "description": "Infer the primary project stage from existing assets and evidence; ask only material missing questions."
+        },
+        {
+          "id": "partial_preserve_and_migrate",
+          "description": "Reconstruct the current flow, explain keep/change/add/remove decisions and migration risks, and distinguish confirmed gaps from hypotheses."
+        },
+        {
+          "id": "reuse_contracts",
+          "description": "Scale deliverables to the stage and reuse existing topology contracts without forcing a new framework or duplicate report protocol."
+        }
+      ],
+      "required_concepts": [
+        "stage_from_evidence",
+        "partial_preserve_and_migrate",
+        "reuse_contracts"
+      ]
     }
   ]
 }
