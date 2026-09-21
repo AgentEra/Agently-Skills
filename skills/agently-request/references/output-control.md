@@ -125,7 +125,9 @@ returns a float from zero to the last grade index (2–10 grades). Use Choice
 for unordered categories, including unknown. Questions must stand on their own.
 
 Configure `Agently.set_settings("Jev", {"api_key": ...})` separately from the
-ordinary LLM provider. No Jev connection or `Jev.enabled=False` projects the
+ordinary LLM provider. Select it with `system_one={"provider": "Jev"}`; Jev
+credentials alone do not enable SystemOne. Unconfigured/disabled SystemOne or
+`Jev.enabled=False` projects the
 judgments into ordinary LLM output constraints; it does not fabricate native
 distributions or calibrated confidence. Partial/explicitly enabled invalid
 configuration fails before dispatch; an actual Jev failure never falls back.
@@ -151,8 +153,16 @@ are sibling templates; Jev protocol translation belongs to the requester.
 Custom templates implement `to_schema()` returning `(annotation, description,
 True, {"judgment": True})` and use the ordinary LLM when Jev has no native support.
 Templates define result contracts, not latency guarantees or reasoning modes.
-Small models and supported no-reasoning settings use existing provider/model
-configuration; do not invent a FastThinking settings namespace.
+Use `system_one` for a dedicated small/no-reasoning model, with existing model
+profile fields or a `model_key` (not both). Model configuration enables SystemOne
+by default; absent/empty configuration disables it. `.use_system_one(bool)` is
+an explicit per-execution override, configured before start. Ordinary fields
+keep their ordinary provider/model, auth and request options. The child template
+request uses its dedicated defaults/profile, with no credential/option inheritance.
+Active provider failures do not switch models. Pass template descriptions and
+JSON Schema onward, including score scales and option meanings; numeric values
+alone are incomplete evidence. Observe model, stage latency and reasoning length,
+and do not equate a SystemOne role with measured end-to-end speed.
 
 Read the final business data normally and inspect
 `execution.get_meta()["judgment"]` for sources and native answers/usage.

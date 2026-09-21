@@ -41,6 +41,9 @@ AgentTask imports are compatibility paths to the same implementation.
 `direct` is an Execution strategy, not permission to bypass Execution.
 In the Jev development build, request execution can compose judgment and LLM
 stages with explicit `from_output`/`after_output` dependencies and Host assembly.
+SystemOne selects the dedicated template model from `system_one` configuration
+or an existing model pool entry. Configured means enabled by default;
+`.use_system_one(False)` uses the ordinary LLM while preserving dependencies.
 OutputTemplate contracts remain provider-independent; Execution groups ready
 templates by provider capability, preserving ordinary schema field order. ModelRequester
 owns only the provider protocol; TriggerFlow owns stage/retry edges. Read
