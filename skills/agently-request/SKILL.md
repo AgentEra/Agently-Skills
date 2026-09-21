@@ -18,6 +18,8 @@ to preserve pending decisions, modifications and abandonment.
 
 ## Read by Need
 
+- Independent model roles, image modes/direct output, audio task input, say or embed:
+  [model-capabilities.md](references/model-capabilities.md); development API, check installed support.
 - Independent TTS/STT, Agent audio binding, continuous audio bytes, or output
   blocks: [audio.md](references/audio.md). AudioModelRequest is a separate
   plugin capability, not the text Prompt pipeline.
@@ -79,7 +81,9 @@ to preserve pending decisions, modifications and abandonment.
   before a real call or side effect.
 
 For VLM requests, prefer
-`.image(question=..., file=...|url=...|files=[...]|urls=[...])`. Use
+`.image(question=..., file=...|url=...|files=[...]|urls=[...])`
+(the model-capabilities development API also accepts a positional file, optional
+question and mode, and appends repeated groups). Use
 `.attachment(...)` only when the caller owns provider-style mixed content or
 exact content ordering.
 

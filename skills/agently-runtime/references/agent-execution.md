@@ -210,3 +210,12 @@ fully replaced implementations must preserve the contract. Extra-capability
 snapshots currently fail explicitly rather than serializing live clients.
 For audio setup and supported streams, read
 `../../agently-request/references/audio.md`.
+
+## Media and speech (model-capabilities development API)
+
+Execution also owns STT/VLM/OCR input preparation and the say speech consumer.
+Use the request skill's [model-capabilities reference](../../agently-request/references/model-capabilities.md)
+for configuration-driven routing, direct image output, cached readers, shared
+retry allowance, cancellation and audio delivery boundaries. ModelRequester
+stays atomic. New execution.stage events and media metadata are additive; do
+not infer text token usage for audio operations.

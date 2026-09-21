@@ -1,5 +1,9 @@
 # Independent audio capability
 
+For independent role configuration and Agent composition in the model-capabilities
+development API, read [model-capabilities.md](model-capabilities.md).
+
+
 Version scope: Agently 4.1.4.8 development; do not recommend these APIs on older
 installed releases. Audio is not a text Prompt/ensure/auto_continue mode.
 

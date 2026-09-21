@@ -1,5 +1,9 @@
 # Agently Model Setup
 
+For independent role configuration and Agent composition in the model-capabilities
+development API, read [model-capabilities.md](model-capabilities.md).
+
+
 Use this reference for provider wiring and transport setup before request logic
 is discussed.
 
