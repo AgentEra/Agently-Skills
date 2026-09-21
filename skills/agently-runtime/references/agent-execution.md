@@ -27,7 +27,7 @@ plugin or bundled `auto`. Explicit names override that default.
 | Plugin | Producer | Explicit strategy |
 |---|---|---|
 | auto | Existing deferred request/task/DAG selection | Existing route strategies |
-| request | One logical request and request-local repair | auto/direct |
+| request | Direct output production; may compose explicit output producers | auto/direct |
 | long_task | Retained multi-step goal work | auto/task/task_loop/long_task/flat/taskboard |
 | plan | Readiness, necessary connected clarification, final plan | auto |
 | long_content | Section plan, dependent writing, host assembly | auto |
@@ -37,6 +37,14 @@ not silently replace an explicitly selected producer. Registration alone adds
 no planning or review. The unreleased AgentPattern / `pattern()` API is
 replaced, not a parallel selector. Released AgentOrchestrator activation and
 AgentTask imports are compatibility paths to the same implementation.
+
+`direct` is an Execution strategy, not permission to bypass Execution.
+In the Jev development build, request execution can compose judgment and LLM
+stages with explicit `from_output`/`after_output` dependencies and Host assembly.
+OutputTemplate contracts remain provider-independent; Execution groups ready
+templates by provider capability, preserving ordinary schema field order. ModelRequester
+owns only the provider protocol; TriggerFlow owns stage/retry edges. Read
+the request skill's output-control reference before using judgment declarations.
 
 ```python
 execution = (

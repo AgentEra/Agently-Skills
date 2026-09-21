@@ -115,6 +115,54 @@ For planned section-by-section prose rather than one structured result, read
 
 ## Native-First Rules
 
+### Output templates and Jev judgment leaves (development build)
+
+When the installed build exports `Probability`, `Choice`, and `Score`, import
+them from `agently` and place instances directly at `.output(..., format="json")`
+leaves. `Probability(question)` returns a [0,1] float; `Choice(question,
+{option: description})` returns an option key; `Score(question, ordered_grades)`
+returns a float from zero to the last grade index (2–10 grades). Use Choice
+for unordered categories, including unknown. Questions must stand on their own.
+
+Configure `Agently.set_settings("Jev", {"api_key": ...})` separately from the
+ordinary LLM provider. No Jev connection or `Jev.enabled=False` projects the
+judgments into ordinary LLM output constraints; it does not fabricate native
+distributions or calibrated confidence. Partial/explicitly enabled invalid
+configuration fails before dispatch; an actual Jev failure never falls back.
+Never assume this development API exists in an older release.
+
+Use Agent Execution for composition. Static independent judgments batch first
+and become LLM evidence; `from_output="items[].name"` means the named output
+must exist before its judgment runs. Root lists use `[].name`; shared list
+wildcards bind the current item, external references collect values, and
+ambiguous cross-list bindings fail. Host assembles native fields; the LLM must
+not recopy or overwrite them. Dependencies are explicit, never inferred from
+question wording. All composition stages share the caller's retry allowance.
+
+`from_output` also accepts a list of unique paths, binding a path-to-value object.
+`after_output` declares output prerequisites whose values are not bound to Jev.
+Both sets can be generated in one LLM request, preserving the schema field order;
+it does not force separate requests for supporting facts and a conclusion.
+Original input/info/instruct remain shared context. Remaining ordinary fields
+are produced after the judgments using fixed accepted output as evidence.
+
+`OutputTemplate` is the provider-independent base. Probability, Choice and Score
+are sibling templates; Jev protocol translation belongs to the requester.
+Custom templates implement `to_schema()` returning `(annotation, description,
+True, {"judgment": True})` and use the ordinary LLM when Jev has no native support.
+Templates define result contracts, not latency guarantees or reasoning modes.
+Small models and supported no-reasoning settings use existing provider/model
+configuration; do not invent a FastThinking settings namespace.
+
+Read the final business data normally and inspect
+`execution.get_meta()["judgment"]` for sources and native answers/usage.
+Stage streams are provisional. Jev does not generate free text or chain-of-thought.
+Direct still passes through Execution; standalone ModelRequest is the atomic
+provider path and does not orchestrate mixed output. Current composition does
+not combine with auto_continue and has no ordinary-field dependency marker.
+
+### Ordinary output control
+
 - default to async-first response consumption when structured output will be streamed, reused, or served over an async boundary
 - prefer prompt-config-owned output contracts such as `.execution.output` when
   the schema is stable and shared across a request family
