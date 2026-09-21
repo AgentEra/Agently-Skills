@@ -24,8 +24,11 @@ visual evidence -> LLM final output; with only one, it produces the final output
 directly. input/info/instruct/output do not change this topology. question is local
 to one image call, and repeated calls append ordered groups. Multiple images may
 need joint comparison; do not split those into unrelated descriptions.
-`mode="llm"` passes originals to a vision-capable LLM. `mode="ocr"` requires an
-actual OCR provider (e.g. MistralOCR), then LLM for reasoning. Missing/failed
+`mode="llm"` passes originals to a vision-capable LLM. `mode="ocr"` requires
+an OCR model/service, then LLM for reasoning. The OCR role can reuse
+OpenAICompatible for compatible services such as oMLX serving GLM-OCR or
+PaddleOCR; MistralOCR adapts a different service protocol. Choose a Requester
+by protocol, not by model name. Missing/failed
 capabilities never silently switch providers. vision=False rejects original-image
 input; unknown model support is determined by the provider, not model-name rules.
 
@@ -35,6 +38,8 @@ select direct image processing, even with two profiles; input/question/output
 still apply. get_text is an ordinary result reader. No question/task means
 image description plus readable text and explicit uncertainty. Direct OCR only
 extracts text and rejects question/input/output reasoning requests.
+`async_to_text(max_retries=0)` / `to_text(max_retries=0)` disables shared
+Execution repair retries; the default remains 3.
 
 Audio retains AudioModelRequest/AudioCapability ownership. Explicit use_audio
 bindings win over stt/tts role configuration. Direct async_stt/async_tts are
