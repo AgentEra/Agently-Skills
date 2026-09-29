@@ -89,6 +89,8 @@ For content review or experiment tuning, first read
 [Ground Each Review Criterion](../../agently/references/model-quality-validation.md#ground-each-review-criterion).
 Trace criticisms to the delivered producer contract or task meaning; distinguish
 soft preferences and unverified consumer risks before adding Prompt constraints.
+Expanding review requirements must also update the producer's necessary inputs
+and constraints, with the rubric and experiment version changed together.
 
 For semantic quality judgments, define descriptive levels and their boundaries
 in the supplied rubric; use a constrained label in the output schema.

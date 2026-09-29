@@ -67,6 +67,12 @@ answers, or deterministic local substitutes as semantic proof.
 
 ## Acceptance Criticality Is Separate From Evaluation Method
 
+First establish
+[constraint and evaluation parity](../../agently/references/model-quality-validation.md#ground-each-review-criterion):
+trace each blocking judgment to the producing node's actual contract and
+available prerequisites. Expanding review scope requires matching changes to
+that node's inputs and constraints; an audit cannot silently add obligations.
+
 Classify every acceptance item twice: first by **acceptance criticality**
 (`hard gate` or `soft target`), then by **evaluation method** (`deterministic
 check` or `semantic review`). Do not infer one axis from the other.

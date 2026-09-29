@@ -85,6 +85,26 @@ requirement is an uncertainty to resolve, not an exact hidden rejection rule.
 State additional or specialized model-satisfiable gates before generation;
 ordinary task meaning does not require an exhaustive list of obvious rules.
 
+Apply **constraint and evaluation parity** to effect reviews by models, code,
+development agents, and humans. Match the producing node's stage, scope,
+thresholds, units, uncertainty, and allowed alternatives. An upper bound is not
+a demand for equality, and a reference answer is not the only valid outcome.
+Parity means equivalent obligations, not identical wording or disclosure of
+expected answers.
+
+When review scope expands, update the producer's necessary inputs and
+constraints, the review rubric, and the experiment version together before
+the next run. Check the actual dispatched prompt, including late context
+injection; information available only to the reviewer was not necessarily
+available to the producer. Keep shared rules authoritative without copying
+them into every prompt.
+
+Before attributing a failure to model capability, check the prerequisite facts,
+tools, and permissions of the responsible owner. A missing input or Host
+configuration is a contract or harness gap. Preserve old runs under their
+original contract and label newly proposed checks as exploratory; do not
+retroactively score them as violations or silently lower an existing standard.
+
 If a desirable new requirement was absent, label it a proposed contract change;
 do not retroactively fail the old run against it. Verify actual downstream use
 before claiming an omission caused failure. Safety and authorization gates keep
@@ -378,23 +398,21 @@ after the model result.
 Use this pattern in pytest when testing whether model-generated text satisfies
 business rules. The test can still check structure deterministically, but the
 semantic pass/fail decision should come from a second Agently model request.
+The generation fixture must supply the same task context and rules to the
+producer before generation, then retain them with the candidate. They are not
+review-only requirements attached after seeing the answer.
 
 ```python
 from agently import Agently
 
 
-def judge_support_reply(candidate: str, ticket_context: dict) -> dict:
+def judge_support_reply(candidate: str, ticket_context: dict, rules: list[str]) -> dict:
     result = (
         Agently.create_request("support-reply-judge")
         .input({
             "candidate": candidate,
             "ticket_context": ticket_context,
-            "rules": [
-                "acknowledges the customer's billing concern",
-                "does not promise a refund before checking policy",
-                "asks for the missing invoice id when it is absent",
-                "uses a calm and professional tone",
-            ],
+            "rules": rules,
         })
         .instruct([
             "Judge semantic compliance with each rule.",
@@ -422,14 +440,13 @@ def judge_support_reply(candidate: str, ticket_context: dict) -> dict:
     return result.get_data()
 
 
-def test_support_reply_quality(generated_reply):
-    ticket_context = {
-        "customer_message": "I was charged twice but cannot find the invoice id.",
-        "account_status": "active",
-        "refund_policy": "refunds require invoice lookup before approval",
-    }
-
-    judge = judge_support_reply(generated_reply, ticket_context)
+def test_support_reply_quality(generated_reply_case):
+    # The fixture records the producer's supplied context/rules with its output.
+    judge = judge_support_reply(
+        generated_reply_case["candidate"],
+        generated_reply_case["ticket_context"],
+        generated_reply_case["rules"],
+    )
 
     assert judge["overall_pass"], judge
     assert all(item["passed"] for item in judge["rule_results"]), judge
