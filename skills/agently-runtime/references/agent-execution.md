@@ -117,7 +117,10 @@ are removed. Finish old states on 4.1.x; do not imply automatic conversion.
   section, or task-step outputs. Scalar callbacks use the existing
   `{"value": ...}` convention. For long_task, policies use the same parsed
   final_result as get_data; get_full_data retains the task envelope.
-  Direct request/auto_continue repair stays request-owned. Other producers
+  Direct request/auto_continue repair stays request-owned. In 4.1.4.9, a
+  complete structured instant field prevents output-validation provider replay;
+  Execution observes that stream internally even for final-only readers.
+  SystemOne stages retain the same boundary. Other producers
   validate once without replaying successful side effects.
 - `artifact(path, handler=None)` converts the final business result to text or
   bytes. TaskWorkspace owns containment, write, complete digest readback,
