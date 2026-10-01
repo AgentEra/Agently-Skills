@@ -1,6 +1,6 @@
 # AgentExecution Plugins and Final Policies
 
-Use this reference for the 4.1.4.8 development-line execution contract.
+Use this reference for the 4.1.4.9 development-line execution contract; released 4.1.x compatibility is identified below.
 An Agent owns reusable configuration and module capabilities; its factory
 constructs the actual selected AgentExecution class. The plugin owns one draft,
 identity, production lifecycle, result, and final policies. Nested ModelRequest,
@@ -79,21 +79,37 @@ execution. Explicit plugin/strategy choices remain in force. Repeating goal()
 before start replaces its convenience switch; goals() is the plural alias.
 Neither declaration enables review automatically.
 
-Only a selected producer needing a complete goal contract derives missing
-fields. The bundled long_task currently needs them before construction and
-persistence, so it uses a visible prerequisite ModelRequest when incomplete.
-Plan/long_content can plan from the original request and do not add this call.
-When an existing planning/readiness node can provide the needed contribution
-before its consumers, put it there instead of imposing a universal preflight.
+New goal-driven long tasks use one decision Loop with a model-editable Markdown
+TaskBoard. It can add/remove/split/merge/reorder/check/reopen items; no default
+per-card execution, per-card judge or independent finalizer is implied.
+ContextPackage supplies effective context; existing ActionRuntime returns actual
+observations before dependent decisions. Original goals/output remain authoritative.
+Do not add a goal-preparation request when the original input already defines the task.
 
-Keep explicit goals/criteria and the original request unchanged. Inferred
-fields carry host-bound request provenance and remain interpretations, not new
-business hard gates. Missing required facts yield an explicit blocked outcome.
-Complete or restored contracts do not regenerate criteria. Review-only and
-ordinary requests do not trigger goal inference. Count preparation against the
-same execution model/deadline limits; it does not gain Action permissions.
-Restored task review reads the persisted original request when available,
-not only the compatibility resume draft's goal declaration.
+```python
+execution = agent.create_execution("long_task").input(task).use_actions(actions).output(result_schema)
+result = await execution.async_get_data()
+```
+
+The same decision returns continue/completed/blocked and useful full text or
+structured data. When blocked, preserve useful work and explain relevant unfinished
+requirements, uncertainties to check, actual risks and missing information.
+Disclosure alone does not fulfill missing required work. Do not invent percentages
+or assume every failure is model incapacity. Respect permitted incomplete templates
+and task-defined negative outcomes; an impossible positive recommendation is not
+necessarily an unfinished analysis.
+
+Host retains budgets, exact file-delivery checks, required successful Actions and
+replay policy. Failed explicit commitments return observations to the same Loop.
+Use require_actions for required execution and artifact(path) for Host publication
+of the final result; no new business gate or always-on judge is implied.
+
+4.1.x keeps explicit flat/taskboard, old task/task_loop strategies, create_task and
+old task-id recovery on their legacy producer. Legacy goal preparation and card
+options belong only there. New long_task or ordinary goal-driven auto execution
+uses the unified Loop. 4.2 uses only canonical long_task and execution save/load/
+resume; old strategy names, create_task/create_task_loop and Agent task-id resume
+are removed. Finish old states on 4.1.x; do not imply automatic conversion.
 
 ## Final Validation, Artifact and Review
 
@@ -137,10 +153,10 @@ candidate, `await execution.async_rework(feedback, max_reworks=3)` advances the 
 execution object/ID and returns a newly produced full result; old readers remain
 bound to their original revision, also available via `get_result(revision=0)`.
 Request, Plan, LongContent and LongTask own re-entry; Plan keeps accepted answers,
-LongContent invalidates dependent sections, and LongTask uses model-selected work
-plus Host-validated dependency closure. Selecting final candidate delivery alone
-preserves completed work. It never substitutes terminal task resume.
-Model/time budgets, Flat iterations and TaskBoard ticks remain cumulative, and
+LongContent invalidates dependent sections, and the unified LongTask retains its
+checklist, observations and original task while handling the new feedback in the
+same decision Loop. Legacy task rework retains its prior dependency contract.
+Model/time budgets and Loop rounds remain cumulative, and
 an established revision cap cannot be raised. Set overall model budgets on
 `create_execution("long_task", limits=...)`; legacy `create_task(limits=...)`
 retains per-step request caps but shares its wall-clock bound across rework.
@@ -150,6 +166,10 @@ children cannot weaken ancestor protection. Artifact callbacks require that same
 explicit replay choice. Historical references are not backups or transactions.
 
 Pause requests settle before production or at candidate-ready before final policies.
+Unified long tasks also settle at long_task_step before a new decision, including
+after an Action batch; saving and restoring that boundary does not replay settled
+Actions. Observe long_task.progress for checklist/status/round and execution.stage.*
+for model phases. Active Actions cannot be snapshotted.
 At the actual TriggerFlow wait, run/readers raise `AgentExecutionPaused`;
 `async_resume()` explicitly continues it. `async_interrupt(content)` supplies future
 TaskContext information and reports consumption separately from insertion.
@@ -188,7 +208,7 @@ receive new Skills or Actions retroactively.
 Treat instant streams as provisional and wait for final parsed data plus host
 validation before irreversible work. Required side effects need actual Action
 evidence; file readback proves file content, not an unrelated Action call.
-When a completed TaskBoard control result has a draftable manifest but no body,
+On the 4.1.x legacy route only, when a completed TaskBoard control result has a draftable manifest but no body,
 the dedicated artifact-draft stage uses the same bounded evidence ledger;
 materialization is not semantic remaining work and still needs verification
 and promotion.
