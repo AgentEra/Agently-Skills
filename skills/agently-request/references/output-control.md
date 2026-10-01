@@ -140,8 +140,8 @@ wildcards bind the current item, external references collect values, and
 ambiguous cross-list bindings fail. Host assembles native fields; the LLM must
 not recopy or overwrite them. Dependencies are explicit, never inferred from
 question wording. Composition stages share the caller's retry allowance, but a
-stage that has emitted a complete instant field is not replayed after validation
-failure. Its provisional value remains visible and final validation can fail.
+SystemOne-selected stage that has emitted a complete instant field is not replayed
+after validation failure; ordinary composition stages retain bounded retries. Its provisional value remains visible and final validation can fail.
 
 `from_output` also accepts a list of unique paths, binding a path-to-value object.
 `after_output` declares output prerequisites whose values are not bound to Jev.
@@ -513,12 +513,11 @@ For a compact rule-first business validator, see
 
 ## Complete instant fields and output validation (4.1.4.9)
 
-A complete structured instant field is an observed result boundary. After that
-boundary, a later schema/ensure/validator failure does not repeat the provider
-request, including when a final reader and instant consumer run concurrently.
-AgentExecution consumes structured streams internally, so this also applies
-when application code only asks for final data. SystemOne LLM stages forward
-instant observations and retain the same no-replay boundary across stage retries.
-A ModelRequest with no observed complete fields retains bounded output retries.
-Final failure remains failure; provisional values are not accepted results.
+Ordinary ModelRequest and AgentExecution instant fields remain provisional; their
+schema/ensure/validator retries remain available after complete fields are observed,
+including concurrent final and instant readers. Accepted retries replace provisional
+results through the existing result/stream facades.
+Only an actual SystemOne stage suppresses replay after a complete field is observed.
+Ordinary LLM predecessor/successor stages and disabled SystemOne paths keep bounded
+retry. Final failure remains failure; downstream stages cannot consume failed results.
 Provider transport retry and its status/reset protocol remain provider-owned.
