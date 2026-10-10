@@ -104,6 +104,39 @@ replay policy. Failed explicit commitments return observations to the same Loop.
 Use require_actions for required execution and artifact(path) for Host publication
 of the final result; no new business gate or always-on judge is implied.
 
+File-delivery boundary: an Action's sandbox `output/...` name may differ from
+its collected TaskWorkspace path. Return the exact observed path as a separate
+structured value, such as `.output({"pdf_path": str, "summary": str})`; do not
+shorten it or embed the only copy inside prose. In the artifact-delivery repair
+(development branch; not part of the 4.1.4.9 release), the Loop binds declared
+Action files to Host-verified identities and retains only selected files at
+termination, including useful blocked outputs. Changed/missing selected files
+return to the same Loop. Unselected private intermediates are cleaned.
+
+For released 4.1.4.9, explicitly publish binary products before terminal cleanup
+with an artifact handler. Without a handler, `artifact(path)` serializes business
+output; it does not copy the PDF named by `pdf_path`:
+
+```python
+execution = (
+    agent.create_execution("long_task")
+    .input(task).use_actions(actions)
+    .output({"pdf_path": str, "summary": str})
+    .artifact("deliverables/report.pdf", handler=lambda result, context:
+        context.task_workspace.resolve_file_path(result["pdf_path"]).read_bytes())
+)
+result = await execution.async_get_data()
+```
+
+Put file existence, scope, format and source-read completeness checks inside
+`validate(handler)` before terminal cleanup; checking only after `get_data()`
+cannot prevent a false acceptance. A successful `read_file` call can contain a
+preview or unreadable result: inspect readability/truncation and use explicit
+readback for full evidence. File identity proves delivery, not semantic quality.
+Snapshots need unchanged workspace content; cancellation/closing with `pending="cancel"`
+can invalidate private files needed by a saved snapshot.
+
+
 4.1.x keeps explicit flat/taskboard, old task/task_loop strategies, create_task and
 old task-id recovery on their legacy producer. Legacy goal preparation and card
 options belong only there. New long_task or ordinary goal-driven auto execution
