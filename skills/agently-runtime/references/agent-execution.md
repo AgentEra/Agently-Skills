@@ -112,6 +112,9 @@ shorten it or embed the only copy inside prose. In the artifact-delivery repair
 Action files to Host-verified identities and retains only selected files at
 termination, including useful blocked outputs. Changed/missing selected files
 return to the same Loop. Unselected private intermediates are cleaned.
+Implicit Agent-bound file Actions follow the current execution workspace identity,
+matching code execution. Explicit root/workspace and isolated bindings keep their
+own boundary.
 
 For released 4.1.4.9, explicitly publish binary products before terminal cleanup
 with an artifact handler. Without a handler, `artifact(path)` serializes business
