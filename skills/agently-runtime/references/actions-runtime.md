@@ -271,6 +271,18 @@ agent.use_actions([
 
 ## MCP and ACP
 
+The 4.1.4.10 candidate adapts FastMCP 4.1 / MCP SDK v2 while retaining
+FastMCP 3.x. Keep the SDK within FastMCP's dependency range; ordinary Agently
+imports do not require either package. Use `agent.use_mcp(...)` for mounting,
+or `agent.action.async_use_mcp(..., tags=[...])` when explicit host tags are
+needed. Server tags and required-input schemas remain authoritative.
+SDK v2 snake_case fields are consumed directly; content values retain their
+MCP wire aliases, empty structured objects stay `{}`, and MCP errors remain
+failed Action evidence even when no text is supplied. ExecutionResource owns
+managed client health and release; a server session depends on the negotiated
+protocol. These adapter checks do not establish model selection or answer
+quality, nor add interactive-tool or background-task workflows.
+
 - MCP tools are Actions backed by managed ExecutionResources. Prefer Streamable
   HTTP for service integrations and explicit config for stdio/multi-server
   local integrations.
