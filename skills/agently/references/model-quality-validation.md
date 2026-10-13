@@ -4,6 +4,19 @@ Use this reference when an Agently project needs to classify intent, choose a
 business scenario, evaluate model output quality, grade a response, or test
 semantic behavior.
 
+## Prerequisites and Evaluation Order
+
+Before input/Prompt tuning or suggesting a stronger model, follow
+[Ordered Diagnosis Before Model Tuning](../../agently-design/references/observability-and-validation.md#ordered-diagnosis-before-model-tuning).
+First establish execution reachability, then sound execution logic, each with
+evidence for the relevant scenario. Only then inspect actual model input and
+test bounded information/Prompt improvements. Recommend a stronger-model
+comparison only when those attempts still fail to reach the declared minimum.
+Keep a mechanics pass separate from a semantic-quality pass; neither proves the
+other. Reuse valid prior checks, and reopen upstream findings when new evidence
+shows a broken dependency or handoff. The ordered diagnostic procedure owns
+these gates; the rubrics and calibration below evaluate semantic effectiveness.
+
 For repeated experiment evaluation, use
 [Multi-Round Collaboration](multi-round-collaboration.md) at each round's
 response head. Keep proposed experiments, completed runs and accepted findings
@@ -152,8 +165,9 @@ fact. Inspect reasons and judgments, not just rule keywords or fixed prose.
   repeated evidence shows the evaluator is poorly calibrated. The developer-
   approved minimum business standard must not be silently lowered merely to
   make a weaker model pass.
-- If task input is accurate and sufficient, the request is clear, and repeated
-  real runs still miss the minimum business direction, report a capability or model-fit gap.
+- After execution gates have evidence, task input is accurate and sufficient,
+  and bounded input/Prompt optimization still misses the minimum business
+  direction in repeated real runs, report a suspected capability or model-fit gap.
   Discuss a different model, context/request design, scoped
   fallback, or human review with the developer instead of hiding the gap with
   unlimited retries or keyword gates.
@@ -168,6 +182,9 @@ confirmed, in-scope engineering defects directly and add regression coverage;
 do not use Prompt wording to compensate for lost data, broken parsing, state,
 or lifecycle behavior. Routine engineering repairs do not require a new human
 Prompt approval.
+
+Complete the prerequisite diagnostic gates above before strategy tuning or
+model escalation; a failed workflow is not evidence of weak semantic capability.
 
 For strategy work, target explicit instruction compliance and justified task
 semantics, not an ideal answer or undeclared standard of prose. First inspect

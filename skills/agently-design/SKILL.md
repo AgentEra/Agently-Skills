@@ -50,6 +50,10 @@ with its existing mechanism owner.
    and observation before implementation.
 8. For an audit, reconstruct the observed topology and identify the earliest
    divergent node or edge rather than inferring root cause from final output.
+   Follow the ordered diagnostic gates in
+   [Observability and Validation](references/observability-and-validation.md#ordered-diagnosis-before-model-tuning):
+   execution reachability, execution logic, actual model input, bounded Prompt
+   experiments, then an authorized stronger-model comparison if tuning fails.
    When DevTools evidence or reviewer comments are available, read them through
    the [review workflow](../agently-runtime/references/devtools-review.md),
    verify the source evidence, and return rerun findings to the original review.
