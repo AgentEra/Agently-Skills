@@ -271,7 +271,7 @@ agent.use_actions([
 
 ## MCP and ACP
 
-The 4.1.4.10 candidate adapts FastMCP 4.1 / MCP SDK v2 while retaining
+Agently 4.1.4.10 adapts FastMCP 4.1 / MCP SDK v2 while retaining
 FastMCP 3.x. Keep the SDK within FastMCP's dependency range; ordinary Agently
 imports do not require either package. Use `agent.use_mcp(...)` for mounting,
 or `agent.action.async_use_mcp(..., tags=[...])` when explicit host tags are
