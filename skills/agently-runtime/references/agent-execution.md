@@ -107,8 +107,7 @@ of the final result; no new business gate or always-on judge is implied.
 File-delivery boundary: an Action's sandbox `output/...` name may differ from
 its collected TaskWorkspace path. Return the exact observed path as a separate
 structured value, such as `.output({"pdf_path": str, "summary": str})`; do not
-shorten it or embed the only copy inside prose. In the artifact-delivery repair
-(development branch; not part of the 4.1.4.9 release), the Loop binds declared
+shorten it or embed the only copy inside prose. In Agently 4.1.4.10, the Loop binds declared
 Action files to Host-verified identities and retains only selected files at
 termination, including useful blocked outputs. Changed/missing selected files
 return to the same Loop. Unselected private intermediates are cleaned.
@@ -116,8 +115,7 @@ Implicit Agent-bound file Actions follow the current execution workspace identit
 matching code execution. Explicit root/workspace and isolated bindings keep their
 own boundary.
 
-For released 4.1.4.9, explicitly publish binary products before terminal cleanup
-with an artifact handler. Without a handler, `artifact(path)` serializes business
+To publish binary products at an explicit destination, use an artifact handler. Without a handler, `artifact(path)` serializes business
 output; it does not copy the PDF named by `pdf_path`:
 
 ```python
