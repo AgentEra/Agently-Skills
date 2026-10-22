@@ -23,6 +23,9 @@ a private runtime mechanism.
 - Actions, ExecutionResources, TaskWorkspace, RecordStore, services, or
   DevTools: use `agently-runtime`.
 
+- Performance, thread budgets, batching, replay costs and optional notification grouping:
+  [performance.md](references/performance.md).
+
 ## Boundary
 
 Choose the smallest surface that matches the caller:
