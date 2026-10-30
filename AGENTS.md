@@ -208,7 +208,11 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- For multi-round tasks, including Prompt collaboration, Flow design and
+- For actionable tasks, start each meaningful progress report with the complete
+  current conversation taskboard: stable IDs, all planned items, actual progress,
+  and icon-plus-text states for completed, not started, in progress, blocked,
+  paused and cancelled. Accepted decisions are not implementation or verification.
+  For multi-round tasks, including Prompt collaboration, Flow design and
   experiment evaluation, begin each substantive round with current items
   (status left, item right) and a change-log table recording time/timezone,
   discussion version, change/reason and implementation or abandonment state.

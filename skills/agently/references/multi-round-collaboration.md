@@ -1,10 +1,58 @@
 # Multi-Round Collaboration
 
-Use this when a task needs repeated discussion, revision or evaluation, including
-Prompt collaboration, Flow design and experiment tuning. At the beginning of
-each substantive round's response, show the current item table, followed by a
-change-log table, before the design, edits or results. Keep tool-by-tool updates
-brief; they do not each create a new discussion version.
+Use taskboard-style reporting whenever the current conversation makes material
+progress on an actionable plan, including development, product/document work,
+Prompt collaboration, Flow design and experiment tuning. Begin a progress report
+or action-round final response with the complete current taskboard, before the
+narrative. At each substantive discussion/revision round, also show the
+change-log table. Brief tool activity without a meaningful state change does not
+need another report or discussion version; do not repeat unchanged boards merely
+to create activity. A one-off informational answer needs no invented plan.
+
+## Taskboard: the Complete Current Plan First
+
+The board is a view of this conversation's actual plan, not a new runtime or
+external task-management system. Use the existing plan/tool when available;
+otherwise a Markdown table is sufficient. This reporting method does not require
+a separately installed `taskboard` Skill or imply that a board tool was called.
+
+- Keep one board across specialties and rounds. Preserve stable task IDs and
+  show **all current planned items**, including unchanged, completed, not started,
+  blocked, paused and cancelled items. A subtopic, context compaction or a new
+  Skill does not silently discard the rest of the conversation's active plan.
+  Genuinely different work may start another board with the scope change named;
+  recover missing prior history rather than inventing it.
+- Put status on the left and the task beside it. State the **actual progress of
+  each task**, not just a generic label: what artifact/change/evidence exists,
+  what remains or the next action. Link evidence as a supplement. Reuse native
+  task identities; reconcile the board with the latest tool/record before
+  reporting, and do not assume a successful plan write proves task execution.
+- Use icons **and text** consistently:
+
+  | Status | Meaning |
+  |---|---|
+  | ⬜ Not started / 未开始 | No task execution yet; an accepted plan alone is not work completion |
+  | 🔄 In progress / 进行中 | Actual work has started; name the current stage and remaining work |
+  | ✅ Completed / 已完成 | The item's stated outcome and applicable checks have evidence |
+  | 🚧 Blocked / 受阻 | Name the specific unmet dependency, owner and recovery condition; continue independent items |
+  | ⏸ Paused / 已暂停 | Work intentionally paused under the user's instruction; do not infer a pause from waiting |
+  | ❌ Cancelled / 已取消 | Preserve the original ID, cancellation reason and actual cleanup/removal state |
+
+- A new task gets a new ID; changed scope and newly discovered work update the
+  board before the next progress report. Cancellation is not completion. Keep
+  accepted decisions separate from implementation and verification. If feedback
+  invalidates a completed task, reopen the same ID as 🔄 or 🚧, retaining the
+  prior result, new evidence and remaining checks.
+- The displayed state is a snapshot, never an invented percentage or ETA.
+  Partial success remains in progress with its verified part stated. Do not
+  mark the whole task ✅ because code was written, a candidate was drawn, a
+  message was sent or a tool returned success. Verification belongs to the
+  outcome actually promised by that task.
+- After the full board, explain the meaningful change, evidence and next action
+  concisely. Large plans may be grouped by phase with compact rows, while every
+  item remains visible; a total count, changed-only list, collapsed completed
+  section or link to an earlier board does not replace the current full view.
+  No polling, heartbeat, new external task or extra approval is introduced.
 
 ## Current Items and Change History
 
@@ -61,12 +109,12 @@ language while retaining the two tables and their meaning.
 
 | Status | Item |
 |---|---|
-| ✅ Confirmed | 1. Business goal and scope |
+| ⬜ Not started · scope confirmed | 1. Implement the agreed business goal; no implementation yet |
 | 🔄 In progress · changed this round | 2. ~~Review every request separately~~ → *Review the coupled planning and writing requests together* |
-| ⏳ Pending | 3. Evaluate representative scenarios |
+| ⬜ Not started | 3. Evaluate representative scenarios; no runs yet |
 | ❌ Abandoned | 4. ~~Add a separate summary request~~ |
 | ➖ Removed | 5. ~~Store a duplicate full input snapshot~~ |
-| 🆕 Pending · added this round | 6. *Check early retrieval deduplication and concurrency limits* |
+| ⬜ Not started · added this round | 6. *Check early retrieval deduplication and concurrency limits; not implemented* |
 
 **Change log · illustrative times in UTC+08:00**
 
