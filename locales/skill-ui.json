@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "default_locale": "en",
+  "locales": {
+    "en": {
+      "agently": {
+        "display_name": "Agently Task Coordination",
+        "short_description": "Route work and track complete taskboard progress",
+        "default_prompt": "Use $agently to route this task, maintain its complete taskboard and coordinate the necessary specialties."
+      },
+      "agently-product-design": {
+        "display_name": "Agently Product Design",
+        "short_description": "Design product journeys, interfaces and readable documents",
+        "default_prompt": "Use $agently-product-design to design the product, role journeys, interface or document and verify the affected outcomes."
+      },
+      "agently-agentic-design": {
+        "display_name": "Agently Agentic Design",
+        "short_description": "Design and audit Agentic service responsibilities and flows",
+        "default_prompt": "Use $agently-agentic-design to review model and Host responsibilities, data flow, lifecycle and evidence for this service."
+      },
+      "agently-request": {
+        "display_name": "Agently Model Requests",
+        "short_description": "Configure model requests, prompts and structured results",
+        "default_prompt": "Use $agently-request to configure this model request, its prompt, output contract and response consumption."
+      },
+      "agently-runtime": {
+        "display_name": "Agently Runtime & Tools",
+        "short_description": "Connect execution, tools, resources and service adapters",
+        "default_prompt": "Use $agently-runtime to choose the runtime, tool, resource or service adapter that owns this capability."
+      },
+      "agently-stage": {
+        "display_name": "Agently Stage",
+        "short_description": "Manage task lifetimes and safe sync/async bridges",
+        "default_prompt": "Use $agently-stage to choose the correct task-lifetime, sync/async bridge, stream or event pattern."
+      },
+      "agently-triggerflow": {
+        "display_name": "Agently TriggerFlow",
+        "short_description": "Build explicit branching, concurrent and resumable workflows",
+        "default_prompt": "Use $agently-triggerflow to implement the explicit branching, concurrency, waiting and recovery required by this workflow."
+      },
+      "agently-migration": {
+        "display_name": "Agently Framework Migration",
+        "short_description": "Map existing model workflows to Agently capability owners",
+        "default_prompt": "Use $agently-migration to map this existing model application to Agently owners while preserving its required behavior."
+      }
+    },
+    "zh-CN": {
+      "agently": {
+        "display_name": "Agently 任务协调",
+        "short_description": "选择合适的设计与实现技能，维护完整任务板、决策、证据和交接记录",
+        "default_prompt": "使用 $agently 选择本任务的合适技能，维护完整任务板并协调相关工作。"
+      },
+      "agently-product-design": {
+        "display_name": "Agently 应用设计",
+        "short_description": "从真实场景设计方案、角色行为、应用体验和文档表达，逐项修订并验证",
+        "default_prompt": "使用 $agently-product-design 从真实场景设计方案、角色行为、应用体验或文档，并验证受影响的结果。"
+      },
+      "agently-agentic-design": {
+        "display_name": "Agently Agentic 设计",
+        "short_description": "设计和审查模型与应用的职责、数据流、证据、生命周期及并发执行边界",
+        "default_prompt": "使用 $agently-agentic-design 审查模型与应用的职责、数据流、生命周期和证据，明确设计与验证边界。"
+      },
+      "agently-request": {
+        "display_name": "Agently 模型请求",
+        "short_description": "配置模型请求、提示词、结构化输出、流式响应、记忆与检索的使用契约",
+        "default_prompt": "使用 $agently-request 配置本次模型请求、提示词、输出契约及响应消费方式。"
+      },
+      "agently-runtime": {
+        "display_name": "Agently 运行时与工具",
+        "short_description": "接入执行插件、工具、资源、工作文件、服务适配和观测能力并核对边界",
+        "default_prompt": "使用 $agently-runtime 选择承接本次能力的运行时、工具、资源或服务适配方式，并核对职责边界。"
+      },
+      "agently-stage": {
+        "display_name": "Agently Stage 生命周期",
+        "short_description": "管理进程内任务生命周期、同步异步桥接、事件、流及清理与并发边界",
+        "default_prompt": "使用 $agently-stage 选择适合本场景的任务生命周期、同步异步桥接、事件或流处理方式。"
+      },
+      "agently-triggerflow": {
+        "display_name": "Agently 工作流编排",
+        "short_description": "构建可检查的分支、并发、等待、恢复和重试工作流，明确状态与执行职责",
+        "default_prompt": "使用 $agently-triggerflow 实现本工作流所需的显式分支、并发、等待与恢复，并验证执行状态。"
+      },
+      "agently-migration": {
+        "display_name": "Agently 框架迁移",
+        "short_description": "将现有模型应用映射到 Agently 的请求、运行时和编排能力，保留原有行为",
+        "default_prompt": "使用 $agently-migration 将现有模型应用映射到 Agently 的能力归属，保留原有行为并核对迁移证据。"
+      }
+    }
+  }
+}

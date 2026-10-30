@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -431,6 +433,12 @@ def main() -> None:
     validate_resource_hygiene(failures, passes)
     validate_retired_and_archived_absence(failures, passes)
     validate_owning_contracts(failures, passes)
+    ui = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/install.py"), "--check"],
+        capture_output=True, text=True,
+    )
+    check("localized_ui_catalog", ui.returncode == 0,
+          (ui.stdout + ui.stderr).strip(), failures, passes)
 
     print("V3 catalog validation")
     print(f"passes: {len(passes)}")

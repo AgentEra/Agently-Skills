@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently TriggerFlow"
+  short_description: "Build explicit branching, concurrent and resumable workflows"
+  default_prompt: "Use $agently-triggerflow to implement the explicit branching, concurrency, waiting and recovery required by this workflow."
