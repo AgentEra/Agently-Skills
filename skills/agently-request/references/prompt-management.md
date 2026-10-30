@@ -131,7 +131,7 @@ tuning, data-flow correctness, missing/redundant information, and
 model-versus-Host/workflow ownership, as well as explicit Prompt/solution review.
 Select it because contracts and handoffs answer the question, not by keywords
 or a table request. Unrelated mechanical fixes do not need it. Use
-`agently-design` alongside this reference for cross-node questions.
+`agently-agentic-design` alongside this reference for cross-node questions.
 
 ### Flow First
 

@@ -25,7 +25,7 @@ different boundaries.
 | host code | admission, authorization, canonical identity joins, UI/transport, and external integration | model-owned semantic judgment |
 | human/external system | approval or external response facts | hidden in-process blocking loops |
 
-`agently-design` describes these boundaries. It does not own executable
+`agently-agentic-design` describes these boundaries. It does not own executable
 TriggerFlow definitions and does not own submitted TaskDAG data.
 
 ## Deep Modules and Inward Dependencies
@@ -116,7 +116,7 @@ when it carries the behavior. If a new term is unavoidable, document:
 4. why a local alias or documentation clarification is not enough;
 5. how the term avoids overlapping public APIs, events, placeholders, or graphs.
 
-`agently-design` is a coding-agent Skill id, not a new Agently runtime concept.
+`agently-agentic-design` is a coding-agent Skill id, not a new Agently runtime concept.
 “Model-request topology” is an analysis and audit view, not an executable graph.
 
 ## Design Review Checklist

@@ -147,7 +147,7 @@ async def judge_route_case(case: dict) -> dict:
         "- If the request explicitly says provider settings, model selection, or auth should stay in settings or env placeholders rather than workflow code, append agently-request when installed.\n"
         "- If the request is about initializing or scaffolding a new model-powered project and the owner layers are not decided yet, stop at agently.\n"
         "- If the request is about initializing or scaffolding a new project into separate settings, prompt, and workflow layers, keep agently first even when later leaf skills are explicit.\n"
-        "- If the request explicitly asks for TaskDAG, DynamicTask, or a submitted or model-generated DAG, start with agently because catalog v3 intentionally has no standalone TaskDAG skill. Add agently-design only for a cross-owner design boundary, or agently-triggerflow only when the execution substrate itself needs separate treatment.\n"
+        "- If the request explicitly asks for TaskDAG, DynamicTask, or a submitted or model-generated DAG, start with agently because catalog v3 intentionally has no standalone TaskDAG skill. Add agently-agentic-design only for a cross-owner design boundary, or agently-triggerflow only when the execution substrate itself needs separate treatment.\n"
         "- If the request is mainly provider wiring or connectivity, continue with agently-request when installed.\n"
         f"- Every item in route_path must be exactly one of: {allowed}.\n"
     )

@@ -111,7 +111,7 @@ defects from model-generation complexity.
   not an improvement.
 
 For planned section-by-section prose rather than one structured result, read
-[planned long-form writing](../../agently-design/references/lifecycle-and-pressure-design.md).
+[planned long-form writing](../../agently-agentic-design/references/lifecycle-and-pressure-design.md).
 
 ## Native-First Rules
 

@@ -1,6 +1,6 @@
 ---
 name: agently-request
-description: "Use for Agently request-side setup and contracts: model settings, Prompt/input/output design, effect tuning, missing or redundant context, structured output, LongContent, auto_continue, response reuse, streaming, TTS/STT audio, session memory, embeddings, and retrieval within one request family. Use agently-design for cross-node data flow and model/Host ownership."
+description: "Use for Agently request-side setup and contracts: model settings, Prompt/input/output design, effect tuning, missing or redundant context, structured output, LongContent, auto_continue, response reuse, streaming, TTS/STT audio, session memory, embeddings, and retrieval within one request family. Use agently-agentic-design for cross-node data flow and model/Host ownership."
 ---
 
 # Agently Request
@@ -49,7 +49,7 @@ to preserve pending decisions, modifications and abandonment.
   tightly coupled larger groups are allowed. Prioritize developer understanding,
   not fixed counts or one-node approval turns. Preserve confirmation of
   consequential changes and distinguish design findings from measured effects.
-  See `references/prompt-management.md`; use `agently-design` for cross-node
+  See `references/prompt-management.md`; use `agently-agentic-design` for cross-node
   flow/ownership analysis, not for unrelated mechanical work.
 - After measured schema/ensure/length failures, consider a shallower model-facing
   projection or coherent request splits with Host reconstruction and unchanged

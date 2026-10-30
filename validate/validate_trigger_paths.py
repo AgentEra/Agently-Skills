@@ -9,8 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 SKILLS = ROOT / "skills"
 PUBLIC_SKILLS = {
-    "agently",
+    "agently-product-design",
     "agently-design",
+    "agently",
+    "agently-agentic-design",
     "agently-migration",
     "agently-request",
     "agently-runtime",
@@ -18,7 +20,7 @@ PUBLIC_SKILLS = {
     "agently-triggerflow",
 }
 VALID_LOCALES = {"en", "zh"}
-TASKDAG_ROUTE_SKILLS = {"agently", "agently-design", "agently-triggerflow"}
+TASKDAG_ROUTE_SKILLS = {"agently", "agently-agentic-design", "agently-triggerflow"}
 INTENT_GROUP_RULES = {
     "triggerflow-output-efficiency-refactor": (
         4,

@@ -9,7 +9,7 @@ Documentation: [English](https://agently.tech/docs/en/) |
 ## Compatibility
 
 The current catalog is generation `v3`, aligned with Agently
-`4.1.4.10`. It preserves the seven-skill structure of the public V3 catalog.
+`4.1.4.10`. It contains eight canonical skills plus one deprecated forwarding entry. The product-design Skill has no Agently runtime dependency.
 
 Historical catalogs are frozen on archive branches:
 
@@ -25,9 +25,11 @@ historical inspection, not new installations.
 - `agently` - route and shape model-powered assistants, internal tools,
   automations, evaluators, and workflows when the correct owner layer is still
   unclear. Low-frequency TaskDAG guidance also starts here.
-- `agently-design` - design and audit non-trivial systems across owner layers,
+- `agently-agentic-design` - design and audit non-trivial systems across owner layers,
   request/value/event topology, evidence, identity, lifecycle, pressure, and
   observability.
+- `agently-product-design` - framework-independent product/solution design, role and behavior coverage, UI experience and document expression; four conditional modules.
+- `agently-design` - deprecated forwarding entry to `agently-agentic-design`; inspect and retire on the next update.
 - `agently-request` - configure model requests, prompts, structured output,
   response consumption, session memory, embeddings, and retrieval.
 - `agently-runtime` - use Action Runtime, MCP, ExecutionResource,
@@ -41,8 +43,14 @@ historical inspection, not new installations.
 
 TaskDAG is intentionally not a standalone Skill in v3. It is a low-frequency
 foundation for submitted or model-generated acyclic graph data; begin with
-`agently`, then add `agently-design` or `agently-triggerflow` only when the
+`agently`, then add `agently-agentic-design` or `agently-triggerflow` only when the
 cross-layer boundary or execution substrate needs separate treatment.
+
+## Design ownership and composition
+
+`agently` owns routing and cross-round progress, decisions, evidence status and handoffs. Product design owns human goals, UI and reading acceptance; Agentic design owns model/Host/workflow contracts. Runtime progress events remain Agentic concerns; their presentation and comprehension belong to product design. Mixed tasks reuse one record and load only the current specialty.
+
+The former `app-design-method` is now `agently-product-design`, without an old-name alias. Only `agently-design` remains temporarily deprecated. On the next update, verify the replacement and active callers before removing that entry; no scheduled cleanup and no rewriting historical evidence.
 
 ## Install
 
@@ -57,7 +65,7 @@ Install the `app` bundle for new Agently applications:
 ```bash
 for skill in \
   agently \
-  agently-design \
+  agently-agentic-design \
   agently-request \
   agently-runtime \
   agently-stage \
@@ -83,4 +91,10 @@ List the current public catalog with:
 
 ```bash
 npx skills add . --list
+```
+
+Install product design independently from a checkout containing this migration; no framework is required:
+
+```bash
+npx skills add . --agent "$AGENT" --skill agently-product-design -y
 ```

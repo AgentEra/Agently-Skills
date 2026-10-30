@@ -7,7 +7,7 @@ semantic behavior.
 ## Prerequisites and Evaluation Order
 
 Before input/Prompt tuning or suggesting a stronger model, follow
-[Ordered Diagnosis Before Model Tuning](../../agently-design/references/observability-and-validation.md#ordered-diagnosis-before-model-tuning).
+[Ordered Diagnosis Before Model Tuning](../../agently-agentic-design/references/observability-and-validation.md#ordered-diagnosis-before-model-tuning).
 First establish execution reachability, then sound execution logic, each with
 evidence for the relevant scenario. Only then inspect actual model input and
 test bounded information/Prompt improvements. Recommend a stronger-model

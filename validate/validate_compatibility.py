@@ -207,7 +207,7 @@ def main(*, require_remote_archives: bool = False) -> None:
             failures,
             passes,
         )
-        check(f"{label}_catalog", "seven-skill" in text or "七个 Skill" in text, "README states the seven-skill catalog", failures, passes)
+        check(f"{label}_catalog", "eight canonical skills plus one deprecated" in text or "八个正式 Skill 和一个弃用" in text, "README distinguishes canonical skills and the deprecated entry", failures, passes)
         check(f"{label}_v2_archive", "update/archive-v2-catalog" in text, "README documents the v2 archive branch", failures, passes)
         check(f"{label}_v1_archive", "update/archive-legacy-v1-catalog" in text, "README documents the v1 archive branch", failures, passes)
         check(f"{label}_legacy_path_absent", "legacy/v1" not in text, "README does not expose an archived in-tree path", failures, passes)

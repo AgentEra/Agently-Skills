@@ -13,7 +13,7 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Usage Priorities
 
-- Route unresolved product, assistant, and workflow requests through `agently` first.
+- Route unresolved product, document, assistant, and workflow requests through `agently` first. Clear human product/UI/document work can use `agently-product-design` directly without an Agently runtime dependency.
 - Prefer Agently-native capabilities before custom output parsers, retry loops, or orchestration layers.
 - Apply Occam's razor to APIs, architecture, and examples: do not add a new entity,
   method, facade, or compatibility patch when an existing Agently surface already
@@ -227,7 +227,7 @@ Use this file as installation-time guidance after the skills are added into anot
   turn when scope is clear. Preserve consequential-change confirmation and
   distinguish design findings from measured effects. The maintained procedure
   is `skills/agently-request/references/prompt-management.md`; cross-node audit
-  checks live in `skills/agently-design/references/model-request-topology.md`.
+  checks live in `skills/agently-agentic-design/references/model-request-topology.md`.
 - After the flow overview, use table-first node details with topic-sized slot rows, visible model examples,
   and output-field constraints. Organize long slots into meaningful source and
   display sections, audit case-specific/non-generalizable rules, distinguish
@@ -392,11 +392,21 @@ Use this file as installation-time guidance after the skills are added into anot
 - Prefer `Agently.load_settings("yaml_file", path, auto_load_env=True)` for file-backed settings. Use `Agently.set_settings(...)` for inline overrides.
 - Keep optional DevTools wiring in the integration layer through `ObservationBridge`, `EvaluationBridge`, or `create_local_observation_app` instead of scattering debug hooks across workflow code.
 
+## Design catalog maintenance
+
+`agently` owns collaboration progress/decision/handoff guidance;
+`agently-product-design` owns framework-independent human product, role coverage,
+UI and document methods; `agently-agentic-design` owns model/Host topology and
+runtime contracts. Keep one owner per rule and conditional specialty handoffs.
+`agently-design` is deprecated forwarding only. At the next catalog/install update,
+check the replacement and active references, migrate current callers, then remove
+the old entry when verified. Do not schedule cleanup or rewrite historical records.
+
 ## Skill Routing Reminders
 
 - `agently`: unresolved owner layer, project shape, broad product request, or
   low-frequency TaskDAG / DynamicTask guidance
-- `agently-design`: cross-owner architecture, ModelRequest/value/event topology,
+- `agently-agentic-design`: cross-owner architecture, ModelRequest/value/event topology,
   evidence and identity boundaries, lifecycle, pressure, and audit design
 - `agently-request`: provider wiring, env placeholders, model settings, prompt config, structured output, response reuse, session memory, embeddings, and retrieval
 - `agently-runtime`: Action Runtime, tools, MCP, ExecutionResource, FastAPIHelper, `auto_func`, `KeyWaiter`, and optional `agently-devtools` observation, evaluation, and playground integration

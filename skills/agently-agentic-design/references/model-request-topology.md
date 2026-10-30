@@ -95,11 +95,16 @@ consequential proposed changes; grouping is not runtime node consolidation.
 
 ## Flow Presentation
 
-Choose a medium for the reader and the available delivery tools. A small static
-flow usually fits Mermaid or a deterministic diagram renderer. Use interactive
-HTML when inspecting node details materially helps; use an image when a visual
-summary serves the report or presentation. Tool availability alone is not a
-reason to generate a bitmap, and an unavailable renderer must not block review.
+Presentation rules belong to `agently-product-design` when installed; read its
+`references/diagram-and-board.md` only for a diagram deliverable. Keep this
+reference responsible for topology semantics. Standalone fallback: an unspecified
+technical architecture diagram is a logical layered SVG, showing support
+bottom-to-top/left-to-right, not Mermaid. For business flows, group by business
+function, distinguish the main path from feedback/recovery, and use meaningful
+names. Preserve needed conditions and ownership; a logical layer is not a
+physical deployment or execution order. Prefer editable native/SVG/HTML sources
+and inspect the rendered artifact. Existing Mermaid blocks below are topology
+notation examples, not a required delivery medium.
 
 Keep node names consistent with the contract tables. Label model, deterministic,
 tool, data/state and human roles where present; show important inputs/outputs,

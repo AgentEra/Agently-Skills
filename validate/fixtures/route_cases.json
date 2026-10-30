@@ -445,14 +445,14 @@
       "query": "我想重构一个模型应用项目，把 Prompt 管理、模型配置和业务流程拆开，但还没决定只是做配置层整理，还是要一起升级成工作流结构。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
           "agently",
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -464,14 +464,14 @@
       "query": "帮我初始化一个 Agently 项目骨架，但我还没决定是先做 request side，还是一开始就拆成 TriggerFlow 工作流；我只知道模型配置、Prompt 和流程后面都要能独立演进。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
           "agently",
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -483,16 +483,16 @@
       "query": "Scaffold a new Agently project with a settings layer, prompt files, and a TriggerFlow workflow skeleton so model setup, prompt evolution, and flow logic stay separate from day one.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-triggerflow",
           "agently-request"
         ]
@@ -506,18 +506,18 @@
       "query": "按 Daily News Collector 那种目录结构重构项目：把模型配置放 SETTINGS 或 env 占位，把 Prompt 独立成配置文件，把业务流程独立成 TriggerFlow 工作流，避免把三者硬写在一起。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-triggerflow",
           "agently-request"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request",
           "agently-triggerflow"
         ]
@@ -531,18 +531,18 @@
       "query": "Split a model app into a settings layer for provider configuration, a prompt-config layer, and a TriggerFlow workflow layer so transport, prompt evolution, and business flow can change independently.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-triggerflow",
           "agently-request"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request",
           "agently-triggerflow"
         ]
@@ -556,18 +556,18 @@
       "query": "前端经常改筛选项和文案，我想让前端通过配置文件驱动 Prompt 和流程参数，作为桥梁减少前端变化对后端整体结构的冲击。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request",
           "agently-triggerflow"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-triggerflow",
           "agently-request"
         ]
@@ -581,18 +581,18 @@
       "query": "我正在用 Agently 设计并优化一个包含多个模型请求的业务流程，请检查请求职责和 Prompt 方案；我没有特别要求审阅格式。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request"
         ],
         [
           "agently-request",
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -604,7 +604,7 @@
       "query": "Review and optimize the business Prompt for this Agently request family, including long slots, model-visible examples, and output constraints. I did not ask for a particular review format.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request"
       ],
       "expected_route_paths": [
@@ -612,7 +612,7 @@
           "agently-request"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request"
         ]
       ]
@@ -853,7 +853,7 @@
       "query": "Use Agently to run a submitted TaskDAG with validation, local handlers, dependency joins, and semantic outputs without hand-writing a scheduler.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
@@ -862,7 +862,7 @@
         ],
         [
           "agently",
-          "agently-design"
+          "agently-agentic-design"
         ],
         [
           "agently",
@@ -878,7 +878,7 @@
       "query": "我要让模型先生成一个可校验的 DAG，再用 Agently 执行这个 Dynamic Task，要求输出 schema 和 handler 绑定都明确。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
@@ -887,7 +887,7 @@
         ],
         [
           "agently",
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -899,7 +899,7 @@
       "query": "请先帮我设计一个包含多个模型请求、检索、工具调用和结果校验的复杂应用，但我还没有确定每一段应该归属请求层、运行时还是工作流层。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-triggerflow"
@@ -907,7 +907,7 @@
       "expected_route_paths": [
         [
           "agently",
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -919,16 +919,16 @@
       "query": "这个 Agently 长流程里有几个模型节点，我想确认每个节点到底负责什么、输入是否齐全、结果有没有交给正确的下游，以及是否传了无用资料。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request"
         ]
       ]
@@ -941,16 +941,16 @@
       "query": "This Agently document pipeline runs but its results are inconsistent. Help me understand the model stages and compare their inputs, outputs and observed behavior before deciding what to tune.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime"
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request"
         ]
       ]
@@ -963,16 +963,16 @@
       "query": "Agently 流程把每一步的完整结果都传给后续模型，还让模型检查 ID 和控制重试。我想知道哪些信息是必要的，哪些判断应该交给模型，哪些应由工程或工作流承担。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ],
         [
-          "agently-design",
+          "agently-agentic-design",
           "agently-request",
           "agently-triggerflow"
         ]
@@ -986,7 +986,7 @@
       "query": "Only correct the environment-variable name used for this Agently provider's base URL; the request contracts and workflow are unchanged and do not need review.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request"
       ],
       "expected_route_paths": [
@@ -1003,14 +1003,14 @@
       "query": "Review the cross-layer architecture of this Agently service and assign clear owner boundaries across ModelRequest contracts, runtime capabilities, executable flows, evidence storage, lifecycle, and pressure control before implementation.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-triggerflow"
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -1102,7 +1102,7 @@
       "query": "我们还没有选模型或框架，请设计一个带资料检索和人工复核的客服工作流，说明最小闭环、节点输入输出和实施顺序。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -1111,7 +1111,7 @@
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -1123,7 +1123,7 @@
       "query": "已有检索、回答和写工单三个节点的脚本，但检索失败后仍然写工单。请审查当前流程，区分应保留和调整的部分，并给出迁移步骤。",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -1132,7 +1132,7 @@
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
         ]
       ]
     },
@@ -1144,7 +1144,7 @@
       "query": "Review our production assistant workflow using its traces and latency/cost metrics. Prioritize evidence-backed findings and propose verification and safe migration steps without changing our current framework.",
       "installed_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -1153,7 +1153,133 @@
       ],
       "expected_route_paths": [
         [
-          "agently-design"
+          "agently-agentic-design"
+        ]
+      ]
+    },
+    {
+      "id": "product-roles-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "product-roles-zh",
+      "query": "只有报销需求，没有模型服务；请按员工、财务与出纳检查权限和状态分支，声明未覆盖条件。",
+      "installed_skills": [
+        "agently-product-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-product-design"
+        ]
+      ]
+    },
+    {
+      "id": "product-document-en",
+      "scenario_id": "design-ownership",
+      "locale": "en",
+      "intent_style": "product-document-en",
+      "query": "Rewrite the onboarding guide for a reader who did not join our design discussions; review its reading flow and terminology.",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-product-design"
+        ]
+      ]
+    },
+    {
+      "id": "product-unclear-boundary-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "product-unclear-boundary-zh",
+      "query": "帮我整理服务方案，前台审批页和后台模型判断都有问题，先区分问题与责任。",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently",
+          "agently-product-design",
+          "agently-agentic-design"
+        ]
+      ]
+    },
+    {
+      "id": "design-compat-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "design-compat-zh",
+      "query": "使用 agently-design 检查模型与 Host 的数据交接和取消恢复契约。",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-design",
+          "agently-agentic-design"
+        ]
+      ]
+    },
+    {
+      "id": "collaboration-progress-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "collaboration-progress-zh",
+      "query": "整理当前方案的决定、实际修订、未验范围与接手责任，不改应用运行状态协议。",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently"
+        ]
+      ]
+    },
+    {
+      "id": "runtime-progress-en",
+      "scenario_id": "design-ownership",
+      "locale": "en",
+      "intent_style": "runtime-progress-en",
+      "query": "Design cancellation and terminal status correlation across model stages and host validation; keep stale replay events from completing a new run.",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-agentic-design"
+        ]
+      ]
+    },
+    {
+      "id": "progress-view-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "progress-view-zh",
+      "query": "进度协议已确认，只调整用户如何找到当前阶段与失败恢复入口；检查多余说明是否挤压主视图。",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-product-design"
         ]
       ]
     }

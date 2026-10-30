@@ -1,0 +1,4 @@
+interface:
+  display_name: "应用设计方法"
+  short_description: "从真实需求设计方案，按需走查应用体验与文档表达，用统一记录修订并验证"
+  default_prompt: "使用 $agently-product-design 从真实场景和证据判断问题，按需加载方案、角色行为、应用或文档模块，完成已授权的设计、修订与验证。"

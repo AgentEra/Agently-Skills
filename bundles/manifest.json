@@ -9,7 +9,7 @@
       "entry_skill": "agently",
       "active_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -17,7 +17,7 @@
       ],
       "recommended_install_order": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -32,7 +32,7 @@
       "base_bundle": "app",
       "active_skills": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
@@ -41,12 +41,38 @@
       ],
       "recommended_install_order": [
         "agently",
-        "agently-design",
+        "agently-agentic-design",
         "agently-request",
         "agently-runtime",
         "agently-stage",
         "agently-triggerflow",
         "agently-migration"
+      ]
+    },
+    {
+      "id": "product-design",
+      "kind": "specialized",
+      "purpose": "Framework-independent product, role/behavior, UI and document design; standalone installation.",
+      "entry_skill": "agently-product-design",
+      "active_skills": [
+        "agently-product-design"
+      ],
+      "recommended_install_order": [
+        "agently-product-design"
+      ]
+    },
+    {
+      "id": "design-compat",
+      "kind": "addon",
+      "purpose": "Deprecated old-name forwarding only; inspect and retire at the next update after current callers migrate.",
+      "entry_skill": "agently-agentic-design",
+      "active_skills": [
+        "agently-agentic-design",
+        "agently-design"
+      ],
+      "recommended_install_order": [
+        "agently-agentic-design",
+        "agently-design"
       ]
     }
   ]

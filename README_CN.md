@@ -8,8 +8,7 @@ Skills 仓库。
 
 ## 兼容性
 
-当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.10`，保留公开
-V3 catalog 的七个 Skill 结构。
+当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.10`，包含八个正式 Skill 和一个弃用转接入口；产品设计 Skill 不依赖 Agently 运行时。
 
 历史 catalog 冻结在归档分支：
 
@@ -24,8 +23,10 @@ V3 catalog 的七个 Skill 结构。
 
 - `agently` - 当模型应用、助手、内部工具、自动化、评估器或工作流的正确 owner
   layer 尚不明确时，负责入口路由与项目形态判断；低频 TaskDAG 需求也从这里开始。
-- `agently-design` - 跨 owner layer 设计和审计复杂系统，覆盖请求、值与事件拓扑、
+- `agently-agentic-design` - 跨 owner layer 设计和审计复杂系统，覆盖请求、值与事件拓扑、
   证据、身份、生命周期、压力和可观测性。
+- `agently-product-design` - 应用设计方法：方案、角色行为覆盖、应用体验与文档表达，按需加载四个内部模块，可独立安装。
+- `agently-design` - 已弃用，只转接 `agently-agentic-design`；下次更新检查并移除。
 - `agently-request` - 模型请求、Prompt、结构化输出、响应消费、session memory、
   embeddings 与检索。
 - `agently-runtime` - Action Runtime、MCP、ExecutionResource、TaskWorkspace、
@@ -39,7 +40,13 @@ V3 catalog 的七个 Skill 结构。
 
 v3 不再提供独立 TaskDAG Skill。TaskDAG 是提交或模型生成的无环图数据所使用的
 低频基础能力；先从 `agently` 开始，仅在跨层边界或执行 substrate 需要独立处理时
-再加入 `agently-design` 或 `agently-triggerflow`。
+再加入 `agently-agentic-design` 或 `agently-triggerflow`。
+
+## 设计职责与组合
+
+`agently` 维护场景路由、跨轮进度/决策/证据状态与交接；产品 Skill 维护人的目标、界面和阅读验收；Agentic Skill 维护模型/Host/工作流契约。应用运行进度事件属于 Agentic 层，显示与理解属于产品层。混合任务共用已有清单，按实际依赖切换，不默认加载全部模块。
+
+旧 `app-design-method` 已统一迁移为 `agently-product-design`，不提供旧名兼容。`agently-design` 单独标记弃用，不进入推荐新装清单；下次更新检查当前调用方和本机新入口，再移除旧入口，不设定时任务，不改历史证据。
 
 ## 安装
 
@@ -54,7 +61,7 @@ export AGENT=codex
 ```bash
 for skill in \
   agently \
-  agently-design \
+  agently-agentic-design \
   agently-request \
   agently-runtime \
   agently-stage \
@@ -80,4 +87,10 @@ npx skills add AgentEra/Agently-Skills --agent "$AGENT" --skill agently -y
 
 ```bash
 npx skills add . --list
+```
+
+产品设计可独立安装。以下命令从包含本次迁移的检出目录安装，不要求框架：
+
+```bash
+npx skills add . --agent "$AGENT" --skill agently-product-design -y
 ```
