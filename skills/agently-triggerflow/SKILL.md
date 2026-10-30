@@ -21,7 +21,7 @@ verification, and repair without application-authored stage topology.
 - Stable application stream projection: `references/stream-bridge.md`.
 - DevTools graph/observation: `references/devtools-graph.md`.
 - Full value/signal topology review:
-  `../agently-design/references/execution-topology-validation.md`.
+  `../agently-agentic-design/references/execution-topology-validation.md`.
 - Direct Stage scopes, settlement, bridges, channels, or listeners use
   `agently-stage`.
 

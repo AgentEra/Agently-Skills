@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Agentic Design"
+  short_description: "Design and audit Agentic service workflows"
+  default_prompt: "Use $agently-agentic-design to review model and Host responsibilities, data flow, lifecycle and evidence for this service."

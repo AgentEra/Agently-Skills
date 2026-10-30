@@ -358,12 +358,12 @@
       "id": "execution-topology-validation-zh",
       "query": "我需要审计一个包含多个 ModelRequest、TriggerFlow 业务块、Action 和 Workspace readback 的复杂执行链。拓扑节点必须列出 prompt 的 input/info/instruct、output schema 和实际结构化输出，边要区分值传递与 signal/RuntimeEvent 触发，并定位字段丢失或覆盖。应该先看哪份评估标准？",
       "matched_skills": [
-        "agently-design",
+        "agently-agentic-design",
         "agently-triggerflow"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/execution-topology-validation.md"
+          "skills/agently-agentic-design/references/execution-topology-validation.md"
         ]
       ],
       "concepts": [
@@ -430,13 +430,13 @@
     },
     {
       "id": "design-system-boundaries-zh",
-      "query": "跨层设计已经路由到 agently-design。我需要先确认请求、运行时、稳定工作流和提交 DAG 的 owner 分界，并决定执行状态与持久存储各自放在哪里。应该先读哪份参考？",
+      "query": "跨层设计已经路由到 agently-agentic-design。我需要先确认请求、运行时、稳定工作流和提交 DAG 的 owner 分界，并决定执行状态与持久存储各自放在哪里。应该先读哪份参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/system-boundaries.md"
+          "skills/agently-agentic-design/references/system-boundaries.md"
         ]
       ],
       "concepts": [
@@ -461,13 +461,13 @@
     },
     {
       "id": "design-model-request-topology-en",
-      "query": "After routing to agently-design, which focused reference should I use to define each ModelRequest prompt and output contract, map schema-field fan-out and join edges, govern provisional instant updates, and compare the planned request topology with runtime observations?",
+      "query": "After routing to agently-agentic-design, which focused reference should I use to define each ModelRequest prompt and output contract, map schema-field fan-out and join edges, govern provisional instant updates, and compare the planned request topology with runtime observations?",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "concepts": [
@@ -497,17 +497,17 @@
     },
     {
       "id": "design-replaceable-handoff-reference-zh",
-      "query": "已经路由到 agently-design。复杂 AI 流程的上游还没完成，但下游希望围绕关键衔接数据先行开发，并让以后真实输出替换参考样例，同时避免把每个节点都做成固定数据包。应该先读哪份参考？",
+      "query": "已经路由到 agently-agentic-design。复杂 AI 流程的上游还没完成，但下游希望围绕关键衔接数据先行开发，并让以后真实输出替换参考样例，同时避免把每个节点都做成固定数据包。应该先读哪份参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "excerpt_anchors": {
-        "skills/agently-design/references/model-request-topology.md": [
+        "skills/agently-agentic-design/references/model-request-topology.md": [
           "## Optional Reference Data At Valuable Handoffs"
         ]
       },
@@ -538,17 +538,17 @@
     },
     {
       "id": "design-stage-scoped-output-progress-zh",
-      "query": "已经路由到 agently-design。复杂任务中的每次模型输出是否都要一次解决整个任务？我希望每轮只推进一个当前职责，但本轮自身不能有实质逻辑或专业错误，并且最终输出仍要通过完整验收。应该先读哪份参考？",
+      "query": "已经路由到 agently-agentic-design。复杂任务中的每次模型输出是否都要一次解决整个任务？我希望每轮只推进一个当前职责，但本轮自身不能有实质逻辑或专业错误，并且最终输出仍要通过完整验收。应该先读哪份参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "excerpt_anchors": {
-        "skills/agently-design/references/model-request-topology.md": [
+        "skills/agently-agentic-design/references/model-request-topology.md": [
           "## Stage-Scoped Output: Local Correctness, Global Progress"
         ]
       },
@@ -584,13 +584,13 @@
     },
     {
       "id": "design-instant-overlap-reconcile-zh",
-      "query": "已经路由到 agently-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
+      "query": "已经路由到 agently-agentic-design。模型要先流式产出检索任务并发启动检索，随后继续生成进度说明和大结构结果；我需要防止 retry 或重复 delta 造成重复检索，并以最终校验结果取消或补齐临时任务。应该先读哪份参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "concepts": [
@@ -620,13 +620,13 @@
     },
     {
       "id": "design-request-snapshot-boundary-zh",
-      "query": "已经路由到 agently-design。什么时候应把意图识别、决策和回复合并到同一个 ModelRequest，什么时候必须拆分？如果前置模型结果要先触发 Action 或系统检索，而后置回答必须使用新返回的数据，instant 能否把结果送回仍在生成的同一次请求？应该先读哪份参考？",
+      "query": "已经路由到 agently-agentic-design。什么时候应把意图识别、决策和回复合并到同一个 ModelRequest，什么时候必须拆分？如果前置模型结果要先触发 Action 或系统检索，而后置回答必须使用新返回的数据，instant 能否把结果送回仍在生成的同一次请求？应该先读哪份参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "concepts": [
@@ -862,15 +862,15 @@
       "id": "design-flow-review-fit-zh",
       "query": "这个 Agently 复杂流程的效果不稳定，我想判断是模型节点职责没定义清楚、输入漏传或重复，还是把确定性校验和工作流控制错交给了模型。先看整体流程和节点职责，再检查数据交接；这套方法能回答哪些问题，哪些结论还需要实际运行证据？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "excerpt_anchors": {
-        "skills/agently-design/references/model-request-topology.md": [
+        "skills/agently-agentic-design/references/model-request-topology.md": [
           "## Collaborative Flow and Handoff Review"
         ]
       },
@@ -947,17 +947,17 @@
     },
     {
       "id": "design-planned-long-form-writing-zh",
-      "query": "已经路由到 agently-design。模型正常 stop 但文档明显短于需要，我想先规划章节再逐段生成和组装。是否每段都要单独摘要？摘要累积如何控制？什么时候串行、什么时候并发，与 auto_continue（兼容名 ensure_long_output）的截断续写有何区别？",
+      "query": "已经路由到 agently-agentic-design。模型正常 stop 但文档明显短于需要，我想先规划章节再逐段生成和组装。是否每段都要单独摘要？摘要累积如何控制？什么时候串行、什么时候并发，与 auto_continue（兼容名 ensure_long_output）的截断续写有何区别？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/lifecycle-and-pressure-design.md"
+          "skills/agently-agentic-design/references/lifecycle-and-pressure-design.md"
         ]
       ],
       "excerpt_anchors": {
-        "skills/agently-design/references/lifecycle-and-pressure-design.md": [
+        "skills/agently-agentic-design/references/lifecycle-and-pressure-design.md": [
           "## Planned Long-Form Writing"
         ]
       },
@@ -1049,24 +1049,24 @@
     },
     {
       "id": "design-selection-key-freshness-correlation-en",
-      "query": "Routing already selected agently-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response to the semantic input/evidence/request revision rather than only candidate state, and have the Host validate correlation before canonical lookup? A caller-supplied logical ID is insufficient unless Host storage guarantees its unique association with that semantic revision; the model must not copy correlation ids. The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
+      "query": "Routing already selected agently-agentic-design. A model chooses a trusted candidate key from an offered set, but replies can cross a cache, queue, retry, persistence boundary, or replay. Which focused references require us to treat offered-set membership as insufficient proof of freshness, bind the response to the semantic input/evidence/request revision rather than only candidate state, and have the Host validate correlation before canonical lookup? A caller-supplied logical ID is insufficient unless Host storage guarantees its unique association with that semantic revision; the model must not copy correlation ids. The guidance should also avoid imposing that ceremony on a strictly inline response that cannot cross request boundaries.",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/information-and-evidence-design.md",
-          "skills/agently-design/references/model-request-topology.md"
+          "skills/agently-agentic-design/references/information-and-evidence-design.md",
+          "skills/agently-agentic-design/references/model-request-topology.md"
         ]
       ],
       "excerpt_anchors": {
-        "skills/agently-design/references/information-and-evidence-design.md": [
+        "skills/agently-agentic-design/references/information-and-evidence-design.md": [
           "### Freshness Across Request Boundaries",
           "Prefer non-overridable per-semantic-request lineage or",
           "the model must not copy correlation ids",
           "A strictly inline response"
         ],
-        "skills/agently-design/references/model-request-topology.md": [
+        "skills/agently-agentic-design/references/model-request-topology.md": [
           "## ModelRequest Node Contract Card",
           "Prefer non-overridable per-semantic-request lineage or a",
           "the model must not copy correlation ids",
@@ -1287,13 +1287,13 @@
     },
     {
       "id": "design-project-stages-zh",
-      "query": "已确定由 agently-design 做设计审查。手上只有半成品脚本和失败输出，模型与框架还未定。我需要知道先收集哪些证据、如何决定保留或修改，以及交付哪些当前/目标流程和迁移内容。应读取什么参考？",
+      "query": "已确定由 agently-agentic-design 做设计审查。手上只有半成品脚本和失败输出，模型与框架还未定。我需要知道先收集哪些证据、如何决定保留或修改，以及交付哪些当前/目标流程和迁移内容。应读取什么参考？",
       "matched_skills": [
-        "agently-design"
+        "agently-agentic-design"
       ],
       "expected_reference_sets": [
         [
-          "skills/agently-design/references/project-stages.md"
+          "skills/agently-agentic-design/references/project-stages.md"
         ]
       ],
       "concepts": [

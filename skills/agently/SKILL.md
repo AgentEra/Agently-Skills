@@ -1,18 +1,21 @@
 ---
 name: agently
-description: Use when a model-powered product, assistant, automation, evaluator, or workflow request still needs the right Agently owner, execution shape, or project boundary chosen. Also use for explicit low-frequency TaskDAG or DynamicTask requests.
+description: Route ambiguous product, document, or Agentic work to the right design or implementation skill, and maintain progress, decisions and handoffs across multi-round tasks. Also use for unresolved Agently owner/project shape or explicit low-frequency TaskDAG or DynamicTask requests. Clear UI/document work can use agently-product-design directly.
 ---
 
 # Agently
 
-Start here when the request is expressed as product behavior rather than an
-Agently API. Choose the smallest native owner before choosing files or
-mechanisms. The request does not need to mention Agently.
+Start here when the owner or working method is unclear, or several specialties
+share one work item. First distinguish human product/document outcomes from
+model-service behavior. Route clear product work directly to `agently-product-design`;
+no model, Agently runtime or framework migration is required. For model systems,
+choose the smallest suitable owner before files or mechanisms; use Agently-native
+mappings only when Agently is in scope. Respect another selected stack.
 
 When an Agently developer needs to understand model-node duties, tune execution
 effects, check data flow or redundant context, or judge model/Host ownership,
 use collaborative review without waiting for the phrase "Prompt review".
-Route through `agently-design` for the highlighted flow and handoffs, and
+Route through `agently-agentic-design` for the highlighted flow and handoffs, and
 `agently-request` for related Prompt tables grouped by readability and dependency.
 Keep unrelated mechanical work outside this review method.
 
@@ -21,7 +24,17 @@ substantive round with a status-left/item-right table and a timestamped,
 versioned change-log table. Follow
 [the collaboration record guidance](references/multi-round-collaboration.md).
 
+## Shared coordination
+
+Use the [collaboration record guidance](references/multi-round-collaboration.md)
+for work-item progress, decisions, evidence limits and handoffs. Specialist Skills
+retain their acceptance criteria; one progress record links them. A routine
+single-step edit does not require a design review or a new tracking system.
+
 ## Workflow
+
+The following owner workflow applies to model-powered systems. For non-model
+product or writing tasks, route to the product Skill and continue its method.
 
 1. Reduce the request to goals, inputs, outputs, side effects, evidence, and
    lifecycle needs.
@@ -37,6 +50,14 @@ versioned change-log table. Follow
 
 ## Route by Owner
 
+- Product goals, role/behavior coverage, interface/component/layout design,
+  document readability or diagrams use `agently-product-design`. It has four
+  conditional modules, not four mandatory phases or Agents.
+- For mixed product + Agentic work, pass role goals, business constraints,
+  observable event meanings, selected decisions and unresolved evidence to the
+  next owner. Load only the necessary phase. Runtime traces prove system events;
+  product walkthroughs prove how people understand and act on them.
+
 - One request family—provider setup, prompt, structured output, LongContent,
   auto_continue, TTS/STT audio, result reuse, session memory, embeddings, or
   retrieval—uses `agently-request`.
@@ -46,7 +67,7 @@ versioned change-log table. Follow
   settlement, replay channels, or local listeners uses `agently-stage`.
 - Cross-owner architecture, request/value/event topology, evidence and identity
   boundaries, lifecycle, pressure, or information-loss audit uses
-  `agently-design`.
+  `agently-agentic-design`.
 - Developer-owned progression, branching, concurrency, approval, wait/resume,
   retry, or restart-safe orchestration uses `agently-triggerflow`.
 - Migration from LangChain, LangGraph, LlamaIndex, CrewAI, or a similar system
@@ -65,8 +86,8 @@ versioned change-log table. Follow
   `references/task-dag.md`.
 - Simulation-first and real-model validation:
   `references/model-quality-validation.md`.
-- Cross-layer topology audit methods live in `agently-design`, especially its
-  `../agently-design/references/execution-topology-validation.md`.
+- Cross-layer topology audit methods live in `agently-agentic-design`, especially its
+  `../agently-agentic-design/references/execution-topology-validation.md`.
 
 ## Core Ownership Rules
 

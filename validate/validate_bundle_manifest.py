@@ -9,17 +9,17 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "bundles" / "manifest.json"
 SKILLS = ROOT / "skills"
 VALID_KINDS = {"entry", "core", "addon", "specialized"}
-EXPECTED_BUNDLE_IDS = {"app", "migration"}
+EXPECTED_BUNDLE_IDS = {"app", "migration", "product-design", "design-compat"}
 APP_ORDER = [
     "agently",
-    "agently-design",
+    "agently-agentic-design",
     "agently-request",
     "agently-runtime",
     "agently-stage",
     "agently-triggerflow",
 ]
 MIGRATION_EXTRA_ORDER = ["agently-migration"]
-EXPECTED_CATALOG = set(APP_ORDER + MIGRATION_EXTRA_ORDER)
+EXPECTED_CATALOG = set(APP_ORDER + MIGRATION_EXTRA_ORDER + ["agently-product-design", "agently-design"])
 RETIRED_SKILL = "agently-" + "dynamic-task"
 
 
@@ -57,7 +57,7 @@ def main() -> None:
     check("manifest_schema", data.get("version") == 3, "manifest schema version is 3", failures, passes)
     check("catalog_generation", data.get("catalog_generation") == "v3", "catalog generation is v3", failures, passes)
     check("bundle_ids_unique", len(bundle_ids) == len(set(bundle_ids)), "bundle ids are unique", failures, passes)
-    check("bundle_ids_exact", set(bundle_map) == EXPECTED_BUNDLE_IDS, "only app and migration bundles are public", failures, passes)
+    check("bundle_ids_exact", set(bundle_map) == EXPECTED_BUNDLE_IDS, "core, migration, standalone product and optional compatibility bundles are public", failures, passes)
 
     for bundle_id, bundle in bundle_map.items():
         active = bundle.get("active_skills")
@@ -68,7 +68,8 @@ def main() -> None:
         if not isinstance(active, list) or not isinstance(install, list):
             continue
         check(f"{bundle_id}_install_matches_active", install == active, "install order covers active skills exactly once", failures, passes)
-        check(f"{bundle_id}_entry", bundle.get("entry_skill") == "agently" and active[:1] == ["agently"], "agently is the installed entry skill", failures, passes)
+        expected_entry = {"product-design": "agently-product-design", "design-compat": "agently-agentic-design"}.get(bundle_id, "agently")
+        check(f"{bundle_id}_entry", bundle.get("entry_skill") == expected_entry and active[:1] == [expected_entry], "bundle starts with its declared owner", failures, passes)
         check(f"{bundle_id}_skills_exist", all((SKILLS / skill).is_dir() for skill in active), "every bundled skill exists", failures, passes)
         check(f"{bundle_id}_retired_absent", RETIRED_SKILL not in active, "retired standalone TaskDAG skill is absent", failures, passes)
 
@@ -84,8 +85,10 @@ def main() -> None:
     check("migration_base", migration.get("base_bundle") == "app", "migration extends app", failures, passes)
     check("migration_exact", migration_active == APP_ORDER + MIGRATION_EXTRA_ORDER, "migration contains app plus only agently-migration", failures, passes)
     check("migration_union", migration_set == app_set | extra_set, "migration equals app union migration extras", failures, passes)
-    check("catalog_expected", actual_catalog == EXPECTED_CATALOG, "skills directory is the exact seven-skill catalog", failures, passes)
-    check("manifest_catalog_union", app_set | migration_set == actual_catalog, "bundle union equals the public skills directory", failures, passes)
+    check("catalog_expected", actual_catalog == EXPECTED_CATALOG, "skills directory is the exact eight canonical skills plus one deprecated entry", failures, passes)
+    check("product_standalone", bundle_map.get("product-design", {}).get("active_skills") == ["agently-product-design"], "product has no framework dependency", failures, passes)
+    check("compat_exact", bundle_map.get("design-compat", {}).get("active_skills") == ["agently-agentic-design", "agently-design"], "legacy alias installs its replacement", failures, passes)
+    check("manifest_catalog_union", set().union(*(set(b.get("active_skills", [])) for b in bundles)) == actual_catalog, "bundle union equals the public skills directory", failures, passes)
 
     print("V3 bundle manifest validation")
     print(f"passes: {len(passes)}")

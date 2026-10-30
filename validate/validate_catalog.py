@@ -15,8 +15,10 @@ ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 REFERENCE_FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 IMPLEMENTATION_FIXTURES = ROOT / "validate" / "fixtures" / "implementation_cases.json"
 EXPECTED_SKILLS = {
-    "agently",
+    "agently-product-design",
     "agently-design",
+    "agently",
+    "agently-agentic-design",
     "agently-migration",
     "agently-request",
     "agently-runtime",
@@ -66,7 +68,7 @@ OWNING_CONTRACTS: dict[str, tuple[Path, tuple[str, ...]]] = {
     ),
     "execution_topology_evidence": (
         SKILLS
-        / "agently-design"
+        / "agently-agentic-design"
         / "references"
         / "execution-topology-validation.md",
         (
@@ -81,7 +83,7 @@ OWNING_CONTRACTS: dict[str, tuple[Path, tuple[str, ...]]] = {
     ),
     "selection_freshness": (
         SKILLS
-        / "agently-design"
+        / "agently-agentic-design"
         / "references"
         / "information-and-evidence-design.md",
         ("selection key", "freshness", "Host correlation", "canonical lookup"),
@@ -105,7 +107,7 @@ OWNING_CONTRACTS: dict[str, tuple[Path, tuple[str, ...]]] = {
         ),
     ),
     "stage_scoped_progress": (
-        SKILLS / "agently-design" / "references" / "model-request-topology.md",
+        SKILLS / "agently-agentic-design" / "references" / "model-request-topology.md",
         (
             "Stage-Scoped Output",
             "whole-task terminal completeness",
@@ -238,7 +240,7 @@ def validate_catalog_sets(failures: list[str], passes: list[str]) -> None:
         for skill in bundle.get("active_skills", [])
     }
 
-    check("catalog_directory_exact", actual == EXPECTED_SKILLS, "skills directory is the exact seven-skill catalog", failures, passes)
+    check("catalog_directory_exact", actual == EXPECTED_SKILLS, "skills directory is the exact eight canonical skills plus one deprecated entry", failures, passes)
     check("readme_en_unique", len(readme_en) == len(set(readme_en)), "README catalog entries are unique", failures, passes)
     check("readme_zh_unique", len(readme_zh) == len(set(readme_zh)), "README_CN catalog entries are unique", failures, passes)
     check("readme_en_exact", set(readme_en) == EXPECTED_SKILLS, "README catalog equals the public catalog", failures, passes)

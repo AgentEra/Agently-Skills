@@ -80,3 +80,53 @@ language while retaining the two tables and their meaning.
 | 2026-09-07 14:40 | D03 | 6 | Propose deduplication by task-relevant payload. | 💬 Awaiting confirmation |
 
 Continue with this round's actual design, findings or implementation evidence.
+
+## Progress, Evidence and Handoff Ownership
+
+This reference owns coding-agent/developer collaboration records across product,
+document and Agentic work. Reuse the project's authoritative issue, checklist or
+review record: do not create a second progress ledger in each Skill. A design
+finding can carry several evidence dimensions; keep one stable item identity.
+A reviewed proposal, accepted decision, applied change, verified result,
+deployment and business approval are different facts. Reopen the same item when
+new evidence contradicts completion and retain its earlier evidence.
+
+At a substantive checkpoint record the goal and scope, current item state,
+actual artifact/version/environment, evidence and its limits, blockers, next
+action and responsible owner. Preserve decision and change history. Progress
+reports are a projection of these facts, not evidence of runtime completion;
+never invent a completion percentage, ETA, benchmark or test result.
+
+The product Skill owns the content/functional/interaction/visual review criteria
+and the Agentic Skill owns request/state/lineage and convergence contracts.
+Neither needs to copy this collaboration procedure. Standalone product installs
+can use their existing local checklist without installing Agently or adopting
+its runtime. Model prompts do not automatically receive these collaboration
+records; include only information required by the current consumer.
+
+### Work identity and continuous responsibility
+
+Distinguish a business request/spec, a work item, a deliverable increment, a
+release batch and the conversation carrying them. Check their actual cardinality;
+never infer one-to-one relationships from the ambiguous word “task”. A stage
+change or a shared executor does not by itself transfer responsibility. Preserve
+the responsible conversation's continuity where that is the actual operating
+model, including returns from shared resources. Context compaction is not a
+business handoff; a fixed acceptance condition plus artifact/run evidence is
+stronger than the executor's completion statement.
+
+Module, iteration, execution segment and conversation lifetimes may differ.
+Choose handoff boundaries by goal cohesion, useful context, dependencies and
+verifiable checkpoints, not by a fixed time or one conversation per function.
+A handoff must preserve source history, valid evidence, remaining work, in-flight
+runs/events and the current responsibility/write authority. It does not authorize
+new conversations, external messages, releases or permission changes.
+
+### Report language
+
+For experiment reports and design documents, when the task instructions are
+not in English, prefer a complete document in that instruction language;
+a bilingual version is also acceptable. An explicit requested output language
+takes precedence. Apply this to the document itself, not only the chat summary.
+Preserve code, identifiers, raw prompts and evidence as needed; their language
+does not determine the surrounding report language.
