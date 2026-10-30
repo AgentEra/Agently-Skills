@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Framework Migration"
+  short_description: "Map existing model workflows to Agently capability owners"
+  default_prompt: "Use $agently-migration to map this existing model application to Agently owners while preserving its required behavior."

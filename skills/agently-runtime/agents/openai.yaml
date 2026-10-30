@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Runtime & Tools"
+  short_description: "Connect execution, tools, resources and service adapters"
+  default_prompt: "Use $agently-runtime to choose the runtime, tool, resource or service adapter that owns this capability."

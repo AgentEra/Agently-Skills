@@ -56,6 +56,26 @@ The former `app-design-method` is now `agently-product-design`, without an old-n
 
 Standard local installations select the canonical `app`, `migration` and/or `product-design` bundles; `design-compat` is only for an explicitly needed old caller. Before updating, compare local changes and preserve useful development supplements with a declared feature/version, capability check and known evidence limits. Do not treat preview guidance as released support. Retire redundant local aliases after a recoverable backup; keep distinct host-specific workflows. Spotkit is an optional external illustration Skill used by product design, not a required Agently dependency.
 
+### Codex display language
+
+The eight canonical skills share one [English/Chinese UI dictionary](locales/skill-ui.json). Shipped metadata uses English; technical skill IDs and invocation names stay unchanged. Codex reads one static display name, so this tool selects the language at installation/update time rather than following each conversation's language.
+
+From a checkout of the version you intend to install, using Python 3.10+ with PyYAML:
+
+```bash
+python scripts/install.py --locale zh-CN
+python scripts/install.py
+python scripts/install.py --locale en --ui-only
+```
+
+The first command installs/updates all eight canonical skills in `$CODEX_HOME/skills` (or `~/.codex/skills`) with Chinese UI. The second reuses the saved language. The third changes only existing skills' UI to English. Use `--skills agently-product-design` for a standalone install, `--dest PATH` for another skill root, and `--dry-run` to inspect changes.
+
+The root-level `.agently-skills-ui.json` stores the language and managed-file baselines. Existing policy, dependencies, icons and other UI fields remain intact. First adoption preserves differing local files as supplements; subsequent upstream changes update unchanged files and stop before writing on overlapping local changes. No untracked files or retired aliases are deleted. A backup and receipt are saved beside the target skill root in `skill-update-backups/`. This tool installs from the checkout; it does not fetch remote updates. After using another installer, run `--ui-only` to reapply your saved language.
+
+Maintainers edit the dictionary, run `python scripts/install.py --write-defaults`, and validate with `--check` plus `python -m unittest discover -s validate -p test_skill_ui_install.py`. Avoid changing SKILL.md identities to translate the interface.
+
+### Other installers
+
 Choose the target coding agent first, for example:
 
 ```bash

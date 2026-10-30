@@ -52,6 +52,26 @@ v3 不再提供独立 TaskDAG Skill。TaskDAG 是提交或模型生成的无环�
 
 本机标准安装选择正式的 `app`、`migration` 和／或 `product-design` bundle；`design-compat` 仅供明确需要旧入口的调用方。更新前对比本地差异，保留有实际用途、明确特性／版本、能力检查及证据边界的开发补充，不把预览指导当作已发布支持。冗余本机别名在可恢复备份后退役；适用宿主不同的工作方式分别保留。Spotkit 是产品设计可选的外部插图辅助 Skill，不是 Agently 的强制依赖。
 
+### Codex 显示语种
+
+八个正式技能共用一份[中英 UI 词典](locales/skill-ui.json)。仓库默认分发英文显示名；技术 ID 和调用名称保持不变。Codex 读取的是静态名称，本工具在安装／更新时选择语种，不会随每轮会话语言实时切换。
+
+在所需版本的仓库检出中执行，环境需要 Python 3.10+ 和 PyYAML：
+
+```bash
+python scripts/install.py --locale zh-CN
+python scripts/install.py
+python scripts/install.py --locale en --ui-only
+```
+
+第一条将八个正式技能安装／更新到 `$CODEX_HOME/skills`（未设置时为 `~/.codex/skills`），采用中文 UI；第二条沿用已保存语种；第三条只将已有技能的 UI 改为英文。独立安装可加 `--skills agently-product-design`，另选位置用 `--dest PATH`，预览修改用 `--dry-run`。
+
+技能根目录的 `.agently-skills-ui.json` 保存语言选择和已管理文件的基线。已有策略、依赖、图标及其他 UI 字段保留。首次接管时将不同的本地文件作为补充保留；后续上游更新可覆盖未改动文件，双方同时改动时在写入前停止，等待核对。不删除未跟踪文件或旧别名。备份和回执保存在技能根目录旁的 `skill-update-backups/`。工具只安装当前检出内容，不自行拉取远端；通过其他安装器更新后，可运行 `--ui-only` 恢复已选语种。
+
+维护者修改词典后执行 `python scripts/install.py --write-defaults`，再运行 `--check` 和 `python -m unittest discover -s validate -p test_skill_ui_install.py`。翻译界面不修改 SKILL.md 技术标识。
+
+### 其他安装方式
+
 先选择目标 coding agent，例如：
 
 ```bash

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Model Requests"
+  short_description: "Configure model requests, prompts and structured results"
+  default_prompt: "Use $agently-request to configure this model request, its prompt, output contract and response consumption."
