@@ -54,6 +54,8 @@ The former `app-design-method` is now `agently-product-design`, without an old-n
 
 ## Install
 
+Standard local installations select the canonical `app`, `migration` and/or `product-design` bundles; `design-compat` is only for an explicitly needed old caller. Before updating, compare local changes and preserve useful development supplements with a declared feature/version, capability check and known evidence limits. Do not treat preview guidance as released support. Retire redundant local aliases after a recoverable backup; keep distinct host-specific workflows. Spotkit is an optional external illustration Skill used by product design, not a required Agently dependency.
+
 Choose the target coding agent first, for example:
 
 ```bash

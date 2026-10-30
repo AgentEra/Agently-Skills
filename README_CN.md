@@ -50,6 +50,8 @@ v3 不再提供独立 TaskDAG Skill。TaskDAG 是提交或模型生成的无环�
 
 ## 安装
 
+本机标准安装选择正式的 `app`、`migration` 和／或 `product-design` bundle；`design-compat` 仅供明确需要旧入口的调用方。更新前对比本地差异，保留有实际用途、明确特性／版本、能力检查及证据边界的开发补充，不把预览指导当作已发布支持。冗余本机别名在可恢复备份后退役；适用宿主不同的工作方式分别保留。Spotkit 是产品设计可选的外部插图辅助 Skill，不是 Agently 的强制依赖。
+
 先选择目标 coding agent，例如：
 
 ```bash

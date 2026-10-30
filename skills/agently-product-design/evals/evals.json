@@ -606,6 +606,28 @@
         "不改模型节点或应用运行状态协议。",
         "已安装 agently 时协作规则引用主 Skill；独立安装用已有清单不中止。"
       ]
+    },
+    {
+      "id": 38,
+      "name": "spotkit-concept-boundary",
+      "prompt": "用一张图说明“从很多候选中按已知条件筛选出可执行项”的产品理念，可考虑 Spotkit；本轮只给概念与表达方案，不需要改应用。",
+      "expected_output": "判断关系与受众，按需借助 Spotkit，保留关键条件和候选性质。",
+      "files": [],
+      "assertions": [
+        "没有把抽象插图当已验证业务机制。",
+        "先确定关系，再选择可复用布局；没有为全部图解强制禁用标签或 imagegen。"
+      ]
+    },
+    {
+      "id": 39,
+      "name": "architecture-with-spotkit-available",
+      "prompt": "已经装了 Spotkit。请梳理服务的技术架构，必须看清外部数据源、应用服务、模型服务和存储的逻辑支撑与权威归属。",
+      "expected_output": "SVG逻辑分层和明确标签、边界；Spotkit仅可作补充。",
+      "files": [],
+      "assertions": [
+        "不以小型抽象插图替代架构。",
+        "没有以 Spotkit 的无文字或固定小画布隐去边界、职责与依赖。"
+      ]
     }
   ]
 }

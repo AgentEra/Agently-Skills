@@ -1,6 +1,6 @@
 ---
 name: agently
-description: Route ambiguous product, document, or Agentic work to the right design or implementation skill, and maintain progress, decisions and handoffs across multi-round tasks. Also use for unresolved Agently owner/project shape or explicit low-frequency TaskDAG or DynamicTask requests. Clear UI/document work can use agently-product-design directly.
+description: Route ambiguous product, document, or Agentic work to the right design or implementation skill, and maintain complete taskboard progress, decisions and handoffs across multi-round tasks. Also use for unresolved Agently owner/project shape or explicit low-frequency TaskDAG or DynamicTask requests. Clear UI/document work can use agently-product-design directly.
 ---
 
 # Agently
@@ -19,10 +19,13 @@ Route through `agently-agentic-design` for the highlighted flow and handoffs, an
 `agently-request` for related Prompt tables grouped by readability and dependency.
 Keep unrelated mechanical work outside this review method.
 
-For multi-round design, Prompt revision or experiment evaluation, begin each
-substantive round with a status-left/item-right table and a timestamped,
-versioned change-log table. Follow
-[the collaboration record guidance](references/multi-round-collaboration.md).
+Whenever the conversation advances its actionable plan, start the progress
+report with the **complete current taskboard**: stable IDs, every task's actual
+state and progress, including completed, not started, in progress, blocked and
+cancelled items. Use icons such as ✅ with explicit labels; an accepted decision
+is not implementation or verification. Follow the single maintained
+[taskboard and collaboration guidance](references/multi-round-collaboration.md)
+for history, reopening and substantive-round change logs.
 
 ## Shared coordination
 
