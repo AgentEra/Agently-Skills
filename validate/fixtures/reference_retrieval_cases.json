@@ -1315,6 +1315,37 @@
         "partial_preserve_and_migrate",
         "reuse_contracts"
       ]
+    },
+    {
+      "id": "conversation-plan-and-handoff-zh",
+      "query": "长任务恢复后如何保留当前计划、取消项的未完成清理与决策历史，并给读者清楚说明进度？",
+      "matched_skills": [
+        "agently-collaboration"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-collaboration/references/taskboard-and-handoffs.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "complete_current_plan",
+          "description": "Show the complete current plan after orienting the reader, with stable IDs and actual states."
+        },
+        {
+          "id": "retained_not_repeated_history",
+          "description": "Retain decision history and show what is relevant to the current report; do not repeat all history automatically."
+        },
+        {
+          "id": "cancelled_cleanup_visible",
+          "description": "Cancelled items retain outstanding cleanup and owner; reopening preserves prior evidence."
+        }
+      ],
+      "required_concepts": [
+        "complete_current_plan",
+        "retained_not_repeated_history",
+        "cancelled_cleanup_visible"
+      ]
     }
   ]
 }

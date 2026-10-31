@@ -208,17 +208,15 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Project Defaults
 
-- For actionable tasks, start each meaningful progress report with the complete
-  current conversation taskboard: stable IDs, all planned items, actual progress,
-  and icon-plus-text states for completed, not started, in progress, blocked,
-  paused and cancelled. Accepted decisions are not implementation or verification.
-  For multi-round tasks, including Prompt collaboration, Flow design and
-  experiment evaluation, begin each substantive round with current items
-  (status left, item right) and a change-log table recording time/timezone,
-  discussion version, change/reason and implementation or abandonment state.
-  Preserve stable item numbers and history; distinguish confirmed from applied
-  and verified. Reuse existing records and follow
-  `skills/agently/references/multi-round-collaboration.md`.
+- Use `skills/agently-collaboration/SKILL.md` alongside any task for conversation
+  expression, progress, decisions and handoffs, without requiring the router.
+  Start substantive reports with the current task, goal and main result, then
+  show the complete current taskboard with stable IDs and actual progress.
+  Explain relevant changes and next actions top-down. Retain complete decision
+  history in existing records; expand it when needed rather than repeating all
+  history every round. Put routine supplementary limits in a short closing note;
+  material blockers and conditions remain beside the affected conclusion.
+  Brief questions and unchanged tool activity need no invented plan or report.
 
 - Use collaborative review for Agently model-node definitions, execution-effect
   tuning, data-flow completeness/redundancy and model/Host/workflow ownership,
@@ -398,7 +396,8 @@ Use this file as installation-time guidance after the skills are added into anot
 
 ## Design catalog maintenance
 
-`agently` owns collaboration progress/decision/handoff guidance;
+`agently` owns ambiguous task routing; `agently-collaboration` owns cross-task
+conversation expression, progress, decisions and handoffs;
 `agently-product-design` owns framework-independent human product, role coverage,
 UI and document methods; `agently-agentic-design` owns model/Host topology and
 runtime contracts. Keep one owner per rule and conditional specialty handoffs.
@@ -408,6 +407,8 @@ the old entry when verified. Do not schedule cleanup or rewrite historical recor
 
 ## Skill Routing Reminders
 
+- `agently-collaboration`: task-independent conversation expression and
+  taskboard/decision/history/handoff guidance, alongside any specialty
 - `agently`: unresolved owner layer, project shape, broad product request, or
   low-frequency TaskDAG / DynamicTask guidance
 - `agently-agentic-design`: cross-owner architecture, ModelRequest/value/event topology,

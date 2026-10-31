@@ -1,15 +1,13 @@
-# Multi-Round Collaboration
+# Taskboard and handoffs
 
-Use taskboard-style reporting whenever the current conversation makes material
-progress on an actionable plan, including development, product/document work,
-Prompt collaboration, Flow design and experiment tuning. Begin a progress report
-or action-round final response with the complete current taskboard, before the
-narrative. At each substantive discussion/revision round, also show the
-change-log table. Brief tool activity without a meaningful state change does not
-need another report or discussion version; do not repeat unchanged boards merely
-to create activity. A one-off informational answer needs no invented plan.
+Use with the [conversation entry](../SKILL.md) for actionable work that spans
+steps or rounds. First orient the reader with the current task, goal and main
+result; then show the board and relevant supporting information. An explicit
+status/remaining-work request also receives the current board, even if nothing
+changed; label it as the current state rather than new progress. A one-off
+informational answer or unchanged tool activity needs no invented plan or log.
 
-## Taskboard: the Complete Current Plan First
+## Complete current taskboard after the opening summary
 
 The board is a view of this conversation's actual plan, not a new runtime or
 external task-management system. Use the existing plan/tool when available;
@@ -54,80 +52,41 @@ a separately installed `taskboard` Skill or imply that a board tool was called.
   section or link to an earlier board does not replace the current full view.
   No polling, heartbeat, new external task or extra approval is introduced.
 
-## Current Items and Change History
+## Decision and change history
 
-- Put **Status on the left, Item on the right**. Keep item numbers stable across
-  rounds and append numbers for new work. Show completion and the current stage
-  truthfully: proposed, awaiting confirmation, confirmed, implementing or
-  verified are different states.
-- Show additions, modifications, removals and abandonment explicitly. Use
-  *italics* for this round's added text, ~~old text~~ → *new text* for edits,
-  and ❌ ~~abandoned item~~ for abandonment, with text labels as well as icons.
-  Removing duplicate work is different from abandoning its underlying goal;
-  explain where any retained responsibility goes.
-- Register changes in a table with **Time (and timezone), Discussion version,
-  Item, Change and reason, Implementation status**. Simple versions such as D01,
-  D02 are discussion revisions, not framework or artifact release versions.
-  Record actual times at known precision; label unknown historical times rather
-  than inventing them.
-- Distinguish a proposed change, an accepted decision awaiting implementation,
-  an applied change, verified work, and an abandoned proposal. Record whether
-  an abandoned or removed design has actually been removed from its affected
-  artifacts. A decision alone does not prove implementation or validation.
-- Append later decisions and implementation outcomes to history rather than
-  silently overwriting them. Reopen an affected completed item if new evidence
-  invalidates it; retain the prior completion and the reopening reason.
-- Highlight this round's differences. In later rounds, use readable current
-  wording in the item table while retaining previous wording in the log.
-- While the same work item remains active, every status/history presentation
-  must include its complete item list and complete change history, including
-  unchanged, completed, pending, removed and abandoned items. Highlight this
-  round's differences within that full view; delta-only tables and links to
-  earlier records do not replace it. If nothing changed, retain the full view
-  and say so without inventing a change.
-- Continuing, resuming or focusing on a subtopic does not by itself start a new
-  work item. Reset the list only for genuinely different work, explicitly
-  naming the scope change. Recover prior records after a handoff or context
-  loss; label missing history rather than silently dropping or inventing it.
-- Reuse the existing plan, review notes or experiment record. A short task can
-  keep both tables in the conversation; use an existing durable project record
-  when long work needs recovery or handoff. Do not require another tracking
-  system, file format, model output schema, or runtime ledger.
-- For large lists, group by phase and keep individual rows concise without
-  omitting items or history entries. Links may supply supporting detail, not
-  replace the full same-work-item view. These records do not add approval gates
-  or reset existing authorization.
+Keep one authoritative record for the current work. Preserve stable IDs,
+original decisions and subsequent changes, including additions, modifications,
+removal, abandonment and reopened failures. Record the reason, actual status,
+responsible owner and evidence; include time/timezone and a discussion revision
+when known and useful. Do not fabricate historical precision or create a new
+tracking system merely to satisfy this guidance.
 
-## Presentation Example
+Distinguish proposed, accepted, implemented and verified states. Cancelling an
+approach does not prove its code or data was removed; record actual cleanup and
+where retained responsibilities moved. Reopen the same item when new evidence
+invalidates an earlier conclusion, preserving both the earlier evidence and the
+new finding.
 
-Synthetic presentation only; the times, versions and states below are not
-observed work. This is a coding-agent/developer collaboration view, not content
-to copy into the application's model prompts. Adapt labels to the user's
-language while retaining the two tables and their meaning.
+Keep pending cleanup visible on the cancelled row with its next action and
+owner, or add a linked cleanup item when it needs separate tracking. Do not
+hide remaining work behind the cancelled status or invent a duplicate task
+solely for presentation.
 
-**Current items · D03**
+The current report shows the complete current taskboard and the changes that
+matter to this round. The **complete history remains retained**, but need not be
+reprinted in every message. Expand it for an explicit history request, audit,
+handoff or a decision that depends on earlier reasoning. Never make the reader
+open an old message to understand the current task, conclusion or required action.
+Use a compact change table when comparing several changes helps; timestamps,
+revision labels, strikethrough and a second table are not mandatory decoration.
 
-| Status | Item |
-|---|---|
-| ⬜ Not started · scope confirmed | 1. Implement the agreed business goal; no implementation yet |
-| 🔄 In progress · changed this round | 2. ~~Review every request separately~~ → *Review the coupled planning and writing requests together* |
-| ⬜ Not started | 3. Evaluate representative scenarios; no runs yet |
-| ❌ Abandoned | 4. ~~Add a separate summary request~~ |
-| ➖ Removed | 5. ~~Store a duplicate full input snapshot~~ |
-| ⬜ Not started · added this round | 6. *Check early retrieval deduplication and concurrency limits; not implemented* |
-
-**Change log · illustrative times in UTC+08:00**
-
-| Time | Discussion version | Item | Change and reason | Implementation status |
-|---|---|---|---|---|
-| 2026-09-07 14:10 | D01 | 1–5 | Register initial scope. | ✅ Recorded |
-| 2026-09-07 14:25 | D03 | 2 | Review coupled requests together to inspect their handoff. | ✅ Applied to the review plan |
-| 2026-09-07 14:25 | D03 | 4 | No consumer for a separate summary. | ❌ Abandoned; removed from the design |
-| 2026-09-07 14:25 | D03 | 5 | Existing records already preserve the input. | ✅ Duplicate removed; tracing retained |
-| 2026-09-07 14:25 | D03 | 6 | Early retrieval needs bounded, deduplicated execution. | ⏳ Confirmed; not implemented |
-| 2026-09-07 14:40 | D03 | 6 | Propose deduplication by task-relevant payload. | 💬 Awaiting confirmation |
-
-Continue with this round's actual design, findings or implementation evidence.
+Continuing a subtopic, resuming or compacting context does not start a new work
+item. Recover the existing plan and history first. If unavailable, mark the
+specific gap rather than inventing a fresh all-pending board or invented prior
+success. Name a scope change when genuinely different work begins. For large
+plans, group rows by phase without dropping current items. Store durable history
+in an existing project record when recovery needs it; a short task can retain
+it in the conversation.
 
 ## Progress, Evidence and Handoff Ownership
 
@@ -147,9 +106,9 @@ never invent a completion percentage, ETA, benchmark or test result.
 
 The product Skill owns the content/functional/interaction/visual review criteria
 and the Agentic Skill owns request/state/lineage and convergence contracts.
-Neither needs to copy this collaboration procedure. Standalone product installs
-can use their existing local checklist without installing Agently or adopting
-its runtime. Model prompts do not automatically receive these collaboration
+Neither needs to copy this collaboration procedure. This Skill and product
+design can be installed without Agently or its runtime; reuse existing local
+checklists when the collaboration Skill is unavailable. Model prompts do not automatically receive these collaboration
 records; include only information required by the current consumer.
 
 ### Work identity and continuous responsibility

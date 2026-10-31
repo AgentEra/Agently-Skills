@@ -8,7 +8,7 @@ Skills 仓库。
 
 ## 兼容性
 
-当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.10`，包含八个正式 Skill 和一个弃用转接入口；产品设计 Skill 不依赖 Agently 运行时。
+当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.10`，包含九个正式 Skill 和一个弃用转接入口；产品设计和会话协作 Skill 不依赖 Agently 运行时。
 
 历史 catalog 冻结在归档分支：
 
@@ -23,6 +23,7 @@ Skills 仓库。
 
 - `agently` - 当模型应用、助手、内部工具、自动化、评估器或工作流的正确 owner
   layer 尚不明确时，负责入口路由与项目形态判断；低频 TaskDAG 需求也从这里开始。
+- `agently-collaboration` - 跨任务的会话表达、完整任务板、决策、变更历史和交接；可独立使用，无需先经过任务路由。
 - `agently-agentic-design` - 跨 owner layer 设计和审计复杂系统，覆盖请求、值与事件拓扑、
   证据、身份、生命周期、压力和可观测性。
 - `agently-product-design` - 应用设计方法：方案、角色行为覆盖、应用体验与文档表达，按需加载四个内部模块，可独立安装。
@@ -44,17 +45,17 @@ v3 不再提供独立 TaskDAG Skill。TaskDAG 是提交或模型生成的无环�
 
 ## 设计职责与组合
 
-`agently` 维护场景路由、跨轮进度/决策/证据状态与交接；产品 Skill 维护人的目标、界面和阅读验收；Agentic Skill 维护模型/Host/工作流契约。应用运行进度事件属于 Agentic 层，显示与理解属于产品层。混合任务共用已有清单，按实际依赖切换，不默认加载全部模块。
+`agently` 维护场景路由；`agently-collaboration` 维护跨任务的会话表达、进度、决策和交接，可直接与任一专业技能配合；产品 Skill 维护人的目标、界面和阅读验收；Agentic Skill 维护模型/Host/工作流契约。应用运行进度事件属于 Agentic 层，显示与理解属于产品层。混合任务共用已有清单，按实际依赖切换，不默认加载全部模块。
 
 旧 `app-design-method` 已统一迁移为 `agently-product-design`，不提供旧名兼容。`agently-design` 单独标记弃用，不进入推荐新装清单；下次更新检查当前调用方和本机新入口，再移除旧入口，不设定时任务，不改历史证据。
 
 ## 安装
 
-本机标准安装选择正式的 `app`、`migration` 和／或 `product-design` bundle；`design-compat` 仅供明确需要旧入口的调用方。更新前对比本地差异，保留有实际用途、明确特性／版本、能力检查及证据边界的开发补充，不把预览指导当作已发布支持。冗余本机别名在可恢复备份后退役；适用宿主不同的工作方式分别保留。Spotkit 是产品设计可选的外部插图辅助 Skill，不是 Agently 的强制依赖。
+本机标准安装选择正式的 `app`、`migration`、`product-design` 和／或 `collaboration` bundle；`design-compat` 仅供明确需要旧入口的调用方。更新前对比本地差异，保留有实际用途、明确特性／版本、能力检查及证据边界的开发补充，不把预览指导当作已发布支持。冗余本机别名在可恢复备份后退役；适用宿主不同的工作方式分别保留。Spotkit 是产品设计可选的外部插图辅助 Skill，不是 Agently 的强制依赖。
 
 ### Codex 显示语种
 
-八个正式技能共用一份[中英 UI 词典](locales/skill-ui.json)。仓库默认分发英文显示名；技术 ID 和调用名称保持不变。Codex 读取的是静态名称，本工具在安装／更新时选择语种，不会随每轮会话语言实时切换。
+九个正式技能共用一份[中英 UI 词典](locales/skill-ui.json)。仓库默认分发英文显示名；技术 ID 和调用名称保持不变。Codex 读取的是静态名称，本工具在安装／更新时选择语种，不会随每轮会话语言实时切换。
 
 在所需版本的仓库检出中执行，环境需要 Python 3.10+ 和 PyYAML：
 
@@ -64,11 +65,23 @@ python scripts/install.py
 python scripts/install.py --locale en --ui-only
 ```
 
-第一条将八个正式技能安装／更新到 `$CODEX_HOME/skills`（未设置时为 `~/.codex/skills`），采用中文 UI；第二条沿用已保存语种；第三条只将已有技能的 UI 改为英文。独立安装可加 `--skills agently-product-design`，另选位置用 `--dest PATH`，预览修改用 `--dry-run`。
+第一条将九个正式技能安装／更新到 `$CODEX_HOME/skills`（未设置时为 `~/.codex/skills`），采用中文 UI；第二条沿用已保存语种；第三条只将已有技能的 UI 改为英文。独立安装可加 `--skills agently-product-design`，另选位置用 `--dest PATH`，预览修改用 `--dry-run`。
 
 技能根目录的 `.agently-skills-ui.json` 保存语言选择和已管理文件的基线。已有策略、依赖、图标及其他 UI 字段保留。首次接管时将不同的本地文件作为补充保留；后续上游更新可覆盖未改动文件，双方同时改动时在写入前停止，等待核对。不删除未跟踪文件或旧别名。备份和回执保存在技能根目录旁的 `skill-update-backups/`。工具只安装当前检出内容，不自行拉取远端；通过其他安装器更新后，可运行 `--ui-only` 恢复已选语种。
 
 维护者修改词典后执行 `python scripts/install.py --write-defaults`，再运行 `--check` 和 `python -m unittest discover -s validate -p test_skill_ui_install.py`。翻译界面不修改 SKILL.md 技术标识。
+
+### 跨任务的会话基础指导
+
+会话表达、进度与交接可独立安装，不要求使用 Agently 框架：
+
+```bash
+python scripts/install.py --skills agently-collaboration
+```
+
+要让基础规则在各类任务开始时生效，将简短的[会话指导块](skills/agently-collaboration/assets/session-guidance.md)合并到宿主支持的全局指令入口，保留已有规则。Codex 应先检查 `$CODEX_HOME`（默认 `~/.codex`）中的 `AGENTS.override.md` 与 `AGENTS.md`，确认实际生效文件；按标记更新原块，不覆盖整份文件，也不新建会遮蔽已有指导的 override。其他 Coding Agent 使用各自支持的全局入口。技能安装本身不会让全文常驻，本安装脚本也不会自动修改全局指令。Codex 新运行会重新读取指令链，更新后应检查实际宿主。
+
+基础块要求先说明当前任务和核心进展，再展示完整当前任务板，并按需读取独立的会话 Skill。专业执行继续由任务 Skill 维护；完整历史保存在已有记录，需要时展开。升级旧版时，先检查并备份 `agently/references/multi-round-collaboration.md` 的本地差异，迁移调用方后移除这个旧副本；通用安装器按设计不会删除新源码中已不存在的文件。
 
 ### 其他安装方式
 
@@ -83,6 +96,7 @@ export AGENT=codex
 ```bash
 for skill in \
   agently \
+  agently-collaboration \
   agently-agentic-design \
   agently-request \
   agently-runtime \

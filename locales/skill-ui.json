@@ -4,9 +4,9 @@
   "locales": {
     "en": {
       "agently": {
-        "display_name": "Agently Task Coordination",
-        "short_description": "Route work and track complete taskboard progress",
-        "default_prompt": "Use $agently to route this task, maintain its complete taskboard and coordinate the necessary specialties."
+        "display_name": "Agently Task Routing",
+        "short_description": "Choose the right design or implementation capability owner",
+        "default_prompt": "Use $agently to identify the task scope and route to the appropriate design or implementation skill."
       },
       "agently-product-design": {
         "display_name": "Agently Product Design",
@@ -42,13 +42,18 @@
         "display_name": "Agently Framework Migration",
         "short_description": "Map existing model workflows to Agently capability owners",
         "default_prompt": "Use $agently-migration to map this existing model application to Agently owners while preserving its required behavior."
+      },
+      "agently-collaboration": {
+        "display_name": "Agently Conversation & Collaboration",
+        "short_description": "Explain tasks, progress, decisions and handoffs clearly",
+        "default_prompt": "Use $agently-collaboration to explain the current task and outcome, maintain its complete plan and report meaningful progress."
       }
     },
     "zh-CN": {
       "agently": {
-        "display_name": "Agently 任务协调",
-        "short_description": "选择合适的设计与实现技能，维护完整任务板、决策、证据和交接记录",
-        "default_prompt": "使用 $agently 选择本任务的合适技能，维护完整任务板并协调相关工作。"
+        "display_name": "Agently 任务路由",
+        "short_description": "判断任务与项目形态，选择合适的设计或实现技能并协调专业职责归属",
+        "default_prompt": "使用 $agently 判断任务范围和项目形态，选择合适的设计或实现技能。"
       },
       "agently-product-design": {
         "display_name": "Agently 应用设计",
@@ -84,6 +89,11 @@
         "display_name": "Agently 框架迁移",
         "short_description": "将现有模型应用映射到 Agently 的请求、运行时和编排能力，保留原有行为",
         "default_prompt": "使用 $agently-migration 将现有模型应用映射到 Agently 的能力归属，保留原有行为并核对迁移证据。"
+      },
+      "agently-collaboration": {
+        "display_name": "Agently 会话协作与表达",
+        "short_description": "先讲清当前任务与核心进展，分层表达成果，维护完整任务板、决策和交接",
+        "default_prompt": "使用 $agently-collaboration 讲清当前任务与核心进展，维护完整任务板，分层说明成果、依据和下一步。"
       }
     }
   }

@@ -9,10 +9,9 @@ Use this Skill for cross-owner design and audit. It produces ownership and
 handoff contracts; it does not become a scheduler, TriggerFlow definition,
 TaskDAG, retry engine, or RuntimeEvent protocol.
 
-For iterative design or review, show current items and a timestamped,
-versioned change log at the response head; distinguish decisions from applied
-and verified changes. Read
-[Multi-Round Collaboration](../agently/references/multi-round-collaboration.md).
+For iterative design or review, use
+[Conversation and Collaboration](../agently-collaboration/SKILL.md) alongside
+this method for task context, progress, decisions and handoffs.
 
 ## Product and collaboration boundaries
 
@@ -22,8 +21,8 @@ Use it only for that part of a mixed task; an Agentic audit does not automatical
 require UI work. Pass goals, role constraints, event meanings and evidence gaps
 across the boundary; keep one existing work-item record.
 
-Coding-agent progress and handoff records are owned by `agently`'s
-[collaboration guidance](../agently/references/multi-round-collaboration.md).
+Coding-agent progress and handoff records are owned by `agently-collaboration`'s
+[collaboration guidance](../agently-collaboration/references/taskboard-and-handoffs.md).
 Runtime progress is different: request/stage completion, evidence lineage,
 retry convergence, provisional results and terminal acceptance stay here;
 mechanics stay with runtime/Stage/TriggerFlow. Never move runtime contracts into

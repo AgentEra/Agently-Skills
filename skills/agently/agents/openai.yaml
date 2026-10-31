@@ -1,4 +1,4 @@
 interface:
-  display_name: "Agently Task Coordination"
-  short_description: "Route work and track complete taskboard progress"
-  default_prompt: "Use $agently to route this task, maintain its complete taskboard and coordinate the necessary specialties."
+  display_name: "Agently Task Routing"
+  short_description: "Choose the right design or implementation capability owner"
+  default_prompt: "Use $agently to identify the task scope and route to the appropriate design or implementation skill."
