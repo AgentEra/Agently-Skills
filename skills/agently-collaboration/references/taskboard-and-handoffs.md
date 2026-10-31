@@ -43,6 +43,10 @@ a separately installed `taskboard` Skill or imply that a board tool was called.
   what remains or the next action. Link evidence as a supplement. Reuse native
   task identities; reconcile the board with the latest tool/record before
   reporting, and do not assume a successful plan write proves task execution.
+- Give each item a meaningful task/action name beside its ID. Follow the
+  [reader-language rule](../SKILL.md#use-familiar-and-defined-language): IDs,
+  undefined abbreviations and conversation-only aliases cannot replace the
+  description, even when they are valid identifiers in an external system.
 - Use icons **and text** consistently:
 
   | Status | Meaning |

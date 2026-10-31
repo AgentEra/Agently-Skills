@@ -32,6 +32,24 @@ current progress, observed effect, next action and who owns it. Distinguish
 observed effects from intended benefits. Do not fabricate metrics, causality,
 completion, history or estimates to make a report look complete.
 
+## Use familiar and defined language
+
+For content people will read, prefer everyday terms or terminology established
+in the relevant industry and appropriate to the intended reader. Do not invent
+and repeatedly use undefined shorthand, acronyms, initials, codes or numbered
+aliases whose meaning exists only in this conversation. Prefer an existing
+clear term; when a new term or abbreviation is genuinely necessary, give its
+full name and meaning before using it, within the reader's current material.
+Do not assume the reader saw its definition in an earlier chat. Familiar
+industry abbreviations need no ritual expansion when the audience knows them.
+
+Stable task IDs, exact API names and other technical identifiers can accompany
+a descriptive name or explanation; they must not replace the human-readable
+meaning. Preserve code, protocol fields and quoted evidence accurately.
+Agent-to-agent messages and machine-readable contracts are exempt from this
+human-expression restriction. When reporting their contents to people, explain
+the meaning rather than copying opaque protocol shorthand into the narrative.
+
 ## Make progress understandable
 
 Every taskboard needs an immediately preceding description of the task's
