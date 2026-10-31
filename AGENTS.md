@@ -220,6 +220,9 @@ Use this file as installation-time guidance after the skills are added into anot
   history every round. Put routine supplementary limits in a short closing note;
   material blockers and conditions remain beside the affected conclusion.
   Brief questions and unchanged tool activity need no invented plan or report.
+  Use everyday or established industry terms for human readers; define necessary
+  new shorthand before use and keep task IDs supplementary to meaningful names.
+  Agent-to-agent protocol messages are exempt; explain them when reporting to people.
 
 - Use collaborative review for Agently model-node definitions, execution-effect
   tuning, data-flow completeness/redundancy and model/Host/workflow ownership,
