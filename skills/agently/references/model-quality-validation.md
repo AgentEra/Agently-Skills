@@ -18,8 +18,8 @@ shows a broken dependency or handoff. The ordered diagnostic procedure owns
 these gates; the rubrics and calibration below evaluate semantic effectiveness.
 
 For repeated experiment evaluation, use
-[Multi-Round Collaboration](multi-round-collaboration.md) at each round's
-response head. Keep proposed experiments, completed runs and accepted findings
+[Conversation and Collaboration](../../agently-collaboration/SKILL.md) to present
+the task, progress and relevant findings. Keep proposed experiments, completed runs and accepted findings
 distinct; link actual evidence without presenting simulation as observation.
 
 ## Rule

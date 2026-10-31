@@ -9,9 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "bundles" / "manifest.json"
 SKILLS = ROOT / "skills"
 VALID_KINDS = {"entry", "core", "addon", "specialized"}
-EXPECTED_BUNDLE_IDS = {"app", "migration", "product-design", "design-compat"}
+EXPECTED_BUNDLE_IDS = {"app", "migration", "product-design", "design-compat", "collaboration"}
 APP_ORDER = [
     "agently",
+    "agently-collaboration",
     "agently-agentic-design",
     "agently-request",
     "agently-runtime",
@@ -68,7 +69,7 @@ def main() -> None:
         if not isinstance(active, list) or not isinstance(install, list):
             continue
         check(f"{bundle_id}_install_matches_active", install == active, "install order covers active skills exactly once", failures, passes)
-        expected_entry = {"product-design": "agently-product-design", "design-compat": "agently-agentic-design"}.get(bundle_id, "agently")
+        expected_entry = {"collaboration": "agently-collaboration", "product-design": "agently-product-design", "design-compat": "agently-agentic-design"}.get(bundle_id, "agently")
         check(f"{bundle_id}_entry", bundle.get("entry_skill") == expected_entry and active[:1] == [expected_entry], "bundle starts with its declared owner", failures, passes)
         check(f"{bundle_id}_skills_exist", all((SKILLS / skill).is_dir() for skill in active), "every bundled skill exists", failures, passes)
         check(f"{bundle_id}_retired_absent", RETIRED_SKILL not in active, "retired standalone TaskDAG skill is absent", failures, passes)
@@ -81,11 +82,12 @@ def main() -> None:
     migration_set = set(migration_active) if isinstance(migration_active, list) else set()
     extra_set = set(MIGRATION_EXTRA_ORDER)
 
-    check("app_exact", app_active == APP_ORDER, "app bundle has the six current application skills in install order", failures, passes)
+    check("app_exact", app_active == APP_ORDER, "app bundle has the seven current application skills in install order", failures, passes)
     check("migration_base", migration.get("base_bundle") == "app", "migration extends app", failures, passes)
     check("migration_exact", migration_active == APP_ORDER + MIGRATION_EXTRA_ORDER, "migration contains app plus only agently-migration", failures, passes)
     check("migration_union", migration_set == app_set | extra_set, "migration equals app union migration extras", failures, passes)
-    check("catalog_expected", actual_catalog == EXPECTED_CATALOG, "skills directory is the exact eight canonical skills plus one deprecated entry", failures, passes)
+    check("catalog_expected", actual_catalog == EXPECTED_CATALOG, "skills directory is the exact nine canonical skills plus one deprecated entry", failures, passes)
+    check("collaboration_standalone", bundle_map.get("collaboration", {}).get("active_skills") == ["agently-collaboration"], "conversation guidance installs without framework or product skills", failures, passes)
     check("product_standalone", bundle_map.get("product-design", {}).get("active_skills") == ["agently-product-design"], "product has no framework dependency", failures, passes)
     check("compat_exact", bundle_map.get("design-compat", {}).get("active_skills") == ["agently-agentic-design", "agently-design"], "legacy alias installs its replacement", failures, passes)
     check("manifest_catalog_union", set().union(*(set(b.get("active_skills", [])) for b in bundles)) == actual_catalog, "bundle union equals the public skills directory", failures, passes)

@@ -35,7 +35,7 @@ class SkillUIInstallTests(unittest.TestCase):
     def test_default_install_and_identities(self):
         result = installer.apply(self.root, self.dest)
         self.assertEqual(result['locale'], 'en')
-        self.assertEqual(len(result['skills']), 8)
+        self.assertEqual(len(result['skills']), 9)
         self.assertFalse((self.dest / 'agently-design').exists())
         for name in result['skills']:
             self.assertEqual((self.dest / name / 'SKILL.md').read_bytes(), (self.root / 'skills' / name / 'SKILL.md').read_bytes())

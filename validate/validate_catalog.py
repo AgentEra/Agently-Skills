@@ -17,6 +17,7 @@ ROUTE_FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 REFERENCE_FIXTURES = ROOT / "validate" / "fixtures" / "reference_retrieval_cases.json"
 IMPLEMENTATION_FIXTURES = ROOT / "validate" / "fixtures" / "implementation_cases.json"
 EXPECTED_SKILLS = {
+    "agently-collaboration",
     "agently-product-design",
     "agently-design",
     "agently",
@@ -242,7 +243,7 @@ def validate_catalog_sets(failures: list[str], passes: list[str]) -> None:
         for skill in bundle.get("active_skills", [])
     }
 
-    check("catalog_directory_exact", actual == EXPECTED_SKILLS, "skills directory is the exact eight canonical skills plus one deprecated entry", failures, passes)
+    check("catalog_directory_exact", actual == EXPECTED_SKILLS, "skills directory is the exact nine canonical skills plus one deprecated entry", failures, passes)
     check("readme_en_unique", len(readme_en) == len(set(readme_en)), "README catalog entries are unique", failures, passes)
     check("readme_zh_unique", len(readme_zh) == len(set(readme_zh)), "README_CN catalog entries are unique", failures, passes)
     check("readme_en_exact", set(readme_en) == EXPECTED_SKILLS, "README catalog equals the public catalog", failures, passes)

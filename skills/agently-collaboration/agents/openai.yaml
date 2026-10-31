@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agently Conversation & Collaboration"
+  short_description: "Explain tasks, progress, decisions and handoffs clearly"
+  default_prompt: "Use $agently-collaboration to explain the current task and outcome, maintain its complete plan and report meaningful progress."

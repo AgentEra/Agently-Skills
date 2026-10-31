@@ -1282,6 +1282,74 @@
           "agently-product-design"
         ]
       ]
+    },
+    {
+      "id": "conversation-progress-no-framework-zh",
+      "scenario_id": "conversation-expression",
+      "locale": "zh",
+      "intent_style": "progress-direct",
+      "query": "订单导出修复到哪了？先说明我们在解决什么，再讲当前完整进度和下一步。项目用普通 Python，没有 Agently。",
+      "installed_skills": [
+        "agently-collaboration"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-collaboration"
+        ]
+      ]
+    },
+    {
+      "id": "conversation-resume-without-router-en",
+      "scenario_id": "conversation-expression",
+      "locale": "en",
+      "intent_style": "resume-direct",
+      "query": "Explain the status of our ongoing document revision: remind me of its goal and what remains, retaining completed and cancelled items and the decision history.",
+      "installed_skills": [
+        "agently-collaboration",
+        "agently-product-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-collaboration"
+        ]
+      ]
+    },
+    {
+      "id": "product-progress-ui-not-conversation-zh",
+      "scenario_id": "conversation-expression",
+      "locale": "zh",
+      "intent_style": "product-ui",
+      "query": "优化应用内任务进度页的布局、取消按钮和错误提示，让用户理解任务状态。",
+      "installed_skills": [
+        "agently-collaboration",
+        "agently-product-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-product-design"
+        ]
+      ]
+    },
+    {
+      "id": "conversation-and-document-work-zh",
+      "scenario_id": "conversation-expression",
+      "locale": "zh",
+      "intent_style": "mixed-document-and-progress",
+      "query": "继续按上次读者审查意见改写方案文档，并在本轮汇报先说明任务目标，再展示完整计划和实际修改结果。",
+      "installed_skills": [
+        "agently-collaboration",
+        "agently-product-design"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-collaboration",
+          "agently-product-design"
+        ],
+        [
+          "agently-product-design",
+          "agently-collaboration"
+        ]
+      ]
     }
   ]
 }

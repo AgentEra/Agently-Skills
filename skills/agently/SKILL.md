@@ -1,6 +1,6 @@
 ---
 name: agently
-description: Route ambiguous product, document, or Agentic work to the right design or implementation skill, and maintain complete taskboard progress, decisions and handoffs across multi-round tasks. Also use for unresolved Agently owner/project shape or explicit low-frequency TaskDAG or DynamicTask requests. Clear UI/document work can use agently-product-design directly.
+description: Route ambiguous product, document, or Agentic work to the right design or implementation skill. Use for unresolved owner/project shape, mixed specialties or explicit low-frequency TaskDAG or DynamicTask requests. Clear tasks use their specialist directly; conversation expression, progress and handoffs use agently-collaboration alongside any task.
 ---
 
 # Agently
@@ -19,20 +19,14 @@ Route through `agently-agentic-design` for the highlighted flow and handoffs, an
 `agently-request` for related Prompt tables grouped by readability and dependency.
 Keep unrelated mechanical work outside this review method.
 
-Whenever the conversation advances its actionable plan, start the progress
-report with the **complete current taskboard**: stable IDs, every task's actual
-state and progress, including completed, not started, in progress, blocked and
-cancelled items. Use icons such as ✅ with explicit labels; an accepted decision
-is not implementation or verification. Follow the single maintained
-[taskboard and collaboration guidance](references/multi-round-collaboration.md)
-for history, reopening and substantive-round change logs.
-
 ## Shared coordination
 
-Use the [collaboration record guidance](references/multi-round-collaboration.md)
-for work-item progress, decisions, evidence limits and handoffs. Specialist Skills
-retain their acceptance criteria; one progress record links them. A routine
-single-step edit does not require a design review or a new tracking system.
+Use [Conversation and Collaboration](../agently-collaboration/SKILL.md) alongside
+any task for reader-oriented communication, progress, decisions and handoffs.
+It can be selected directly without this router. Specialist Skills retain their
+execution and acceptance criteria; reuse one work record across them. If the
+companion is unavailable, follow the host's base guidance and existing task
+record; routing does not require installation or a new tracking system.
 
 ## Workflow
 

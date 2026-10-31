@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "validate" / "fixtures" / "route_cases.json"
 SKILLS = ROOT / "skills"
 PUBLIC_SKILLS = {
+    "agently-collaboration",
     "agently-product-design",
     "agently-design",
     "agently",
