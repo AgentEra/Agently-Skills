@@ -11,7 +11,7 @@ of framework. The domain Skill owns how to execute and accept that work.
 
 ## Lead with the task and its main point
 
-At a substantive progress report, explain in one short paragraph what the
+At a substantive progress report, explain with a descriptive title or short paragraph what the
 current work is trying to achieve and its most useful current result, finding
 or decision. Supply the minimum context needed by a reader returning after a
 break. Name the relevant requirement or scope when it explains this increment;
@@ -34,7 +34,16 @@ completion, history or estimates to make a report look complete.
 
 ## Make progress understandable
 
-After the opening paragraph, show the **complete current taskboard** when an
+Every taskboard needs an immediately preceding description of the task's
+problem or goal. When a relevant external task/document is available, use its
+meaningful title as a link to the actual source; that can be enough context
+without another introductory paragraph. If the source title is vague, add one
+short sentence explaining the task. IDs and action lists are not task summaries.
+For several distinct work items, introduce each by its own title/goal and group
+the corresponding rows, keeping the complete current plan visible. Use only
+real supplied or retrieved links; no source is required just to write a report.
+
+After that task introduction, show the **complete current taskboard** when an
 actionable plan materially advances or the user asks for its status/remaining
 work. For a status-only request, show the current snapshot without inventing
 new progress. Give stable IDs, icon-plus-text status and

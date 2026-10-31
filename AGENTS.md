@@ -212,6 +212,9 @@ Use this file as installation-time guidance after the skills are added into anot
   expression, progress, decisions and handoffs, without requiring the router.
   Start substantive reports with the current task, goal and main result, then
   show the complete current taskboard with stable IDs and actual progress.
+  Each board/group needs its own meaningful task introduction; use a clear
+  source task/document title with its real link when available. The visible
+  title and statuses must make sense without following that link.
   Explain relevant changes and next actions top-down. Retain complete decision
   history in existing records; expand it when needed rather than repeating all
   history every round. Put routine supplementary limits in a short closing note;

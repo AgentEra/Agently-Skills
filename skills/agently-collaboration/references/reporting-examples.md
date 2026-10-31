@@ -48,3 +48,30 @@ the new or reopened item. Explain what actually changed this round. Keep prior
 decision details in the existing record; retrieve them if necessary to explain
 the current choice or when the user asks for the full history. A candidate,
 accepted decision and applied implementation have distinct statuses.
+
+## Several tasks in one report
+
+Give each task a descriptive introduction before its rows. When an actual
+task/document URL is available, make that title the link; the synthetic example
+below has no external source. The short titles carry the task context, so another
+background paragraph is unnecessary. These are two groups of one current plan,
+not newly created work records.
+
+**任务一：修复共享资料切换时的跨端定位与恢复**
+
+| 状态 | 事项 | 当前进展 |
+|---|---|---|
+| ✅ 已完成 | 1. 修复切换与恢复 | 已完成修复及本机回归 |
+| 🔄 进行中 | 2. 上线后复核 | 已上线，继续验证两个账号的协作路径 |
+
+**任务二：完善应用权限范围与审计记录**
+
+| 状态 | 事项 | 当前进展 |
+|---|---|---|
+| ✅ 已完成 | 3. 修复权限范围与审计 | 已完成实现与相应回归 |
+| 🔄 进行中 | 4. 核对生产权限行为 | 角色保存和审计已验，继续撤权验证 |
+
+The reader can identify both problems without decoding IDs or inferring the
+goal from implementation actions. In real reports, retain the actual task IDs,
+all planned items and evidence-backed states; do not replace them with these
+illustrative numbers or claim these synthetic results as observed.
