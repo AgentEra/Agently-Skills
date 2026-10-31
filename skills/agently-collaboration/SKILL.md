@@ -34,16 +34,31 @@ completion, history or estimates to make a report look complete.
 
 ## Use familiar and defined language
 
-For content people will read, prefer everyday terms or terminology established
-in the relevant industry and appropriate to the intended reader. Do not invent
-and repeatedly use undefined shorthand, acronyms, initials, codes or numbered
-aliases whose meaning exists only in this conversation. Prefer an existing
-clear term; when a new term or abbreviation is genuinely necessary, give its
-full name and meaning before using it, within the reader's current material.
-Do not assume the reader saw its definition in an earlier chat. Familiar
-industry abbreviations need no ritual expansion when the audience knows them.
+For content people will read, use everyday terms or established industry
+terminology appropriate to the reader. Apply Occam's razor: normally create no
+new vocabulary, abbreviations, codes, numbered aliases or private terminology.
+The reader must not need to read the whole conversation to decode a name.
+Defining a term once, or having a glossary, is not permission to proliferate it.
 
-Stable task IDs, exact API names and other technical identifiers can accompany
+Before an exception, strictly assess whether a common term, established domain
+name or complete descriptive phrase already expresses the intended meaning. If
+it does, use it. Brevity, the agent's convenience or organizing its own thoughts
+does not justify a new alias. Introduce one only when a real, necessary meaning
+cannot be conveyed clearly by the simpler existing expression, and its benefit
+to the reader warrants the extra learning burden.
+
+For an exceptionally necessary conversation-specific term, maintain and provide
+a **current conversation glossary** with its full name and plain meaning in the
+human-facing reply that uses it. An earlier chat definition or a glossary link
+alone is insufficient. Normally keep the glossary at **10 terms or fewer**, with
+a **hard maximum of 15**; retaining 11–15 requires a concrete necessity, not a
+target to fill. The limit covers the active vocabulary across the conversation,
+not a fresh allowance per message/table. Do not split glossaries to evade it.
+Replace unnecessary aliases with complete/common names and update the glossary
+when meanings change. If it would exceed 15, simplify the vocabulary before
+continuing. Familiar industry terms do not require inventing glossary entries.
+
+Existing task IDs, ordinary item numbering, exact API names and technical identifiers can accompany
 a descriptive name or explanation; they must not replace the human-readable
 meaning. Preserve code, protocol fields and quoted evidence accurately.
 Agent-to-agent messages and machine-readable contracts are exempt from this
