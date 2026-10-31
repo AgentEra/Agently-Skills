@@ -32,6 +32,29 @@ current progress, observed effect, next action and who owns it. Distinguish
 observed effects from intended benefits. Do not fabricate metrics, causality,
 completion, history or estimates to make a report look complete.
 
+## Preserve the reader's order of understanding
+
+Plan what the reader needs to know at each point. Keep a simple explanation or
+dependency chain continuous; do not make the reader jump ahead, return to a
+table, or assemble scattered sections to understand one decision. Introduce a
+necessary premise or definition before the reasoning that uses it. Keep related
+conditions, actions and results together, with the condition before the action
+and the result after it. A conclusion may lead a report; the supporting account
+must still make its causal and temporal relationships clear.
+
+Present an execution sequence in actual dependency order, not historical IDs
+followed by prose asking the reader to reorder it. Stable task IDs stay stable;
+they identify work, not its execution order. Distinguish completed events,
+current state and proposed next steps without narrating every tool operation.
+
+At a necessary reference, supply the local meaning and the condition that
+affects the current judgment. Do not defer an essential explanation to “see
+later,” an issue code, an appendix or another link. References still serve
+optional evidence, shared detailed procedures and genuinely separate branches;
+do not duplicate whole specifications or flatten a complex document into one
+long paragraph. State why the reference matters and where a branch rejoins when
+needed. Fewer jumps, not zero links, is the goal.
+
 ## Use familiar and defined language
 
 For content people will read, use everyday terms or established industry
@@ -113,7 +136,9 @@ not the work required to satisfy them.
 Before sending, check that a reader with the stated role and reasonable prior
 knowledge can understand the task, main result, supporting reasons and next
 action from this message alone. Expand unexplained references and missing
-logical steps. Remove repeated background, procedural narration and generic
+logical steps. Read in the presented order: mark any forced forward lookup or
+backtracking, then bring essential context to its use or reorder the material.
+Remove repeated background, procedural narration and generic
 “not X” statements that do not affect understanding. This is a static self-check,
 not user research or a reason to invoke a full product review for every reply.
 
@@ -145,3 +170,7 @@ strategy follows [Codex global instruction discovery](https://learn.chatgpt.com/
 and [progressive Skill loading](https://learn.chatgpt.com/docs/build-skills).
 Sources checked 2026-10-31; host configuration and availability must be verified
 for the environment being installed.
+
+The procedural ordering also draws on Google's [procedure writing guidance](https://developers.google.com/style/procedures):
+prepare readers before actions and keep actions with their results. The broader
+reading-order rule is this Skill's synthesis, not a mandatory document template.

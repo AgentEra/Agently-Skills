@@ -49,6 +49,10 @@ a separately installed `taskboard` Skill or imply that a board tool was called.
   valid in an external system. Do not invent prefixes just to group the board.
   Exceptionally necessary private terms require the provided conversation
   glossary and its limits; a glossary is not permission to create more terms.
+- Arrange dependent work in a readable dependency order while keeping existing
+  IDs unchanged. If chronology and grouping differ, state the prerequisite beside
+  the affected item; do not make a later paragraph undo the apparent sequence of
+  the board. Stable IDs are references, not instructions to execute numerically.
 - Use icons **and text** consistently:
 
   | Status | Meaning |
