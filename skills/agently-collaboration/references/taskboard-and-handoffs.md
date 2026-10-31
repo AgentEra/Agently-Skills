@@ -44,9 +44,11 @@ a separately installed `taskboard` Skill or imply that a board tool was called.
   task identities; reconcile the board with the latest tool/record before
   reporting, and do not assume a successful plan write proves task execution.
 - Give each item a meaningful task/action name beside its ID. Follow the
-  [reader-language rule](../SKILL.md#use-familiar-and-defined-language): IDs,
-  undefined abbreviations and conversation-only aliases cannot replace the
-  description, even when they are valid identifiers in an external system.
+  [reader-language rule](../SKILL.md#use-familiar-and-defined-language): prefer
+  ordinary names over new aliases; IDs never replace the description, even when
+  valid in an external system. Do not invent prefixes just to group the board.
+  Exceptionally necessary private terms require the provided conversation
+  glossary and its limits; a glossary is not permission to create more terms.
 - Use icons **and text** consistently:
 
   | Status | Meaning |
