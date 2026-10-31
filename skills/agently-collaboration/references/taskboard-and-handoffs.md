@@ -9,6 +9,24 @@ informational answer or unchanged tool activity needs no invented plan or log.
 
 ## Complete current taskboard after the opening summary
 
+Before the rows, tell the reader what problem this work solves or what outcome
+it delivers. Prefer a meaningful **task/document title linked to its actual
+source** when one is already provided or can be read through available access.
+Reuse the authoritative title when clear; a generic title such as “Follow-up,”
+an internal ID or a list of actions needs a brief goal/problem explanation.
+The visible title and current statuses must make sense without opening the link;
+the link supplies optional background and detail, not hidden prerequisites.
+Do not invent a URL, require the user to create a task/document or search unrelated
+systems merely to decorate a report. Without a source, use a plain descriptive title.
+
+If the report contains distinct work items, introduce each group separately and
+associate its rows with that task. One concise overall summary can describe the
+combined goal when it genuinely exists; do not invent a common parent just from
+ID prefixes. A table per group or a single table with explicit groups is fine.
+Grouping does not reset task identities or omit completed, pending or cancelled
+items. A standalone or repeated board still needs its local task introduction;
+do not assume the reader remembers an earlier reply's title.
+
 The board is a view of this conversation's actual plan, not a new runtime or
 external task-management system. Use the existing plan/tool when available;
 otherwise a Markdown table is sufficient. This reporting method does not require
