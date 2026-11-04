@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -21,6 +22,44 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 STATE_FILE = '.agently-skills-ui.json'
 UI_FIELDS = {'display_name', 'short_description', 'default_prompt'}
+UPSTREAM = 'https://github.com/AgentEra/Agently-Skills'
+
+
+def source_revision(root: Path, name: str, files: dict[str, bytes]) -> dict | None:
+    """Record a verified source tree, never infer a release from install time.
+
+    No network. Archives, modified sources and non-official origins are unknown.
+    Localized installed UI and preserved supplements do not change source identity.
+    """
+    def git(*args):
+        return subprocess.check_output(['git', '-C', str(root), *args],
+                                       stderr=subprocess.DEVNULL, timeout=5)
+    try:
+        origin = git('remote', 'get-url', 'origin').decode().strip().removesuffix('.git')
+        if origin not in (UPSTREAM, 'git@github.com:AgentEra/Agently-Skills',
+                          'ssh://git@github.com/AgentEra/Agently-Skills'):
+            return None
+        commit = git('rev-parse', 'HEAD').decode().strip()
+        tree = git('rev-parse', f'{commit}:skills/{name}').decode().strip()
+        expected = {}
+        for entry in git('ls-tree', '-r', '-z', f'{commit}:skills/{name}').split(b'\0'):
+            if not entry:
+                continue
+            header, path = entry.split(b'\t', 1)
+            mode, kind, sha = header.decode().split()
+            if kind != 'blob' or mode not in ('100644', '100755'):
+                return None
+            expected[f'{name}/{path.decode()}'] = (mode, sha)
+        actual = {}
+        for relative, content in files.items():
+            mode = '100755' if (root / 'skills' / relative).stat().st_mode & 0o111 else '100644'
+            sha = hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest()
+            actual[relative] = (mode, sha)
+        if actual != expected:
+            return None
+        return {'repository': UPSTREAM, 'commit': commit, 'tree': tree}
+    except (OSError, subprocess.SubprocessError, ValueError, UnicodeError):
+        return None
 
 
 def digest(data: bytes) -> str:
@@ -138,6 +177,7 @@ def apply(root: Path, dest: Path, locale: str | None = None, skills: list[str] |
         raise ValueError('Select one or more unique canonical skill names')
     changes, originals, preserved, conflicts = {}, {}, [], []
     baselines = dict(state['files'])
+    sources = dict(state.get('sources', {}))
     for name in selected:
         files = source_files(root, name)
         installed_entry = read_file(dest, f'{name}/SKILL.md')
@@ -147,6 +187,11 @@ def apply(root: Path, dest: Path, locale: str | None = None, skills: list[str] |
             if identity(installed_entry) != name:
                 raise ValueError(f'{name}: installed identity mismatch')
         if not ui_only:
+            revision = source_revision(root, name, files)
+            if revision is None:
+                sources.pop(name, None)
+            else:
+                sources[name] = revision
             for relative, incoming in files.items():
                 if relative.endswith('/agents/openai.yaml'):
                     continue
@@ -172,6 +217,8 @@ def apply(root: Path, dest: Path, locale: str | None = None, skills: list[str] |
     if conflicts:
         raise ValueError('Upstream and local files both changed; reconcile before updating: ' + ', '.join(conflicts))
     saved = {'version': 1, 'locale': selected_locale, 'files': baselines}
+    if sources:
+        saved['sources'] = sources
     replacement = (json.dumps(saved, ensure_ascii=False, indent=2) + '\n').encode()
     if replacement != prior:
         changes[STATE_FILE], originals[STATE_FILE] = replacement, prior

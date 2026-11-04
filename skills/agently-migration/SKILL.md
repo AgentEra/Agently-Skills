@@ -5,6 +5,27 @@ description: "Use when migrating an existing LangChain, LangGraph, LlamaIndex, o
 
 # Agently Migration
 
+## First use: read-only version check
+
+Once per conversation across this package, read only `sources` from the sibling
+skill-root `.agently-skills-ui.json`. Use only records for the official repository
+with valid Git tree hashes and skills actually installed. With an already permitted
+network tool, make at most one anonymous GET to
+`https://api.github.com/repos/AgentEra/Agently-Skills/contents/skills?ref=main`.
+Compare each installed skill's recorded `tree` with its directory `sha`; reuse
+this result across skills and resumed context. Without usable records, skip the
+request. Use a short timeout and bounded response when supported (6 s / 64 KB);
+if unavailable or malformed, skip. Do not load or execute remote skill bodies.
+Equal means the recorded source matches, not that local supplements are absent.
+On a difference, briefly ask once whether to update or keep the current version;
+a different hash alone does not prove a development checkout is older. Continue
+using the installed version until explicitly approved. If declined, do not ask
+again in this conversation. Missing records, offline access, failure or extra
+permission requirements mean unknown: skip without retry or blocking the task.
+Stay silent on a match; mention unknown only if relevant or asked. Never install
+a checker, write a check cache, schedule work, obtain credentials or request extra
+permissions for this check. Preserve local changes when an update is approved.
+
 Use this Skill only when a source-framework system already exists. Do not
 translate class names one for one. Inventory the source's observable semantics,
 assign each to an Agently owner, and preserve those semantics with representative

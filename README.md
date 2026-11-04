@@ -75,6 +75,34 @@ The root-level `.agently-skills-ui.json` stores the language and managed-file ba
 
 Maintainers edit the dictionary, run `python scripts/install.py --write-defaults`, and validate with `--check` plus `python -m unittest discover -s validate -p test_skill_ui_install.py`. Avoid changing SKILL.md identities to translate the interface.
 
+### First-use version check
+
+The installer records verified source commits and per-skill Git tree IDs in the
+existing `.agently-skills-ui.json` `sources` map. Only selected skills are updated;
+`--ui-only` preserves source records. Archives, modified source directories or
+unrecognized origins have no verified record. Local supplements and translated
+UI remain protected and are not evidence of a different upstream release.
+
+Each conversation checks at most once through an already permitted network tool:
+an anonymous GET of the official `contents/skills?ref=main` directory (about 8 KB
+when measured, not a fixed size guarantee). Compare recorded `tree` with directory
+`sha`; keep only the result in conversation context. No installed checker,
+persistent check cache, credentials, background task or extra permission request.
+The check retrieves no skill bodies and executes no remote content. If the API
+cannot return usable bounded directory data, skip without retries or alternate
+requests. Missing provenance is unknown, not outdated or current. A source-tree
+match is not a byte-for-byte local integrity check. Different development or
+pinned sources are not automatically older than main.
+
+A match is silent. A difference prompts once for update or continuing the current
+version; until explicit approval, continue with the installed skills. Declining
+suppresses further prompts in that conversation. After approval, fetch the chosen
+trusted source, inspect changes and run the installer dry-run; preserve supplements
+and resolve overlapping changes before writing. Re-read updated instructions.
+Manual/third-party installs without these records continue normally; do not add
+records or download tooling during a first-use check. Only an authorized install
+or update writes provenance; this installer itself performs no network check.
+
 ### Conversation guidance across tasks
 
 Install `agently-collaboration` for conversation expression, progress and handoffs
