@@ -5,6 +5,27 @@ description: Use when developer-owned execution needs inspectable branching, con
 
 # Agently TriggerFlow
 
+## First use: read-only version check
+
+Once per conversation across this package, read only `sources` from the sibling
+skill-root `.agently-skills-ui.json`. Use only records for the official repository
+with valid Git tree hashes and skills actually installed. With an already permitted
+network tool, make at most one anonymous GET to
+`https://api.github.com/repos/AgentEra/Agently-Skills/contents/skills?ref=main`.
+Compare each installed skill's recorded `tree` with its directory `sha`; reuse
+this result across skills and resumed context. Without usable records, skip the
+request. Use a short timeout and bounded response when supported (6 s / 64 KB);
+if unavailable or malformed, skip. Do not load or execute remote skill bodies.
+Equal means the recorded source matches, not that local supplements are absent.
+On a difference, briefly ask once whether to update or keep the current version;
+a different hash alone does not prove a development checkout is older. Continue
+using the installed version until explicitly approved. If declined, do not ask
+again in this conversation. Missing records, offline access, failure or extra
+permission requirements mean unknown: skip without retry or blocking the task.
+Stay silent on a match; mention unknown only if relevant or asked. Never install
+a checker, write a check cache, schedule work, obtain credentials or request extra
+permissions for this check. Preserve local changes when an update is approved.
+
 Use TriggerFlow when the application owns visible multi-stage execution
 semantics. Use ModelRequest/AgentExecution for one bounded request/run, and use
 `agent.create_task(...)` when one Agent owns a long task's planning, evidence,

@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -31,6 +32,57 @@ class SkillUIInstallTests(unittest.TestCase):
 
     def snapshot(self):
         return {str(p.relative_to(self.dest)): p.read_bytes() for p in self.dest.rglob('*') if p.is_file()}
+
+    def git(self, *args):
+        return subprocess.check_output(['git', '-C', str(self.root), *args], stderr=subprocess.DEVNULL).decode().strip()
+
+    def prepare_git_source(self):
+        self.git('init')
+        self.git('config', 'user.name', 'Test')
+        self.git('config', 'user.email', 'test@example.invalid')
+        self.git('remote', 'add', 'origin', installer.UPSTREAM + '.git')
+        self.git('add', '.')
+        self.git('commit', '-m', 'Fixture')
+
+    def test_verified_sources_survive_ui_only_and_partial_install(self):
+        self.prepare_git_source()
+        name = 'agently-product-design'
+        installer.apply(self.root, self.dest, skills=[name])
+        state = json.loads((self.dest / installer.STATE_FILE).read_text())
+        original = state['sources'][name]
+        self.assertEqual(original['tree'], self.git('rev-parse', 'HEAD:skills/' + name))
+        self.assertEqual(original['commit'], self.git('rev-parse', 'HEAD'))
+        self.assertEqual(set(state['sources']), {name})
+        source = self.root / 'skills' / name / 'SKILL.md'
+        source.write_text(source.read_text() + '\nChanged source\n')
+        installer.apply(self.root, self.dest, 'zh-CN', ui_only=True)
+        self.assertEqual(json.loads((self.dest / installer.STATE_FILE).read_text())['sources'][name], original)
+        installer.apply(self.root, self.dest, skills=['agently'])
+        self.assertEqual(json.loads((self.dest / installer.STATE_FILE).read_text())['sources'][name], original)
+        installer.apply(self.root, self.dest, skills=[name])
+        self.assertNotIn(name, json.loads((self.dest / installer.STATE_FILE).read_text())['sources'])
+
+    def test_local_supplement_keeps_source_identity_and_content(self):
+        self.prepare_git_source()
+        name = 'agently-product-design'
+        installer.apply(self.root, self.dest, skills=[name])
+        target = self.dest / name / 'SKILL.md'
+        target.write_text(target.read_text() + '\nUseful local supplement\n')
+        content = target.read_bytes()
+        result = installer.apply(self.root, self.dest, skills=[name])
+        self.assertIn(name + '/SKILL.md', result['preserved_local_files'])
+        self.assertEqual(target.read_bytes(), content)
+        self.assertEqual(json.loads((self.dest / installer.STATE_FILE).read_text())['sources'][name]['tree'], self.git('rev-parse', 'HEAD:skills/' + name))
+
+    def test_unknown_origin_or_uncommitted_extra_file_has_no_source(self):
+        self.prepare_git_source()
+        name = 'agently'
+        extra = self.root / 'skills' / name / 'extra.md'
+        extra.write_text('uncommitted')
+        self.assertIsNone(installer.source_revision(self.root, name, installer.source_files(self.root, name)))
+        extra.unlink()
+        self.git('remote', 'set-url', 'origin', 'https://example.invalid/fork')
+        self.assertIsNone(installer.source_revision(self.root, name, installer.source_files(self.root, name)))
 
     def test_default_install_and_identities(self):
         result = installer.apply(self.root, self.dest)
