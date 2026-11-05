@@ -84,6 +84,8 @@ new vocabulary, abbreviations, codes, numbered aliases or private terminology.
 The reader must not need to read the whole conversation to decode a name.
 Defining a term once, or having a glossary, is not permission to proliferate it.
 
+When writing in Chinese, translate the meaning in context. Prefer an accurate, familiar Chinese word or phrase to a word-for-word rendering or a transliteration, even one already in the draft. Keep established specialist names when they help the intended reader. If a recurring concept needs a new Chinese name, introduce it with the English original and a plain explanation, then use it consistently. If no natural wording preserves the meaning, keep the English and explain what it means here. Preserve literal commands, flags and identifiers.
+
 Before an exception, strictly assess whether a common term, established domain
 name or complete descriptive phrase already expresses the intended meaning. If
 it does, use it. Brevity, the agent's convenience or organizing its own thoughts
