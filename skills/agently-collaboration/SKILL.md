@@ -157,7 +157,7 @@ not the work required to satisfy them.
 Before sending, check that a reader with the stated role and reasonable prior
 knowledge can understand the task, main result, supporting reasons and next
 action from this message alone. Expand unexplained references and missing
-logical steps. Read in the presented order: mark any forced forward lookup or
+logical steps. Read each action from the recipient’s position: can they identify the participants, action and object needed to understand what happened, even when the sentence contains no pronoun? Supply the missing object from known facts. Keep natural omissions and pronouns when nearby text makes the meaning clear. Read in the presented order: mark any forced forward lookup or
 backtracking, then bring essential context to its use or reorder the material.
 Remove repeated background, procedural narration and generic
 “not X” statements that do not affect understanding. This is a static self-check,
