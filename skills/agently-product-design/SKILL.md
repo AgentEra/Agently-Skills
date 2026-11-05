@@ -36,7 +36,7 @@ permissions for this check. Preserve local changes when an update is approved.
 
 ## 面向人的表达
 
-交付方案、图解或图文材料时，读取[面向人的表达原则](references/human-facing-expression.md)：图与关键文字共同保持信息完整、主次和关系可辨、实际尺寸可读。简单局部文字修订不强制配图。表达关系、概念或产品设计理念且适合抽象产品插图时，可按[Spotkit 辅助表达](references/concept-illustrations.md)选用已安装的 `spotkit`；精确架构、流程和权限语义仍按画板规则表达，不默认把每个概念都画成插图。
+交付方案、图解或图文材料时，读取[面向人的表达原则](references/human-facing-expression.md)：图与关键文字共同保持信息完整、主次和关系可辨、实际尺寸可读。简单局部文字修订不强制配图。会话中需要解释多对象的分组、连接、流程或比较关系时，按[会话内图形表达的选用](references/visual-storytelling.md#会话内图形表达的选用)主动选择图形，优先让读者在当前回复中直接理解，不默认另交网页。表达关系、概念或产品设计理念且适合抽象产品插图时，可按[Spotkit 辅助表达](references/concept-illustrations.md)选用已安装的 `spotkit`；精确架构、流程和权限语义仍按画板规则表达，不默认把每个概念都画成插图。
 
 未另指定视图的技术架构图默认用 SVG 表达逻辑分层，自下往上、自左往右体现支撑关系，不用 Mermaid；流程图按业务职能分块，区分主链路与反馈等次要链路，用业务名称代替无意义标号。图稿表达的详细规则在[画板指导](references/diagram-and-board.md)，不以图清楚代替事实或运行正确。
 
