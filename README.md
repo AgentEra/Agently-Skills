@@ -9,7 +9,7 @@ Documentation: [English](https://agently.tech/docs/en/) |
 ## Compatibility
 
 The current catalog is generation `v3`, aligned with Agently
-`4.1.4.10`. It contains nine canonical skills plus one deprecated forwarding entry. The product-design and collaboration Skills have no Agently runtime dependency.
+`4.1.4.11`. It contains nine canonical skills plus one deprecated forwarding entry. The product-design and collaboration Skills have no Agently runtime dependency.
 
 Historical catalogs are frozen on archive branches:
 

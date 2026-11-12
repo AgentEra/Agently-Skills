@@ -8,7 +8,7 @@ Skills 仓库。
 
 ## 兼容性
 
-当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.10`，包含九个正式 Skill 和一个弃用转接入口；产品设计和会话协作 Skill 不依赖 Agently 运行时。
+当前 catalog 为 generation `v3`，对齐 Agently `4.1.4.11`，包含九个正式 Skill 和一个弃用转接入口；产品设计和会话协作 Skill 不依赖 Agently 运行时。
 
 历史 catalog 冻结在归档分支：
 
