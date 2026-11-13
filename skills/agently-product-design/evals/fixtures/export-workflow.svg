@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1170" viewBox="0 0 1200 1170">
+<rect width="1200" height="1170" fill="#f5f7f6"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#697c78"/></marker></defs>
+<text x="30" y="40" font-family="Hiragino Sans GB, sans-serif" font-size="28" fill="#263f39">资料导出：申请、复核与交付</text>
+<text x="30" y="74" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">团队操作图 · 虚构测试材料</text>
+<rect x="30" y="105" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="133" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">申请人：提交申请</text>
+<text x="70" y="159" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">仅项目成员可发起申请。</text>
+<text x="70" y="183" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">填写资料范围、用途、指定收件人。</text>
+<text x="70" y="207" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">申请内容不得包含密钥。</text>
+<path d="M600 248V271" stroke="#697c78" fill="none" marker-end="url(#arrow)"/>
+<rect x="30" y="275" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="303" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">并行复核：两项都要通过</text>
+<text x="70" y="329" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">资料负责人：核对访问范围。</text>
+<text x="70" y="353" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">安全审核员：检查敏感字段。</text>
+<text x="70" y="377" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">两项同时进行；任一不通过，退回申请人。</text>
+<text x="70" y="401" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">申请人修改后，两项都重新复核。</text>
+<path d="M600 418V441" stroke="#697c78" fill="none" marker-end="url(#arrow)"/>
+<rect x="30" y="445" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="473" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">发布负责人：批准或退回</text>
+<text x="70" y="499" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">仅在两项复核均通过后批准。</text>
+<text x="70" y="523" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">不得批准自己提交的申请。</text>
+<text x="70" y="547" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">驳回后回到申请人，再经过两项复核。</text>
+<path d="M600 588V611" stroke="#697c78" fill="none" marker-end="url(#arrow)"/>
+<rect x="30" y="615" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="643" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">执行人员：生成与交付</text>
+<text x="70" y="669" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">批准后生成下载包，仅指定收件人可访问。</text>
+<text x="70" y="693" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">下载链接自生成起 24 小时失效。</text>
+<text x="70" y="717" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">单个附件不得超过 100 MB。</text>
+<text x="70" y="741" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">生成失败最多重试 2 次；仍失败转人工，停止自动重试。</text>
+<rect x="30" y="785" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="813" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">撤销与审计</text>
+<text x="70" y="839" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">撤销后要求下载链接立即失效。</text>
+<text x="70" y="863" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">撤销不删除审计记录。</text>
+<text x="70" y="887" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">审计记录保留 180 天；日志不得包含资料正文。</text>
+<rect x="30" y="955" width="1140" height="142" rx="8" fill="white" stroke="#bdcec4"/>
+<text x="50" y="983" font-family="Hiragino Sans GB, sans-serif" font-size="20" fill="#263f39">当前实施与验证状态</text>
+<text x="70" y="1009" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">申请与复核已上线；下载交付仅在试点使用。</text>
+<text x="70" y="1033" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">自动撤销尚未上线，当前由管理员手动禁用链接。</text>
+<text x="70" y="1057" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">外部访客下载尚未验收。</text>
+<text x="70" y="1081" font-family="Hiragino Sans GB, sans-serif" font-size="18" fill="#263f39">本图为虚构测试材料，不描述任何真实系统。</text>
+</svg>
