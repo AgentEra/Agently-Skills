@@ -70,7 +70,9 @@ product or writing tasks, route to the product Skill and continue its method.
 
 - Product goals, role/behavior coverage, interface/component/layout design,
   document readability or diagrams use `agently-product-design`. It has four
-  conditional modules, not four mandatory phases or Agents.
+  conditional modules, not four mandatory phases or Agents. An ordinary API or
+  background service that slows under load uses the performance shortcut in
+  [that skill](../agently-product-design/SKILL.md), including code-only tasks.
 - For mixed product + Agentic work, pass role goals, business constraints,
   observable event meanings, selected decisions and unresolved evidence to the
   next owner. Load only the necessary phase. Runtime traces prove system events;

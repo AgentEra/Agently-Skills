@@ -1350,6 +1350,24 @@
           "agently-collaboration"
         ]
       ]
+    },
+    {
+      "id": "service-read-latency-zh",
+      "scenario_id": "design-ownership",
+      "locale": "zh",
+      "intent_style": "observed-service-slowdown",
+      "query": "晨会上很多同事反复打开同一份排班表，读取接口变得很慢。请看后台代码，改善响应时间并保持原有权限和返回字段。",
+      "installed_skills": [
+        "agently",
+        "agently-product-design",
+        "agently-agentic-design",
+        "agently-runtime"
+      ],
+      "expected_route_paths": [
+        [
+          "agently-product-design"
+        ]
+      ]
     }
   ]
 }
