@@ -1346,6 +1346,37 @@
         "retained_not_repeated_history",
         "cancelled_cleanup_visible"
       ]
+    },
+    {
+      "id": "service-read-latency-zh",
+      "query": "读取排班表的接口在集中刷新时很慢。该参考哪份指导决定先改哪里，并核对改后响应、返回内容与权限？",
+      "matched_skills": [
+        "agently-product-design"
+      ],
+      "expected_reference_sets": [
+        [
+          "skills/agently-product-design/references/performance-guidance.md"
+        ]
+      ],
+      "concepts": [
+        {
+          "id": "wait_dependencies",
+          "description": "Locate required results and independent reads before choosing where to wait."
+        },
+        {
+          "id": "repeated_cost",
+          "description": "Identify which work actually repeats and respect freshness and permission boundaries before sharing it."
+        }
+      ],
+      "excerpt_anchors": {
+        "skills/agently-product-design/references/performance-guidance.md": [
+          "按等待与重复开销选择机制"
+        ]
+      },
+      "required_concepts": [
+        "wait_dependencies",
+        "repeated_cost"
+      ]
     }
   ]
 }
