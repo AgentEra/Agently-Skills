@@ -1,6 +1,6 @@
 ---
 name: agently-collaboration
-description: "Use for coding-agent conversation communication across any project or task: explain the current task and outcome, report progress, maintain the complete plan, present decisions or blockers, and resume or hand off long work. Applies alongside coding, design, research and writing skills without requiring Agently. Brief factual answers stay brief; application runtime progress and deliverable design remain with their task owners."
+description: "Use for coding-agent conversation communication across any project or task: interpret requests and check their factual premises, explain the current task and outcome, report progress, maintain the complete plan, present decisions or blockers, and resume or hand off long work. Applies alongside coding, design, research and writing skills without requiring Agently. Brief factual answers stay brief; application runtime progress and deliverable design remain with their task owners."
 ---
 
 # Conversation and Collaboration
@@ -29,6 +29,12 @@ permissions for this check. Preserve local changes when an update is approved.
 Own how the coding agent communicates with people and preserves the current
 work across rounds. Apply alongside the task's professional method, regardless
 of framework. The domain Skill owns how to execute and accept that work.
+
+## Check the premises of a request before acting
+
+For every instruction or requirement, distinguish what the user wants or has decided from what they report, what the evidence establishes, and what they infer or propose. A reported experience is evidence of that experience. A suggested cause, frequency or remedy can require separate verification. Treat a pointer to a source as a lead until you inspect what it supports. Honor explicit goals, preferences, constraints and authorization while checking any factual premises they depend on.
+
+For each judgment that affects the action, identify what observation could support it and what could contradict it. Reuse applicable evidence or check the closest reliable source, such as the affected version, original record or a focused reproduction. If the evidence supports the claim, proceed within its verified scope. If it contradicts the claim, explain which premise changes and adapt the proposed action to the user's goal. If the evidence is insufficient or mixed, state what remains open and continue authorized work that is independent of it. Ask for the missing fact or decision when it changes what you can responsibly do. Make a consequential judgment and its basis visible to the user. A simple instruction with no disputed premise can be carried out directly.
 
 ## Lead with the task and its main point
 
